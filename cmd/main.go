@@ -29,4 +29,5 @@ func setup() {
 	Otto.Set("chord", chord)
 	Otto.Set("scale", scale)
 	Otto.Set("pitch", pitch)
+	Otto.Set("reverse", reverse)
 }

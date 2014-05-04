@@ -12,21 +12,25 @@ import (
 var noteLength = time.Duration(500) * time.Millisecond
 
 func playSequence(call otto.FunctionCall) otto.Value {
-	arg := call.Argument(0)
-	if arg.IsString() {
-		input := arg.String()
-		seq := m.ParseSequence(input)
-		for _, eachGroup := range seq.Notes {
-			wg := new(sync.WaitGroup)
-			for _, eachNote := range eachGroup {
-				wg.Add(1)
-				go func(n m.Note) {
-					playNote(n, noteLength)
-					wg.Done()
-				}(eachNote)
+	for i := 0; i < len(call.ArgumentList); i++ {
+		go func(argIndex int) {
+			arg := call.Argument(argIndex)
+			if arg.IsString() {
+				input := arg.String()
+				seq := m.ParseSequence(input)
+				for _, eachGroup := range seq.Notes {
+					wg := new(sync.WaitGroup)
+					for _, eachNote := range eachGroup {
+						wg.Add(1)
+						go func(n m.Note) {
+							playNote(n, noteLength)
+							wg.Done()
+						}(eachNote)
+					}
+					wg.Wait()
+				}
 			}
-			wg.Wait()
-		}
+		}(i)
 	}
 	return toValue("")
 }
@@ -89,4 +93,14 @@ func pitch(call otto.FunctionCall) otto.Value {
 	seq := m.ParseSequence(notes)
 	pitched := m.PitchBy{int(offset)}.Transform(seq)
 	return toValue(pitched.String())
+}
+
+func reverse(call otto.FunctionCall) otto.Value {
+	notes, err := call.Argument(0).ToString()
+	if err != nil {
+		return toValue(err)
+	}
+	seq := m.ParseSequence(notes)
+	reversed := seq.Reversed()
+	return toValue(reversed.String())
 }

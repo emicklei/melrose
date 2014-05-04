@@ -99,6 +99,17 @@ func (s Sequence) RotatedBy(direction int, howMany int) Sequence {
 	return Sequence{groups}
 }
 
+func (s Sequence) Reversed() Sequence {
+	if len(s.Notes) == 0 {
+		return s
+	}
+	groups := [][]Note{}
+	for c := len(s.Notes) - 1; c != -1; c-- {
+		groups = append(groups, s.Notes[c])
+	}
+	return Sequence{groups}
+}
+
 // Conversion
 
 func (s Sequence) String() string {
