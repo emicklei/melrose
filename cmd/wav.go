@@ -62,7 +62,7 @@ func loadSounds() {
 			loadWavFile(fin)
 		}
 	}
-	log.Printf("loaded %d sound files\n", len(list))
+	log.Printf("loaded %d sound files\n", len(waves))
 }
 
 func loadWavFile(fileName string) {
@@ -94,6 +94,7 @@ func loadWavFile(fileName string) {
 		}
 		key = strings.ToUpper(key[0:1]) + "♯" + oct
 	}
+	fmt.Println("loaded", key)
 	waves[key] = buffer // G3#
 }
 
