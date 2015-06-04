@@ -3,10 +3,12 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 func main() {
-	dir := "/Users/emicklei/Downloads/sounds"
+	dir := filepath.Join(os.Getenv("HOME"), "sounds")
 	list, _ := ioutil.ReadDir(dir)
 	for _, each := range list {
 		out := each.Name()[0 : len(each.Name())-4]

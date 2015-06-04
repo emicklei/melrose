@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -54,7 +55,7 @@ func playNote(note m.Note, duration time.Duration) {
 }
 
 func loadSounds() {
-	dir := "/Users/emicklei/Downloads/sounds"
+	dir := filepath.Join(os.Getenv("HOME"), "sounds")
 	list, _ := ioutil.ReadDir(dir)
 	for _, each := range list {
 		if strings.HasSuffix(each.Name(), ".wav") {
