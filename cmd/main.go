@@ -24,10 +24,12 @@ func help() string {
 
 func setup() {
 	loadSounds()
-	Otto.Set("play", playSequence)
+	Otto.Set("play", playAllSequences)
 	Otto.Set("tempo", tempo)
 	Otto.Set("chord", chord)
 	Otto.Set("scale", scale)
 	Otto.Set("pitch", pitch)
 	Otto.Set("reverse", reverse)
+	Otto.Set("repeat", repeat)
+	Otto.Set("rotate", rotate)
 }

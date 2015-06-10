@@ -11,28 +11,30 @@ import (
 
 var noteLength = time.Duration(500) * time.Millisecond
 
-func playSequence(call otto.FunctionCall) otto.Value {
+func playAllSequences(call otto.FunctionCall) otto.Value {
 	for i := 0; i < len(call.ArgumentList); i++ {
-		go func(argIndex int) {
-			arg := call.Argument(argIndex)
-			if arg.IsString() {
-				input := arg.String()
-				seq := m.ParseSequence(input)
-				for _, eachGroup := range seq.Notes {
-					wg := new(sync.WaitGroup)
-					for _, eachNote := range eachGroup {
-						wg.Add(1)
-						go func(n m.Note) {
-							playNote(n, noteLength)
-							wg.Done()
-						}(eachNote)
-					}
-					wg.Wait()
-				}
-			}
-		}(i)
+		argIndex := i
+		arg := call.Argument(argIndex)
+		if arg.IsString() {
+			playSequence(arg.String())
+		}
 	}
 	return toValue("")
+}
+
+func playSequence(input string) {
+	seq := m.ParseSequence(input)
+	for _, eachGroup := range seq.Notes {
+		wg := new(sync.WaitGroup)
+		for _, eachNote := range eachGroup {
+			wg.Add(1)
+			go func(n m.Note) {
+				playNote(n, noteLength)
+				wg.Done()
+			}(eachNote)
+		}
+		wg.Wait()
+	}
 }
 
 func tempo(call otto.FunctionCall) otto.Value {
@@ -61,6 +63,23 @@ func chord(call otto.FunctionCall) otto.Value {
 	start := m.ParseNote(starts)
 	seq := m.Chord(start, mm)
 	return toValue(seq.String())
+}
+
+// repeat(sequence, howMany)
+func repeat(call otto.FunctionCall) otto.Value {
+	seq, err := call.Argument(0).ToString()
+	if err != nil {
+		return toValue(err)
+	}
+	howMany, err := call.Argument(1).ToInteger()
+	if err != nil {
+		return toValue(err)
+	}
+	for howMany > 0 {
+		playSequence(seq)
+		howMany -= 1
+	}
+	return otto.NullValue()
 }
 
 func scale(call otto.FunctionCall) otto.Value {
@@ -93,6 +112,26 @@ func pitch(call otto.FunctionCall) otto.Value {
 	seq := m.ParseSequence(notes)
 	pitched := m.PitchBy{int(offset)}.Transform(seq)
 	return toValue(pitched.String())
+}
+
+// rotate("C D E", -4)
+func rotate(call otto.FunctionCall) otto.Value {
+	notes, err := call.Argument(0).ToString()
+	if err != nil {
+		return toValue(err)
+	}
+	howMany, err := call.Argument(2).ToInteger()
+	if err != nil {
+		return toValue(err)
+	}
+	seq := m.ParseSequence(notes)
+	direction := m.Right
+	if howMany < 0 {
+		direction = m.Left
+		howMany *= -1
+	}
+	t := seq.RotatedBy(direction, int(howMany))
+	return toValue(t.String())
 }
 
 func reverse(call otto.FunctionCall) otto.Value {

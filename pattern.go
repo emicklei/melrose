@@ -65,10 +65,10 @@ func (g GroupBy) Transform(seq Sequence) Sequence {
 }
 
 type RotateBy struct {
-	direction int
-	howMany   int
+	Direction int
+	HowMany   int
 }
 
 func (r RotateBy) Transform(seq Sequence) Sequence {
-	return seq.RotatedBy(r.direction, r.howMany)
+	return seq.RotatedBy(r.Direction, r.HowMany)
 }

@@ -35,8 +35,17 @@ func closeDevice() {
 
 // half a second
 func playNote(note m.Note, duration time.Duration) {
-	key := note.PrintString(m.Sharp)
-	// log.Printf("%s ", key)
+	key := note.Name
+	if note.IsSharp() {
+		key += "#"
+	}
+	if note.IsFlat() {
+		key = note.AdjecentName(m.Right, 1) + "#"
+	}
+	if note.Octave != 4 {
+		key = fmt.Sprintf("%s%d", key, note.Octave)
+	}
+	log.Printf("%s ", key)
 	wav, ok := waves[key]
 	if !ok {
 		log.Printf("No such note:%s", key)
@@ -78,22 +87,14 @@ func loadWavFile(fileName string) {
 	case 2:
 		buffer.SetData(openal.FormatStereo16, data[:len(data)], int32(format.Samples))
 	}
-	key := path.Base(fileName)          // gs3.wav
-	key = key[0 : len(key)-len(".wav")] // gs3
-	if len(key) == 2 {
-		// normal
-		oct := key[1:2]
-		if oct == "4" {
-			oct = ""
-		}
-		key = strings.ToUpper(key[0:1]) + oct
-	} else {
-		// sharp
-		oct := key[2:3]
-		if oct == "4" {
-			oct = ""
-		}
-		key = strings.ToUpper(key[0:1]) + "♯" + oct
+	key := path.Base(fileName)                           // gs3.wav
+	key = strings.ToUpper(key[0 : len(key)-len(".wav")]) // GS3
+	if len(key) == 3 {                                   // sharp
+		key = fmt.Sprintf("%s%s#", key[0:1], key[2:3])
+		note := m.ParseNote(key).Modified(m.Sharp)
+		flatKey := note.AdjecentName(m.Right, 1) + "_"
+		fmt.Println(key, note, "loaded", flatKey)
+		waves[flatKey] = buffer
 	}
 	fmt.Println("loaded", key)
 	waves[key] = buffer // G3#
