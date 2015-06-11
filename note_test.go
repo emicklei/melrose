@@ -56,6 +56,10 @@ var midi = []struct {
 	{"B9", 131},
 }
 
+func TestAdjecentName(t *testing.T) {
+
+}
+
 func TestMIDI(t *testing.T) {
 	for _, each := range midi {
 		n := ParseNote(each.note)
@@ -84,13 +88,14 @@ var pitchers = []struct {
 	{"B", 1, "C5"},
 	{"D", -2, "C"},
 	{"C", 12, "C5"},
+	{"C5", 2, "D5"},
 }
 
 func TestModifiedPitch(t *testing.T) {
 	for i, each := range pitchers {
-		n := ParseNote(each.before).ModifiedPitch(each.by)
-		if n.String() != each.after {
-			t.Fatal("line,exp,act", i, each.after, n.String())
+		n := ParseNote(each.before).Pitched(each.by)
+		if got, want := n.String(), each.after; got != want {
+			t.Errorf("%d: got %v want %v", i, got, want)
 		}
 	}
 }
@@ -140,7 +145,7 @@ func ExampleBs() {
 }
 
 func ExampleCSharpOctave() {
-	fmt.Println(C().Sharp().ModifiedOctave(-1))
+	fmt.Println(C().Sharp().Octaved(-1))
 	// Output:
 	// C♯3
 }
@@ -158,17 +163,9 @@ func ExampleFlatEight() {
 }
 
 func ExampleOctaveUp() {
-	fmt.Println(C().ModifiedOctave(1), C().ModifiedOctave(-1))
+	fmt.Println(C().Octaved(1), C().Octaved(-1))
 	// Output:
 	// C5 C3
-}
-
-func ExampleAdjecentName() {
-	fmt.Println(C().AdjecentName(Left, 1))
-	fmt.Println(C().AdjecentName(Right, 7))
-	// Output:
-	// B
-	// C
 }
 
 func ExamplePrintString_Flat() {

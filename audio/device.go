@@ -1,4 +1,4 @@
-package main
+package audio
 
 import (
 	"encoding/binary"
@@ -15,42 +15,35 @@ import (
 	"github.com/vova616/go-openal/openal"
 )
 
-var waves = map[string]openal.Buffer{}
-
-var soundContext *openal.Context
-
-func openDevice() {
-	device := openal.OpenDevice("")
-	context := device.CreateContext()
-	context.Activate()
-	soundContext = context
+type Device struct {
+	Name         string
+	soundContext *openal.Context
+	waves        map[string]openal.Buffer
 }
 
-func closeDevice() {
-	if soundContext != nil {
-		log.Println("close device")
-		soundContext.Destroy()
+func (d *Device) Open() {
+	device := openal.OpenDevice(d.Name)
+	context := device.CreateContext()
+	context.Activate()
+	d.soundContext = context
+	d.waves = map[string]openal.Buffer{}
+}
+
+func (d *Device) Close() {
+	if d.soundContext != nil {
+		d.soundContext.Destroy()
 	}
 }
 
 // half a second
-func playNote(note m.Note, duration time.Duration) {
-	key := note.Name
-	if note.IsSharp() {
-		key += "#"
-	}
-	if note.IsFlat() {
-		key = note.AdjecentName(m.Right, 1) + "#"
-	}
-	if note.Octave != 4 {
-		key = fmt.Sprintf("%s%d", key, note.Octave)
-	}
-	log.Printf("%s ", key)
-	wav, ok := waves[key]
+func (d *Device) PlayNote(note m.Note, duration time.Duration) {
+	key := note.Whole().String()
+	wav, ok := d.waves[key]
 	if !ok {
 		log.Printf("No such note:%s", key)
 		return
 	}
+	//fmt.Println("=", key)
 	source := openal.NewSource()
 	source.SetPitch(1)
 	source.SetGain(1)
@@ -63,21 +56,21 @@ func playNote(note m.Note, duration time.Duration) {
 	source.Stop()
 }
 
-func loadSounds() {
+func (d *Device) LoadSounds() {
 	dir := filepath.Join(os.Getenv("HOME"), "sounds")
 	list, _ := ioutil.ReadDir(dir)
 	for _, each := range list {
 		if strings.HasSuffix(each.Name(), ".wav") {
 			fin := path.Join(dir, each.Name())
-			loadWavFile(fin)
+			d.loadWavFile(fin)
 		}
 	}
-	log.Printf("loaded %d sound files\n", len(waves))
+	log.Printf("loaded %d sound files\n", len(d.waves))
 }
 
-func loadWavFile(fileName string) {
+func (d *Device) loadWavFile(fileName string) {
 	buffer := openal.NewBuffer()
-	format, data, err := ReadWavFile(fileName)
+	format, data, err := readWavFile(fileName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -89,15 +82,15 @@ func loadWavFile(fileName string) {
 	}
 	key := path.Base(fileName)                           // gs3.wav
 	key = strings.ToUpper(key[0 : len(key)-len(".wav")]) // GS3
-	if len(key) == 3 {                                   // sharp
-		key = fmt.Sprintf("%s%s#", key[0:1], key[2:3])
-		note := m.ParseNote(key).Modified(m.Sharp)
-		flatKey := note.AdjecentName(m.Right, 1) + "_"
-		fmt.Println(key, note, "loaded", flatKey)
-		waves[flatKey] = buffer
+	key = strings.Replace(key, "S", "♯", -1)
+	note := m.ParseNote(key)
+	if note.IsSharp() {
+		flat := note.Pitched(1).Modified(m.Flat)
+		//fmt.Println(flat, "->", fileName)
+		d.waves[flat.String()] = buffer
 	}
-	fmt.Println("loaded", key)
-	waves[key] = buffer // G3#
+	//fmt.Println(note, "->", fileName)
+	d.waves[note.String()] = buffer
 }
 
 type Format struct {
@@ -121,7 +114,7 @@ type Format3 struct {
 	SubFormat          [16]byte
 }
 
-func ReadWavFile(path string) (*Format, []byte, error) {
+func readWavFile(path string) (*Format, []byte, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, nil, err

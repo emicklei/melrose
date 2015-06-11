@@ -114,22 +114,6 @@ func (n Note) Duration() float32 {
 	return n.duration
 }
 
-// AdjecentName returns the note name left or right on the Major Scale by an offset
-func (n Note) AdjecentName(leftOrRightOnScale, offset int) string {
-	i := strings.Index(NonRestNoteNames, n.Name)
-	s := len(NonRestNoteNames)
-	var j int
-	if Left == leftOrRightOnScale {
-		j = (i - offset) % s
-		if j < 0 {
-			j += s
-		}
-	} else {
-		j = (i + offset) % s
-	}
-	return string(NonRestNoteNames[j])
-}
-
 func (n Note) Frequency() int {
 	// http://en.wikipedia.org/wiki/Musical_Note
 	// A4 == 440Hz (scientific pitch notation)
@@ -137,8 +121,7 @@ func (n Note) Frequency() int {
 	return 440
 }
 
-// Modifiers always create new Notes
-
+// Modified applies modifiers on the Note and returns the new result
 func (n Note) Modified(modifiers ...int) Note {
 	modified := n
 	for _, each := range modifiers {
@@ -171,13 +154,19 @@ func (n Note) Flat() Note {
 	return newNote(n.Name, n.Octave, n.duration, -1, n.Dotted)
 }
 
-// ModifiedPitch changes the pitch by a (positive or negative) number of semi tones
-func (n Note) ModifiedPitch(howManySemitones int) Note {
+// Pitched creates a new Note with a pitch by a (positive or negative) number of semi tones
+func (n Note) Pitched(howManySemitones int) Note {
 	simple := MIDItoNote(n.MIDI() + howManySemitones)
 	return newNote(simple.Name, simple.Octave, n.duration, simple.Accidental, n.Dotted)
 }
 
-func (n Note) ModifiedOctave(howmuch int) Note {
+// Major returns the note left or right on the Major Scale by an offset
+func (n Note) Major(offset int) Note {
+	// TODO
+	return n.Pitched(offset * 2)
+}
+
+func (n Note) Octaved(howmuch int) Note {
 	// TODO direct Note{}
 	return newNote(n.Name, n.Octave+howmuch, n.duration, n.Accidental, n.Dotted)
 }
@@ -197,14 +186,14 @@ func (n Note) Half() Note {
 }
 
 func (n Note) Whole() Note {
-	return newNote(n.Name, n.Octave, 1, n.Accidental, n.Dotted)
+	return newNote(n.Name, n.Octave, 1, n.Accidental, false)
 }
 
 func (n Note) Dot() Note {
 	return newNote(n.Name, n.Octave, n.duration, n.Accidental, true)
 }
 
-func (n Note) ModifiedDurationBy(by float32) Note {
+func (n Note) ModifiedDuration(by float32) Note {
 	return newNote(n.Name, n.Octave, n.duration+by, n.Accidental, n.Dotted)
 }
 
@@ -369,10 +358,10 @@ func (n Note) PrintOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 		return
 	}
 	if Sharp == sharpOrFlatKey && n.Accidental == -1 { // want Sharp, specified in Flat
-		buf.WriteString(n.AdjecentName(Left, 1))
+		buf.WriteString(n.Pitched(-1).Name)
 		buf.WriteString("♯")
 	} else if Flat == sharpOrFlatKey && n.Accidental == 1 { // want Flat, specified in Sharp
-		buf.WriteString(n.AdjecentName(Right, 1))
+		buf.WriteString(n.Pitched(1).Name)
 		buf.WriteString("♭")
 	} else { // PrintAsSpecified
 		buf.WriteString(n.Name)

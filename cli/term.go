@@ -50,7 +50,7 @@ func loop() {
 		case "?":
 			output = help()
 		case "q":
-			closeDevice()
+			Audio.Close()
 			os.Exit(1)
 		default:
 			if entry != lastHistoryEntry {

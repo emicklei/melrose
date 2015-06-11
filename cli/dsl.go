@@ -29,7 +29,7 @@ func playSequence(input string) {
 		for _, eachNote := range eachGroup {
 			wg.Add(1)
 			go func(n m.Note) {
-				playNote(n, noteLength)
+				Audio.PlayNote(n, noteLength)
 				wg.Done()
 			}(eachNote)
 		}

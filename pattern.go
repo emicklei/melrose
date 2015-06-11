@@ -14,7 +14,7 @@ type PitchBy struct {
 
 func (p PitchBy) Transform(seq Sequence) Sequence {
 	return seq.NotesCollect(func(n Note) Note {
-		return n.ModifiedPitch(p.Semitones)
+		return n.Pitched(p.Semitones)
 	})
 }
 

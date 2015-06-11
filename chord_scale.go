@@ -11,7 +11,7 @@ func Scale(start Note, minorOrMajor int) Sequence {
 	}
 	next := start
 	for _, each := range semitones {
-		next = next.ModifiedPitch(each)
+		next = next.Pitched(each)
 		notes = append(notes, next)
 	}
 	return BuildSequence(notes)
@@ -26,7 +26,7 @@ func Chord(start Note, minorOrMajor int) Sequence {
 		semitones = []int{3, 7}
 	}
 	for _, each := range semitones {
-		next := start.ModifiedPitch(each)
+		next := start.Pitched(each)
 		notes = append(notes, next)
 	}
 	return Sequence{[][]Note{notes}}
