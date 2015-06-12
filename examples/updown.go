@@ -15,8 +15,31 @@ func main() {
 	Audio.LoadSounds()
 	defer Audio.Close()
 
+	left := newStreamer()
+	right := newStreamer()
+
 	note := m.ParseNote("C1")
-	for i := 0; i < 20; i++ {
-		Audio.PlayNote(note.Major(i), 150*time.Millisecond)
+	for i := 0; i < 30; i++ {
+		left.put(note.Major(i))
+		right.put(note.Major(29 - i))
 	}
+}
+
+type streamer struct {
+	notes chan m.Note
+}
+
+func (s *streamer) put(n m.Note) {
+	s.notes <- n
+}
+
+func newStreamer() *streamer {
+	s := new(streamer)
+	s.notes = make(chan m.Note)
+	go func() {
+		for {
+			Audio.PlayNote(<-s.notes, 150*time.Millisecond)
+		}
+	}()
+	return s
 }

@@ -3,18 +3,9 @@ package melrose
 import (
 	"bytes"
 	"fmt"
-	"regexp"
 	"strconv"
 	"strings"
 )
-
-var noteRegexp *regexp.Regexp
-var noteMidiOffsets []int
-
-func init() {
-	noteRegexp = regexp.MustCompile("([½¼⅛248]?)([CDEFGABr])([#♯_♭]?)(\\.?)([0-9]?)")
-	noteMidiOffsets = []int{0, 2, 4, 5, 7, 9, 11}
-}
 
 // Note represents a musical note.
 // Notations:
@@ -162,12 +153,16 @@ func (n Note) Pitched(howManySemitones int) Note {
 
 // Major returns the note left or right on the Major Scale by an offset
 func (n Note) Major(offset int) Note {
-	// TODO
-	return n.Pitched(offset * 2)
+	// C=0
+	nameIndex := strings.Index(NonRestNoteNames, n.Name)
+	// semitones on the scale
+	nameOffset := noteMidiOffsets[nameIndex]
+	majors := offset % 7
+	scales := offset / 7
+	return n.Pitched(-nameOffset).Octaved(scales).Pitched(noteMidiOffsets[majors])
 }
 
 func (n Note) Octaved(howmuch int) Note {
-	// TODO direct Note{}
 	return newNote(n.Name, n.Octave+howmuch, n.duration, n.Accidental, n.Dotted)
 }
 

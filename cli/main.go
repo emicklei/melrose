@@ -24,6 +24,15 @@ func main() {
 func help() string {
 	return `
 	melrose
+	
+	play("C#5 E_ 2F G A#")
+	tempo(150)
+	chord("C") -> "C E"
+	scale("C") -> "C D E F G A B"
+	pitch("C" , -1) -> "B3"
+	reverse("C D E") -> "E D C"
+	repeat("C",5)
+	rotate("C D E",-1) -> "D E C"
 `
 }
 
