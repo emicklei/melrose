@@ -9,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	m "github.com/emicklei/melrose"
@@ -35,8 +36,30 @@ func (d *Device) Close() {
 	}
 }
 
-// half a second
+func (d *Device) Play(p m.Playable, t time.Duration) {
+	p.Play(d, t)
+}
+
+func (d *Device) PlaySequence(seq m.Sequence, duration time.Duration) {
+	for _, eachGroup := range seq.Notes {
+		wg := new(sync.WaitGroup)
+		for _, eachNote := range eachGroup {
+			wg.Add(1)
+			go func(n m.Note) {
+				d.PlayNote(n, duration)
+				wg.Done()
+			}(eachNote)
+		}
+		wg.Wait()
+	}
+}
+
 func (d *Device) PlayNote(note m.Note, duration time.Duration) {
+	actualDuration := time.Duration(float32(duration) * note.DurationFactor())
+	if note.IsRest() {
+		time.Sleep(actualDuration)
+		return
+	}
 	key := note.Whole().String()
 	wav, ok := d.waves[key]
 	if !ok {
@@ -52,7 +75,7 @@ func (d *Device) PlayNote(note m.Note, duration time.Duration) {
 	source.SetLooping(false)
 	source.SetBuffer(wav)
 	source.Play()
-	time.Sleep(duration)
+	time.Sleep(actualDuration)
 	source.Stop()
 }
 

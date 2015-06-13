@@ -3,8 +3,10 @@ package melrose
 import (
 	"bytes"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Note represents a musical note.
@@ -92,17 +94,25 @@ func (n Note) Equals(other Note) bool {
 		return false
 	}
 	// pitch independent check
-	if n.Duration() != other.Duration() {
+	if n.DurationFactor() != other.DurationFactor() {
 		return false
 	}
 	return n.MIDI() == other.MIDI()
 }
 
-func (n Note) Duration() float32 {
+func (n Note) DurationFactor() float32 {
 	if n.Dotted {
 		return n.duration + 0.5
 	}
 	return n.duration
+}
+
+func (n Note) Repeated(howMany int) Sequence {
+	s := Sequence{}
+	for i := 0; i < howMany; i++ {
+		s = s.Append(n)
+	}
+	return s
 }
 
 func (n Note) Frequency() int {
@@ -194,8 +204,9 @@ func (n Note) ModifiedDuration(by float32) Note {
 
 // Conversion
 
-// ParseNote reads the format  <(inverse-)duration?>[CDEFGAB]<accidental?><dot?><octave?>
-// TODO add return value error
+var noteRegexp = regexp.MustCompile("([½¼⅛1248]?)([CDEFGABr])([#♯_♭]?)(\\.?)([0-9]?)")
+
+// ParseNote reads the format  <(inverse-)duration?>[CDEFGABr]<accidental?><dot?><octave?>
 func ParseNote(input string) Note {
 	matches := noteRegexp.FindStringSubmatch(input)
 
@@ -213,6 +224,8 @@ func ParseNote(input string) Note {
 		duration = 0.5
 	case "2":
 		duration = 0.5
+	case "1":
+		duration = 1
 	default:
 		duration = 0.25
 	}
@@ -243,35 +256,6 @@ func ParseNote(input string) Note {
 	}
 
 	return newNote(matches[2], octave, duration, accidental, dotted)
-}
-
-func (n Note) MIDI() int {
-	// http://en.wikipedia.org/wiki/Musical_Note
-	// C4 = 60 (scientific pitch notation)
-	if n.IsRest() { // TODO
-		return 0
-	}
-	nameIndex := strings.Index(NonRestNoteNames, n.Name)
-	nameOffset := noteMidiOffsets[nameIndex]
-	return ((1 + n.Octave) * 12) + nameOffset + n.Accidental
-}
-
-func MIDItoNote(nr int) Note {
-	octave := (nr / 12) - 1
-	nrIndex := nr - ((octave + 1) * 12)
-	var offsetIndex, offset int
-	for o, each := range noteMidiOffsets {
-		if each >= nrIndex {
-			offsetIndex = o
-			offset = each
-			break
-		}
-	}
-	accidental := 0
-	if nrIndex != offset {
-		accidental = -1
-	}
-	return newNote(string(NonRestNoteNames[offsetIndex]), octave, 0.25, accidental, false)
 }
 
 // Formatting
@@ -370,4 +354,8 @@ func (n Note) PrintOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 	if n.Octave != 4 {
 		buf.WriteString(fmt.Sprintf("%d", n.Octave))
 	}
+}
+
+func (n Note) Play(p Player, t time.Duration) {
+	p.PlayNote(n, t)
 }

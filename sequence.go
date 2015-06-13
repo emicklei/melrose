@@ -3,6 +3,7 @@ package melrose
 import (
 	"bytes"
 	"strings"
+	"time"
 )
 
 type Sequence struct {
@@ -17,11 +18,17 @@ func (s Sequence) Size() int {
 	return sum
 }
 
-// Add modifies the Sequence by adding (at last) a Notes.
-// Return the modified Sequence
-func (s *Sequence) Add(n Note) *Sequence {
-	s.Notes = append(s.Notes, []Note{n})
-	return s
+// Append creates a new Sequence with Notes at the end.
+func (s Sequence) Append(notes ...Note) Sequence {
+	list := s.Notes
+	for _, each := range notes {
+		list = append(list, []Note{each})
+	}
+	return Sequence{list}
+}
+
+func (s Sequence) Join(other Sequence) Sequence {
+	return Sequence{append(s.Notes, other.Notes...)}
 }
 
 func (s Sequence) NotesCollect(transform func(Note) Note) Sequence {
@@ -148,4 +155,8 @@ func (s Sequence) writeNotesOn(
 			buf.WriteString(")")
 		}
 	}
+}
+
+func (s Sequence) Play(p Player, t time.Duration) {
+	p.PlaySequence(s, t)
 }

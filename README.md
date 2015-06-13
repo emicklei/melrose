@@ -15,7 +15,7 @@ Melrose - interactive programming of music melodies
 
 | Notation    | Description 
 |-------------|---
-| C D E F     | 4 half tones
+| C D E F     | 4 quarter tones
 | (C E) (D F) | 2 doublets
 
 
@@ -29,4 +29,6 @@ Melrose - interactive programming of music melodies
 | pitch("C D",-2)  | B♭3 C
 | scale("C")       | C D E F G A B C5
 
-(c) 2014-2015 http://ernestmicklei.com Sofware is licensed under [Apache 2.0 license](LICENSE).
+
+Sofware is licensed under [Apache 2.0 license](LICENSE).
+(c) 2014-2015 http://ernestmicklei.com 

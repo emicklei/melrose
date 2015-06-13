@@ -22,6 +22,7 @@ var parsetests = []struct {
 	{"C#", "C", 4, 0.25, 1, false},
 	{"B_", "B", 4, 0.25, -1, false}, //8
 	{"F#.9", "F", 9, 0.25, 1, true},
+	{"1C", "C", 4, 1, 0, false},
 }
 
 func TestParseNote(t *testing.T) {

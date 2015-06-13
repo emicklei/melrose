@@ -19,9 +19,9 @@ func main() {
 	right := newStreamer()
 
 	note := m.ParseNote("C1")
-	for i := 0; i < 30; i++ {
+	for i := 0; i < 40; i++ {
 		left.put(note.Major(i))
-		right.put(note.Major(29 - i))
+		right.put(note.Major(39 - i))
 	}
 }
 
@@ -38,7 +38,7 @@ func newStreamer() *streamer {
 	s.notes = make(chan m.Note)
 	go func() {
 		for {
-			Audio.PlayNote(<-s.notes, 150*time.Millisecond)
+			Audio.PlayNote(<-s.notes, 300*time.Millisecond)
 		}
 	}()
 	return s
