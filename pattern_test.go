@@ -6,7 +6,7 @@ import (
 )
 
 func ExampleStretchBy() {
-	s := ParseSequence("C D E F")
+	s, _ := ParseSequence("C D E F")
 	s = StretchBy{2}.Transform(s)
 	fmt.Println(s)
 	// Output:
@@ -14,7 +14,7 @@ func ExampleStretchBy() {
 }
 
 func ExamplePitchBy() {
-	s := ParseSequence("C D E F")
+	s, _ := ParseSequence("C D E F")
 	s = PitchBy{2}.Transform(s)
 	t := PitchBy{-4}.Transform(s)
 	fmt.Println(s)
@@ -25,11 +25,11 @@ func ExamplePitchBy() {
 }
 
 func ExampleGroupBy() {
-	s := ParseSequence("C D E F")
+	s, _ := ParseSequence("C D E F")
 	s = GroupBy{[]int{2, 2}}.Transform(s)
 	fmt.Println(s)
 
-	t := ParseSequence("C D E F G A B")
+	t, _ := ParseSequence("C D E F G A B")
 	t = GroupBy{[]int{3, 3, 1}}.Transform(t)
 	fmt.Println(t)
 	// Output:
@@ -38,15 +38,15 @@ func ExampleGroupBy() {
 }
 
 func ExampleRotateBy() {
-	s := ParseSequence("C D E F")
+	s, _ := ParseSequence("C D E F")
 	s = RotateBy{Left, 1}.Transform(s)
 	fmt.Println(s)
 
-	t := ParseSequence("C D E F G A B")
+	t, _ := ParseSequence("C D E F G A B")
 	t = RotateBy{Right, 3}.Transform(t)
 	fmt.Println(t)
 
-	u := ParseSequence("C (D E F) G A B")
+	u, _ := ParseSequence("C (D E F) G A B")
 	u = RotateBy{Right, 2}.Transform(u)
 	fmt.Println(u)
 	// Output:
