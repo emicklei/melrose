@@ -208,7 +208,10 @@ var noteRegexp = regexp.MustCompile("([½¼⅛1248]?)([CDEFGABr])([#♯_♭]?)(\
 
 // ParseNote reads the format  <(inverse-)duration?>[CDEFGABr]<accidental?><dot?><octave?>
 func ParseNote(input string) Note {
-	matches := noteRegexp.FindStringSubmatch(input)
+	matches := noteRegexp.FindStringSubmatch(strings.ToUpper(input))
+	if matches == nil {
+		panic("illegal note:" + input)
+	}
 
 	var duration float32
 	switch matches[1] {

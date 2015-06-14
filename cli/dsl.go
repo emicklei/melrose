@@ -67,7 +67,7 @@ func chord(call otto.FunctionCall) otto.Value {
 
 // repeat(sequence, howMany)
 func repeat(call otto.FunctionCall) otto.Value {
-	seq, err := call.Argument(0).ToString()
+	input, err := call.Argument(0).ToString()
 	if err != nil {
 		return toValue(err)
 	}
@@ -75,11 +75,13 @@ func repeat(call otto.FunctionCall) otto.Value {
 	if err != nil {
 		return toValue(err)
 	}
+	seq := m.ParseSequence(input)
+	repeated := seq
 	for howMany > 0 {
-		playSequence(seq)
+		repeated = repeated.Join(seq)
 		howMany -= 1
 	}
-	return otto.NullValue()
+	return toValue(repeated.String())
 }
 
 func scale(call otto.FunctionCall) otto.Value {
