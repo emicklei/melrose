@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -23,7 +24,12 @@ func playAllSequences(call otto.FunctionCall) otto.Value {
 }
 
 func playSequence(input string) {
-	seq := m.ParseSequence(input)
+	seq, err := m.ParseSequence(input)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to parse sequence: %s\n", err)
+		return
+	}
+
 	for _, eachGroup := range seq.Notes {
 		wg := new(sync.WaitGroup)
 		for _, eachNote := range eachGroup {
@@ -60,7 +66,10 @@ func chord(call otto.FunctionCall) otto.Value {
 	if mms == "m" {
 		mm = m.Minor
 	}
-	start := m.ParseNote(starts)
+	start, err := m.ParseNote(starts)
+	if err != nil {
+		return toValue(err)
+	}
 	seq := m.Chord(start, mm)
 	return toValue(seq.String())
 }
@@ -95,7 +104,10 @@ func scale(call otto.FunctionCall) otto.Value {
 	if mms == "m" {
 		mm = m.Minor
 	}
-	start := m.ParseNote(starts)
+	start, err := m.ParseNote(starts)
+	if err != nil {
+		return toValue(err)
+	}
 	seq := m.Scale(start, mm)
 	return toValue(seq.String())
 }
@@ -109,7 +121,10 @@ func pitch(call otto.FunctionCall) otto.Value {
 	if err != nil {
 		return toValue(err)
 	}
-	seq := m.ParseSequence(notes)
+	seq, err := m.ParseSequence(notes)
+	if err != nil {
+		return toValue(err)
+	}
 	pitched := m.PitchBy{int(offset)}.Transform(seq)
 	return toValue(pitched.String())
 }
@@ -124,7 +139,10 @@ func rotate(call otto.FunctionCall) otto.Value {
 	if err != nil {
 		return toValue(err)
 	}
-	seq := m.ParseSequence(notes)
+	seq, err := m.ParseSequence(notes)
+	if err != nil {
+		return toValue(err)
+	}
 	direction := m.Right
 	if howMany < 0 {
 		direction = m.Left
@@ -139,7 +157,10 @@ func reverse(call otto.FunctionCall) otto.Value {
 	if err != nil {
 		return toValue(err)
 	}
-	seq := m.ParseSequence(notes)
+	seq, err := m.ParseSequence(notes)
+	if err != nil {
+		return toValue(err)
+	}
 	reversed := seq.Reversed()
 	return toValue(reversed.String())
 }
