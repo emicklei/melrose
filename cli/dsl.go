@@ -84,7 +84,7 @@ func repeat(call otto.FunctionCall) otto.Value {
 	if err != nil {
 		return toValue(err)
 	}
-	seq := m.ParseSequence(input)
+	seq, _ := m.ParseSequence(input)
 	repeated := seq
 	for howMany > 0 {
 		repeated = repeated.Join(seq)

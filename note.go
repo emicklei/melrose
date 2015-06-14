@@ -107,6 +107,14 @@ func (n Note) DurationFactor() float32 {
 	return n.duration
 }
 
+func (n Note) ToSequence() Sequence {
+	return BuildSequence([]Note{n})
+}
+
+func (n Note) S() Sequence {
+	return BuildSequence([]Note{n})
+}
+
 func (n Note) Repeated(howMany int) Sequence {
 	s := Sequence{}
 	for i := 0; i < howMany; i++ {
@@ -205,6 +213,17 @@ func (n Note) ModifiedDuration(by float32) Note {
 // Conversion
 
 var noteRegexp = regexp.MustCompile("([½¼⅛1248]?)([CDEFGAB=])([#♯_♭]?)(\\.?)([0-9]?)")
+
+// MustParseNote returns a Note by parsing the input. Panic if it fails.
+func MustParseNote(input string) Note {
+	if n, err := ParseNote(input); err != nil {
+		panic("MustParseNote failed:" + err.Error())
+	} else {
+		return n
+	}
+}
+
+var N = MustParseNote
 
 // ParseNote reads the format  <(inverse-)duration?>[CDEFGA=]<accidental?><dot?><octave?>
 func ParseNote(input string) (Note, error) {

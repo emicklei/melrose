@@ -61,6 +61,17 @@ func BuildSequence(notes []Note) Sequence {
 	return Sequence{Notes: groups}
 }
 
+var S = MustParseSequence
+
+func MustParseSequence(input string) Sequence {
+	if s, err := ParseSequence(input); err != nil {
+		panic("MustParseSequence failed:" + err.Error())
+	} else {
+		return s
+	}
+
+}
+
 // ParseSequence creates a Sequence by reading the format "Note* (Note Note*)* Note*"
 func ParseSequence(input string) (Sequence, error) {
 	m := Sequence{}
@@ -90,6 +101,14 @@ func ParseSequence(input string) (Sequence, error) {
 		}
 	}
 	return m, nil
+}
+
+func (s Sequence) Repeated(howMany int) Sequence {
+	r := s
+	for i := 0; i < howMany; i++ {
+		r = r.Join(s)
+	}
+	return r
 }
 
 func (s Sequence) RotatedBy(direction int, howMany int) Sequence {
