@@ -5,18 +5,18 @@ import (
 )
 
 func ExampleSequenceParse() {
-	m := ParseSequence("C C4 4C4")
+	m, _ := ParseSequence("C C4 4C4")
 	fmt.Println(m)
 	// Output:
 	// C C C
 }
 
 func ExampleSequenceParseGroups() {
-	m := ParseSequence("C (E G)")
-	m2 := ParseSequence("C ( A )")
-	m3 := ParseSequence("2C# (8D_ 8E_ 2F#)")
-	m4 := ParseSequence("(C E)(D. F.)(E G)")
-	canto := ParseSequence("B_ 8F 8D_5 8B_5 8F A_ 8E_ 8C5 8A_5 8E_")
+	m, _ := ParseSequence("C (E G)")
+	m2, _ := ParseSequence("C ( A )")
+	m3, _ := ParseSequence("2C# (8D_ 8E_ 2F#)")
+	m4, _ := ParseSequence("(C E)(D. F.)(E G)")
+	canto, _ := ParseSequence("B_ 8F 8D_5 8B_5 8F A_ 8E_ 8C5 8A_5 8E_")
 	fmt.Println(m)
 	fmt.Println(m2)
 	fmt.Println(m3)

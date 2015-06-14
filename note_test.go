@@ -27,7 +27,7 @@ var parsetests = []struct {
 
 func TestParseNote(t *testing.T) {
 	for i, each := range parsetests {
-		n := ParseNote(each.in)
+		n, _ := ParseNote(each.in)
 		if n.Name != each.name {
 			t.Fatal("name: line,exp,act", i, each.name, n.Name)
 		}
@@ -63,7 +63,7 @@ func TestAdjecentName(t *testing.T) {
 
 func TestMIDI(t *testing.T) {
 	for _, each := range midi {
-		n := ParseNote(each.note)
+		n, _ := ParseNote(each.note)
 		if n.MIDI() != each.nr {
 			t.Error("line,exp,act", each.note, each.nr, n.MIDI())
 		}
@@ -94,7 +94,8 @@ var pitchers = []struct {
 
 func TestModifiedPitch(t *testing.T) {
 	for i, each := range pitchers {
-		n := ParseNote(each.before).Pitched(each.by)
+		n, _ := ParseNote(each.before)
+		n = n.Pitched(each.by)
 		if got, want := n.String(), each.after; got != want {
 			t.Errorf("%d: got %v want %v", i, got, want)
 		}
@@ -112,7 +113,8 @@ func TestMajorOffset(t *testing.T) {
 		{"C", 3, "F"},
 		{"C", 10, "F5"},
 	} {
-		n := ParseNote(each.before).Major(each.by)
+		n, _ := ParseNote(each.before)
+		n = n.Major(each.by)
 		if got, want := n.String(), each.after; got != want {
 			t.Errorf("%d: got %v want %v", i, got, want)
 		}
@@ -120,18 +122,24 @@ func TestMajorOffset(t *testing.T) {
 }
 
 func ExampleParseNote() {
-	fmt.Println(ParseNote("2C#3"))
-	fmt.Println(ParseNote("2E_.2"))
+	n1, _ := ParseNote("2C#3")
+	n2, _ := ParseNote("2E_.2")
+	fmt.Println(n1)
+	fmt.Println(n2)
 	// Output:
 	// ½C♯3
 	// ½E♭.2
 }
 
 func ExampleParseNoteAsPrinted() {
-	fmt.Println(ParseNote("½C♯"))
-	fmt.Println(ParseNote("⅛B♭"))
-	fmt.Println(ParseNote("¼D."))
-	fmt.Println(ParseNote("E♭"))
+	n1, _ := ParseNote("½C♯")
+	n2, _ := ParseNote("⅛B♭")
+	n3, _ := ParseNote("¼D.")
+	n4, _ := ParseNote("E♭")
+	fmt.Println(n1)
+	fmt.Println(n2)
+	fmt.Println(n3)
+	fmt.Println(n4)
 	// Output:
 	// ½C♯
 	// ⅛B♭

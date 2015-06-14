@@ -18,7 +18,7 @@ func main() {
 	left := newStreamer()
 	right := newStreamer()
 
-	note := m.ParseNote("C1")
+	note, _ := m.ParseNote("C1")
 	for i := 0; i < 40; i++ {
 		left.put(note.Major(i))
 		right.put(note.Major(39 - i))

@@ -106,7 +106,7 @@ func (d *Device) loadWavFile(fileName string) {
 	key := path.Base(fileName)                           // gs3.wav
 	key = strings.ToUpper(key[0 : len(key)-len(".wav")]) // GS3
 	key = strings.Replace(key, "S", "♯", -1)
-	note := m.ParseNote(key)
+	note, err := m.ParseNote(key)
 	if note.IsSharp() {
 		flat := note.Pitched(1).Modified(m.Flat)
 		//fmt.Println(flat, "->", fileName)

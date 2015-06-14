@@ -62,7 +62,7 @@ func BuildSequence(notes []Note) Sequence {
 }
 
 // ParseSequence creates a Sequence by reading the format "Note* (Note Note*)* Note*"
-func ParseSequence(input string) Sequence {
+func ParseSequence(input string) (Sequence, error) {
 	m := Sequence{}
 	// hack to keep scanning simple, TODO
 	splitable := strings.Replace(input, "(", " ( ", -1)
@@ -78,7 +78,10 @@ func ParseSequence(input string) Sequence {
 			ingroup = false
 			m.Notes = append(m.Notes, group)
 		} else {
-			next := ParseNote(each)
+			next, err := ParseNote(each)
+			if err != nil {
+				return m, err
+			}
 			if ingroup {
 				group = append(group, next)
 			} else {
@@ -86,7 +89,7 @@ func ParseSequence(input string) Sequence {
 			}
 		}
 	}
-	return m
+	return m, nil
 }
 
 func (s Sequence) RotatedBy(direction int, howMany int) Sequence {
