@@ -9,7 +9,7 @@ Melrose - interactive programming of music melodies
 | F#       | F♯    | F sharp
 | G_       | G♭    | G flat
 | G.       | G.    | duration x 1.5 
-| r        | r     | quarter rest
+| =        | =     | quarter rest
 
 ### Sequence notation
 
@@ -30,5 +30,5 @@ Melrose - interactive programming of music melodies
 | scale("C")       | C D E F G A B C5
 
 
-Sofware is licensed under [Apache 2.0 license](LICENSE).
+Software is licensed under [Apache 2.0 license](LICENSE).
 (c) 2014-2015 http://ernestmicklei.com 

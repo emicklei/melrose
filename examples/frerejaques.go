@@ -15,7 +15,7 @@ func main() {
 	Audio.LoadSounds()
 	defer Audio.Close()
 
-	s := m.ParseSequence(`
+	s, _ := m.ParseSequence(`
 	C D E C 
 	C D E C 
 	E F 2G
@@ -26,8 +26,8 @@ func main() {
 	2C 2G3 2C`)
 	go Audio.Play(s, 1*time.Second)
 
-	s2 := m.ParseNote("r").Repeated(8).Join(s)
-	Audio.Play(s2, 1*time.Second)
+	s2, _ := m.ParseNote("=")
+	Audio.Play(s2.Repeated(8).Join(s), 1*time.Second)
 
 	/*
 		w := new(sync.WaitGroup)

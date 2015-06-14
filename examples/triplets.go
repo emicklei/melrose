@@ -15,7 +15,7 @@ func main() {
 	Audio.LoadSounds()
 	defer Audio.Close()
 
-	s := m.ParseSequence("(C D E)")
+	s, _ := m.ParseSequence("(C D E)")
 	for i := 0; i < 10; i++ {
 		t := m.PitchBy{Semitones: i}
 		Audio.Play(t.Transform(s), 1*time.Second)

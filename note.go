@@ -17,7 +17,7 @@ import (
 //		r     = quarter rest
 // http://en.wikipedia.org/wiki/Musical_Note
 type Note struct {
-	Name       string  // {C D E F G A B r}
+	Name       string  // {C D E F G A B =}
 	Octave     int     // [0 .. 9]
 	duration   float32 // {0.125,0.25,0.5,1}
 	Accidental int     // -1 Flat, +1 Sharp, 0 Normal
@@ -58,10 +58,10 @@ func NewNote(name string) Note {
 // todo make it return error i.o panic
 func newNote(name string, octave int, duration float32, accidental int, dot bool) Note {
 	if len(name) != 1 {
-		panic("note name too long [1]:" + name)
+		panic(fmt.Sprintf("note must be one character, got [%s]", name))
 	}
-	if !strings.Contains("ABCDEFGr", name) {
-		panic("invalid note name [ABCDEFGr]:" + name)
+	if !strings.Contains("ABCDEFG=", name) {
+		panic("invalid note name [ABCDEFG=]:" + name)
 	}
 	if octave < 0 || octave > 9 {
 		panic("invalid octave [0..9]:" + string(octave))
@@ -86,7 +86,7 @@ func newNote(name string, octave int, duration float32, accidental int, dot bool
 
 func (n Note) IsFlat() bool  { return n.Accidental == -1 }
 func (n Note) IsSharp() bool { return n.Accidental == 1 }
-func (n Note) IsRest() bool  { return "r" == n.Name }
+func (n Note) IsRest() bool  { return "=" == n.Name }
 
 func (n Note) Equals(other Note) bool {
 	// quick check first
@@ -204,13 +204,13 @@ func (n Note) ModifiedDuration(by float32) Note {
 
 // Conversion
 
-var noteRegexp = regexp.MustCompile("([½¼⅛1248]?)([CDEFGABr])([#♯_♭]?)(\\.?)([0-9]?)")
+var noteRegexp = regexp.MustCompile("([½¼⅛1248]?)([CDEFGAB=])([#♯_♭]?)(\\.?)([0-9]?)")
 
-// ParseNote reads the format  <(inverse-)duration?>[CDEFGABr]<accidental?><dot?><octave?>
-func ParseNote(input string) Note {
+// ParseNote reads the format  <(inverse-)duration?>[CDEFGA=]<accidental?><dot?><octave?>
+func ParseNote(input string) (Note, error) {
 	matches := noteRegexp.FindStringSubmatch(strings.ToUpper(input))
 	if matches == nil {
-		panic("illegal note:" + input)
+		return Note{}, fmt.Errorf("illegal note: [%s]", input)
 	}
 
 	var duration float32
@@ -253,12 +253,13 @@ func ParseNote(input string) Note {
 	if len(matches[5]) > 0 {
 		i, err := strconv.Atoi(matches[5])
 		if err != nil {
-			panic("illegal octave:" + matches[5])
+			return Note{}, fmt.Errorf("illegal octave: %s", matches[5])
+
 		}
 		octave = i
 	}
 
-	return newNote(matches[2], octave, duration, accidental, dotted)
+	return newNote(matches[2], octave, duration, accidental, dotted), nil
 }
 
 // Formatting

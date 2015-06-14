@@ -23,11 +23,15 @@ var parsetests = []struct {
 	{"B_", "B", 4, 0.25, -1, false}, //8
 	{"F#.9", "F", 9, 0.25, 1, true},
 	{"1C", "C", 4, 1, 0, false},
+	{"=", "=", 4, 0.25, 0, false},
 }
 
 func TestParseNote(t *testing.T) {
 	for i, each := range parsetests {
-		n, _ := ParseNote(each.in)
+		n, err := ParseNote(each.in)
+		if err != nil {
+			t.Errorf("got [%v] for %s", err, each.in)
+		}
 		if n.Name != each.name {
 			t.Fatal("name: line,exp,act", i, each.name, n.Name)
 		}
