@@ -24,7 +24,7 @@ func ExampleScale() {
 	fmt.Println(s3.PrintString(Sharp)) // TODO where do the spaces come from????
 	// Output:
 	// C D E F G A B C5
-	//         E♭ F G A♭ B♭ C5 D5 E♭5
-	//         G♯ B♭ B D♭5 E♭5 E5 G♭5 A♭5
-	//         G♯ A♯ B C♯5 D♯5 E5 F♯5 G♯5
+	// E♭ F G A♭ B♭ C5 D5 E♭5
+	// G♯ B♭ B D♭5 E♭5 E5 G♭5 A♭5
+	// G♯ A♯ B C♯5 D♯5 E5 F♯5 G♯5
 }

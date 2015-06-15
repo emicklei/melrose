@@ -1,8 +1,10 @@
 package melrose
 
 type Joinable interface {
-	JoinNote(Note) Sequence
-	JoinSequence(Sequence) Sequence
+	// result is Note + Joinable
+	NoteJoin(Note) Sequence
+	// result is Sequence + Joinable
+	SequenceJoin(Sequence) Sequence
 }
 
 type Joiner interface {

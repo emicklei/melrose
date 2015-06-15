@@ -4,8 +4,8 @@ Melrose - interactive programming of music melodies
 
 | Notation | Alternative | Description 
 |----------|-------|-------------
-| 1C4      | C     | C octave 4 
-| 2E5      | ½C5   | Halftone C octave 5
+| C4       | C     | quarter C octave 4 
+| 2E5      | ½C5   | Halftone (2 x ¼) C octave 5
 | F#       | F♯    | F sharp
 | G_       | G♭    | G flat
 | G.       | G.    | duration x 1.5 

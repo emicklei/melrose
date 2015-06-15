@@ -123,6 +123,20 @@ func (n Note) Repeated(howMany int) Sequence {
 	return s
 }
 
+func (n Note) Join(others ...Joinable) Sequence {
+	return BuildSequence([]Note{n}).Join(others...)
+}
+
+// NoteJoin returns n + n2
+func (n Note) NoteJoin(n2 Note) Sequence {
+	return BuildSequence([]Note{n, n2})
+}
+
+// SequenceJoin returns t + n
+func (n Note) SequenceJoin(t Sequence) Sequence {
+	return t.Append(n)
+}
+
 func (n Note) Frequency() int {
 	// http://en.wikipedia.org/wiki/Musical_Note
 	// A4 == 440Hz (scientific pitch notation)
