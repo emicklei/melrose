@@ -32,3 +32,8 @@ Melrose - interactive programming of music melodies
 
 Software is licensed under [Apache 2.0 license](LICENSE).
 (c) 2014-2015 http://ernestmicklei.com 
+
+
+Similar projects
+- http://daveyarwood.github.io/alda/2015/09/05/alda-a-manifesto-and-gentle-introduction/
+- http://www.lilypond.org/
