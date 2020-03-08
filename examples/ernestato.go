@@ -52,5 +52,5 @@ func main() {
 	g2 := N("G2").S()
 	d3 := N("D3").S()
 	g3 := N("G3").S()
-	Audio.Play(g2.Join(b3dg).Join(d3).Join(b3dg).Join(g3).Join(b3dg), 800*time.Millisecond)
+	Audio.Play(g2.Join(b3dg).Join(d3).Join(b3dg).Join(g3).Join(b3dg), 1600*time.Millisecond)
 }

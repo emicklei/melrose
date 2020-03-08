@@ -127,6 +127,29 @@ func (s Sequence) Repeated(howMany int) Sequence {
 	return r
 }
 
+func (s Sequence) Octaved(howMuch int) Sequence {
+	if len(s.Notes) == 0 {
+		return s
+	}
+	groups := [][]Note{}
+	for _, group := range s.Notes {
+		changed := []Note{}
+		for _, each := range group {
+			changed = append(changed, each.Octaved(howMuch))
+		}
+		groups = append(groups, changed)
+	}
+	return Sequence{groups}
+}
+
+// Inverted is for chord inversion
+func (s Sequence) Inverted(howMuch int) Sequence {
+	if len(s.Notes) == 0 {
+		return s
+	}
+	return s
+}
+
 func (s Sequence) RotatedBy(direction int, howMany int) Sequence {
 	if len(s.Notes) == 0 {
 		return s
