@@ -16,8 +16,8 @@ func main() {
 	Audio.LoadSounds()
 	defer Audio.Close()
 
-	csm := Chord(C(Sharp), Minor).Octaved(-1)
-	b1 := Chord(B(), Major).Octaved(-1)
+	csm := C(Sharp).Chord(Minor).Octaved(-1)
+	b1 := B().Chord(Major).Octaved(-1)
 
 	Audio.Play(csm.Join(b1), 6*time.Second)
 }

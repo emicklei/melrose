@@ -18,6 +18,16 @@ const (
 	Minor // Natural
 	HarmonicMinor
 	MelodicMinor
+
+	// https://en.wikipedia.org/wiki/Chord_(music)#Common_types_of_chords
+	MajorTriad
+	MajorSeventh
+	Triad
+	Seventh
+
+	Ground
+	Inversion1
+	Inversion2
 )
 const (
 	// NonRestNoteNames maps a tone to an index (C=0)

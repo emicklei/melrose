@@ -36,11 +36,7 @@ func (d *Device) Close() {
 	}
 }
 
-func (d *Device) Play(p m.Playable, t time.Duration) {
-	p.Play(d, t)
-}
-
-func (d *Device) PlaySequence(seq m.Sequence, duration time.Duration) {
+func (d *Device) Play(seq m.Sequence, duration time.Duration) {
 	for _, eachGroup := range seq.Notes {
 		log.Println(eachGroup)
 		wg := new(sync.WaitGroup)

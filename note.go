@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // Note represents a musical note.
@@ -105,10 +104,6 @@ func (n Note) DurationFactor() float32 {
 		return n.duration + 0.5
 	}
 	return n.duration
-}
-
-func (n Note) ToSequence() Sequence {
-	return BuildSequence([]Note{n})
 }
 
 func (n Note) S() Sequence {
@@ -391,8 +386,4 @@ func (n Note) PrintOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 	if n.Octave != 4 {
 		buf.WriteString(fmt.Sprintf("%d", n.Octave))
 	}
-}
-
-func (n Note) Play(p Player, t time.Duration) {
-	p.PlayNote(n, t)
 }

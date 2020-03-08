@@ -16,7 +16,7 @@ func main() {
 	Audio.LoadSounds()
 	defer Audio.Close()
 
-	cm := Scale(C(), Major)
+	cm := C().Scale(Major)
 
-	Audio.Play(cm, 1*time.Second)
+	Audio.Play(cm.S(), 1*time.Second)
 }
