@@ -1,6 +1,10 @@
-Melrose - interactive programming of music melodies
+# Melrose - programming of music melodies
 
-### Note notation
+[![Build Status](https://travis-ci.org/emicklei/melrose.png)](https://travis-ci.org/emicklei/melrose)
+[![Go Report Card](https://goreportcard.com/badge/github.com/emicklei/melrose)](https://goreportcard.com/report/github.com/emicklei/melrose)
+[![GoDoc](https://godoc.org/github.com/emicklei/melrose?status.svg)](https://pkg.go.dev/github.com/emicklei/melrose?tab=doc)
+
+## Note notation
 
 | Notation | Alternative | Description 
 |----------|-------|-------------
@@ -11,29 +15,17 @@ Melrose - interactive programming of music melodies
 | G.       | G.    | duration x 1.5 
 | =        | =     | quarter rest
 
-### Sequence notation
+## Sequence notation
 
 | Notation    | Description 
 |-------------|---
 | C D E F     | 4 quarter tones
 | (C E) (D F) | 2 doublets
 
+### Similar projects
 
-### Sequence functions
-
-| Expression       | Result
-|------------------|----
-| chord("C")       | (C E G)
-| reverse("C D E") | E D C
-| pitch("C D",1)   | D♭ E♭
-| pitch("C D",-2)  | B♭3 C
-| scale("C")       | C D E F G A B C5
-
-
-Software is licensed under [Apache 2.0 license](LICENSE).
-(c) 2014-2015 http://ernestmicklei.com 
-
-
-Similar projects
 - http://daveyarwood.github.io/alda/2015/09/05/alda-a-manifesto-and-gentle-introduction/
 - http://www.lilypond.org/
+
+Software is licensed under [Apache 2.0 license](LICENSE).
+(c) 2014-2020 http://ernestmicklei.com 
