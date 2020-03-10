@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"os"
 	"path"
 	"path/filepath"
@@ -20,6 +21,7 @@ type Device struct {
 	Name         string
 	soundContext *openal.Context
 	waves        map[string]openal.Buffer
+	bpm          float64
 }
 
 func (d *Device) Open() {
@@ -28,6 +30,7 @@ func (d *Device) Open() {
 	context.Activate()
 	d.soundContext = context
 	d.waves = map[string]openal.Buffer{}
+	d.bpm = 120.0
 }
 
 func (d *Device) Close() {
@@ -36,14 +39,20 @@ func (d *Device) Close() {
 	}
 }
 
-func (d *Device) Play(seq m.Sequence, duration time.Duration) {
+// BeatsPerMinute (BPM) ; beats each the length of a quarter note per minute.
+func (d *Device) BeatsPerMinute(bpm float64) {
+	d.bpm = bpm
+}
+
+func (d *Device) Play(seq m.Sequence) {
+	wholeNoteDuration := time.Duration(int(math.Round( 4 * 60 * 1000 / d.bpm)))* time.Millisecond
 	for _, eachGroup := range seq.Notes {
 		log.Println(eachGroup)
 		wg := new(sync.WaitGroup)
 		for _, eachNote := range eachGroup {
 			wg.Add(1)
 			go func(n m.Note) {
-				d.PlayNote(n, duration)
+				d.PlayNote(n, wholeNoteDuration)
 				wg.Done()
 			}(eachNote)
 		}

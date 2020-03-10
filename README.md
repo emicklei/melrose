@@ -8,8 +8,9 @@
 
 | Notation | Alternative | Description 
 |----------|-------|-------------
-| C4       | C     | quarter C octave 4 
-| 2E5      | ½C5   | Halftone (2 x ¼) C octave 5
+| C4       | ¼C,C  | quarter C octave 4 
+| 2E5      | ½E5   | Halftone (2 x ¼) E octave 5
+| 1C       |       | Full tone () octave 4
 | F#       | F♯    | F sharp
 | G_       | G♭    | G flat
 | G.       | G.    | duration x 1.5 

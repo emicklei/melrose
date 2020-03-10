@@ -3,7 +3,6 @@ package melrose
 import (
 	"bytes"
 	"strings"
-	"time"
 )
 
 type Sequence struct {
@@ -218,6 +217,6 @@ func (s Sequence) writeNotesOn(
 	}
 }
 
-func (s Sequence) Play(p Player, t time.Duration) {
-	p.PlaySequence(s, t)
+func (s Sequence) Play(p Player) {
+	p.PlaySequence(s)
 }

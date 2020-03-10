@@ -15,6 +15,6 @@ func main() {
 	Audio.LoadSounds()
 	defer Audio.Close()
 
-	note, _ := m.ParseNote("C5")
-	Audio.Play(note.S(), 2*time.Second)
+	note, _ := m.ParseNote("1C5")
+	Audio.Play(note.S(), 3*time.Second)
 }

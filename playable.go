@@ -7,6 +7,6 @@ type Playable interface {
 }
 
 type Player interface {
-	PlayNote(Note, time.Duration)
-	PlaySequence(s Sequence, singleNoteDuration time.Duration)
+	PlayNote(Note)
+	PlaySequence(s Sequence)
 }

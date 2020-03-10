@@ -12,7 +12,7 @@ import (
 // Notations:
 // 		½C♯.3 = half+half duration, pitch C, sharp, octave 3
 //		D     = quarter duration, pitch D, octave 4, no accidental
-//      ⅛B♭   = eigth duration, pitch B, octave 4, flat
+//      ⅛B♭   = eighth duration, pitch B, octave 4, flat
 //		r     = quarter rest
 // http://en.wikipedia.org/wiki/Musical_Note
 type Note struct {
@@ -258,7 +258,7 @@ func ParseNote(input string) (Note, error) {
 	case "1":
 		duration = 1
 	default:
-		duration = 0.25
+		duration = 0.25 // quarter
 	}
 
 	var accidental int

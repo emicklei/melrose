@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	. "github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/pilot"
 )
@@ -18,5 +16,5 @@ func main() {
 	// p.Send("rosc")
 	cm := C().Scale(Major)
 
-	p.Play(cm.S(), 1*time.Second)
+	p.Play(cm.S())
 }

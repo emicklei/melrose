@@ -30,7 +30,7 @@ func (p *Pilot) Close() {
 	}
 }
 
-func (p *Pilot) Play(seq m.Sequence, duration time.Duration) {
+func (p *Pilot) Play(seq m.Sequence) {
 	seq.NotesDo(func(n m.Note) {
 		cmd := noteToCmd(p.channel, n)
 		p.Send(cmd)

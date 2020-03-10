@@ -18,6 +18,6 @@ func main() {
 	s, _ := m.ParseSequence("(C D E)")
 	for i := 0; i < 10; i++ {
 		t := m.PitchBy{Semitones: i}
-		Audio.Play(t.Transform(s), 1*time.Second)
+		Audio.Play(t.Transform(s))
 	}
 }

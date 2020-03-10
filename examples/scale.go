@@ -1,7 +1,6 @@
 package main
 
 import (
-	"time"
 
 	. "github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/audio"
@@ -16,7 +15,7 @@ func main() {
 	Audio.LoadSounds()
 	defer Audio.Close()
 
-	cm := C().Scale(Major)
-
-	Audio.Play(cm.S(), 1*time.Second)
+	Audio.BeatsPerMinute(140)
+	Audio.Play(C().Scale(Minor).S())
+	Audio.Play(C().Scale(Major).S().Reversed())
 }

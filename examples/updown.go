@@ -38,7 +38,7 @@ func newStreamer() *streamer {
 	s.notes = make(chan m.Note)
 	go func() {
 		for {
-			Audio.PlayNote(<-s.notes, 300*time.Millisecond)
+			Audio.PlayNote(<-s.notes)
 		}
 	}()
 	return s

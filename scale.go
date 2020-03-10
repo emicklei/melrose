@@ -30,9 +30,9 @@ func (s Scale) S() Sequence {
 	notes := []Note{s.start}
 	var semitones []int
 	if Major == s.minorOrMajor {
-		semitones = []int{2, 2, 1, 2, 2, 2}
+		semitones = []int{2, 2, 1, 2, 2, 2,1}
 	} else if Minor == s.minorOrMajor {
-		semitones = []int{2, 1, 2, 2, 1, 2}
+		semitones = []int{2, 1, 2, 2, 1, 2,2}
 	}
 	next := s.start
 	for _, each := range semitones {
