@@ -45,9 +45,9 @@ func (d *Device) BeatsPerMinute(bpm float64) {
 }
 
 func (d *Device) Play(seq m.Sequence) {
-	wholeNoteDuration := time.Duration(int(math.Round( 4 * 60 * 1000 / d.bpm)))* time.Millisecond
+	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/d.bpm))) * time.Millisecond
 	for _, eachGroup := range seq.Notes {
-		log.Println(eachGroup)
+		fmt.Printf("𝄢 %v\n", eachGroup)
 		wg := new(sync.WaitGroup)
 		for _, eachNote := range eachGroup {
 			wg.Add(1)
@@ -69,7 +69,7 @@ func (d *Device) PlayNote(note m.Note, duration time.Duration) {
 	key := note.Whole().String()
 	wav, ok := d.waves[key]
 	if !ok {
-		log.Printf("No such note:%s", key)
+		fmt.Printf("No such note:%s", key)
 		return
 	}
 	//fmt.Println("=", key)
@@ -94,7 +94,7 @@ func (d *Device) LoadSounds() {
 			d.loadWavFile(fin)
 		}
 	}
-	log.Printf("loaded %d sound files\n", len(d.waves))
+	fmt.Printf("loaded %d sound files\n", len(d.waves))
 }
 
 func (d *Device) loadWavFile(fileName string) {

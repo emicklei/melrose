@@ -2,16 +2,22 @@ package main
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/antonmedv/expr"
+	"github.com/emicklei/melrose"
 )
 
-var assignmentRegex := regex.MustCompile(`^[a-z]+\[[0-9]+\]=.*$`)
+var assignmentRegex = regexp.MustCompile(`^[a-z]+\[[0-9]+\]=.*$`)
 
 func dispatch(entry string) error {
+	if len(entry) == 0 {
+		fmt.Println()
+		return nil
+	}
 	if value, ok := memory[entry]; ok {
-		fmt.Println(value)
+		printValue(value)
 		return nil
 	}
 	// is assignment?
@@ -25,7 +31,7 @@ func dispatch(entry string) error {
 			return err
 		}
 		memory[variable] = r
-		fmt.Println(r)
+		printValue(r)
 		return nil
 	}
 	// evaluate and print
@@ -33,15 +39,23 @@ func dispatch(entry string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(r)
+	printValue(r)
 	return nil
+}
+
+func printValue(v interface{}) {
+	if v == nil {
+		fmt.Println()
+		return
+	}
+	fmt.Printf("(%T) %v\n", v, v)
 }
 
 func eval(entry string) (interface{}, error) {
 	env := map[string]interface{}{
-		"greet":   "Hello, %v!",
-		"names":   []string{"world", "you"},
-		"sprintf": fmt.Sprintf,
+		"C":    melrose.C(),
+		"note": evalNote,
+		"play": evalPlay,
 	}
 	for k, v := range memory {
 		env[k] = v
@@ -51,4 +65,29 @@ func eval(entry string) (interface{}, error) {
 		return nil, err
 	}
 	return expr.Run(program, env)
+}
+
+func evalNote(s string) melrose.Note {
+	n, err := melrose.ParseNote(s)
+	if err != nil {
+		printError(err)
+		return melrose.N("C")
+	}
+	return n
+}
+
+func evalPlay(p interface{}) error {
+	if n, ok := p.(melrose.Note); ok {
+		piano.Play(n.S())
+		return nil
+	}
+	if s, ok := p.(melrose.Sequence); ok {
+		piano.Play(s)
+		return nil
+	}
+	if c, ok := p.(melrose.Chord); ok {
+		piano.Play(c.S())
+		return nil
+	}
+	return nil
 }

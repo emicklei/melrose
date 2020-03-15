@@ -14,3 +14,30 @@ a = 54 * 4564
 a
 chord(a)
 :Q
+a = 10*34
+b = a
+b
+c = b * a 
+note("C5")
+note("Z5")
+n1 = note("C5")
+c1 = C
+c1
+c1.Sharp()
+c1 = C
+c1.Sharp()
+c1 = C.Sharp()
+play(c1)
+d = note("d")
+play(d)
+play(C)
+:Q
+C
+D5
+D
+C.Sharp()
+C.Sharp
+C.Sharp()
+C.Sharp().Chord()
+C.sharp
+play(C)

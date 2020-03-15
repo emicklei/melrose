@@ -90,7 +90,7 @@ func loop(line *liner.State) {
 		default:
 			if err := dispatch(entry); err != nil {
 				printError(err)
-				continue
+				// even on error, add entry to history so we can edit/fix it
 			}
 		}
 		line.AppendHistory(entry)
