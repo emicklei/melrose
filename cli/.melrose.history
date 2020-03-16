@@ -41,3 +41,23 @@ C.Sharp()
 C.Sharp().Chord()
 C.sharp
 play(C)
+a.b = C
+a.b
+play(5.C)
+5.C
+play(n.C5)
+play(n:C5)
+play(N.C5)
+E = {}
+E.C = N.C5
+play(E.C)
+E
+E.C
+play(E.C)
+play(N.C5)
+play(piano.C5)
+piano
+
+play(piano.C5)
+play(piano.C4)
+play(piano.C3)

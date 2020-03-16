@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 
@@ -53,10 +54,10 @@ func printValue(v interface{}) {
 
 func eval(entry string) (interface{}, error) {
 	env := map[string]interface{}{
-		"C":    melrose.C(),
 		"note": evalNote,
 		"play": evalPlay,
 	}
+	setupPiano(env)
 	for k, v := range memory {
 		env[k] = v
 	}
@@ -90,4 +91,21 @@ func evalPlay(p interface{}) error {
 		return nil
 	}
 	return nil
+}
+
+func setupPiano(env map[string]interface{}) {
+	piano := map[string]melrose.Note{}
+	env["piano"] = piano
+	for octave := 3; octave < 6; octave++ {
+		for _, each := range strings.Fields("C D E F G A B") {
+			key := fmt.Sprintf("%s%d", each, octave)
+			note, err := melrose.ParseNote(key)
+			if err != nil {
+				log.Println(err)
+			} else {
+				log.Println(key, note)
+				piano[key] = note
+			}
+		}
+	}
 }
