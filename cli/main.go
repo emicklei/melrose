@@ -87,6 +87,10 @@ func loop(line *liner.State) {
 		// commands starting with : control the program itself
 		case ":q":
 			goto exit
+		case ":v":
+			for k, v := range memory {
+				fmt.Printf("%s = (%T) %v\n", k, v, v)
+			}
 		default:
 			if err := dispatch(entry); err != nil {
 				printError(err)

@@ -3,6 +3,7 @@ package melrose
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"regexp"
 	"strconv"
 	"strings"
@@ -47,7 +48,7 @@ func B(modifiers ...int) Note {
 	return NewNote("B").Modified(modifiers...)
 }
 func Rest(modifiers ...int) Note {
-	return NewNote("r").Modified(modifiers...)
+	return NewNote("=").Modified(modifiers...)
 }
 
 func NewNote(name string) Note {
@@ -57,13 +58,15 @@ func NewNote(name string) Note {
 // todo make it return error i.o panic
 func newNote(name string, octave int, duration float32, accidental int, dot bool) Note {
 	if len(name) != 1 {
-		panic(fmt.Sprintf("note must be one character, got [%s]", name))
+		log.Printf("note must be one character, got [%s]", name)
+		return Rest()
 	}
 	if !strings.Contains("ABCDEFG=", name) {
-		panic("invalid note name [ABCDEFG=]:" + name)
+		log.Println("invalid note name [ABCDEFG=]:" + name)
 	}
 	if octave < 0 || octave > 9 {
-		panic("invalid octave [0..9]:" + string(octave))
+		log.Println("invalid octave [0..9]:" + string(octave))
+		return Rest()
 	}
 	switch duration {
 	case 0.125:
@@ -71,11 +74,13 @@ func newNote(name string, octave int, duration float32, accidental int, dot bool
 	case 0.5:
 	case 1:
 	default:
-		panic(fmt.Sprintf("invalid duration [1,0.5,0.25,0.125]:%v", duration))
+		log.Printf("invalid duration [1,0.5,0.25,0.125]:%v\n", duration)
+		return Rest()
 	}
 
 	if accidental != 0 && accidental != -1 && accidental != 1 {
-		panic("invalid accidental :" + string(accidental))
+		log.Println("invalid accidental :" + string(accidental))
+		return Rest()
 	}
 
 	return Note{Name: name, Octave: octave, duration: duration, Accidental: accidental, Dotted: dot}
@@ -225,11 +230,12 @@ var noteRegexp = regexp.MustCompile("([½¼⅛1248]?)([CDEFGAB=])([#♯_♭]?)(\
 
 // MustParseNote returns a Note by parsing the input. Panic if it fails.
 func MustParseNote(input string) Note {
-	if n, err := ParseNote(input); err != nil {
-		panic("MustParseNote failed:" + err.Error())
-	} else {
-		return n
+	n, err := ParseNote(input)
+	if err != nil {
+		log.Println("MustParseNote failed:" + err.Error())
+		n = C()
 	}
+	return n
 }
 
 var N = MustParseNote

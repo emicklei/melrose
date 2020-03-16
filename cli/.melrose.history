@@ -61,3 +61,20 @@ piano
 play(piano.C5)
 play(piano.C4)
 play(piano.C3)
+play(piano.C6)
+play(piano.C5)
+C5
+piano.C5
+:V
+:v
+a = piano.C5
+:v
+play(a)
+play(a.Sharp())
+play(a.Flat())
+play(a)
+:v
+c = a.Chord()
+play(c)
+s1 = c.S().Repeated(5)
+play(s1)
