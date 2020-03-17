@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	. "github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/audio"
 )
@@ -16,4 +18,6 @@ func main() {
 	b1 := B().Chord(Major).Octaved(-1)
 
 	Audio.Play(csm.Join(b1))
+
+	time.Sleep(4 * time.Second)
 }

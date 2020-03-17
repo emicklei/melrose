@@ -69,7 +69,7 @@ func (d *Device) PlayNote(note m.Note, duration time.Duration) {
 	key := note.Whole().String()
 	wav, ok := d.waves[key]
 	if !ok {
-		fmt.Printf("No such note:%s", key)
+		fmt.Printf("no such note:%s", key)
 		return
 	}
 	//fmt.Println("=", key)
@@ -82,7 +82,7 @@ func (d *Device) PlayNote(note m.Note, duration time.Duration) {
 	source.SetBuffer(wav)
 	source.Play()
 	time.Sleep(actualDuration)
-	source.Stop()
+	//source.Stop()
 }
 
 func (d *Device) LoadSounds() {

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	m "github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/audio"
 )
@@ -16,5 +14,5 @@ func main() {
 	defer Audio.Close()
 
 	note, _ := m.ParseNote("1C5")
-	Audio.Play(note.S(), 3*time.Second)
+	Audio.Play(note.S())
 }

@@ -1,21 +1,23 @@
 package main
 
 import (
+	"time"
 
 	. "github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/audio"
 )
 
-var Audio *audio.Device
-
 // go run scale.go
 func main() {
-	Audio = new(audio.Device)
-	Audio.Open()
-	Audio.LoadSounds()
-	defer Audio.Close()
+	a := new(audio.Device)
+	a.Open()
+	a.LoadSounds()
+	defer a.Close()
 
-	Audio.BeatsPerMinute(140)
-	Audio.Play(C().Scale(Minor).S())
-	Audio.Play(C().Scale(Major).S().Reversed())
+	a.BeatsPerMinute(180)
+
+	a.Play(C().Scale(Minor).S())
+	a.Play(C().Scale(Major).S().Reversed())
+
+	time.Sleep(4 * time.Second)
 }

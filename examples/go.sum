@@ -1,6 +1,7 @@
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/GeertJohan/go.linenoise v0.0.0-20141120151038-1918ff89d613/go.mod h1:hjDAY2N/A6k4IInagcBqLG/q8SyECV6TDzEu5dY0Mwg=
 github.com/antonmedv/expr v1.6.0/go.mod h1:5qsM3oLGDND7sDmQGDXHkYfkjYMUX14qsgqmHhwGEk8=
+github.com/antonmedv/expr v1.7.0/go.mod h1:5qsM3oLGDND7sDmQGDXHkYfkjYMUX14qsgqmHhwGEk8=
 github.com/containous/yaegi v0.7.6/go.mod h1:Yj82MHpXQ9/h3ukzc2numJQ/Wr4+M3C9YLMzNjFtd3o=
 github.com/davecgh/go-spew v0.0.0-20161028175848-04cdfd42973b/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

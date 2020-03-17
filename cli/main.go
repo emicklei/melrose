@@ -3,9 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
+	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/audio"
 	"github.com/peterh/liner"
 )
@@ -60,9 +62,18 @@ func setup(line *liner.State) {
 	fmt.Println("melrose - v0.0.1")
 	line.SetCtrlCAborts(true)
 	line.SetCompleter(func(line string) (c []string) {
-		for _, n := range functionNames {
-			if strings.HasPrefix(n, strings.ToLower(line)) {
-				c = append(c, n)
+		// if line ends with dot then lookup methods for the value before the dot
+		if strings.HasSuffix(line, ".") {
+			n := melrose.C()
+			for _, each := range availableMethodNames(n, line) {
+				c = append(c, line+each)
+			}
+			log.Println(c)
+		} else {
+			for _, n := range functionNames {
+				if strings.HasPrefix(n, strings.ToLower(line)) {
+					c = append(c, n)
+				}
 			}
 		}
 		return

@@ -78,3 +78,18 @@ c = a.Chord()
 play(c)
 s1 = c.S().Repeated(5)
 play(s1)
+piano.C4.S()
+piano.C4.S().Octaved(2)
+c6 = piano.C4.S().Octaved(2)
+play(c6)
+c7 = c6.Pitched(1)
+c7 = c6.Repeated(1)
+c7 = c6.Repeated(3)
+play(c7)
+:v
+a.
+a = piano.C5
+a.
+a = piano.C5
+a.P:q
+a = piano.C5

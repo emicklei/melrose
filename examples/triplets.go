@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	m "github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/audio"
 )

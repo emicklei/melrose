@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	m "github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/audio"
 )
@@ -13,6 +11,7 @@ func main() {
 	Audio = new(audio.Device)
 	Audio.Open()
 	Audio.LoadSounds()
+	Audio.BeatsPerMinute(180)
 	defer Audio.Close()
 
 	left := newStreamer()
@@ -38,7 +37,7 @@ func newStreamer() *streamer {
 	s.notes = make(chan m.Note)
 	go func() {
 		for {
-			Audio.PlayNote(<-s.notes)
+			Audio.Play((<-s.notes).S())
 		}
 	}()
 	return s
