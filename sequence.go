@@ -26,24 +26,9 @@ func (s Sequence) Append(notes ...Note) Sequence {
 	return Sequence{list}
 }
 
-func (s Sequence) Join(others ...Joinable) Sequence {
-	if len(others) == 0 {
-		return s
-	}
-	if len(others) == 1 {
-		return others[0].SequenceJoin(s)
-	}
-	return others[0].SequenceJoin(s).Join(others[1:]...)
-}
-
-// SequenceJoin returns t + s
+// SequenceJoin returns s + t
 func (s Sequence) SequenceJoin(t Sequence) Sequence {
-	return Sequence{append(t.Notes, s.Notes...)}
-}
-
-// NoteJoin returns n + s
-func (s Sequence) NoteJoin(n Note) Sequence {
-	return Sequence{append([][]Note{[]Note{n}}, s.Notes...)}
+	return Sequence{append(s.Notes, t.Notes...)}
 }
 
 func (s Sequence) NotesCollect(transform func(Note) Note) Sequence {
@@ -119,11 +104,11 @@ func ParseSequence(input string) (Sequence, error) {
 }
 
 func (s Sequence) Repeated(howMany int) Sequence {
-	r := s
+	groups := [][]Note{}
 	for i := 0; i < howMany; i++ {
-		r = r.Join(s)
+		groups = append(groups, s.Notes...)
 	}
-	return r
+	return Sequence{Notes: groups}
 }
 
 func (s Sequence) Octaved(howMuch int) Sequence {
@@ -164,6 +149,18 @@ func (s Sequence) RotatedBy(direction int, howMany int) Sequence {
 		}
 	}
 	return Sequence{groups}
+}
+
+func (s Sequence) Reverse() Reverse {
+	return Reverse{Target: s}
+}
+
+func (s Sequence) Join(seq Sequenceable) Sequenceable {
+	return Join{Left: s, Right: seq}
+}
+
+func (s Sequence) S() Sequence {
+	return s
 }
 
 func (s Sequence) Reversed() Sequence {
@@ -215,8 +212,4 @@ func (s Sequence) writeNotesOn(
 			buf.WriteString(")")
 		}
 	}
-}
-
-func (s Sequence) Play(p Player) {
-	p.PlaySequence(s)
 }

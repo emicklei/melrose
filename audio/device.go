@@ -45,9 +45,14 @@ func (d *Device) BeatsPerMinute(bpm float64) {
 }
 
 func (d *Device) Play(seq m.Sequence) {
+	fmt.Printf("𝄢 ")
 	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/d.bpm))) * time.Millisecond
 	for _, eachGroup := range seq.Notes {
-		fmt.Printf("𝄢 %v\n", eachGroup)
+		if len(eachGroup) == 1 {
+			fmt.Printf("%v ", eachGroup[0])
+		} else {
+			fmt.Printf("%v ", eachGroup)
+		}
 		wg := new(sync.WaitGroup)
 		for _, eachNote := range eachGroup {
 			wg.Add(1)
@@ -58,6 +63,7 @@ func (d *Device) Play(seq m.Sequence) {
 		}
 		wg.Wait()
 	}
+	fmt.Println()
 }
 
 func (d *Device) PlayNote(note m.Note, duration time.Duration) {

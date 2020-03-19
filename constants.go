@@ -28,6 +28,7 @@ const (
 	Ground
 	Inversion1
 	Inversion2
+	Inversion3
 )
 const (
 	// NonRestNoteNames maps a tone to an index (C=0)

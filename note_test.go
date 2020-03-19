@@ -222,28 +222,38 @@ func PanicDetector(t *testing.T) {
 }
 
 func TestFailedNewNote_BadName(t *testing.T) {
-	defer PanicDetector(t)
 	// name string, octave int, duration float32, accidental int, dot bool
-	t.Log(newNote("Z", 4, 0.5, 0, false))
+	if _, err := NewNote("Z", 4, 0.5, 0, false); err == nil {
+		t.Fail()
+	}
 }
 
 func TestFailedNewNote_BadOctave(t *testing.T) {
-	defer PanicDetector(t)
 	// name string, octave int, duration float32, accidental int, dot bool
-	t.Log(newNote("A", -1, 0.5, 0, false))
-	t.Log(newNote("A", 10, 0.5, 0, false))
+	if _, err := NewNote("A", -1, 0.5, 0, false); err == nil {
+		t.Fail()
+	}
+	if _, err := NewNote("A", 10, 0.5, 0, false); err == nil {
+		t.Fail()
+	}
 }
 
 func TestFailedNewNote_BadDuration(t *testing.T) {
-	defer PanicDetector(t)
 	// name string, octave int, duration float32, accidental int, dot bool
-	t.Log(newNote("A", 4, 2, 0, false))
-	t.Log(newNote("A", 4, -1, 0, false))
+	if _, err := NewNote("A", 4, 2, 0, false); err == nil {
+		t.Fail()
+	}
+	if _, err := NewNote("A", 4, -1, 0, false); err == nil {
+		t.Fail()
+	}
 }
 
 func TestFailedNewNote_BadAccidental(t *testing.T) {
-	defer PanicDetector(t)
 	// name string, octave int, duration float32, accidental int, dot bool
-	t.Log(newNote("A", 4, 0.25, -2, false))
-	t.Log(newNote("A", 4, 0.25, 2, false))
+	if _, err := NewNote("A", 4, 0.25, -2, false); err == nil {
+		t.Error(err)
+	}
+	if _, err := NewNote("A", 4, 0.25, 2, false); err == nil {
+		t.Error(err)
+	}
 }

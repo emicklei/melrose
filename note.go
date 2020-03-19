@@ -3,7 +3,6 @@ package melrose
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"regexp"
 	"strconv"
 	"strings"
@@ -27,46 +26,41 @@ type Note struct {
 // Constructors
 
 func C(modifiers ...int) Note {
-	return NewNote("C").Modified(modifiers...)
+	return MustParseNote("C").Modified(modifiers...)
 }
 func D(modifiers ...int) Note {
-	return NewNote("D").Modified(modifiers...)
+	return MustParseNote("D").Modified(modifiers...)
 }
 func E(modifiers ...int) Note {
-	return NewNote("E").Modified(modifiers...)
+	return MustParseNote("E").Modified(modifiers...)
 }
 func F(modifiers ...int) Note {
-	return NewNote("F").Modified(modifiers...)
+	return MustParseNote("F").Modified(modifiers...)
 }
 func G(modifiers ...int) Note {
-	return NewNote("G").Modified(modifiers...)
+	return MustParseNote("G").Modified(modifiers...)
 }
 func A(modifiers ...int) Note {
-	return NewNote("A").Modified(modifiers...)
+	return MustParseNote("A").Modified(modifiers...)
 }
 func B(modifiers ...int) Note {
-	return NewNote("B").Modified(modifiers...)
+	return MustParseNote("B").Modified(modifiers...)
 }
 func Rest(modifiers ...int) Note {
-	return NewNote("=").Modified(modifiers...)
+	return MustParseNote("=").Modified(modifiers...)
 }
 
-func NewNote(name string) Note {
-	return newNote(name, 4, 0.25, 0, false)
-}
+var rest = Note{Name: "="}
 
-// todo make it return error i.o panic
-func newNote(name string, octave int, duration float32, accidental int, dot bool) Note {
+func NewNote(name string, octave int, duration float32, accidental int, dot bool) (Note, error) {
 	if len(name) != 1 {
-		log.Printf("note must be one character, got [%s]", name)
-		return Rest()
+		return rest, fmt.Errorf("note must be one character, got [%s]", name)
 	}
 	if !strings.Contains("ABCDEFG=", name) {
-		log.Println("invalid note name [ABCDEFG=]:" + name)
+		return rest, fmt.Errorf("invalid note name [ABCDEFG=]:" + name)
 	}
 	if octave < 0 || octave > 9 {
-		log.Println("invalid octave [0..9]:" + string(octave))
-		return Rest()
+		return rest, fmt.Errorf("invalid octave [0..9]:" + string(octave))
 	}
 	switch duration {
 	case 0.125:
@@ -74,16 +68,14 @@ func newNote(name string, octave int, duration float32, accidental int, dot bool
 	case 0.5:
 	case 1:
 	default:
-		log.Printf("invalid duration [1,0.5,0.25,0.125]:%v\n", duration)
-		return Rest()
+		return rest, fmt.Errorf("invalid duration [1,0.5,0.25,0.125]:%v\n", duration)
 	}
 
 	if accidental != 0 && accidental != -1 && accidental != 1 {
-		log.Println("invalid accidental :" + string(accidental))
-		return Rest()
+		return rest, fmt.Errorf("invalid accidental :" + string(accidental))
 	}
 
-	return Note{Name: name, Octave: octave, duration: duration, Accidental: accidental, Dotted: dot}
+	return Note{Name: name, Octave: octave, duration: duration, Accidental: accidental, Dotted: dot}, nil
 }
 
 // Accessors
@@ -113,28 +105,6 @@ func (n Note) DurationFactor() float32 {
 
 func (n Note) S() Sequence {
 	return BuildSequence([]Note{n})
-}
-
-func (n Note) Repeated(howMany int) Sequence {
-	s := Sequence{}
-	for i := 0; i < howMany; i++ {
-		s = s.Append(n)
-	}
-	return s
-}
-
-func (n Note) Join(others ...Joinable) Sequence {
-	return BuildSequence([]Note{n}).Join(others...)
-}
-
-// NoteJoin returns n + n2
-func (n Note) NoteJoin(n2 Note) Sequence {
-	return BuildSequence([]Note{n, n2})
-}
-
-// SequenceJoin returns t + n
-func (n Note) SequenceJoin(t Sequence) Sequence {
-	return t.Append(n)
 }
 
 func (n Note) Frequency() int {
@@ -171,16 +141,19 @@ func (n Note) Modified(modifiers ...int) Note {
 // Pitch
 
 func (n Note) Sharp() Note {
-	return newNote(n.Name, n.Octave, n.duration, 1, n.Dotted)
+	nn, _ := NewNote(n.Name, n.Octave, n.duration, 1, n.Dotted)
+	return nn
 }
 func (n Note) Flat() Note {
-	return newNote(n.Name, n.Octave, n.duration, -1, n.Dotted)
+	nn, _ := NewNote(n.Name, n.Octave, n.duration, -1, n.Dotted)
+	return nn
 }
 
 // Pitched creates a new Note with a pitch by a (positive or negative) number of semi tones
 func (n Note) Pitched(howManySemitones int) Note {
 	simple := MIDItoNote(n.MIDI() + howManySemitones)
-	return newNote(simple.Name, simple.Octave, n.duration, simple.Accidental, n.Dotted)
+	nn, _ := NewNote(simple.Name, simple.Octave, n.duration, simple.Accidental, n.Dotted)
+	return nn
 }
 
 // Major returns the note left or right on the Major Scale by an offset
@@ -195,33 +168,40 @@ func (n Note) Major(offset int) Note {
 }
 
 func (n Note) Octaved(howmuch int) Note {
-	return newNote(n.Name, n.Octave+howmuch, n.duration, n.Accidental, n.Dotted)
+	nn, _ := NewNote(n.Name, n.Octave+howmuch, n.duration, n.Accidental, n.Dotted)
+	return nn
 }
 
 // Duration
 
 func (n Note) Eight() Note {
-	return newNote(n.Name, n.Octave, 0.125, n.Accidental, n.Dotted)
+	nn, _ := NewNote(n.Name, n.Octave, 0.125, n.Accidental, n.Dotted)
+	return nn
 }
 
 func (n Note) Quarter() Note {
-	return newNote(n.Name, n.Octave, 0.25, n.Accidental, n.Dotted)
+	nn, _ := NewNote(n.Name, n.Octave, 0.25, n.Accidental, n.Dotted)
+	return nn
 }
 
 func (n Note) Half() Note {
-	return newNote(n.Name, n.Octave, 0.5, n.Accidental, n.Dotted)
+	nn, _ := NewNote(n.Name, n.Octave, 0.5, n.Accidental, n.Dotted)
+	return nn
 }
 
 func (n Note) Whole() Note {
-	return newNote(n.Name, n.Octave, 1, n.Accidental, false)
+	nn, _ := NewNote(n.Name, n.Octave, 1, n.Accidental, false)
+	return nn
 }
 
 func (n Note) Dot() Note {
-	return newNote(n.Name, n.Octave, n.duration, n.Accidental, true)
+	nn, _ := NewNote(n.Name, n.Octave, n.duration, n.Accidental, true)
+	return nn
 }
 
 func (n Note) ModifiedDuration(by float32) Note {
-	return newNote(n.Name, n.Octave, n.duration+by, n.Accidental, n.Dotted)
+	nn, _ := NewNote(n.Name, n.Octave, n.duration+by, n.Accidental, n.Dotted)
+	return nn
 }
 
 // Conversion
@@ -232,8 +212,7 @@ var noteRegexp = regexp.MustCompile("([½¼⅛1248]?)([CDEFGAB=])([#♯_♭]?)(\
 func MustParseNote(input string) Note {
 	n, err := ParseNote(input)
 	if err != nil {
-		log.Println("MustParseNote failed:" + err.Error())
-		n = C()
+		panic("MustParseNote failed:" + err.Error())
 	}
 	return n
 }
@@ -293,7 +272,7 @@ func ParseNote(input string) (Note, error) {
 		octave = i
 	}
 
-	return newNote(matches[2], octave, duration, accidental, dotted), nil
+	return NewNote(matches[2], octave, duration, accidental, dotted)
 }
 
 // Formatting

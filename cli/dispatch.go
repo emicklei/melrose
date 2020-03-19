@@ -55,6 +55,8 @@ func eval(entry string) (interface{}, error) {
 	env := map[string]interface{}{
 		"note": evalNote,
 		"play": evalPlay,
+		"seq":  evalSeq,
+		"bpm":  evalBPM,
 	}
 	env["piano"] = pianoNotes
 	for k, v := range memory {
@@ -67,6 +69,20 @@ func eval(entry string) (interface{}, error) {
 	return expr.Run(program, env)
 }
 
+func evalBPM(i int) int {
+	piano.BeatsPerMinute(float64(i))
+	return i
+}
+
+func evalSeq(s string) melrose.Sequence {
+	n, err := melrose.ParseSequence(s)
+	if err != nil {
+		printError(err)
+		return melrose.N("C").S()
+	}
+	return n
+}
+
 func evalNote(s string) melrose.Note {
 	n, err := melrose.ParseNote(s)
 	if err != nil {
@@ -76,18 +92,11 @@ func evalNote(s string) melrose.Note {
 	return n
 }
 
-func evalPlay(p interface{}) error {
-	if n, ok := p.(melrose.Note); ok {
-		piano.Play(n.S())
-		return nil
-	}
-	if s, ok := p.(melrose.Sequence); ok {
-		piano.Play(s)
-		return nil
-	}
-	if c, ok := p.(melrose.Chord); ok {
-		piano.Play(c.S())
-		return nil
+func evalPlay(playables ...interface{}) interface{} {
+	for _, p := range playables {
+		if s, ok := p.(melrose.Sequenceable); ok {
+			piano.Play(s.S())
+		}
 	}
 	return nil
 }

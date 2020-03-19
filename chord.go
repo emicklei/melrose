@@ -1,5 +1,7 @@
 package melrose
 
+import "fmt"
+
 type Chord struct {
 	minorOrMajor   int
 	start          Note
@@ -15,6 +17,36 @@ func (n Note) Chord(modifiers ...int) Chord {
 		inversion:      Ground,
 	}
 	return zero.Modified(modifiers...)
+}
+
+func (c Chord) String() string {
+	return fmt.Sprintf("%v %s %s", c.start, minorMajor(c.minorOrMajor), inversion(c.inversion))
+}
+
+func minorMajor(m int) string {
+	if m == Minor {
+		return "minor"
+	}
+	if m == Major {
+		return "major"
+	}
+	return "?"
+}
+
+func inversion(i int) string {
+	if i == Ground {
+		return "ground"
+	}
+	if i == Inversion1 {
+		return "1st inversion"
+	}
+	if i == Inversion2 {
+		return "2nd inversion"
+	}
+	if i == Inversion3 {
+		return "3nd inversion"
+	}
+	return "?"
 }
 
 func (c Chord) Modified(modifiers ...int) Chord {
@@ -41,6 +73,7 @@ func (c Chord) Octaved(howMuch int) Chord {
 		minorOrMajor:   Minor,
 		start:          c.start.Octaved(howMuch),
 		triadOrSeventh: c.triadOrSeventh,
+		inversion:      c.inversion,
 	}
 }
 
@@ -57,16 +90,4 @@ func (c Chord) S() Sequence {
 		notes = append(notes, next)
 	}
 	return Sequence{[][]Note{notes}}
-}
-
-func (c Chord) Join(j ...Joinable) Sequence {
-	return c.S().Join(j...)
-}
-
-func (c Chord) NoteJoin(n Note) Sequence {
-	return c.S().NoteJoin(n)
-}
-
-func (c Chord) SequenceJoin(s Sequence) Sequence {
-	return c.S().SequenceJoin(s)
 }

@@ -37,14 +37,14 @@ func help() string {
 	return `
 	melrose
 	
-	play("C#5 E_ 2F G A#")
-	tempo(150)
-	chord("C") -> "C E"
-	scale("C") -> "C D E F G A B"
-	pitch("C" , -1) -> "B3"
-	reverse("C D E") -> "E D C"
-	repeat("C",5)
-	rotate("C D E",-1) -> "D E C"
+	v = seq("C D E F A B C5")
+	bpm(180)
+	c = note("C4").Chord()
+	play(v,v)
+	
+	:q
+	:v
+	:h
 `
 }
 
@@ -93,7 +93,7 @@ func loop(line *liner.State) {
 			continue
 		}
 		switch entry {
-		case "?":
+		case "?", ":h":
 			help()
 		// commands starting with : control the program itself
 		case ":q":
@@ -108,7 +108,10 @@ func loop(line *liner.State) {
 				// even on error, add entry to history so we can edit/fix it
 			}
 		}
-		line.AppendHistory(entry)
+		// do not remember commands
+		if !strings.HasPrefix(entry, ":") {
+			line.AppendHistory(entry)
+		}
 	}
 exit:
 }
