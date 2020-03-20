@@ -221,27 +221,42 @@ play(s1,s1)
 c = note("C4").Chord()
 play(c)
 c = note("C4").Chord()
-piano.C5
-play(piano.C5)
-s1 = seq("C D E C")
-play(s1)
-play(s1,s1)
-s2 = seq("E F 2G")
-play(s2)
-play(s1,s1,s2,s2)
-s3 = seq("8G 8A 8G 8F E C")
-play(s3)
-s4 = seq("2C 2G3 2C")
-play(s4)
-play(s1,s1,s2,s2,s3,s3,s4,s4)
-s5 = join(s1,s1,s2,s2,s3,s3,s4,s4)
-s1 = seq("C D E C")
-s2 = seq("E F 2G")
-s3 = seq("8G 8A 8G 8F E C")
-s4 = seq("2C 2G3 2C")
-s5 = join(s1,s1,s2,s2,s3,s3,s4,s4)
-play(s5)
-s5
+play (c)
+c.S()
+c = note("C4").Chord()
+c = c.Octaved(2)
+play(c)
+c = c.Octaved(-3)
+play(c)
+play(c,c)
+
+c = note("C4").Chord()
+c = c.Octaved(1)
+c = note("C4").Chord()
+d = c.Octaved(1)
+e = c.Octaved(2)
+play(c,d,e)
+n = piano.C5
+play(n)
+c = n.Chord()
+play(n)
+play(n,n)
+m = n.Pitched(1)
+play(m)
+o = n.Pitched(2)
+play(o)
+play(o,m,n,o,m)
 bpm(200)
-play(s5)
-s6=s5.Pitched(1)
+play(o,m,n,o,m)
+play(o,m,n,o,m,o,o,m,m,m,n)
+s = seq(`
+    C D E C 
+    E F 2G
+    E F 2G 
+    8G 8A 8G 8F E C 
+    8G 8A 8G 8F E C
+    2C 2G3 2C
+    2C 2G3 2C`
+"fdsaf
+fdsa"
+help\

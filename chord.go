@@ -9,6 +9,10 @@ type Chord struct {
 	inversion      int
 }
 
+func (c Chord) Storex() string {
+	return fmt.Sprintf("chord(%q)", c.start)
+}
+
 func (n Note) Chord(modifiers ...int) Chord {
 	zero := Chord{
 		minorOrMajor:   Major,

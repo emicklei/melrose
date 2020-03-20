@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/antonmedv/expr"
-	"github.com/emicklei/melrose"
 )
 
 var assignmentRegex = regexp.MustCompile(`^[a-z]+\[[0-9]+\]=.*$`)
@@ -52,13 +51,7 @@ func printValue(v interface{}) {
 }
 
 func eval(entry string) (interface{}, error) {
-	env := map[string]interface{}{
-		"note": evalNote,
-		"play": evalPlay,
-		"seq":  evalSeq,
-		"bpm":  evalBPM,
-		"join": evalJoin,
-	}
+	env := evalFunctions()
 	env["piano"] = pianoNotes
 	for k, v := range memory {
 		env[k] = v
@@ -68,46 +61,4 @@ func eval(entry string) (interface{}, error) {
 		return nil, err
 	}
 	return expr.Run(program, env)
-}
-
-func evalJoin(playables ...interface{}) interface{} {
-	joined := melrose.S("")
-	for _, p := range playables {
-		if s, ok := p.(melrose.Sequenceable); ok {
-			joined = joined.SequenceJoin(s.S())
-		}
-	}
-	return joined
-}
-
-func evalBPM(i int) int {
-	piano.BeatsPerMinute(float64(i))
-	return i
-}
-
-func evalSeq(s string) melrose.Sequence {
-	n, err := melrose.ParseSequence(s)
-	if err != nil {
-		printError(err)
-		return melrose.N("C").S()
-	}
-	return n
-}
-
-func evalNote(s string) melrose.Note {
-	n, err := melrose.ParseNote(s)
-	if err != nil {
-		printError(err)
-		return melrose.N("C")
-	}
-	return n
-}
-
-func evalPlay(playables ...interface{}) interface{} {
-	for _, p := range playables {
-		if s, ok := p.(melrose.Sequenceable); ok {
-			piano.Play(s.S())
-		}
-	}
-	return nil
 }

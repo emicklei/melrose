@@ -257,3 +257,10 @@ func TestFailedNewNote_BadAccidental(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestNote_Storex(t *testing.T) {
+	n, _ := NewNote("A", 4, 0.25, 1, false)
+	if got, want := n.Storex(), `note("A♯")`; got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+}

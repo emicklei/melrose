@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func printInfo(args ...interface{}) {
-	fmt.Println(append([]interface{}{"\033[1;31mINFO:\033[0m"}, args...)...)
+	fmt.Println(append([]interface{}{"\033[1;32mINFO:\033[0m"}, args...)...)
 }
 
 func printError(args ...interface{}) {
@@ -11,5 +11,5 @@ func printError(args ...interface{}) {
 }
 
 func printWarning(args ...interface{}) {
-	fmt.Println(append([]interface{}{"\033[1;31mWARNING:\033[0m"}, args...)...)
+	fmt.Println(append([]interface{}{"\033[1;33mWARNING:\033[0m"}, args...)...)
 }

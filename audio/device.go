@@ -45,7 +45,7 @@ func (d *Device) BeatsPerMinute(bpm float64) {
 }
 
 func (d *Device) Play(seq m.Sequence) {
-	fmt.Printf("𝄢 ")
+	fmt.Printf(" 𝄢 ")
 	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/d.bpm))) * time.Millisecond
 	for _, eachGroup := range seq.Notes {
 		if len(eachGroup) == 1 {

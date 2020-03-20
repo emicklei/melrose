@@ -23,6 +23,10 @@ type Note struct {
 	Dotted     bool    // if true then reported duration is increased by half
 }
 
+func (n Note) Storex() string {
+	return fmt.Sprintf("note(%q)", n.String())
+}
+
 // Constructors
 
 func C(modifiers ...int) Note {
