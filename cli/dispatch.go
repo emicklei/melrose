@@ -57,6 +57,7 @@ func eval(entry string) (interface{}, error) {
 		"play": evalPlay,
 		"seq":  evalSeq,
 		"bpm":  evalBPM,
+		"join": evalJoin,
 	}
 	env["piano"] = pianoNotes
 	for k, v := range memory {
@@ -67,6 +68,16 @@ func eval(entry string) (interface{}, error) {
 		return nil, err
 	}
 	return expr.Run(program, env)
+}
+
+func evalJoin(playables ...interface{}) interface{} {
+	joined := melrose.S("")
+	for _, p := range playables {
+		if s, ok := p.(melrose.Sequenceable); ok {
+			joined = joined.SequenceJoin(s.S())
+		}
+	}
+	return joined
 }
 
 func evalBPM(i int) int {

@@ -4,6 +4,7 @@ import "fmt"
 
 type Sequenceable interface {
 	S() Sequence
+	Storex() string
 }
 
 type Join struct {
@@ -13,6 +14,10 @@ type Join struct {
 
 func (j Join) String() string {
 	return fmt.Sprintf("(%v).Join(%v)", j.Left, j.Right)
+}
+
+func (j Join) Storex() string {
+	return fmt.Sprintf("join(%s,%s)", j.Left.Storex(), j.Right.Storex())
 }
 
 func (j Join) S() Sequence {

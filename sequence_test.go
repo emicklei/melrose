@@ -2,6 +2,7 @@ package melrose
 
 import (
 	"fmt"
+	"testing"
 )
 
 func ExampleSequenceParse() {
@@ -28,4 +29,11 @@ func ExampleSequenceParseGroups() {
 	// ½C♯ (⅛D♭ ⅛E♭ ½F♯)
 	// (C E) (D. F.) (E G)
 	// B♭ ⅛F ⅛D♭5 ⅛B♭5 ⅛F A♭ ⅛E♭ ⅛C5 ⅛A♭5 ⅛E♭
+}
+
+func TestSequence_Storex(t *testing.T) {
+	m, _ := ParseSequence("C (E G)")
+	if got, want := m.Storex(), `seq("C (E G)")`; got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
 }

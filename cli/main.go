@@ -42,9 +42,11 @@ func help() string {
 	c = note("C4").Chord()
 	play(v,v)
 	
-	:q
-	:v
-	:h
+	:q -- quit
+	:v -- show variables
+	:h -- show help
+	:s -- save memory to disk
+	:l -- load memory from disk
 `
 }
 
@@ -98,6 +100,10 @@ func loop(line *liner.State) {
 		// commands starting with : control the program itself
 		case ":q":
 			goto exit
+		case ":s":
+			saveMemoryToDisk()
+		case ":l":
+			loadMemoryFromDisk()
 		case ":v":
 			for k, v := range memory {
 				fmt.Printf("%s = (%T) %v\n", k, v, v)

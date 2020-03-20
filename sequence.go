@@ -2,6 +2,7 @@ package melrose
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 )
 
@@ -175,6 +176,11 @@ func (s Sequence) Reversed() Sequence {
 }
 
 // Conversion
+
+// Storex returns the command line expression that creates the receiver
+func (s Sequence) Storex() string {
+	return fmt.Sprintf("seq(%q)", s.String())
+}
 
 func (s Sequence) String() string {
 	return s.PrintString(PrintAsSpecified)
