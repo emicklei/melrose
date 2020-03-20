@@ -2,6 +2,8 @@ package main
 
 import "github.com/emicklei/melrose"
 
+var evalFuncMap = evalFunctions()
+
 func evalFunctions() map[string]interface{} {
 	eval := map[string]interface{}{}
 	eval["chord"] = func(note string) melrose.Chord {

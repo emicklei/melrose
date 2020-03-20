@@ -2,4 +2,5 @@ cli/.studio
 .idea
 cli/.melrose.history
 cli/.melrose.image
+cli/melrose.json
 cli/cli

@@ -105,9 +105,7 @@ func loop(line *liner.State) {
 		case ":l":
 			loadMemoryFromDisk()
 		case ":v":
-			for k, v := range memory {
-				fmt.Printf("%s = (%T) %v\n", k, v, v)
-			}
+			listVariables()
 		default:
 			if err := dispatch(entry); err != nil {
 				printError(err)

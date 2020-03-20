@@ -51,6 +51,8 @@ func printValue(v interface{}) {
 }
 
 func eval(entry string) (interface{}, error) {
+	// flatten multiline ; expr does not support multiline strings
+	entry = strings.Replace(entry, "\n", " ", -1)
 	env := evalFunctions()
 	env["piano"] = pianoNotes
 	for k, v := range memory {
