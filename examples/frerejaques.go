@@ -2,12 +2,11 @@ package main
 
 import (
 	m "github.com/emicklei/melrose"
-	"github.com/emicklei/melrose/audio"
+	"github.com/emicklei/melrose/audiolib"
 )
 
 func main() {
-	Audio := new(audio.Device)
-	Audio.Open()
+	Audio, _ := audiolib.Open()
 	Audio.BeatsPerMinute(160)
 	Audio.LoadSounds()
 	defer Audio.Close()
@@ -24,5 +23,5 @@ func main() {
 	go Audio.Play(s)
 
 	s2, _ := m.ParseNote("=")
-	Audio.Play(s2.Repeated(8).Join(s))
+	Audio.Play(s2.Repeated(8).Join(s).S())
 }

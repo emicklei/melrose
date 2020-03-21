@@ -1,4 +1,4 @@
-package audio
+package audiolib
 
 import (
 	"encoding/binary"
@@ -24,13 +24,17 @@ type Device struct {
 	bpm          float64
 }
 
-func (d *Device) Open() {
-	device := openal.OpenDevice(d.Name)
-	context := device.CreateContext()
+func Open() (*Device, error) {
+	device := new(Device)
+	device.Name = "melrose"
+	od := openal.OpenDevice(device.Name)
+	context := od.CreateContext()
 	context.Activate()
-	d.soundContext = context
-	d.waves = map[string]openal.Buffer{}
-	d.bpm = 120.0
+
+	device.soundContext = context
+	device.waves = map[string]openal.Buffer{}
+	device.bpm = 120.0
+	return device, nil
 }
 
 func (d *Device) Close() {
@@ -100,7 +104,7 @@ func (d *Device) LoadSounds() {
 			d.loadWavFile(fin)
 		}
 	}
-	fmt.Printf("loaded %d sound files\n", len(d.waves))
+	fmt.Printf("audiolib: loaded %d sound files\n", len(d.waves))
 }
 
 func (d *Device) loadWavFile(fileName string) {

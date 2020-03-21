@@ -2,14 +2,12 @@ package main
 
 import (
 	m "github.com/emicklei/melrose"
-	"github.com/emicklei/melrose/audio"
+	"github.com/emicklei/melrose/audiolib"
 )
 
-var Audio *audio.Device
-
 func main() {
-	Audio = new(audio.Device)
-	Audio.Open()
+	Audio, _ := audiolib.Open()
+	Audio.BeatsPerMinute(160)
 	Audio.LoadSounds()
 	defer Audio.Close()
 

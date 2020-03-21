@@ -12,17 +12,22 @@ import (
 	m "github.com/emicklei/melrose"
 )
 
+// https://github.com/hundredrabbits/Pilot/blob/master/desktop/sources/scripts/mixer.js
+// p.Send("1OSCsisq")
+// p.Send("reset")
+// p.Send("rosc")
+
 type Pilot struct {
 	conn    net.Conn
 	channel int
 }
 
-func Open() *Pilot {
+func Open() (*Pilot, error) {
 	conn, err := net.Dial("udp4", ":49161")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	return &Pilot{conn: conn, channel: 0}
+	return &Pilot{conn: conn, channel: 0}, nil
 }
 func (p *Pilot) Close() {
 	if p.conn != nil {

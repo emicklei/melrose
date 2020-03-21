@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -14,6 +15,34 @@ var memory = map[string]interface{}{}
 
 type Var struct {
 	Name string
+}
+
+func (v Var) Value() interface{} {
+	return memory[v.Name]
+}
+
+func (v Var) Storex() string {
+	return fmt.Sprintf(`var(%s)`, v.Name)
+}
+
+func (v Var) String() string {
+	return fmt.Sprintf(`%s:%T`, v.Name, v.Value())
+}
+
+func (v Var) S() melrose.Sequence {
+	if s, ok := v.Value().(melrose.Sequenceable); ok {
+		return s.S()
+	}
+	return melrose.Sequence{}
+}
+
+func variableNameFor(value interface{}) string {
+	for k, v := range memory {
+		if reflect.DeepEqual(value, v) {
+			return k
+		}
+	}
+	return "" // not found
 }
 
 func listVariables() {
@@ -53,8 +82,18 @@ func loadMemoryFromDisk() {
 		return
 	}
 
+	// if var is used and its value is not known we do a second pass. TODO workaround fix
+	secondsPass := map[string]string{}
 	// load into existing
 	for k, s := range storeMap {
+		v, err := eval(s)
+		if err != nil {
+			secondsPass[k] = s
+		} else {
+			memory[k] = v
+		}
+	}
+	for k, s := range secondsPass {
 		v, err := eval(s)
 		if err != nil {
 			printError(fmt.Sprintf("unable to eval:%s = %s", k, s))

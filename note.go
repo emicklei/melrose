@@ -208,6 +208,14 @@ func (n Note) ModifiedDuration(by float32) Note {
 	return nn
 }
 
+func (n Note) Repeated(howMany int) Sequence {
+	notes := []Note{}
+	for i := 0; i < howMany; i++ {
+		notes = append(notes, n)
+	}
+	return BuildSequence(notes)
+}
+
 // Conversion
 
 var noteRegexp = regexp.MustCompile("([½¼⅛1248]?)([CDEFGAB=])([#♯_♭]?)(\\.?)([0-9]?)")

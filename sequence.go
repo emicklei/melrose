@@ -18,15 +18,6 @@ func (s Sequence) Size() int {
 	return sum
 }
 
-// Append creates a new Sequence with Notes at the end.
-func (s Sequence) Append(notes ...Note) Sequence {
-	list := s.Notes
-	for _, each := range notes {
-		list = append(list, []Note{each})
-	}
-	return Sequence{list}
-}
-
 // SequenceJoin returns s + t
 func (s Sequence) SequenceJoin(t Sequence) Sequence {
 	return Sequence{append(s.Notes, t.Notes...)}
@@ -127,14 +118,6 @@ func (s Sequence) Octaved(howMuch int) Sequence {
 	return Sequence{groups}
 }
 
-// Inverted is for chord inversion
-func (s Sequence) Inverted(howMuch int) Sequence {
-	if len(s.Notes) == 0 {
-		return s
-	}
-	return s
-}
-
 func (s Sequence) RotatedBy(direction int, howMany int) Sequence {
 	if len(s.Notes) == 0 {
 		return s
@@ -156,12 +139,27 @@ func (s Sequence) Reverse() Reverse {
 	return Reverse{Target: s}
 }
 
-func (s Sequence) Join(seq Sequenceable) Sequenceable {
-	return Join{Left: s, Right: seq}
+func (s Sequence) Join(seqs ...Sequenceable) Join {
+	return Join{List: append([]Sequenceable{s}, seqs...)}
 }
 
 func (s Sequence) S() Sequence {
 	return s
+}
+
+func (s Sequence) Pitched(semitones int) Sequence {
+	if len(s.Notes) == 0 {
+		return s
+	}
+	groups := [][]Note{}
+	for _, group := range s.Notes {
+		changed := []Note{}
+		for _, each := range group {
+			changed = append(changed, each.Pitched(semitones))
+		}
+		groups = append(groups, changed)
+	}
+	return Sequence{groups}
 }
 
 func (s Sequence) Reversed() Sequence {

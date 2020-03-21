@@ -2,20 +2,17 @@ package main
 
 import (
 	m "github.com/emicklei/melrose"
-	"github.com/emicklei/melrose/audio"
+	"github.com/emicklei/melrose/audiolib"
 )
 
-var Audio *audio.Device
-
 func main() {
-	Audio = new(audio.Device)
-	Audio.Open()
+	Audio, _ := audiolib.Open()
+	Audio.BeatsPerMinute(160)
 	Audio.LoadSounds()
-	Audio.BeatsPerMinute(180)
 	defer Audio.Close()
 
-	left := newStreamer()
-	right := newStreamer()
+	left := newStreamer(Audio)
+	right := newStreamer(Audio)
 
 	note, _ := m.ParseNote("C1")
 	for i := 0; i < 40; i++ {
@@ -32,12 +29,12 @@ func (s *streamer) put(n m.Note) {
 	s.notes <- n
 }
 
-func newStreamer() *streamer {
+func newStreamer(a *audiolib.Device) *streamer {
 	s := new(streamer)
 	s.notes = make(chan m.Note)
 	go func() {
 		for {
-			Audio.Play((<-s.notes).S())
+			a.Play((<-s.notes).S())
 		}
 	}()
 	return s

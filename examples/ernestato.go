@@ -1,50 +1,48 @@
 package main
 
 import (
-	"github.com/emicklei/melrose/audio"
-	. "github.com/emicklei/melrose"
 	"time"
+
+	. "github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/audiolib"
 )
 
-
-
 func main() {
-	Audio := new(audio.Device)
-	Audio.Open()
+	Audio, _ := audiolib.Open()
 	Audio.BeatsPerMinute(160)
 	Audio.LoadSounds()
 	defer Audio.Close()
 
-		f2, _ := ParseSequence(`
+	f2, _ := ParseSequence(`
 			F#2 C#3 F#3 A3 C# F#`)
-		Audio.Play(f2.Repeated(2))
+	Audio.Play(f2.Repeated(2))
 
 	time.Sleep(1 * time.Second)
 
-		f3, _ := ParseSequence(`
+	f3, _ := ParseSequence(`
 			F#2 (A3 C# F#)
 			C#3 (A3 C# F#)
 			F#3 (A3 C# F#)
 			C#3 (A3 C# F#)`)
-		Audio.Play(f3.Repeated(2))
+	Audio.Play(f3.Repeated(2))
 
-		time.Sleep(1 * time.Second)
+	time.Sleep(1 * time.Second)
 
-		f4, _ := ParseSequence(`
+	f4, _ := ParseSequence(`
 			2F#2 (A3 C# F#) (A3 C# F#)
 			2C#3 (A3 C# F#) (A3 C# F#)
 			2F#3 (A3 C# F#) (A3 C# F#)
 			2C#3 (A3 C# F#) (A3 C# F#)`)
-		Audio.Play(f4.Repeated(2))
+	Audio.Play(f4.Repeated(2))
 
-		time.Sleep(1 * time.Second)
+	time.Sleep(1 * time.Second)
 
-		f5, _ := ParseSequence(`
+	f5, _ := ParseSequence(`
 			G2 (B3 D G)
 			D3 (B3 D G)
 			G3 (B3 D G)
 			D3 (B3 D G)`)
-		Audio.Play(f5.Repeated(2))
+	Audio.Play(f5.Repeated(2))
 
 	time.Sleep(1 * time.Second)
 
@@ -52,5 +50,5 @@ func main() {
 	g2 := N("G2").S()
 	d3 := N("D3").S()
 	g3 := N("G3").S()
-	Audio.Play(g2.Join(b3dg).Join(d3).Join(b3dg).Join(g3).Join(b3dg))
+	Audio.Play(g2.Join(b3dg, d3, b3dg, g3, b3dg).S())
 }

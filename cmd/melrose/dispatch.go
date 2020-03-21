@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/antonmedv/expr"
+	"github.com/emicklei/melrose"
 )
 
 var assignmentRegex = regexp.MustCompile(`^[a-z]+\[[0-9]+\]=.*$`)
@@ -29,6 +30,7 @@ func dispatch(entry string) error {
 		if err != nil {
 			return err
 		}
+		// TODO check that we do not use a function name as variable
 		memory[variable] = r
 		printValue(r)
 		return nil
@@ -47,14 +49,21 @@ func printValue(v interface{}) {
 		fmt.Println()
 		return
 	}
-	fmt.Printf("(%T) %v\n", v, v)
+	if s, ok := v.(melrose.Storable); ok {
+		fmt.Printf("(%T) %s\n", v, s.Storex())
+	} else {
+		fmt.Printf("(%T) %v\n", v, v)
+	}
 }
 
 func eval(entry string) (interface{}, error) {
 	// flatten multiline ; expr does not support multiline strings
 	entry = strings.Replace(entry, "\n", " ", -1)
-	env := evalFunctions()
-	env["piano"] = pianoNotes
+
+	env := map[string]interface{}{}
+	for k, f := range evalFunctions() {
+		env[k] = f.Func
+	}
 	for k, v := range memory {
 		env[k] = v
 	}

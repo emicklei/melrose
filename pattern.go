@@ -4,10 +4,6 @@ import (
 	"fmt"
 )
 
-type Transformer interface {
-	Transform(Sequence) Sequence
-}
-
 type PitchBy struct {
 	Semitones int
 }
