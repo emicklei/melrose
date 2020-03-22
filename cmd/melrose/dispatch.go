@@ -9,7 +9,7 @@ import (
 	"github.com/emicklei/melrose"
 )
 
-var assignmentRegex = regexp.MustCompile(`^[a-z]+\[[0-9]+\]=.*$`)
+var assignmentRegex = regexp.MustCompile(`^([a-z]+\[[0-9]+\])=.*$`)
 
 func dispatch(entry string) error {
 	if len(entry) == 0 {

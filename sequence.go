@@ -177,7 +177,7 @@ func (s Sequence) Reversed() Sequence {
 
 // Storex returns the command line expression that creates the receiver
 func (s Sequence) Storex() string {
-	return fmt.Sprintf("seq(%q)", s.String())
+	return fmt.Sprintf("seq('%s')", s.String())
 }
 
 func (s Sequence) String() string {

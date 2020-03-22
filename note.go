@@ -16,7 +16,7 @@ import (
 //		r     = quarter rest
 // http://en.wikipedia.org/wiki/Musical_Note
 type Note struct {
-	Name       string  // {C D E F G A B =}
+	Name       string  // {C D E F G A B = }
 	Octave     int     // [0 .. 9]
 	duration   float32 // {0.125,0.25,0.5,1}
 	Accidental int     // -1 Flat, +1 Sharp, 0 Normal

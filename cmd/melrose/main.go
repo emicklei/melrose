@@ -11,8 +11,7 @@ import (
 )
 
 var (
-	deviceID = flag.String("d", "midi", "set the audio device")
-	verbose  = flag.Bool("v", false, "verbose logging")
+	verbose = flag.Bool("v", false, "verbose logging")
 
 	history       = ".melrose.history"
 	currentDevice melrose.AudioDevice
@@ -23,7 +22,7 @@ func main() {
 	flag.Parse()
 
 	// set audio
-	currentDevice = setupAudio(*deviceID)
+	currentDevice = setupAudio("midi")
 	defer currentDevice.Close()
 
 	// start REPL
