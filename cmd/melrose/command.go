@@ -18,11 +18,9 @@ type Command struct {
 func cmdFunctions() map[string]Command {
 	cmds := map[string]Command{}
 	cmds[":h"] = Command{Description: "show help on commands and functions", Func: showHelp}
-	cmds[":s"] = Command{Description: "save memory to disk", Func: saveMemoryToDisk}
-	cmds[":l"] = Command{Description: "load memory from disk", Func: loadMemoryFromDisk}
-	cmds[":v"] = Command{Description: "show variables", Func: listVariables}
-	cmds[":d"] = Command{Description: "switch audio device", Func: listVariables}
-	cmds[":x"] = Command{Description: "show examples", Func: listVariables}
+	cmds[":s"] = Command{Description: "save memory to disk", Func: varStore.saveMemoryToDisk}
+	cmds[":l"] = Command{Description: "load memory from disk", Func: varStore.loadMemoryFromDisk}
+	cmds[":v"] = Command{Description: "show variables", Func: varStore.listVariables}
 	cmds[":q"] = Command{Description: "quit"}
 	return cmds
 }

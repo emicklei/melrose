@@ -16,7 +16,7 @@ func dispatch(entry string) error {
 		fmt.Println()
 		return nil
 	}
-	if value, ok := memory[entry]; ok {
+	if value, ok := varStore.Get(entry); ok {
 		printValue(value)
 		return nil
 	}
@@ -31,7 +31,7 @@ func dispatch(entry string) error {
 			return err
 		}
 		// TODO check that we do not use a function name as variable
-		memory[variable] = r
+		varStore.Put(variable, r)
 		printValue(r)
 		return nil
 	}
@@ -64,7 +64,7 @@ func eval(entry string) (interface{}, error) {
 	for k, f := range evalFunctions() {
 		env[k] = f.Func
 	}
-	for k, v := range memory {
+	for k, v := range varStore.Variables() {
 		env[k] = v
 	}
 	program, err := expr.Compile(entry, expr.Env(env))

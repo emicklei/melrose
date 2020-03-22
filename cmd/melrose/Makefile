@@ -1,2 +1,2 @@
 run:
-	go install && melrose -d midi
+	go install && melrose

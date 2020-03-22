@@ -82,6 +82,8 @@ func evalFunctions() map[string]Function {
 			for _, p := range playables {
 				if s, ok := p.(melrose.Sequenceable); ok {
 					currentDevice.Play(s.S())
+				} else {
+					printWarning(fmt.Sprintf("cannot play (%T) %v", p, p))
 				}
 			}
 			return nil
@@ -90,13 +92,13 @@ func evalFunctions() map[string]Function {
 	eval["var"] = Function{
 		Description: "create a reference to a known variable",
 		Sample:      `var(v1)`,
-		Func: func(value interface{}) Var {
-			varName := variableNameFor(value)
+		Func: func(value interface{}) Variable {
+			varName := varStore.NameFor(value)
 			if len(varName) == 0 {
 				printWarning("no variable found with this Musical Object")
-				return Var{Name: "?"}
+				return Variable{Name: "?", store: varStore}
 			}
-			return Var{Name: varName}
+			return Variable{Name: varName, store: varStore}
 		}}
 	return eval
 }

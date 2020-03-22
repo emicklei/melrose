@@ -153,13 +153,6 @@ func (n Note) Flat() Note {
 	return nn
 }
 
-// Pitched creates a new Note with a pitch by a (positive or negative) number of semi tones
-func (n Note) Pitched(howManySemitones int) Note {
-	simple := MIDItoNote(n.MIDI() + howManySemitones)
-	nn, _ := NewNote(simple.Name, simple.Octave, n.duration, simple.Accidental, n.Dotted)
-	return nn
-}
-
 // Major returns the note left or right on the Major Scale by an offset
 func (n Note) Major(offset int) Note {
 	// C=0
@@ -169,11 +162,6 @@ func (n Note) Major(offset int) Note {
 	majors := offset % 7
 	scales := offset / 7
 	return n.Pitched(-nameOffset).Octaved(scales).Pitched(noteMidiOffsets[majors])
-}
-
-func (n Note) Octaved(howmuch int) Note {
-	nn, _ := NewNote(n.Name, n.Octave+howmuch, n.duration, n.Accidental, n.Dotted)
-	return nn
 }
 
 // Duration
@@ -206,14 +194,6 @@ func (n Note) Dot() Note {
 func (n Note) ModifiedDuration(by float32) Note {
 	nn, _ := NewNote(n.Name, n.Octave, n.duration+by, n.Accidental, n.Dotted)
 	return nn
-}
-
-func (n Note) Repeated(howMany int) Sequence {
-	notes := []Note{}
-	for i := 0; i < howMany; i++ {
-		notes = append(notes, n)
-	}
-	return BuildSequence(notes)
 }
 
 // Conversion
@@ -331,33 +311,17 @@ func (n Note) durationf(encoded bool) string {
 	return ""
 }
 
-func (n Note) EncodeOn(buf *bytes.Buffer, sharpOrFlatKey int) {
-	buf.WriteString(n.durationf(true))
-	buf.WriteString(n.Name)
-	if !n.IsRest() {
-		if n.Accidental != 0 {
-			buf.WriteString(n.accidentalf(true))
-		}
-		if n.Dotted {
-			buf.WriteString(".")
-		}
-		if n.Octave != 4 {
-			buf.WriteString(fmt.Sprintf("%d", n.Octave))
-		}
-	}
-}
-
 func (n Note) String() string {
 	return n.PrintString(PrintAsSpecified)
 }
 
 func (n Note) PrintString(sharpOrFlatKey int) string {
 	var buf bytes.Buffer
-	n.PrintOn(&buf, sharpOrFlatKey)
+	n.printOn(&buf, sharpOrFlatKey)
 	return buf.String()
 }
 
-func (n Note) PrintOn(buf *bytes.Buffer, sharpOrFlatKey int) {
+func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 	if n.duration != 0.25 {
 		buf.WriteString(n.durationf(false))
 	}

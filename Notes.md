@@ -2,9 +2,6 @@
 [http://code.google.com/p/portaudio-go]()
 [http://mudcu.be/midi-js/]()
 
-  gocov test bitbucket.org/emicklei/musigo/midi | gocov-html > cov.html    
-
-  gocov test bitbucket.org/emicklei/musigo | gocov-html > cov.html    
 
 Patterns:
 - change Pitch
@@ -62,3 +59,8 @@ Piano rolls
 http://www.oliphaunts.com/pianoroll-js/
 
 http://bitterspring.net/ms/morningstar/
+
+### Similar projects
+
+- http://daveyarwood.github.io/alda/2015/09/05/alda-a-manifesto-and-gentle-introduction/
+- http://www.lilypond.org/

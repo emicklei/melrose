@@ -26,6 +26,11 @@ func (s Scale) Modified(modifiers ...int) Scale {
 	return modified
 }
 
+func (s Scale) Storex() string {
+	// TODO handle minor major
+	return s.start.Storex() + ".Scale()"
+}
+
 func (s Scale) S() Sequence {
 	notes := []Note{s.start}
 	var semitones []int

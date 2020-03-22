@@ -8,25 +8,24 @@
 
 | Notation | Alternative | Description 
 |----------|-------|-------------
-| C4       | ¼C,C  | quarter C octave 4 
-| 2E5      | ½E5   | Halftone (2 x ¼) E octave 5
-| 1C       |       | Full tone () octave 4
-| F#       | F♯    | F sharp
+| C4       | ¼C,C,c  | quarter C octave 4 
+| 2E5      | ½E5,½e5 | Halftone (2 x ¼) E octave 5
+| 1C       |        | Full tone C octave 4
+| F#       | F♯,f♯  | F sharp
 | G_       | G♭    | G flat
 | G.       | G.    | duration x 1.5 
 | =        | =     | quarter rest
+| 2=       | ½=    | half rest
+| 1=       | 1=    | full rest
+
 
 ## Sequence notation
 
 | Notation    | Description 
 |-------------|---
-| C D E F     | 4 quarter tones
-| (C E) (D F) | 2 doublets
+| C D E F       | 4 quarter tones
+| (C E) (d5 f5) | 2 doublets
 
-### Similar projects
-
-- http://daveyarwood.github.io/alda/2015/09/05/alda-a-manifesto-and-gentle-introduction/
-- http://www.lilypond.org/
 
 Software is licensed under [Apache 2.0 license](LICENSE).
 (c) 2014-2020 http://ernestmicklei.com 

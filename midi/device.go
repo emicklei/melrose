@@ -1,6 +1,7 @@
 package midi
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"sync"
@@ -79,6 +80,9 @@ func Open() (*Midi, error) {
 	m.enabled = false
 	portmidi.Initialize()
 	deviceID := portmidi.DefaultOutputDeviceID()
+	if deviceID == -1 {
+		return nil, errors.New("no default output device available")
+	}
 	out, err := portmidi.NewOutputStream(deviceID, 1024, 0)
 	if err != nil {
 		return nil, err
