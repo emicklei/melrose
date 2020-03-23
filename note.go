@@ -24,7 +24,7 @@ type Note struct {
 }
 
 func (n Note) Storex() string {
-	return fmt.Sprintf("note(%q)", n.String())
+	return fmt.Sprintf("note('%s')", n.String())
 }
 
 // Constructors

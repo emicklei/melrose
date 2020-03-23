@@ -28,11 +28,10 @@ func (m *Midi) Play(seq melrose.Sequence) {
 		fmt.Println(" 𝄢 disabled")
 		return
 	}
-	fmt.Printf(" 𝄢 ")
 	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/m.bpm))) * time.Millisecond
 	for _, eachGroup := range seq.Notes {
 		if len(eachGroup) == 1 {
-			fmt.Printf("%v ", eachGroup[0])
+			print(eachGroup[0])
 		} else {
 			fmt.Printf("%v ", eachGroup)
 		}
@@ -71,8 +70,12 @@ func (m *Midi) PlayNote(note melrose.Note, wholeNoteDuration time.Duration) {
 }
 
 // BeatsPerMinute (BPM) ; beats each the length of a quarter note per minute.
-func (m *Midi) BeatsPerMinute(bpm float64) {
+func (m *Midi) SetBeatsPerMinute(bpm float64) {
 	m.bpm = bpm
+}
+
+func (m *Midi) BeatsPerMinute() float64 {
+	return m.bpm
 }
 
 func Open() (*Midi, error) {
@@ -100,4 +103,9 @@ func (m *Midi) Close() {
 		m.stream.Close()
 	}
 	portmidi.Terminate()
+}
+
+// 34 = purple
+func print(arg interface{}) {
+	fmt.Printf("\033[2;34m" + fmt.Sprintf("%v ", arg) + "\033[0m")
 }

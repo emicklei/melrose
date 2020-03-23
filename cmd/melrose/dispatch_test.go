@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestMultiLineEval(t *testing.T) {
 	input := `seq("
@@ -17,5 +19,45 @@ func TestMultiLineEval(t *testing.T) {
 	_, err := eval(input)
 	if err != nil {
 		t.Error(err)
+	}
+}
+
+func Test_isAssignment(t *testing.T) {
+	type args struct {
+		entry string
+	}
+	tests := []struct {
+		name           string
+		args           args
+		wantVarname    string
+		wantExpression string
+		wantOk         bool
+	}{
+		{"a=1",
+			args{"a=1"},
+			"a",
+			"1",
+			true,
+		},
+		{" a = note('=')",
+			args{" a = note('=')"},
+			"a",
+			"note('=')",
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotVarname, gotExpression, gotOk := isAssignment(tt.args.entry)
+			if gotVarname != tt.wantVarname {
+				t.Errorf("isAssignment() gotVarname = %v, want %v", gotVarname, tt.wantVarname)
+			}
+			if gotExpression != tt.wantExpression {
+				t.Errorf("isAssignment() gotExpression = %v, want %v", gotExpression, tt.wantExpression)
+			}
+			if gotOk != tt.wantOk {
+				t.Errorf("isAssignment() gotOk = %v, want %v", gotOk, tt.wantOk)
+			}
+		})
 	}
 }

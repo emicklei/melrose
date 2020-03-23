@@ -12,7 +12,18 @@ var cmdFuncMap = cmdFunctions()
 
 type Command struct {
 	Description string
-	Func        func()
+	Func        func(entry string)
+}
+
+func lookupCommand(entry string) (Command, bool) {
+	tokens := strings.Split(entry, " ")
+	if len(tokens) == 0 {
+		return Command{}, false
+	}
+	if cmd, ok := cmdFuncMap[tokens[0]]; ok {
+		return cmd, true
+	}
+	return Command{}, false
 }
 
 func cmdFunctions() map[string]Command {
@@ -25,7 +36,7 @@ func cmdFunctions() map[string]Command {
 	return cmds
 }
 
-func showHelp() {
+func showHelp(entry string) {
 	var b bytes.Buffer
 	io.WriteString(&b, "\n")
 	{

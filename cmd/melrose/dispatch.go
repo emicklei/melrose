@@ -9,8 +9,6 @@ import (
 	"github.com/emicklei/melrose"
 )
 
-var assignmentRegex = regexp.MustCompile(`^([a-z]+\[[0-9]+\])=.*$`)
-
 func dispatch(entry string) error {
 	if len(entry) == 0 {
 		fmt.Println()
@@ -20,12 +18,7 @@ func dispatch(entry string) error {
 		printValue(value)
 		return nil
 	}
-	// is assignment?
-	// TODO not correct
-	if strings.Contains(entry, "=") {
-		parts := strings.Split(entry, "=")
-		variable := strings.TrimSpace(parts[0])
-		expression := parts[1]
+	if variable, expression, ok := isAssignment(entry); ok {
 		r, err := eval(expression)
 		if err != nil {
 			return err
@@ -50,9 +43,9 @@ func printValue(v interface{}) {
 		return
 	}
 	if s, ok := v.(melrose.Storable); ok {
-		fmt.Printf("(%T) %s\n", v, s.Storex())
+		fmt.Printf("%s\n", s.Storex())
 	} else {
-		fmt.Printf("(%T) %v\n", v, v)
+		fmt.Printf("%v\n", v)
 	}
 }
 
@@ -72,4 +65,20 @@ func eval(entry string) (interface{}, error) {
 		return nil, err
 	}
 	return expr.Run(program, env)
+}
+
+// https://regex101.com/
+var assignmentRegex = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)$`)
+
+// [ ]a[]=[]note('c')
+func isAssignment(entry string) (varname string, expression string, ok bool) {
+	sanitized := strings.TrimSpace(entry)
+	res := assignmentRegex.FindAllStringSubmatch(sanitized, -1)
+	if len(res) != 1 {
+		return "", "", false
+	}
+	if len(res[0]) != 3 {
+		return "", "", false
+	}
+	return res[0][1], res[0][2], true
 }

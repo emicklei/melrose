@@ -19,3 +19,10 @@ func (n Note) Octaved(howmuch int) Note {
 	nn, _ := NewNote(n.Name, n.Octave+howmuch, n.duration, n.Accidental, n.Dotted)
 	return nn
 }
+
+func (n Note) Join(s Sequenceable) Sequenceable {
+	return Join{
+ 		List: []Sequenceable{n,s},
+	}
+ }
+

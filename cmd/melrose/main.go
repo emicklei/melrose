@@ -34,7 +34,7 @@ func main() {
 }
 
 func welcome() {
-	fmt.Println("\033[1;34mmelrose\033[0m" + " - v0.0.1")
+	fmt.Println("\033[1;34mmelrose\033[0m" + " - v0.1")
 }
 
 var functionNames = []string{"play"}
@@ -46,7 +46,7 @@ func tearDown(line *liner.State) {
 		line.WriteHistory(f)
 		f.Close()
 	}
-	fmt.Println("\033[1;34mmelrose\033[0m" + " says bye!")
+	fmt.Println("\033[1;34mmelrose\033[0m" + " sings bye!")
 }
 
 func setup(line *liner.State) {
@@ -70,8 +70,8 @@ func loop(line *liner.State) {
 			if entry == ":q" {
 				goto exit
 			}
-			if cmd, ok := cmdFuncMap[entry]; ok {
-				cmd.Func()
+			if cmd, ok := lookupCommand(entry); ok {
+				cmd.Func(entry)
 				continue
 			}
 		}

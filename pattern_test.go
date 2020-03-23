@@ -5,25 +5,6 @@ import (
 	"fmt"
 )
 
-func ExampleStretchBy() {
-	s, _ := ParseSequence("C D E F")
-	s = StretchBy{2}.Transform(s)
-	fmt.Println(s)
-	// Output:
-	// ½C ½D ½E ½F
-}
-
-func ExamplePitchBy() {
-	s, _ := ParseSequence("C D E F")
-	s = PitchBy{2}.Transform(s)
-	t := PitchBy{-4}.Transform(s)
-	fmt.Println(s)
-	fmt.Println(t)
-	// Output:
-	// D E G♭ G
-	// B♭3 C D E♭
-}
-
 func ExampleGroupBy() {
 	s, _ := ParseSequence("C D E F")
 	s = GroupBy{[]int{2, 2}}.Transform(s)
@@ -39,15 +20,15 @@ func ExampleGroupBy() {
 
 func ExampleRotateBy() {
 	s, _ := ParseSequence("C D E F")
-	s = RotateBy{Left, 1}.Transform(s)
+	s = s.RotatedBy(-1)
 	fmt.Println(s)
 
 	t, _ := ParseSequence("C D E F G A B")
-	t = RotateBy{Right, 3}.Transform(t)
+	t = t.RotatedBy(3)
 	fmt.Println(t)
 
 	u, _ := ParseSequence("C (D E F) G A B")
-	u = RotateBy{Right, 2}.Transform(u)
+	u = u.RotatedBy(2)
 	fmt.Println(u)
 	// Output:
 	// D E F C

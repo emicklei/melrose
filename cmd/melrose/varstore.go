@@ -6,8 +6,10 @@ import (
 	"os"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/emicklei/melrose"
 )
@@ -87,7 +89,7 @@ func (v *VariableStore) Variables() map[string]interface{} {
 	return copy
 }
 
-func (v *VariableStore) listVariables() {
+func (v *VariableStore) listVariables(entry string) {
 	v.mutex.RLock()
 	defer v.mutex.RUnlock()
 	keys := []string{}
@@ -109,9 +111,15 @@ func (v *VariableStore) listVariables() {
 	}
 }
 
+type Snapshot struct {
+	Created       time.Time         `json:"created"`
+	Variables     map[string]string `json:"variables"`
+	Configuration map[string]string `json:"configuration"`
+}
+
 const defaultStorageFilename = "melrose.json"
 
-func (s *VariableStore) loadMemoryFromDisk() {
+func (s *VariableStore) loadMemoryFromDisk(entry string) {
 	f, err := os.Open(defaultStorageFilename)
 	if err != nil {
 		printError(fmt.Sprintf("unable to load:%v", err))
@@ -119,9 +127,9 @@ func (s *VariableStore) loadMemoryFromDisk() {
 	}
 	defer f.Close()
 
-	storeMap := map[string]string{}
+	snap := Snapshot{}
 	dec := json.NewDecoder(f)
-	if err := dec.Decode(&storeMap); err != nil {
+	if err := dec.Decode(&snap); err != nil {
 		printError(err)
 		return
 	}
@@ -129,7 +137,7 @@ func (s *VariableStore) loadMemoryFromDisk() {
 	// if var is used and its value is not known we do a second pass. TODO workaround fix
 	secondsPass := map[string]string{}
 	// load into existing
-	for k, storex := range storeMap {
+	for k, storex := range snap.Variables {
 		v, err := eval(storex)
 		if err != nil {
 			secondsPass[k] = storex
@@ -145,10 +153,20 @@ func (s *VariableStore) loadMemoryFromDisk() {
 			s.Put(k, v)
 		}
 	}
-	printInfo(fmt.Sprintf("loaded %d variables. use \":v\" to list them", len(storeMap)))
+	// handle configuration
+	if v, ok := snap.Configuration["bpm"]; ok {
+		f, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			printError("invalid value for bpm (beat-per-minute):", v)
+		} else {
+			currentDevice.SetBeatsPerMinute(f)
+		}
+	}
+
+	printInfo(fmt.Sprintf("loaded %d variables. use \":v\" to list them", len(snap.Variables)))
 }
 
-func (s *VariableStore) saveMemoryToDisk() {
+func (s *VariableStore) saveMemoryToDisk(entry string) {
 	f, err := os.Create(defaultStorageFilename)
 	if err != nil {
 		printError(fmt.Sprintf("unable to save:%v", err))
@@ -166,9 +184,17 @@ func (s *VariableStore) saveMemoryToDisk() {
 		}
 	}
 
+	snap := Snapshot{
+		Created:   time.Now(),
+		Variables: storeMap,
+		Configuration: map[string]string{
+			"bpm": fmt.Sprintf("%v", currentDevice.BeatsPerMinute()),
+		},
+	}
+
 	enc := json.NewEncoder(f)
 	enc.SetIndent("", "\t")
-	if err := enc.Encode(storeMap); err != nil {
+	if err := enc.Encode(snap); err != nil {
 		printError(err)
 		return
 	}

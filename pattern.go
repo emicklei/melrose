@@ -4,26 +4,6 @@ import (
 	"fmt"
 )
 
-type PitchBy struct {
-	Semitones int
-}
-
-func (p PitchBy) Transform(seq Sequence) Sequence {
-	return seq.NotesCollect(func(n Note) Note {
-		return n.Pitched(p.Semitones)
-	})
-}
-
-type StretchBy struct {
-	factor int
-}
-
-func (s StretchBy) Transform(seq Sequence) Sequence {
-	return seq.NotesCollect(func(n Note) Note {
-		return n.Half()
-	})
-}
-
 type GroupBy struct {
 	sizes []int
 }
@@ -58,13 +38,4 @@ func (g GroupBy) Transform(seq Sequence) Sequence {
 	})
 	notes = append(notes, group)
 	return Sequence{notes}
-}
-
-type RotateBy struct {
-	Direction int
-	HowMany   int
-}
-
-func (r RotateBy) Transform(seq Sequence) Sequence {
-	return seq.RotatedBy(r.Direction, r.HowMany)
 }

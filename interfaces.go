@@ -15,6 +15,7 @@ type Storable interface {
 
 type AudioDevice interface {
 	Play(s Sequence)
-	BeatsPerMinute(bpm float64)
+	SetBeatsPerMinute(bpm float64)
+	BeatsPerMinute() float64
 	Close()
 }

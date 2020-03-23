@@ -56,9 +56,14 @@ func (s Sequence) Octaved(howMuch int) Sequence {
 	return Sequence{groups}
 }
 
-func (s Sequence) RotatedBy(direction int, howMany int) Sequence {
+func (s Sequence) RotatedBy(howMany int) Sequence {
 	if len(s.Notes) == 0 {
 		return s
+	}
+	direction := Right
+	if howMany < 0 {
+		direction = Left
+		howMany = -howMany
 	}
 	groups := s.Notes
 	for c := 0; c < howMany; c++ {

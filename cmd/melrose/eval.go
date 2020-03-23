@@ -28,9 +28,45 @@ func evalFunctions() map[string]Function {
 			return n.Chord()
 		}}
 
+	eval["pitch"] = Function{
+		Description: "change the pitch with a delta of semitones",
+		Sample:      `pitch(1,?)`,
+		Func: func(semitones int, m interface{}) interface{} {
+			s, ok := m.(melrose.Sequenceable)
+			if !ok {
+				printWarning(fmt.Sprintf("cannot pitch (%T) %v", m, m))
+				return m
+			}
+			return melrose.Pitch{Target: s, Semitones: semitones}
+		}}
+
+	eval["reverse"] = Function{
+		Description: "reverse the (groups of) notes in a sequence",
+		Sample:      `reverse(?)`,
+		Func: func(m interface{}) interface{} {
+			s, ok := m.(melrose.Sequenceable)
+			if !ok {
+				printWarning(fmt.Sprintf("cannot reverse (%T) %v", m, m))
+				return m
+			}
+			return melrose.Reverse{Target: s}
+		}}
+
+	eval["repeat"] = Function{
+		Description: "repeat the musical object a number of times",
+		Sample:      `repeat(2,?)`,
+		Func: func(howMany int, m interface{}) interface{} {
+			s, ok := m.(melrose.Sequenceable)
+			if !ok {
+				printWarning(fmt.Sprintf("cannot repeat (%T) %v", m, m))
+				return m
+			}
+			return melrose.Repeat{Target: s, Times: howMany}
+		}}
+
 	eval["join"] = Function{
-		Description: "join two or more Musical objects",
-		Sample:      `join()`,
+		Description: "join two or more musical objects",
+		Sample:      `join(?,?)`,
 		Func: func(playables ...interface{}) interface{} {
 			joined := []melrose.Sequenceable{}
 			for _, p := range playables {
@@ -46,9 +82,9 @@ func evalFunctions() map[string]Function {
 	eval["bpm"] = Function{
 		Description: "set the Beats Per Minute value [1..300], default is 120",
 		Sample:      `bpm(180)`,
-		Func: func(i int) int {
-			currentDevice.BeatsPerMinute(float64(i))
-			return i
+		Func: func(f float64) float64 {
+			currentDevice.SetBeatsPerMinute(f)
+			return f
 		}}
 
 	eval["seq"] = Function{
@@ -76,7 +112,7 @@ func evalFunctions() map[string]Function {
 		}}
 
 	eval["play"] = Function{
-		Description: "play a Musical object such as Note,Chord,Sequence,...",
+		Description: "play a musical object such as Note,Chord,Sequence,...",
 		Sample:      `play()`,
 		Func: func(playables ...interface{}) interface{} {
 			for _, p := range playables {

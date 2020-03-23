@@ -13,3 +13,7 @@ func printError(args ...interface{}) {
 func printWarning(args ...interface{}) {
 	fmt.Println(append([]interface{}{"\033[1;33mwarning:\033[0m"}, args...)...)
 }
+
+func shortTypename(v interface{}) string {
+	return ""
+}

@@ -10,7 +10,7 @@ type Chord struct {
 }
 
 func (c Chord) Storex() string {
-	return fmt.Sprintf("chord(%q)", c.start)
+	return fmt.Sprintf("chord('%v')", c.start)
 }
 
 func (n Note) Chord(modifiers ...int) Chord {
