@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/emicklei/melrose"
 )
@@ -79,6 +78,12 @@ func (v *VariableStore) Put(key string, value interface{}) {
 	v.mutex.Unlock()
 }
 
+func (v *VariableStore) Delete(key string) {
+	v.mutex.Lock()
+	delete(v.variables, key)
+	v.mutex.Unlock()
+}
+
 func (v *VariableStore) Variables() map[string]interface{} {
 	v.mutex.RLock()
 	copy := map[string]interface{}{}
@@ -112,7 +117,6 @@ func (v *VariableStore) listVariables(entry string) {
 }
 
 type Snapshot struct {
-	Created       time.Time         `json:"created"`
 	Variables     map[string]string `json:"variables"`
 	Configuration map[string]string `json:"configuration"`
 }
@@ -185,7 +189,6 @@ func (s *VariableStore) saveMemoryToDisk(entry string) {
 	}
 
 	snap := Snapshot{
-		Created:   time.Now(),
 		Variables: storeMap,
 		Configuration: map[string]string{
 			"bpm": fmt.Sprintf("%v", currentDevice.BeatsPerMinute()),

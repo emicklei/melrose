@@ -136,5 +136,22 @@ func evalFunctions() map[string]Function {
 			}
 			return Variable{Name: varName, store: varStore}
 		}}
+
+	eval["del"] = Function{
+		Description: "delete a variable",
+		Sample:      `del(v1)`,
+		Func: func(value interface{}) interface{} {
+			varName := varStore.NameFor(value)
+			printInfo("deleted " + varName)
+			varStore.Delete(varName)
+			return value
+		}}
 	return eval
+}
+
+func evalPut(funcs map[string]Function, key string, alias string, f Function) {
+	funcs[key] = f
+	if len(alias) > 0 {
+		funcs[alias] = f
+	}
 }
