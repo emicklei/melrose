@@ -80,11 +80,14 @@ func evalFunctions() map[string]Function {
 		}}
 
 	eval["bpm"] = Function{
-		Description: "set the Beats Per Minute value [1..300], default is 120",
+		Description: "get or set the Beats Per Minute value [1..300], default is 120",
 		Sample:      `bpm(180)`,
-		Func: func(f float64) float64 {
-			currentDevice.SetBeatsPerMinute(f)
-			return f
+		Func: func(f ...float64) float64 {
+			if len(f) == 0 {
+				return currentDevice.BeatsPerMinute()
+			}
+			currentDevice.SetBeatsPerMinute(f[0])
+			return f[0]
 		}}
 
 	eval["seq"] = Function{
