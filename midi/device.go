@@ -34,7 +34,7 @@ func (m *Midi) Play(seq melrose.Sequence) {
 		if len(eachGroup) == 1 {
 			print(eachGroup[0])
 		} else {
-			fmt.Printf("%v ", eachGroup)
+			print(eachGroup)
 		}
 		wg := new(sync.WaitGroup)
 		for _, eachNote := range eachGroup {

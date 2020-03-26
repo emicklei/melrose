@@ -1,3 +1,45 @@
+# melrose live coding
+
+
+## language
+
+### variables
+
+Variable names must start with a non-digit character and can zero or more characters in `a-z A-Z _ 0-9`.
+
+### functions
+
+Functions create or augment musical objects. 
+Objects cannot be changed after creation.
+Each function returns a new object or an object wrapped in an operation.
+
+#### note
+
+## help
+
+    𝄞 :h
+    info:
+        bpm --- get or set the Beats Per Minute value [1..300], default is 120
+      chord --- create a triad Chord with a Note
+        del --- delete a variable
+       flat --- flat (ungroup) the groups of a variable
+       join --- join two or more musical objects
+       note --- create a Note from a string
+      pitch --- change the pitch with a delta of semitones
+       play --- play a musical object such as Note,Chord,Sequence,...
+     repeat --- repeat the musical object a number of times
+    reverse --- reverse the (groups of) notes in a sequence
+        seq --- create a Sequence from a string of notes
+        var --- create a reference to a known variable
+
+    :h --- show help on commands and functions
+    :l --- load memory from disk
+    :m --- show MIDI information
+    :q --- quit
+    :s --- save memory to disk
+    :v --- show variables
+
+
 Line Editing
 ------------
 

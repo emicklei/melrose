@@ -149,6 +149,19 @@ func evalFunctions() map[string]Function {
 			varStore.Delete(varName)
 			return value
 		}}
+
+	eval["flat"] = Function{
+		Description: "flat (ungroup) the groups of a variable",
+		Sample:      `flat(v1)`,
+		Func: func(value interface{}) interface{} {
+			if s, ok := value.(melrose.Sequenceable); ok {
+				return melrose.Ungroup{Target: s}
+			} else {
+				printWarning(fmt.Sprintf("cannot flat (%T) %v", value, value))
+				return value
+			}
+		}}
+
 	return eval
 }
 

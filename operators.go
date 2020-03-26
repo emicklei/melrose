@@ -84,3 +84,19 @@ func (r Rotate) S() Sequence {
 func (r Rotate) Storex() string {
 	return fmt.Sprintf("rotate(%d,%s)", r.Times, r.Target)
 }
+
+type Ungroup struct {
+	Target Sequenceable
+}
+
+func (a Ungroup) S() Sequence {
+	n := []Note{}
+	a.Target.S().NotesDo(func(each Note) {
+		n = append(n, each)
+	})
+	return BuildSequence(n)
+}
+
+func (a Ungroup) Storex() string {
+	return fmt.Sprintf("flat(%s)", a.Target)
+}
