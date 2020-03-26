@@ -39,9 +39,8 @@ func (p *Pilot) Close() {
 	}
 }
 
-func (p *Pilot) Play(seq melrose.Sequence) {
+func (p *Pilot) Play(seq melrose.Sequence, echo bool) {
 	if !p.enabled {
-		fmt.Println("pilot disabled")
 		return
 	}
 	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/p.bpm))) * time.Millisecond

@@ -14,7 +14,7 @@ func TestPlaySequence(t *testing.T) {
 	defer p.Close()
 	p.SetBeatsPerMinute(140)
 	s := melrose.MustParseSequence("C D E")
-	p.Play(s)
+	p.Play(s, true)
 	s2 := melrose.MustParseSequence("(C D E)")
-	p.Play(s2)
+	p.Play(s2, true)
 }

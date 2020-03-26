@@ -17,6 +17,7 @@ type Midi struct {
 	bpm      float64
 	mutex    *sync.Mutex
 	deviceID int
+	echo     bool
 }
 
 const (
@@ -24,17 +25,18 @@ const (
 	noteOff = 0x80
 )
 
-func (m *Midi) Play(seq melrose.Sequence) {
+func (m *Midi) Play(seq melrose.Sequence, echo bool) {
 	if !m.enabled {
-		fmt.Println(" 𝄢 disabled")
 		return
 	}
 	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/m.bpm))) * time.Millisecond
 	for _, eachGroup := range seq.Notes {
-		if len(eachGroup) == 1 {
-			print(eachGroup[0])
-		} else {
-			print(eachGroup)
+		if echo {
+			if len(eachGroup) == 1 {
+				print(eachGroup[0])
+			} else {
+				print(eachGroup)
+			}
 		}
 		wg := new(sync.WaitGroup)
 		for _, eachNote := range eachGroup {
@@ -46,7 +48,9 @@ func (m *Midi) Play(seq melrose.Sequence) {
 		}
 		wg.Wait()
 	}
-	fmt.Println()
+	if echo {
+		fmt.Println()
+	}
 }
 
 func (m *Midi) PlayNote(note melrose.Note, wholeNoteDuration time.Duration) {

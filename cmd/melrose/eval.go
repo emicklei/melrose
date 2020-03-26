@@ -120,9 +120,21 @@ func evalFunctions() map[string]Function {
 		Func: func(playables ...interface{}) interface{} {
 			for _, p := range playables {
 				if s, ok := p.(melrose.Sequenceable); ok {
-					currentDevice.Play(s.S())
+					currentDevice.Play(s.S(), true)
 				} else {
 					printWarning(fmt.Sprintf("cannot play (%T) %v", p, p))
+				}
+			}
+			return nil
+		}}
+
+	eval["go"] = Function{
+		Description: "play all musical objects in parallel",
+		Sample:      `go()`,
+		Func: func(playables ...interface{}) interface{} {
+			for _, p := range playables {
+				if s, ok := p.(melrose.Sequenceable); ok {
+					go currentDevice.Play(s.S(), false)
 				}
 			}
 			return nil

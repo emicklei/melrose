@@ -18,6 +18,14 @@ func (s Sequence) Size() int {
 	return sum
 }
 
+func (s Sequence) Length() int {
+	return len(s.Notes)
+}
+
+func (s Sequence) At(i int) []Note {
+	return s.Notes[i]
+}
+
 // SequenceJoin returns s + t
 func (s Sequence) SequenceJoin(t Sequence) Sequence {
 	return Sequence{append(s.Notes, t.Notes...)}

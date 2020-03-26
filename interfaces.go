@@ -15,7 +15,7 @@ type Storable interface {
 
 type AudioDevice interface {
 	PrintInfo()
-	Play(s Sequence)
+	Play(seq Sequence, echo bool)
 	SetBeatsPerMinute(bpm float64)
 	BeatsPerMinute() float64
 	Close()

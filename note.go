@@ -307,6 +307,8 @@ func (n Note) durationf(encoded bool) string {
 		} else {
 			return "½"
 		}
+	case 1.0:
+		return "1"
 	}
 	return ""
 }
