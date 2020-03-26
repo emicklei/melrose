@@ -32,8 +32,13 @@ func cmdFunctions() map[string]Command {
 	cmds[":s"] = Command{Description: "save memory to disk", Func: varStore.saveMemoryToDisk}
 	cmds[":l"] = Command{Description: "load memory from disk", Func: varStore.loadMemoryFromDisk}
 	cmds[":v"] = Command{Description: "show variables", Func: varStore.listVariables}
+	cmds[":m"] = Command{Description: "show MIDI information", Func: showDeviceInfo}
 	cmds[":q"] = Command{Description: "quit"}
 	return cmds
+}
+
+func showDeviceInfo(entry string) {
+	currentDevice.PrintInfo()
 }
 
 func showHelp(entry string) {

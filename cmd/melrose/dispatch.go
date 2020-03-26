@@ -33,6 +33,10 @@ func dispatch(entry string) error {
 	if err != nil {
 		return err
 	}
+	// if reflect.TypeOf(r).I
+	// 	printWarning(fmt.Sprintf("did you mean %s()?", entry))
+	// 	return nil
+	// }
 	printValue(r)
 	return nil
 }

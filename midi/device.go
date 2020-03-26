@@ -12,10 +12,11 @@ import (
 )
 
 type Midi struct {
-	enabled bool
-	stream  *portmidi.Stream
-	bpm     float64
-	mutex   *sync.Mutex
+	enabled  bool
+	stream   *portmidi.Stream
+	bpm      float64
+	mutex    *sync.Mutex
+	deviceID int
 }
 
 const (
@@ -71,11 +72,19 @@ func (m *Midi) PlayNote(note melrose.Note, wholeNoteDuration time.Duration) {
 
 // BeatsPerMinute (BPM) ; beats each the length of a quarter note per minute.
 func (m *Midi) SetBeatsPerMinute(bpm float64) {
+	if bpm <= 0 {
+		return
+	}
 	m.bpm = bpm
 }
 
 func (m *Midi) BeatsPerMinute() float64 {
 	return m.bpm
+}
+
+func (m *Midi) PrintInfo() {
+	fmt.Println("[midi] BPM:", m.bpm)
+	fmt.Println("[midi] devices:", portmidi.CountDevices())
 }
 
 func Open() (*Midi, error) {
