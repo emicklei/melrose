@@ -23,7 +23,7 @@ func dispatch(entry string) error {
 		if err != nil {
 			return err
 		}
-		er := r.(dsl.EvaluationResult)
+		er := r.(dsl.FunctionResult)
 		notify.Print(er.Notification)
 		// TODO check that we do not use a function name as variable
 		varStore.Put(variable, er.Result)
@@ -35,7 +35,7 @@ func dispatch(entry string) error {
 	if err != nil {
 		return err
 	}
-	if er, ok := r.(dsl.EvaluationResult); ok {
+	if er, ok := r.(dsl.FunctionResult); ok {
 		// info,warn,error
 		notify.Print(er.Notification)
 		// still can have a result

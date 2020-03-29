@@ -42,28 +42,34 @@ func (v Variable) S() melrose.Sequence {
 	return melrose.Sequence{}
 }
 
+// VariableStore is an in-memory storage of values by name.
+// Access to this store is go-routine safe.
 type VariableStore struct {
 	mutex     sync.RWMutex
 	variables map[string]interface{}
 }
 
+// NewVariableStore returns a new
 func NewVariableStore() *VariableStore {
 	return &VariableStore{
 		variables: map[string]interface{}{},
 	}
 }
 
+// NameFor finds the entry for a value and returns its (first) associated name
 func (v *VariableStore) NameFor(value interface{}) string {
 	v.mutex.RLock()
 	defer v.mutex.RUnlock()
 	for k, v := range v.variables {
 		if reflect.DeepEqual(value, v) {
+			// the first found
 			return k
 		}
 	}
 	return "" // not found
 }
 
+// Get returns a value found by the key. Inspect the second return value of presence.
 func (v *VariableStore) Get(key string) (interface{}, bool) {
 	v.mutex.RLock()
 	e, ok := v.variables[key]
@@ -71,18 +77,21 @@ func (v *VariableStore) Get(key string) (interface{}, bool) {
 	return e, ok
 }
 
+// Put stores a value by the key. Overwrites any existing value.
 func (v *VariableStore) Put(key string, value interface{}) {
 	v.mutex.Lock()
 	v.variables[key] = value
 	v.mutex.Unlock()
 }
 
+// Delete removes a stored value by the key. Ignores if the key is not found.
 func (v *VariableStore) Delete(key string) {
 	v.mutex.Lock()
 	delete(v.variables, key)
 	v.mutex.Unlock()
 }
 
+// Variables returns a copy of all stores variables.
 func (v *VariableStore) Variables() map[string]interface{} {
 	v.mutex.RLock()
 	copy := map[string]interface{}{}
@@ -93,6 +102,7 @@ func (v *VariableStore) Variables() map[string]interface{} {
 	return copy
 }
 
+// ListVariables prints a list of sorted key=value pairs.
 func (v *VariableStore) ListVariables(entry string) notify.Message {
 	v.mutex.RLock()
 	defer v.mutex.RUnlock()
@@ -116,6 +126,7 @@ func (v *VariableStore) ListVariables(entry string) notify.Message {
 	return nil
 }
 
+// Snapshot is the object stored as JSON in a Save/Load operation.
 type Snapshot struct {
 	Variables     map[string]string `json:"variables"`
 	Configuration map[string]string `json:"configuration"`
@@ -123,6 +134,7 @@ type Snapshot struct {
 
 const defaultStorageFilename = "melrose.json"
 
+// LoadMemoryFromDisk loads all variables by decoding JSON from a filename.
 func (s *VariableStore) LoadMemoryFromDisk(entry string) notify.Message {
 	f, err := os.Open(defaultStorageFilename)
 	if err != nil {
@@ -146,7 +158,7 @@ func (s *VariableStore) LoadMemoryFromDisk(entry string) notify.Message {
 			secondsPass[k] = storex
 			continue
 		}
-		if r, ok := v.(EvaluationResult); ok {
+		if r, ok := v.(FunctionResult); ok {
 			s.Put(k, r.Result)
 		}
 	}
@@ -155,7 +167,7 @@ func (s *VariableStore) LoadMemoryFromDisk(entry string) notify.Message {
 		if err != nil {
 			return notify.Errorf("unable to evaluate [%s = %s] because: %v", k, storex, err)
 		}
-		if r, ok := v.(EvaluationResult); ok {
+		if r, ok := v.(FunctionResult); ok {
 			s.Put(k, r.Result)
 		}
 	}
@@ -172,6 +184,7 @@ func (s *VariableStore) LoadMemoryFromDisk(entry string) notify.Message {
 	return nil
 }
 
+// SaveMemoryToDisk saves all known variables in JSON to a filename.
 func (s *VariableStore) SaveMemoryToDisk(entry string) notify.Message {
 	f, err := os.Create(defaultStorageFilename)
 	if err != nil {

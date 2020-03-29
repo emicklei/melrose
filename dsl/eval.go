@@ -8,15 +8,18 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-type EvaluationResult struct {
+// FunctionResult is returned by a custom function to hold both or either a Result and a Notification.
+type FunctionResult struct {
 	Notification notify.Message
 	Result       interface{}
 }
 
-func result(r interface{}, m notify.Message) EvaluationResult {
-	return EvaluationResult{Notification: m, Result: r}
+func result(r interface{}, m notify.Message) FunctionResult {
+	return FunctionResult{Notification: m, Result: r}
 }
 
+// Evaluate returns the result of an expression (entry) using a given store of variables.
+// The result is either FunctionResult or a "raw" Go object.
 func Evaluate(varStore *VariableStore, entry string) (interface{}, error) {
 	// flatten multiline ; expr does not support multiline strings
 	entry = strings.Replace(entry, "\n", " ", -1)

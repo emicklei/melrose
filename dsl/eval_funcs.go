@@ -16,7 +16,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval["chord"] = Function{
 		Description: "create a triad Chord with a Note",
 		Sample:      `chord("C4")`,
-		Func: func(note string) EvaluationResult {
+		Func: func(note string) FunctionResult {
 			n, err := melrose.ParseNote(note)
 			if err != nil {
 				return result(nil, notify.Errorf("%v", err))
@@ -27,7 +27,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval["pitch"] = Function{
 		Description: "change the pitch with a delta of semitones",
 		Sample:      `pitch(1,?)`,
-		Func: func(semitones int, m interface{}) EvaluationResult {
+		Func: func(semitones int, m interface{}) FunctionResult {
 			s, ok := m.(melrose.Sequenceable)
 			if !ok {
 				return result(nil, notify.Warningf("cannot pitch (%T) %v", m, m))
@@ -38,7 +38,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval["reverse"] = Function{
 		Description: "reverse the (groups of) notes in a sequence",
 		Sample:      `reverse(?)`,
-		Func: func(m interface{}) EvaluationResult {
+		Func: func(m interface{}) FunctionResult {
 			s, ok := m.(melrose.Sequenceable)
 			if !ok {
 				return result(nil, notify.Warningf("cannot reverse (%T) %v", m, m))
@@ -49,7 +49,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval["repeat"] = Function{
 		Description: "repeat the musical object a number of times",
 		Sample:      `repeat(2,?)`,
-		Func: func(howMany int, m interface{}) EvaluationResult {
+		Func: func(howMany int, m interface{}) FunctionResult {
 			s, ok := m.(melrose.Sequenceable)
 			if !ok {
 				return result(nil, notify.Warningf("cannot repeat (%T) %v", m, m))
@@ -75,7 +75,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval["bpm"] = Function{
 		Description: "get or set the Beats Per Minute value [1..300], default is 120",
 		Sample:      `bpm(180)`,
-		Func: func(f ...float64) EvaluationResult {
+		Func: func(f ...float64) FunctionResult {
 			if len(f) == 0 {
 				return result(melrose.CurrentDevice().BeatsPerMinute(), nil)
 			}
@@ -86,7 +86,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval["seq"] = Function{
 		Description: "create a Sequence from a string of notes",
 		Sample:      `seq("C C5")`,
-		Func: func(s string) EvaluationResult {
+		Func: func(s string) FunctionResult {
 			n, err := melrose.ParseSequence(s)
 			if err != nil {
 				return result(nil, notify.Error(err))
@@ -97,7 +97,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval["note"] = Function{
 		Description: "create a Note from a string",
 		Sample:      `note("C#3")`,
-		Func: func(s string) EvaluationResult {
+		Func: func(s string) FunctionResult {
 			n, err := melrose.ParseNote(s)
 			if err != nil {
 				return result(nil, notify.Error(err))
@@ -134,7 +134,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval["var"] = Function{
 		Description: "create a reference to a known variable",
 		Sample:      `var(v1)`,
-		Func: func(value interface{}) EvaluationResult {
+		Func: func(value interface{}) FunctionResult {
 			varName := varStore.NameFor(value)
 			if len(varName) == 0 {
 				return result(nil, notify.Warningf("no variable found with this Musical Object"))
@@ -145,7 +145,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval["del"] = Function{
 		Description: "delete a variable",
 		Sample:      `del(v1)`,
-		Func: func(value interface{}) EvaluationResult {
+		Func: func(value interface{}) FunctionResult {
 			varName := varStore.NameFor(value)
 			varStore.Delete(varName)
 			return result(value, notify.Infof("deleted %s", varName))
@@ -154,7 +154,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval["flat"] = Function{
 		Description: "flat (ungroup) the groups of a variable",
 		Sample:      `flat(v1)`,
-		Func: func(value interface{}) EvaluationResult {
+		Func: func(value interface{}) FunctionResult {
 			if s, ok := value.(melrose.Sequenceable); ok {
 				return result(melrose.Ungroup{Target: s}, nil)
 			} else {
