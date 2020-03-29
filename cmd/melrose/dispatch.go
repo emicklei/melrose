@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
-	"regexp"
-	"strings"
 
-	"github.com/antonmedv/expr"
 	"github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/dsl"
+	"github.com/emicklei/melrose/notify"
 )
 
 func dispatch(entry string) error {
@@ -19,28 +18,37 @@ func dispatch(entry string) error {
 		printValue(value)
 		return nil
 	}
-	if variable, expression, ok := isAssignment(entry); ok {
-		r, err := eval(expression)
+	if variable, expression, ok := dsl.IsAssignment(entry); ok {
+		r, err := dsl.Evaluate(varStore, expression)
 		if err != nil {
 			return err
 		}
+		er := r.(dsl.EvaluationResult)
+		notify.Print(er.Notification)
 		// TODO check that we do not use a function name as variable
-		varStore.Put(variable, r)
-		printValue(r)
+		varStore.Put(variable, er.Result)
+		printValue(er.Result)
 		return nil
 	}
 	// evaluate and print
-	r, err := eval(entry)
+	r, err := dsl.Evaluate(varStore, entry)
 	if err != nil {
 		return err
 	}
-	printValue(r)
+	if er, ok := r.(dsl.EvaluationResult); ok {
+		// info,warn,error
+		notify.Print(er.Notification)
+		// still can have a result
+		printValue(er.Result)
+	} else {
+		// should not happen
+		printValue(r)
+	}
 	return nil
 }
 
 func printValue(v interface{}) {
 	if v == nil {
-		fmt.Println()
 		return
 	}
 	if s, ok := v.(melrose.Storable); ok {
@@ -48,38 +56,4 @@ func printValue(v interface{}) {
 	} else {
 		fmt.Printf("%v\n", v)
 	}
-}
-
-func eval(entry string) (interface{}, error) {
-	// flatten multiline ; expr does not support multiline strings
-	entry = strings.Replace(entry, "\n", " ", -1)
-
-	env := map[string]interface{}{}
-	for k, f := range evalFunctions() {
-		env[k] = f.Func
-	}
-	for k, v := range varStore.Variables() {
-		env[k] = v
-	}
-	program, err := expr.Compile(entry, expr.Env(env))
-	if err != nil {
-		return nil, err
-	}
-	return expr.Run(program, env)
-}
-
-// https://regex101.com/
-var assignmentRegex = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)$`)
-
-// [ ]a[]=[]note('c')
-func isAssignment(entry string) (varname string, expression string, ok bool) {
-	sanitized := strings.TrimSpace(entry)
-	res := assignmentRegex.FindAllStringSubmatch(sanitized, -1)
-	if len(res) != 1 {
-		return "", "", false
-	}
-	if len(res[0]) != 3 {
-		return "", "", false
-	}
-	return res[0][1], res[0][2], true
 }

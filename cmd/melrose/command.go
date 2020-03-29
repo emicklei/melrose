@@ -6,13 +6,28 @@ import (
 	"io"
 	"sort"
 	"strings"
+
+	"github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/dsl"
+	"github.com/emicklei/melrose/notify"
 )
 
 var cmdFuncMap = cmdFunctions()
 
+func cmdFunctions() map[string]Command {
+	cmds := map[string]Command{}
+	cmds[":h"] = Command{Description: "show help on commands and functions", Func: showHelp}
+	cmds[":s"] = Command{Description: "save memory to disk", Func: varStore.SaveMemoryToDisk}
+	cmds[":l"] = Command{Description: "load memory from disk", Func: varStore.LoadMemoryFromDisk}
+	cmds[":v"] = Command{Description: "show variables", Func: varStore.ListVariables}
+	cmds[":m"] = Command{Description: "show MIDI information", Func: ShowDeviceInfo}
+	cmds[":q"] = Command{Description: "quit"} // no Func because it is handled in the main loop
+	return cmds
+}
+
 type Command struct {
 	Description string
-	Func        func(entry string)
+	Func        func(entry string) notify.Message
 }
 
 func lookupCommand(entry string) (Command, bool) {
@@ -26,26 +41,17 @@ func lookupCommand(entry string) (Command, bool) {
 	return Command{}, false
 }
 
-func cmdFunctions() map[string]Command {
-	cmds := map[string]Command{}
-	cmds[":h"] = Command{Description: "show help on commands and functions", Func: showHelp}
-	cmds[":s"] = Command{Description: "save memory to disk", Func: varStore.saveMemoryToDisk}
-	cmds[":l"] = Command{Description: "load memory from disk", Func: varStore.loadMemoryFromDisk}
-	cmds[":v"] = Command{Description: "show variables", Func: varStore.listVariables}
-	cmds[":m"] = Command{Description: "show MIDI information", Func: showDeviceInfo}
-	cmds[":q"] = Command{Description: "quit"}
-	return cmds
+func ShowDeviceInfo(entry string) notify.Message {
+	// TODO
+	melrose.CurrentDevice().PrintInfo()
+	return nil
 }
 
-func showDeviceInfo(entry string) {
-	currentDevice.PrintInfo()
-}
-
-func showHelp(entry string) {
+func showHelp(entry string) notify.Message {
 	var b bytes.Buffer
 	io.WriteString(&b, "\n")
 	{
-		funcs := evalFunctions()
+		funcs := dsl.EvalFunctions(varStore)
 		keys := []string{}
 		width := 0
 		for k, _ := range funcs {
@@ -73,5 +79,5 @@ func showHelp(entry string) {
 			fmt.Fprintf(&b, "%s --- %s\n", k, c.Description)
 		}
 	}
-	printInfo(b.String())
+	return notify.Infof("%s", b.String())
 }

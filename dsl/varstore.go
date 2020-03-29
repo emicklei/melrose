@@ -1,4 +1,4 @@
-package main
+package dsl
 
 import (
 	"encoding/json"
@@ -11,9 +11,8 @@ import (
 	"sync"
 
 	"github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/notify"
 )
-
-var varStore = NewVariableStore()
 
 type Variable struct {
 	Name  string
@@ -94,7 +93,7 @@ func (v *VariableStore) Variables() map[string]interface{} {
 	return copy
 }
 
-func (v *VariableStore) listVariables(entry string) {
+func (v *VariableStore) ListVariables(entry string) notify.Message {
 	v.mutex.RLock()
 	defer v.mutex.RUnlock()
 	keys := []string{}
@@ -114,6 +113,7 @@ func (v *VariableStore) listVariables(entry string) {
 			fmt.Printf("%s = (%T) %v\n", strings.Repeat(" ", width-len(k))+k, v, v)
 		}
 	}
+	return nil
 }
 
 type Snapshot struct {
@@ -123,58 +123,59 @@ type Snapshot struct {
 
 const defaultStorageFilename = "melrose.json"
 
-func (s *VariableStore) loadMemoryFromDisk(entry string) {
+func (s *VariableStore) LoadMemoryFromDisk(entry string) notify.Message {
 	f, err := os.Open(defaultStorageFilename)
 	if err != nil {
-		printError(fmt.Sprintf("unable to load:%v", err))
-		return
+		return notify.Errorf("unable to load:%v", err)
 	}
 	defer f.Close()
 
 	snap := Snapshot{}
 	dec := json.NewDecoder(f)
 	if err := dec.Decode(&snap); err != nil {
-		printError(err)
-		return
+		return notify.Error(err)
 	}
 
-	// if var is used and its value is not known we do a second pass. TODO workaround fix
+	// if var is used and its value is not known we do a second pass.
+	// TODO workaround fix
 	secondsPass := map[string]string{}
 	// load into existing
 	for k, storex := range snap.Variables {
-		v, err := eval(storex)
+		v, err := Evaluate(s, storex)
 		if err != nil {
 			secondsPass[k] = storex
-		} else {
-			s.Put(k, v)
+			continue
+		}
+		if r, ok := v.(EvaluationResult); ok {
+			s.Put(k, r.Result)
 		}
 	}
 	for k, storex := range secondsPass {
-		v, err := eval(storex)
+		v, err := Evaluate(s, storex)
 		if err != nil {
-			printError(fmt.Sprintf("unable to eval:%s = %s", k, storex))
-		} else {
-			s.Put(k, v)
+			return notify.Errorf("unable to evaluate [%s = %s] because: %v", k, storex, err)
+		}
+		if r, ok := v.(EvaluationResult); ok {
+			s.Put(k, r.Result)
 		}
 	}
 	// handle configuration
 	if v, ok := snap.Configuration["bpm"]; ok {
 		f, err := strconv.ParseFloat(v, 64)
 		if err != nil {
-			printError("invalid value for bpm (beat-per-minute):", v)
+			return notify.Errorf("invalid value for bpm (beat-per-minute):%v", v)
 		} else {
-			currentDevice.SetBeatsPerMinute(f)
+			melrose.CurrentDevice().SetBeatsPerMinute(f)
 		}
 	}
-
-	printInfo(fmt.Sprintf("loaded %d variables. use \":v\" to list them", len(snap.Variables)))
+	//printInfo(fmt.Sprintf("loaded %d variables. use \":v\" to list them", len(snap.Variables)))
+	return nil
 }
 
-func (s *VariableStore) saveMemoryToDisk(entry string) {
+func (s *VariableStore) SaveMemoryToDisk(entry string) notify.Message {
 	f, err := os.Create(defaultStorageFilename)
 	if err != nil {
-		printError(fmt.Sprintf("unable to save:%v", err))
-		return
+		return notify.Errorf("unable to save:%v", err)
 	}
 	defer f.Close()
 
@@ -184,22 +185,21 @@ func (s *VariableStore) saveMemoryToDisk(entry string) {
 		if s, ok := v.(melrose.Storable); ok {
 			storeMap[k] = s.Storex()
 		} else {
-			printError(fmt.Sprintf("cannot store %q:%T\n", k, v))
+			return notify.Errorf("cannot store %q:%T\n", k, v)
 		}
 	}
 
 	snap := Snapshot{
 		Variables: storeMap,
 		Configuration: map[string]string{
-			"bpm": fmt.Sprintf("%v", currentDevice.BeatsPerMinute()),
+			"bpm": fmt.Sprintf("%v", melrose.CurrentDevice().BeatsPerMinute()),
 		},
 	}
 
 	enc := json.NewEncoder(f)
 	enc.SetIndent("", "\t")
 	if err := enc.Encode(snap); err != nil {
-		printError(err)
-		return
+		return notify.Errorf("%v", err)
 	}
-	printInfo(fmt.Sprintf("saved %d variables. use \":v\" to list them", len(storeMap)))
+	return notify.Infof("saved %d variables. use \":v\" to list them", len(storeMap))
 }

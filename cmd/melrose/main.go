@@ -7,14 +7,16 @@ import (
 	"strings"
 
 	"github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/dsl"
+	"github.com/emicklei/melrose/notify"
 	"github.com/peterh/liner"
 )
 
 var (
 	verbose = flag.Bool("v", false, "verbose logging")
 
-	history       = ".melrose.history"
-	currentDevice melrose.AudioDevice
+	history  = ".melrose.history"
+	varStore = dsl.NewVariableStore()
 )
 
 func main() {
@@ -22,8 +24,9 @@ func main() {
 	flag.Parse()
 
 	// set audio
-	currentDevice = setupAudio("midi")
+	currentDevice := setupAudio("midi")
 	defer currentDevice.Close()
+	melrose.SetCurrentDevice(currentDevice)
 
 	// start REPL
 	line := liner.NewLiner()
@@ -41,7 +44,7 @@ var functionNames = []string{"play"}
 
 func tearDown(line *liner.State) {
 	if f, err := os.Create(history); err != nil {
-		printError(fmt.Sprintf("error writing history file:%v", err))
+		notify.Print(notify.Errorf("error writing history file:%v", err))
 	} else {
 		line.WriteHistory(f)
 		f.Close()
@@ -62,7 +65,7 @@ func loop(line *liner.State) {
 	for {
 		entry, err := line.Prompt("𝄞 ")
 		if err != nil {
-			printError(err)
+			notify.Print(notify.Error(err))
 			continue
 		}
 		if strings.HasPrefix(entry, ":") {
@@ -71,12 +74,14 @@ func loop(line *liner.State) {
 				goto exit
 			}
 			if cmd, ok := lookupCommand(entry); ok {
-				cmd.Func(entry)
+				if msg := cmd.Func(entry); msg != nil {
+					notify.Print(msg)
+				}
 				continue
 			}
 		}
 		if err := dispatch(entry); err != nil {
-			printError(err)
+			notify.Print(notify.Error(err))
 			// even on error, add entry to history so we can edit/fix it
 		}
 		line.AppendHistory(entry)

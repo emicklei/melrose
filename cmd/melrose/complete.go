@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/dsl"
 )
 
 func availableMethodNames(v interface{}, prefix string) (list []string) {
@@ -28,7 +29,7 @@ func completeMe(line string) (c []string) {
 		}
 		log.Println(c)
 	} else {
-		for k, f := range evalFuncMap {
+		for k, f := range dsl.EvalFunctions(varStore) {
 			// TODO start from closest (
 			if strings.HasPrefix(k, strings.ToLower(line)) {
 				c = append(c, f.Sample)

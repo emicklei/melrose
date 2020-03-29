@@ -1,22 +1,22 @@
-package main
+package dsl
 
 import (
 	"testing"
 )
 
-func TestMultiLineEval(t *testing.T) {
+func TestMulitLineEvaluate(t *testing.T) {
 	input := `seq("
-	C D E C 
-	C D E C 
-	E F 2G
-	E F 2G 
-	8G 8A 8G 8F E C 
-	8G 8A 8G 8F E C
-	2C 2G3 2C
-	2C 2G3 2C
-	")`
+		C D E C 
+		C D E C 
+		E F 2G
+		E F 2G 
+		8G 8A 8G 8F E C 
+		8G 8A 8G 8F E C
+		2C 2G3 2C
+		2C 2G3 2C
+		")`
 	t.Log(input)
-	_, err := eval(input)
+	_, err := Evaluate(NewVariableStore(), input)
 	if err != nil {
 		t.Error(err)
 	}
@@ -48,7 +48,7 @@ func Test_isAssignment(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotVarname, gotExpression, gotOk := isAssignment(tt.args.entry)
+			gotVarname, gotExpression, gotOk := IsAssignment(tt.args.entry)
 			if gotVarname != tt.wantVarname {
 				t.Errorf("isAssignment() gotVarname = %v, want %v", gotVarname, tt.wantVarname)
 			}
