@@ -28,7 +28,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Description: "change the pitch with a delta of semitones",
 		Sample:      `pitch(1,?)`,
 		Func: func(semitones int, m interface{}) FunctionResult {
-			s, ok := m.(melrose.Sequenceable)
+			s, ok := getSequenceable(m)
 			if !ok {
 				return result(nil, notify.Warningf("cannot pitch (%T) %v", m, m))
 			}
@@ -39,7 +39,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Description: "reverse the (groups of) notes in a sequence",
 		Sample:      `reverse(?)`,
 		Func: func(m interface{}) FunctionResult {
-			s, ok := m.(melrose.Sequenceable)
+			s, ok := getSequenceable(m)
 			if !ok {
 				return result(nil, notify.Warningf("cannot reverse (%T) %v", m, m))
 			}
@@ -50,7 +50,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Description: "repeat the musical object a number of times",
 		Sample:      `repeat(2,?)`,
 		Func: func(howMany int, m interface{}) FunctionResult {
-			s, ok := m.(melrose.Sequenceable)
+			s, ok := getSequenceable(m)
 			if !ok {
 				return result(nil, notify.Warningf("cannot repeat (%T) %v", m, m))
 			}
@@ -63,7 +63,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
 			joined := []melrose.Sequenceable{}
 			for _, p := range playables {
-				if s, ok := p.(melrose.Sequenceable); ok {
+				if s, ok := getSequenceable(p); ok {
 					joined = append(joined, s)
 				} else {
 					return result(nil, notify.Warningf("cannot join (%T) %v", p, p))
@@ -110,7 +110,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Sample:      `play()`,
 		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
 			for _, p := range playables {
-				if s, ok := p.(melrose.Sequenceable); ok {
+				if s, ok := getSequenceable(p); ok {
 					melrose.CurrentDevice().Play(s.S(), true)
 				} else {
 					return result(nil, notify.Warningf("cannot play (%T) %v", p, p))
@@ -124,7 +124,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Sample:      `go()`,
 		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
 			for _, p := range playables {
-				if s, ok := p.(melrose.Sequenceable); ok {
+				if s, ok := getSequenceable(p); ok {
 					go melrose.CurrentDevice().Play(s.S(), false)
 				}
 			}
@@ -155,11 +155,24 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Description: "flat (ungroup) the groups of a variable",
 		Sample:      `flat(v1)`,
 		Func: func(value interface{}) FunctionResult {
-			if s, ok := value.(melrose.Sequenceable); ok {
+			if s, ok := getSequenceable(value); ok {
 				return result(melrose.Ungroup{Target: s}, nil)
 			} else {
 				return result(nil, notify.Warningf("cannot flat (%T) %v", value, value))
 			}
 		}}
 	return eval
+}
+
+func getSequenceable(v interface{}) (melrose.Sequenceable, bool) {
+	if s, ok := v.(melrose.Sequenceable); ok {
+		return s, ok
+	}
+	if f, ok := v.(FunctionResult); ok {
+		if f.Notification != nil {
+			notify.Print(f.Notification)
+		}
+		return getSequenceable(f.Result)
+	}
+	return nil, false
 }
