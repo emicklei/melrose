@@ -1,6 +1,8 @@
 language: go
 go: 
  - 1.x
+before_install:
+- sudo apt-get install libportmidi-dev
 script:
 - go test -v .
 - go test -v ./dsl
