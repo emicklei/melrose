@@ -139,7 +139,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 			if len(varName) == 0 {
 				return result(nil, notify.Warningf("no variable found with this Musical Object"))
 			}
-			return result(Variable{Name: varName, store: varStore}, nil)
+			return result(variable{Name: varName, store: varStore}, nil)
 		}}
 
 	eval["del"] = Function{

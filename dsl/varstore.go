@@ -14,29 +14,21 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-type Variable struct {
+type variable struct {
 	Name  string
 	store *VariableStore
 }
 
-func (v Variable) Value() interface{} {
+func (v variable) Storex() string {
+	return v.Name // fmt.Sprintf(`var(%s)`, v.Name)
+}
+
+func (v variable) S() melrose.Sequence {
 	m, ok := v.store.Get(v.Name)
 	if !ok {
-		return nil
+		return melrose.Sequence{}
 	}
-	return m
-}
-
-func (v Variable) Storex() string {
-	return fmt.Sprintf(`var(%s)`, v.Name)
-}
-
-func (v Variable) String() string {
-	return fmt.Sprintf(`%s:%T`, v.Name, v.Value())
-}
-
-func (v Variable) S() melrose.Sequence {
-	if s, ok := v.Value().(melrose.Sequenceable); ok {
+	if s, ok := m.(melrose.Sequenceable); ok {
 		return s.S()
 	}
 	return melrose.Sequence{}
@@ -194,6 +186,7 @@ func (s *VariableStore) SaveMemoryToDisk(entry string) notify.Message {
 
 	storeMap := map[string]string{}
 	s.mutex.RLock()
+	defer s.mutex.RUnlock()
 	for k, v := range s.variables {
 		if s, ok := v.(melrose.Storable); ok {
 			storeMap[k] = s.Storex()

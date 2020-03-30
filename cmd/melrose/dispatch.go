@@ -23,11 +23,15 @@ func dispatch(entry string) error {
 		if err != nil {
 			return err
 		}
-		er := r.(dsl.FunctionResult)
-		notify.Print(er.Notification)
-		// TODO check that we do not use a function name as variable
-		varStore.Put(variable, er.Result)
-		printValue(er.Result)
+		if er, ok := r.(dsl.FunctionResult); ok {
+			notify.Print(er.Notification)
+			// TODO check that we do not use a function name as variable
+			varStore.Put(variable, er.Result)
+			printValue(er.Result)
+		} else {
+			varStore.Put(variable, r)
+			printValue(r)
+		}
 		return nil
 	}
 	// evaluate and print

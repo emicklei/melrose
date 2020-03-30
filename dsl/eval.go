@@ -28,8 +28,8 @@ func Evaluate(varStore *VariableStore, entry string) (interface{}, error) {
 	for k, f := range EvalFunctions(varStore) { // cache this?
 		env[k] = f.Func
 	}
-	for k, v := range varStore.Variables() {
-		env[k] = v
+	for k, _ := range varStore.Variables() {
+		env[k] = variable{Name: k, store: varStore}
 	}
 	program, err := expr.Compile(entry, expr.Env(env))
 	if err != nil {
