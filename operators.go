@@ -69,7 +69,7 @@ func (r Reverse) S() Sequence {
 }
 
 func (r Reverse) Storex() string {
-	return fmt.Sprintf("reverse(%s)", r.Target)
+	return fmt.Sprintf("reverse(%s)", r.Target.Storex())
 }
 
 type Rotate struct {
@@ -82,7 +82,7 @@ func (r Rotate) S() Sequence {
 }
 
 func (r Rotate) Storex() string {
-	return fmt.Sprintf("rotate(%d,%s)", r.Times, r.Target)
+	return fmt.Sprintf("rotate(%d,%s)", r.Times, r.Target.Storex())
 }
 
 type Ungroup struct {
@@ -98,5 +98,5 @@ func (a Ungroup) S() Sequence {
 }
 
 func (a Ungroup) Storex() string {
-	return fmt.Sprintf("flat(%s)", a.Target)
+	return fmt.Sprintf("flat(%s)", a.Target.Storex())
 }

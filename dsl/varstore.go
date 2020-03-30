@@ -140,29 +140,38 @@ func (s *VariableStore) LoadMemoryFromDisk(entry string) notify.Message {
 		return notify.Error(err)
 	}
 
-	// if var is used and its value is not known we do a second pass.
-	// TODO workaround fix
-	secondsPass := map[string]string{}
-	// load into existing
-	for k, storex := range snap.Variables {
-		v, err := Evaluate(s, storex)
-		if err != nil {
-			secondsPass[k] = storex
-			continue
+	toProcess := snap.Variables
+	pass := 0
+	for {
+		if len(toProcess) == 0 {
+			break
 		}
-		if r, ok := v.(FunctionResult); ok {
-			s.Put(k, r.Result)
+		pass++
+		if pass == 10 {
+			break
 		}
+		toProcessNext := map[string]string{}
+		for k, storex := range toProcess {
+			v, err := Evaluate(s, storex)
+			if err != nil {
+				toProcessNext[k] = storex
+				continue
+			}
+			if r, ok := v.(FunctionResult); ok {
+				s.Put(k, r.Result)
+			}
+		}
+		toProcess = toProcessNext
 	}
-	for k, storex := range secondsPass {
-		v, err := Evaluate(s, storex)
-		if err != nil {
-			return notify.Errorf("unable to evaluate [%s = %s] because: %v", k, storex, err)
+	// check unresolveables
+	if len(toProcess) > 0 {
+		keys := []string{}
+		for k := range toProcess {
+			keys = append(keys, k)
 		}
-		if r, ok := v.(FunctionResult); ok {
-			s.Put(k, r.Result)
-		}
+		return notify.Errorf("unable to evaluate variable(s) %v", keys)
 	}
+
 	// handle configuration
 	if v, ok := snap.Configuration["bpm"]; ok {
 		f, err := strconv.ParseFloat(v, 64)
