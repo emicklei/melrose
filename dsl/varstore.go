@@ -172,8 +172,7 @@ func (s *VariableStore) LoadMemoryFromDisk(entry string) notify.Message {
 			melrose.CurrentDevice().SetBeatsPerMinute(f)
 		}
 	}
-	//printInfo(fmt.Sprintf("loaded %d variables. use \":v\" to list them", len(snap.Variables)))
-	return nil
+	return notify.Infof("loaded %d variables. use \":v\" to list them", len(snap.Variables))
 }
 
 // SaveMemoryToDisk saves all known variables in JSON to a filename.

@@ -24,7 +24,7 @@
 | Notation    | Description 
 |-------------|---
 | C D E F       | 4 quarter tones
-| (C E) (d5 f5) | 2 doublets
+| [C E] [d5 f5] | 2 doublets
 
 
 # Melrose Live Coding
@@ -37,6 +37,7 @@ Using the command-line tool called `melrose` and a MIDI controlled synthesizer.
 
 Variable names must start with a non-digit character and can zero or more characters in `a-z A-Z _ 0-9`.
 An assigment `=` is used to create a Variable.
+To delete a variable, assign it to the special value `nil`.
 
 ### composition functions
 

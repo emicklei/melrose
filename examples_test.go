@@ -10,6 +10,6 @@ func ExampleChord() {
 	fmt.Println(c.S())
 	fmt.Println(ebm.S())
 	// Output:
-	// (C E G)
-	// (E♭ G♭ B♭)
+	// [C E G]
+	// [E♭ G♭ B♭]
 }

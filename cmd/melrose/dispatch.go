@@ -29,8 +29,13 @@ func dispatch(entry string) error {
 			varStore.Put(variable, er.Result)
 			printValue(er.Result)
 		} else {
-			varStore.Put(variable, r)
-			printValue(r)
+			// check delete
+			if r == nil {
+				varStore.Delete(variable)
+			} else {
+				varStore.Put(variable, r)
+				printValue(r)
+			}
 		}
 		return nil
 	}

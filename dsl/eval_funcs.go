@@ -6,9 +6,10 @@ import (
 )
 
 type Function struct {
-	Description string
-	Sample      string
-	Func        interface{}
+	Description   string
+	Sample        string
+	ControlsAudio bool
+	Func          interface{}
 }
 
 func EvalFunctions(varStore *VariableStore) map[string]Function {
@@ -73,8 +74,9 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["bpm"] = Function{
-		Description: "get or set the Beats Per Minute value [1..300], default is 120",
-		Sample:      `bpm(180)`,
+		Description:   "get or set the Beats Per Minute value [1..300], default is 120",
+		ControlsAudio: true,
+		Sample:        `bpm(180)`,
 		Func: func(f ...float64) FunctionResult {
 			if len(f) == 0 {
 				return result(melrose.CurrentDevice().BeatsPerMinute(), nil)
@@ -106,8 +108,9 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["play"] = Function{
-		Description: "play a musical object such as Note,Chord,Sequence,...",
-		Sample:      `play()`,
+		Description:   "play a musical object such as Note,Chord,Sequence,...",
+		ControlsAudio: true,
+		Sample:        `play()`,
 		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
@@ -120,8 +123,9 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["go"] = Function{
-		Description: "play all musical objects in parallel",
-		Sample:      `go()`,
+		Description:   "play all musical objects in parallel",
+		ControlsAudio: true,
+		Sample:        `go()`,
 		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
@@ -129,26 +133,6 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 				}
 			}
 			return result(nil, nil)
-		}}
-
-	eval["var"] = Function{
-		Description: "create a reference to a known variable",
-		Sample:      `var(v1)`,
-		Func: func(value interface{}) FunctionResult {
-			varName := varStore.NameFor(value)
-			if len(varName) == 0 {
-				return result(nil, notify.Warningf("no variable found with this Musical Object"))
-			}
-			return result(variable{Name: varName, store: varStore}, nil)
-		}}
-
-	eval["del"] = Function{
-		Description: "delete a variable",
-		Sample:      `del(v1)`,
-		Func: func(value interface{}) FunctionResult {
-			varName := varStore.NameFor(value)
-			varStore.Delete(varName)
-			return result(value, notify.Infof("deleted %s", varName))
 		}}
 
 	eval["flat"] = Function{
