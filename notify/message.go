@@ -30,6 +30,9 @@ func Warningf(format string, args ...interface{}) Message {
 }
 
 func Error(err error) Message {
+	if err == nil {
+		return nil
+	}
 	return Errorf("%v", err)
 }
 

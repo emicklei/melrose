@@ -16,7 +16,10 @@ func (n Note) MIDI() int {
 	return ((1 + n.Octave) * 12) + nameOffset + n.Accidental
 }
 
-func MIDItoNote(nr int) Note {
+var velocityFactors = []float32{F_Pianissimo, F_Piano, F_MezzoPiano, 1.0, F_MezzoForte, F_Forte, F_Fortissimo}
+
+// TODO handle duration
+func MIDItoNote(nr int, f float32) Note {
 	octave := (nr / 12) - 1
 	nrIndex := nr - ((octave + 1) * 12)
 	var offsetIndex, offset int
@@ -31,6 +34,19 @@ func MIDItoNote(nr int) Note {
 	if nrIndex != offset {
 		accidental = -1
 	}
-	nn, _ := NewNote(string(NonRestNoteNames[offsetIndex]), octave, 0.25, accidental, false, 1.0)
+	velocityFactor := float32(1.0)
+	// quantize the velocity
+	minDistance := float32(2.0)
+	for _, each := range velocityFactors {
+		dist := each - f
+		if dist < 0 {
+			dist = dist * -1
+		}
+		if dist < minDistance {
+			minDistance = dist
+			velocityFactor = each
+		}
+	}
+	nn, _ := NewNote(string(NonRestNoteNames[offsetIndex]), octave, 0.25, accidental, false, float32(velocityFactor))
 	return nn
 }

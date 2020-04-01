@@ -11,16 +11,16 @@ import (
 
 // Note represents a musical note.
 // Notations:
-// 		½C♯.3 = half duration, pitch C, sharp, octave 3, velocity default (50)
+// 		½C♯.3 = half duration, pitch C, sharp, octave 3, velocity default (70)
 //		D     = quarter duration, pitch D, octave 4, no accidental
 //      ⅛B♭  = eigth duration, pitch B, octave 4, flat
 //		=     = quarter rest
-//      -     = velocity -20% (40)
-//      --    = velocity -40% (30)
-//      ---   = velocity -80% (10)
-//      +     = velocity +20% (60)
-//      ++    = velocity +40% (70)
-//      +++   = velocity +80% (90)
+//      -     = velocity -20%
+//      --    = velocity -40%
+//      ---   = velocity -80%
+//      +     = velocity +20%
+//      ++    = velocity +40%
+//      +++   = velocity +80%
 // http://en.wikipedia.org/wiki/Musical_Note
 type Note struct {
 	Name       string // {C D E F G A B = }
@@ -65,7 +65,7 @@ func Rest(modifiers ...int) Note {
 
 var rest = Note{Name: "="}
 
-func NewNote(name string, octave int, duration float32, accidental int, dot bool, velocity float32) (Note, error) {
+func NewNote(name string, octave int, duration float32, accidental int, dot bool, velocityFactor float32) (Note, error) {
 	if len(name) != 1 {
 		return rest, fmt.Errorf("note must be one character, got [%s]", name)
 	}
@@ -88,7 +88,7 @@ func NewNote(name string, octave int, duration float32, accidental int, dot bool
 		return rest, fmt.Errorf("invalid accidental :" + string(accidental))
 	}
 
-	return Note{Name: name, Octave: octave, duration: duration, Accidental: accidental, Dotted: dot, velocityFactor: velocity}, nil
+	return Note{Name: name, Octave: octave, duration: duration, Accidental: accidental, Dotted: dot, velocityFactor: velocityFactor}, nil
 }
 
 // Accessors
@@ -208,7 +208,7 @@ func (n Note) ModifiedDuration(by float32) Note {
 }
 
 func (n Note) MezzoForte() Note {
-	nn, _ := NewNote(n.Name, n.Octave, n.duration, n.Accidental, false, 1.2)
+	nn, _ := NewNote(n.Name, n.Octave, n.duration, n.Accidental, false, F_MezzoForte)
 	return nn
 }
 
@@ -285,17 +285,17 @@ func ParseNote(input string) (Note, error) {
 		// 0.8,0.6,0.2,1.2,1.6,1.8
 		switch plusmin {
 		case "-":
-			velocity = 0.8
+			velocity = F_MezzoPiano
 		case "--":
-			velocity = 0.6
+			velocity = F_Piano
 		case "---":
-			velocity = 0.2
+			velocity = F_Pianissimo
 		case "+":
-			velocity = 1.2
+			velocity = F_MezzoForte
 		case "++":
-			velocity = 1.6
+			velocity = F_Forte
 		case "+++":
-			velocity = 1.8
+			velocity = F_Fortissimo
 		}
 	}
 	return NewNote(matches[2], octave, duration, accidental, dotted, velocity)
@@ -381,22 +381,21 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 		buf.WriteString(".")
 	}
 	if n.Octave != 4 {
-		buf.WriteString(fmt.Sprintf("%d", n.Octave))
+		fmt.Fprintf(buf, "%d", n.Octave)
 	}
 	if n.velocityFactor != 1.0 {
-		// 0.8,0.6,0.2,1.2,1.6,1.8
 		switch n.velocityFactor {
-		case 0.2:
+		case F_Pianissimo:
 			io.WriteString(buf, "---")
-		case 0.6:
+		case F_Piano:
 			io.WriteString(buf, "--")
-		case 0.8:
+		case F_MezzoPiano:
 			io.WriteString(buf, "-")
-		case 1.2:
+		case F_MezzoForte:
 			io.WriteString(buf, "+")
-		case 1.6:
+		case F_Forte:
 			io.WriteString(buf, "++")
-		case 1.8:
+		case F_Fortissimo:
 			io.WriteString(buf, "+++")
 		}
 	}

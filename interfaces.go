@@ -1,5 +1,7 @@
 package melrose
 
+import "time"
+
 type Transformer interface {
 	Transform(Sequence) Sequence
 }
@@ -15,8 +17,12 @@ type Storable interface {
 
 type AudioDevice interface {
 	PrintInfo()
+
 	Play(seq Sequence, echo bool)
+	Record(deviceID int, stopAfterInactivity time.Duration) (Sequence, error)
+
 	SetBeatsPerMinute(bpm float64)
 	BeatsPerMinute() float64
+
 	Close()
 }

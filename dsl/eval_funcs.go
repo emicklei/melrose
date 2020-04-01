@@ -1,6 +1,8 @@
 package dsl
 
 import (
+	"time"
+
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
 )
@@ -145,6 +147,16 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 				return result(nil, notify.Warningf("cannot flat (%T) %v", value, value))
 			}
 		}}
+
+	eval["record"] = Function{
+		Description:   "creates a recorded sequence of notes from device ID and stop after T seconds of inactivity",
+		ControlsAudio: true,
+		Sample:        `record(ID,T)`,
+		Func: func(deviceID int, secondsInactivity int) FunctionResult {
+			seq, err := melrose.CurrentDevice().Record(deviceID, time.Duration(secondsInactivity)*time.Second)
+			return result(seq, notify.Error(err))
+		}}
+
 	return eval
 }
 

@@ -25,7 +25,12 @@ var parsetests = []struct {
 	{"F#.9", "F", 9, 0.25, 1, true, 1.0},
 	{"1C", "C", 4, 1, 0, false, 1.0},
 	{"=", "=", 4, 0.25, 0, false, 1.0},
-	{"D++", "D", 4, 0.25, 0, false, 1.6},
+	{"D++", "D", 4, 0.25, 0, false, F_Forte},
+	{"D+", "D", 4, 0.25, 0, false, F_MezzoForte},
+	{"D+++", "D", 4, 0.25, 0, false, F_Fortissimo},
+	{"E-", "E", 4, 0.25, 0, false, F_MezzoPiano},
+	{"E--", "E", 4, 0.25, 0, false, F_Piano},
+	{"E---", "E", 4, 0.25, 0, false, F_Pianissimo},
 }
 
 func TestParseNote(t *testing.T) {
@@ -81,7 +86,7 @@ func TestMIDI(t *testing.T) {
 
 func TestMIDIAll(t *testing.T) {
 	for i := 12; i < 127; i++ {
-		n := MIDItoNote(i)
+		n := MIDItoNote(i, 1.0)
 		m := n.MIDI()
 		if m != i {
 			t.Error("exp,act,note", i, m, n)
@@ -133,11 +138,14 @@ func TestMajorOffset(t *testing.T) {
 func ExampleParseNote() {
 	n1, _ := ParseNote("2C#3")
 	n2, _ := ParseNote("2E_.2")
+	n3, _ := ParseNote("F_.2++")
 	fmt.Println(n1)
 	fmt.Println(n2)
+	fmt.Println(n3)
 	// Output:
 	// ½C♯3
 	// ½E♭.2
+	// F♭.2++
 }
 
 func ExampleParseNoteAsPrinted() {

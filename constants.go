@@ -38,6 +38,16 @@ const (
 	Forte      // ++
 	Fortissimo // +++
 )
+
+const (
+	F_Pianissimo = 0.2 // ---
+	F_Piano      = 0.4 // --
+	F_MezzoPiano = 0.8 // -
+	F_MezzoForte = 1.2 // +
+	F_Forte      = 1.4 // ++
+	F_Fortissimo = 1.8 // +++
+)
+
 const (
 	// NonRestNoteNames maps a tone to an index (C=0)
 	NonRestNoteNames = "CDEFGAB"

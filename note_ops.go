@@ -10,7 +10,7 @@ func (n Note) Repeated(howMany int) Sequence {
 
 // Pitched creates a new Note with a pitch by a (positive or negative) number of semi tones
 func (n Note) Pitched(howManySemitones int) Note {
-	simple := MIDItoNote(n.MIDI() + howManySemitones)
+	simple := MIDItoNote(n.MIDI()+howManySemitones, 1.0)
 	nn, _ := NewNote(simple.Name, simple.Octave, n.duration, simple.Accidental, n.Dotted, n.velocityFactor)
 	return nn
 }
