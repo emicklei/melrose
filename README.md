@@ -17,7 +17,16 @@
 | =        | =     | quarter rest
 | 2=       | ½=    | half rest
 | 1=       | 1=    | full rest
+| D+       | d+    | quarter D octave 4 MezzoForte
 
+### Note dynamics
+
+	Pianissimo // ---
+	Piano      // --
+	MezzoPiano // -
+	MezzoForte // +
+	Forte      // ++
+	Fortissimo // +++
 
 ## Sequence notation
 

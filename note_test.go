@@ -11,19 +11,21 @@ var parsetests = []struct {
 	dura     float32
 	acc      int
 	dot      bool
+	vel      float32
 }{
-	{"C", "C", 4, 0.25, 0, false},
-	{"C3", "C", 3, 0.25, 0, false},
-	{"C3", "C", 3, 0.25, 0, false},
-	{"4C3", "C", 3, 0.25, 0, false},
-	{"4C#3", "C", 3, 0.25, 1, false},
-	{"4C#.3", "C", 3, 0.25, 1, true},
-	{"4C#", "C", 4, 0.25, 1, false},
-	{"C#", "C", 4, 0.25, 1, false},
-	{"B_", "B", 4, 0.25, -1, false}, //8
-	{"F#.9", "F", 9, 0.25, 1, true},
-	{"1C", "C", 4, 1, 0, false},
-	{"=", "=", 4, 0.25, 0, false},
+	{"C", "C", 4, 0.25, 0, false, 1.0},
+	{"C3", "C", 3, 0.25, 0, false, 1.0},
+	{"C3", "C", 3, 0.25, 0, false, 1.0},
+	{"4C3", "C", 3, 0.25, 0, false, 1.0},
+	{"4C#3", "C", 3, 0.25, 1, false, 1.0},
+	{"4C#.3", "C", 3, 0.25, 1, true, 1.0},
+	{"4C#", "C", 4, 0.25, 1, false, 1.0},
+	{"C#", "C", 4, 0.25, 1, false, 1.0},
+	{"B_", "B", 4, 0.25, -1, false, 1.0}, //8
+	{"F#.9", "F", 9, 0.25, 1, true, 1.0},
+	{"1C", "C", 4, 1, 0, false, 1.0},
+	{"=", "=", 4, 0.25, 0, false, 1.0},
+	{"D++", "D", 4, 0.25, 0, false, 1.6},
 }
 
 func TestParseNote(t *testing.T) {
@@ -46,6 +48,9 @@ func TestParseNote(t *testing.T) {
 		}
 		if n.Dotted != each.dot {
 			t.Fatal("dot: line,exp,act", i, each.dot, n.Dotted)
+		}
+		if n.VelocityFactor() != each.vel {
+			t.Fatal("vel: line,exp,act", i, each.vel, n.VelocityFactor())
 		}
 	}
 }
@@ -157,6 +162,12 @@ func ExampleC() {
 	// C♯ C
 }
 
+func ExampleMezzoForte() {
+	fmt.Println(C(MezzoForte))
+	// Output:
+	// C+
+}
+
 func ExampleSharp() {
 	fmt.Println(C().Sharp(), D().Sharp(), E().Sharp(), F().Sharp(), G().Sharp(), A().Sharp(), B().Sharp())
 	// Output:
@@ -223,43 +234,43 @@ func PanicDetector(t *testing.T) {
 
 func TestFailedNewNote_BadName(t *testing.T) {
 	// name string, octave int, duration float32, accidental int, dot bool
-	if _, err := NewNote("Z", 4, 0.5, 0, false); err == nil {
+	if _, err := NewNote("Z", 4, 0.5, 0, false, 1.0); err == nil {
 		t.Fail()
 	}
 }
 
 func TestFailedNewNote_BadOctave(t *testing.T) {
 	// name string, octave int, duration float32, accidental int, dot bool
-	if _, err := NewNote("A", -1, 0.5, 0, false); err == nil {
+	if _, err := NewNote("A", -1, 0.5, 0, false, 1); err == nil {
 		t.Fail()
 	}
-	if _, err := NewNote("A", 10, 0.5, 0, false); err == nil {
+	if _, err := NewNote("A", 10, 0.5, 0, false, 1); err == nil {
 		t.Fail()
 	}
 }
 
 func TestFailedNewNote_BadDuration(t *testing.T) {
 	// name string, octave int, duration float32, accidental int, dot bool
-	if _, err := NewNote("A", 4, 2, 0, false); err == nil {
+	if _, err := NewNote("A", 4, 2, 0, false, 1); err == nil {
 		t.Fail()
 	}
-	if _, err := NewNote("A", 4, -1, 0, false); err == nil {
+	if _, err := NewNote("A", 4, -1, 0, false, 1); err == nil {
 		t.Fail()
 	}
 }
 
 func TestFailedNewNote_BadAccidental(t *testing.T) {
 	// name string, octave int, duration float32, accidental int, dot bool
-	if _, err := NewNote("A", 4, 0.25, -2, false); err == nil {
+	if _, err := NewNote("A", 4, 0.25, -2, false, 1); err == nil {
 		t.Error(err)
 	}
-	if _, err := NewNote("A", 4, 0.25, 2, false); err == nil {
+	if _, err := NewNote("A", 4, 0.25, 2, false, 1); err == nil {
 		t.Error(err)
 	}
 }
 
 func TestNote_Storex(t *testing.T) {
-	n, _ := NewNote("A", 4, 0.25, 1, false)
+	n, _ := NewNote("A", 4, 0.25, 1, false, 1)
 	if got, want := n.Storex(), `note('A♯')`; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}

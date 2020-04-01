@@ -12,17 +12,18 @@ import (
 )
 
 type Midi struct {
-	enabled  bool
-	stream   *portmidi.Stream
-	bpm      float64
-	mutex    *sync.Mutex
-	deviceID int
-	echo     bool
+	enabled         bool
+	stream          *portmidi.Stream
+	mutex           *sync.Mutex
+	deviceID        int
+	echo            bool
+	bpm             float64
+	defaultVelocity int
 }
 
 const (
-	noteOn  = 0x90
-	noteOff = 0x80
+	noteOn  int = 0x90
+	noteOff int = 0x80
 )
 
 func (m *Midi) Play(seq melrose.Sequence, echo bool) {
@@ -42,7 +43,7 @@ func (m *Midi) Play(seq melrose.Sequence, echo bool) {
 		for _, eachNote := range eachGroup {
 			wg.Add(1)
 			go func(n melrose.Note) {
-				m.PlayNote(n, wholeNoteDuration)
+				m.playNote(1, int(float32(m.defaultVelocity)*n.VelocityFactor()), n, wholeNoteDuration)
 				wg.Done()
 			}(eachNote)
 		}
@@ -53,7 +54,7 @@ func (m *Midi) Play(seq melrose.Sequence, echo bool) {
 	}
 }
 
-func (m *Midi) PlayNote(note melrose.Note, wholeNoteDuration time.Duration) {
+func (m *Midi) playNote(channel int, velocity int, note melrose.Note, wholeNoteDuration time.Duration) {
 	actualDuration := time.Duration(float32(wholeNoteDuration) * note.DurationFactor())
 	if note.IsRest() {
 		time.Sleep(actualDuration)
@@ -63,14 +64,14 @@ func (m *Midi) PlayNote(note melrose.Note, wholeNoteDuration time.Duration) {
 
 	//fmt.Println("on", data1, actualDuration)
 	m.mutex.Lock()
-	m.stream.WriteShort(noteOn, int64(data1), 100)
+	m.stream.WriteShort(int64(noteOn|channel), int64(data1), int64(velocity))
 	m.mutex.Unlock()
 
 	time.Sleep(actualDuration)
 
 	//fmt.Println("off", data1)
 	m.mutex.Lock()
-	m.stream.WriteShort(noteOff, int64(data1), 100)
+	m.stream.WriteShort(int64(noteOff|channel), int64(data1), 100)
 	m.mutex.Unlock()
 }
 
@@ -88,7 +89,15 @@ func (m *Midi) BeatsPerMinute() float64 {
 
 func (m *Midi) PrintInfo() {
 	fmt.Println("[midi] BPM:", m.bpm)
-	fmt.Println("[midi] devices:", portmidi.CountDevices())
+	var midiDeviceInfo *portmidi.DeviceInfo
+	defaultOut := portmidi.DefaultOutputDeviceID()
+	fmt.Println("[midi] default:", defaultOut)
+	for i := 0; i < portmidi.CountDevices(); i++ {
+		midiDeviceInfo = portmidi.Info(portmidi.DeviceID(i)) // returns info about a MIDI device
+		fmt.Printf("[midi] %v: ", i)
+		fmt.Print("\"", midiDeviceInfo.Interface, "/", midiDeviceInfo.Name, "\"")
+		fmt.Println()
+	}
 }
 
 func Open() (*Midi, error) {
@@ -106,6 +115,7 @@ func Open() (*Midi, error) {
 	m.enabled = true
 	m.stream = out
 	m.bpm = 120
+	m.defaultVelocity = 50
 	m.mutex = new(sync.Mutex)
 	return m, nil
 }

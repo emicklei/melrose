@@ -29,6 +29,14 @@ const (
 	Inversion1
 	Inversion2
 	Inversion3
+
+	// https://nl.wikipedia.org/wiki/Dynamiek_(muziek)
+	Pianissimo // ---
+	Piano      // --
+	MezzoPiano // -
+	MezzoForte // +
+	Forte      // ++
+	Fortissimo // +++
 )
 const (
 	// NonRestNoteNames maps a tone to an index (C=0)

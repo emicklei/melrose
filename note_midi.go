@@ -31,6 +31,6 @@ func MIDItoNote(nr int) Note {
 	if nrIndex != offset {
 		accidental = -1
 	}
-	nn, _ := NewNote(string(NonRestNoteNames[offsetIndex]), octave, 0.25, accidental, false)
+	nn, _ := NewNote(string(NonRestNoteNames[offsetIndex]), octave, 0.25, accidental, false, 1.0)
 	return nn
 }
