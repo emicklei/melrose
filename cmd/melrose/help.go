@@ -13,6 +13,23 @@ import (
 
 func showHelp(entry string) notify.Message {
 	var b bytes.Buffer
+
+	// detect help for a command or function
+	if len(entry) > len(":h") {
+		cmdfunc := strings.TrimSpace(entry[2:])
+		if cmd, ok := cmdFunctions()[cmdfunc]; ok {
+			fmt.Fprintf(&b, "%s\n", cmdfunc)
+			fmt.Fprintf(&b, "%s\n", cmd.Description)
+			fmt.Fprintf(&b, "%s\n", cmd.Sample)
+			return notify.Infof("%s", b.String())
+		}
+		if fun, ok := dsl.EvalFunctions(varStore)[cmdfunc]; ok {
+			fmt.Fprintf(&b, "%s\n", cmdfunc)
+			fmt.Fprintf(&b, "%s\n", fun.Description)
+			fmt.Fprintf(&b, "%s\n", fun.Sample)
+			return notify.Infof("%s", b.String())
+		}
+	}
 	io.WriteString(&b, "\n")
 	{
 		funcs := dsl.EvalFunctions(varStore)

@@ -11,7 +11,7 @@ var cmdFuncMap = cmdFunctions()
 
 func cmdFunctions() map[string]Command {
 	cmds := map[string]Command{}
-	cmds[":h"] = Command{Description: "show help on commands and functions", Func: showHelp}
+	cmds[":h"] = Command{Description: "show help on a command or function, e.g :h seq", Func: showHelp}
 	cmds[":s"] = Command{Description: "save memory to disk", Func: varStore.SaveMemoryToDisk}
 	cmds[":l"] = Command{Description: "load memory from disk", Func: varStore.LoadMemoryFromDisk}
 	cmds[":v"] = Command{Description: "show variables", Func: varStore.ListVariables}
@@ -22,6 +22,7 @@ func cmdFunctions() map[string]Command {
 
 type Command struct {
 	Description string
+	Sample      string
 	Func        func(entry string) notify.Message
 }
 

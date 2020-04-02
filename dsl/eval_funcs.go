@@ -137,9 +137,9 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 			return result(nil, nil)
 		}}
 
-	eval["flat"] = Function{
-		Description: "flat (ungroup) the groups of a variable",
-		Sample:      `flat(v1)`,
+	eval["ungroup"] = Function{
+		Description: "ungroup any groups of a musical object (mo)",
+		Sample:      `ungroup(mo)`,
 		Func: func(value interface{}) FunctionResult {
 			if s, ok := getSequenceable(value); ok {
 				return result(melrose.Ungroup{Target: s}, nil)
@@ -155,6 +155,28 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Func: func(deviceID int, secondsInactivity int) FunctionResult {
 			seq, err := melrose.CurrentDevice().Record(deviceID, time.Duration(secondsInactivity)*time.Second)
 			return result(seq, notify.Error(err))
+		}}
+
+	eval["undynamic"] = Function{
+		Description: "undynamic all the notes in a musical object (mo)",
+		Sample:      `undynamic(mo)`,
+		Func: func(value interface{}) FunctionResult {
+			if s, ok := getSequenceable(value); ok {
+				return result(melrose.Undynamic{Target: s}, nil)
+			} else {
+				return result(nil, notify.Warningf("cannot undynamic (%T) %v", value, value))
+			}
+		}}
+
+	eval["flatten"] = Function{
+		Description: "flatten all operations on a musical object (mo) to a new sequence",
+		Sample:      `flatten(mo)`,
+		Func: func(value interface{}) FunctionResult {
+			if s, ok := getSequenceable(value); ok {
+				return result(s.S(), nil)
+			} else {
+				return result(nil, notify.Warningf("cannot flatten (%T) %v", value, value))
+			}
 		}}
 
 	return eval

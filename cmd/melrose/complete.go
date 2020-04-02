@@ -1,11 +1,9 @@
 package main
 
 import (
-	"log"
 	"reflect"
 	"strings"
 
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 )
 
@@ -21,19 +19,16 @@ func availableMethodNames(v interface{}, prefix string) (list []string) {
 }
 
 func completeMe(line string) (c []string) {
-	// if line ends with dot then lookup methods for the value before the dot
-	if strings.HasSuffix(line, ".") {
-		n := melrose.C()
-		for _, each := range availableMethodNames(n, line) {
-			c = append(c, line+each)
+	// vars first
+	for k, _ := range varStore.Variables() {
+		if strings.HasPrefix(k, line) {
+			c = append(c, k)
 		}
-		log.Println(c)
-	} else {
-		for k, f := range dsl.EvalFunctions(varStore) {
-			// TODO start from closest (
-			if strings.HasPrefix(k, strings.ToLower(line)) {
-				c = append(c, f.Sample)
-			}
+	}
+	for k, f := range dsl.EvalFunctions(varStore) {
+		// TODO start from closest (
+		if strings.HasPrefix(k, line) {
+			c = append(c, f.Sample)
 		}
 	}
 	return

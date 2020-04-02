@@ -100,3 +100,20 @@ func (a Ungroup) S() Sequence {
 func (a Ungroup) Storex() string {
 	return fmt.Sprintf("flat(%s)", a.Target.Storex())
 }
+
+type Undynamic struct {
+	Target Sequenceable
+}
+
+func (u Undynamic) S() Sequence {
+	n := []Note{}
+	u.Target.S().NotesDo(func(each Note) {
+		each.velocityFactor = 1.0
+		n = append(n, each)
+	})
+	return BuildSequence(n)
+}
+
+func (u Undynamic) Storex() string {
+	return fmt.Sprintf("undynamic(%s)", u.Target.Storex())
+}

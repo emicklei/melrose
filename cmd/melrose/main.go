@@ -68,6 +68,7 @@ func loop(line *liner.State) {
 			notify.Print(notify.Error(err))
 			continue
 		}
+		entry = strings.TrimSpace(entry)
 		if strings.HasPrefix(entry, ":") {
 			// special case
 			if entry == ":q" {
