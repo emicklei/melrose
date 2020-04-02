@@ -21,7 +21,7 @@ type Midi struct {
 const (
 	noteOn          int = 0x90
 	noteOff         int = 0x80
-	DefaultVelocity     = 80
+	DefaultVelocity     = 70
 	DefaultBPM          = 120
 )
 

@@ -40,7 +40,9 @@ func (m *Midi) Record(deviceID int, stopAfterInactivity time.Duration) (melrose.
 			//fmt.Println("ts,note,velocity", each.Timestamp, each.Data1, each.Data2)
 
 			note := m.eventToNote(startEvent, each)
-			//fmt.Println(note, "|", note.VelocityFactor()*float32(m.baseVelocity))
+
+			//fmt.Println(startEvent.Data2, note.VelocityFactor()*float32(m.baseVelocity))
+
 			print(note)
 			notes = append(notes, note)
 

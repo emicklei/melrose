@@ -1,6 +1,5 @@
 # Melrose - programming of music melodies
 
-[![Build Status](https://travis-ci.org/emicklei/melrose.png)](https://travis-ci.org/emicklei/melrose)
 [![Go Report Card](https://goreportcard.com/badge/github.com/emicklei/melrose)](https://goreportcard.com/report/github.com/emicklei/melrose)
 [![GoDoc](https://godoc.org/github.com/emicklei/melrose?status.svg)](https://pkg.go.dev/github.com/emicklei/melrose?tab=doc)
 
@@ -62,19 +61,19 @@ These functions control the audio device (playing, changing settings).
 
     𝄞 :h
     info:
-        bpm --- get or set the Beats Per Minute value [1..300], default is 120
       chord --- create a triad Chord with a Note
-        del --- delete a variable
        flat --- flat (ungroup) the groups of a variable
-         go --- play all musical objects in parallel
        join --- join two or more musical objects
        note --- create a Note from a string
       pitch --- change the pitch with a delta of semitones
-       play --- play a musical object such as Note,Chord,Sequence,...
      repeat --- repeat the musical object a number of times
     reverse --- reverse the (groups of) notes in a sequence
         seq --- create a Sequence from a string of notes
-        var --- create a reference to a known variable
+
+       bpm --- get or set the Beats Per Minute value [1..300], default is 120
+        go --- play all musical objects in parallel
+      play --- play a musical object such as Note,Chord,Sequence,...
+    record --- creates a recorded sequence of notes from device ID and stop after T seconds of inactivity
 
     :h --- show help on commands and functions
     :l --- load memory from disk
