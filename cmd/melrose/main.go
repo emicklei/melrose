@@ -6,10 +6,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/emicklei/liner"
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
+	"github.com/peterh/liner"
 )
 
 var (
