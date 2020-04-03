@@ -11,12 +11,12 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-func showHelp(entry string) notify.Message {
+func showHelp(args []string) notify.Message {
 	var b bytes.Buffer
 
 	// detect help for a command or function
-	if len(entry) > len(":h") {
-		cmdfunc := strings.TrimSpace(entry[2:])
+	if len(args) > 1 {
+		cmdfunc := strings.TrimSpace(args[1])
 		if cmd, ok := cmdFunctions()[cmdfunc]; ok {
 			fmt.Fprintf(&b, "%s\n", cmdfunc)
 			fmt.Fprintf(&b, "%s\n", cmd.Description)

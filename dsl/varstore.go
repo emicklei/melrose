@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
@@ -20,7 +21,7 @@ type variable struct {
 }
 
 func (v variable) Storex() string {
-	return v.Name // fmt.Sprintf(`var(%s)`, v.Name)
+	return v.Name
 }
 
 func (v variable) S() melrose.Sequence {
@@ -95,12 +96,16 @@ func (v *VariableStore) Variables() map[string]interface{} {
 }
 
 // ListVariables prints a list of sorted key=value pairs.
-func (v *VariableStore) ListVariables(entry string) notify.Message {
+func (v *VariableStore) ListVariables(args []string) notify.Message {
 	v.mutex.RLock()
 	defer v.mutex.RUnlock()
 	keys := []string{}
 	width := 0
 	for k, _ := range v.variables {
+		// if filtering is wanted
+		if len(args) == 2 && !strings.HasPrefix(k, args[1]) {
+			continue
+		}
 		if len(k) > width {
 			width = len(k)
 		}
@@ -120,6 +125,8 @@ func (v *VariableStore) ListVariables(entry string) notify.Message {
 
 // Snapshot is the object stored as JSON in a Save/Load operation.
 type Snapshot struct {
+	Author        string            `json:"author"`
+	LastModified  time.Time         `json:"lastModified"`
 	Variables     map[string]string `json:"variables"`
 	Configuration map[string]string `json:"configuration"`
 }
@@ -127,8 +134,12 @@ type Snapshot struct {
 const defaultStorageFilename = "melrose.json"
 
 // LoadMemoryFromDisk loads all variables by decoding JSON from a filename.
-func (s *VariableStore) LoadMemoryFromDisk(entry string) notify.Message {
-	f, err := os.Open(defaultStorageFilename)
+func (s *VariableStore) LoadMemoryFromDisk(args []string) notify.Message {
+	filename := defaultStorageFilename
+	if len(args) == 2 {
+		filename = makeJSONFilename(args[1])
+	}
+	f, err := os.Open(filename)
 	if err != nil {
 		return notify.Errorf("unable to load:%v", err)
 	}
@@ -185,8 +196,12 @@ func (s *VariableStore) LoadMemoryFromDisk(entry string) notify.Message {
 }
 
 // SaveMemoryToDisk saves all known variables in JSON to a filename.
-func (s *VariableStore) SaveMemoryToDisk(entry string) notify.Message {
-	f, err := os.Create(defaultStorageFilename)
+func (s *VariableStore) SaveMemoryToDisk(args []string) notify.Message {
+	filename := defaultStorageFilename
+	if len(args) == 2 {
+		filename = makeJSONFilename(args[1])
+	}
+	f, err := os.Create(filename)
 	if err != nil {
 		return notify.Errorf("unable to save:%v", err)
 	}
@@ -204,7 +219,9 @@ func (s *VariableStore) SaveMemoryToDisk(entry string) notify.Message {
 	}
 
 	snap := Snapshot{
-		Variables: storeMap,
+		Author:       os.Getenv("USER"),
+		LastModified: time.Now(),
+		Variables:    storeMap,
 		Configuration: map[string]string{
 			"bpm": fmt.Sprintf("%v", melrose.CurrentDevice().BeatsPerMinute()),
 		},
@@ -216,4 +233,11 @@ func (s *VariableStore) SaveMemoryToDisk(entry string) notify.Message {
 		return notify.Errorf("%v", err)
 	}
 	return notify.Infof("saved %d variables. use \":v\" to list them", len(storeMap))
+}
+
+func makeJSONFilename(entry string) string {
+	if strings.HasSuffix(entry, ".json") {
+		return entry
+	}
+	return entry + ".json"
 }

@@ -54,7 +54,7 @@ func tearDown(line *liner.State) {
 
 func setup(line *liner.State) {
 	line.SetCtrlCAborts(true)
-	line.SetCompleter(completeMe)
+	line.SetWordCompleter(completeMe)
 	if f, err := os.Open(history); err == nil {
 		line.ReadHistory(f)
 		f.Close()
@@ -74,8 +74,9 @@ func loop(line *liner.State) {
 			if entry == ":q" {
 				goto exit
 			}
-			if cmd, ok := lookupCommand(entry); ok {
-				if msg := cmd.Func(entry); msg != nil {
+			args := strings.Split(entry, " ")
+			if cmd, ok := lookupCommand(args); ok {
+				if msg := cmd.Func(args); msg != nil {
 					notify.Print(msg)
 				}
 				continue

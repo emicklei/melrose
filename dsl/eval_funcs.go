@@ -9,6 +9,7 @@ import (
 
 type Function struct {
 	Description   string
+	Aliasses      string // space separated keywords
 	Sample        string
 	ControlsAudio bool
 	Func          interface{}
@@ -62,7 +63,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 
 	eval["join"] = Function{
 		Description: "join two or more musical objects",
-		Sample:      `join(?,?)`,
+		Sample:      `join(,)`,
 		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
 			joined := []melrose.Sequenceable{}
 			for _, p := range playables {
@@ -87,9 +88,10 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 			return result(f[0], nil)
 		}}
 
-	eval["seq"] = Function{
+	eval["sequence"] = Function{
 		Description: "create a Sequence from a string of notes",
-		Sample:      `seq("C C5")`,
+		Sample:      `sequence('')`,
+		Aliasses:    "seq",
 		Func: func(s string) FunctionResult {
 			n, err := melrose.ParseSequence(s)
 			if err != nil {
@@ -100,7 +102,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 
 	eval["note"] = Function{
 		Description: "create a Note from a string",
-		Sample:      `note("C#3")`,
+		Sample:      `note('')`,
 		Func: func(s string) FunctionResult {
 			n, err := melrose.ParseNote(s)
 			if err != nil {

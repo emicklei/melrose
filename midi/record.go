@@ -16,7 +16,7 @@ func (m *Midi) Record(deviceID int, stopAfterInactivity time.Duration) (melrose.
 	defer in.Close()
 
 	midiDeviceInfo := portmidi.Info(portmidi.DeviceID(deviceID))
-	print(fmt.Sprintf("listening to %s/%s ...\n", midiDeviceInfo.Interface, midiDeviceInfo.Name))
+	info(fmt.Sprintf("listening to %s/%s ...\n", midiDeviceInfo.Interface, midiDeviceInfo.Name))
 
 	// listing on all channels TODO
 	noteMap := map[int64]portmidi.Event{}
@@ -54,7 +54,7 @@ func (m *Midi) Record(deviceID int, stopAfterInactivity time.Duration) (melrose.
 		}
 	}
 done:
-	print(fmt.Sprintf("\nstopped after %v of inactivity\n", stopAfterInactivity))
+	info(fmt.Sprintf("\nstopped after %v of inactivity\n", stopAfterInactivity))
 	return melrose.BuildSequence(notes), nil
 }
 

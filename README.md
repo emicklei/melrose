@@ -61,21 +61,23 @@ These functions control the audio device (playing, changing settings).
 
     𝄞 :h
     info:
-      chord --- create a triad Chord with a Note
-       flat --- flat (ungroup) the groups of a variable
-       join --- join two or more musical objects
-       note --- create a Note from a string
-      pitch --- change the pitch with a delta of semitones
-     repeat --- repeat the musical object a number of times
-    reverse --- reverse the (groups of) notes in a sequence
-        seq --- create a Sequence from a string of notes
+        chord --- create a triad Chord with a Note
+      flatten --- flatten all operations on a musical object (mo) to a new sequence
+         join --- join two or more musical objects
+         note --- create a Note from a string
+        pitch --- change the pitch with a delta of semitones
+       repeat --- repeat the musical object a number of times
+      reverse --- reverse the (groups of) notes in a sequence
+     sequence --- create a Sequence from a string of notes
+    undynamic --- undynamic all the notes in a musical object (mo)
+      ungroup --- ungroup any groups of a musical object (mo)
 
        bpm --- get or set the Beats Per Minute value [1..300], default is 120
         go --- play all musical objects in parallel
       play --- play a musical object such as Note,Chord,Sequence,...
     record --- creates a recorded sequence of notes from device ID and stop after T seconds of inactivity
 
-    :h --- show help on commands and functions
+    :h --- show help on a command or function, e.g :h seq
     :l --- load memory from disk
     :m --- show MIDI information
     :q --- quit

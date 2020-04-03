@@ -39,6 +39,7 @@ func (m *Midi) BeatsPerMinute() float64 {
 
 func (m *Midi) PrintInfo() {
 	fmt.Println("[midi] BPM:", m.bpm)
+	fmt.Println("[midi] Base Velocity:", m.baseVelocity)
 	var midiDeviceInfo *portmidi.DeviceInfo
 	defaultOut := portmidi.DefaultOutputDeviceID()
 	fmt.Println("[midi] default output device id:", defaultOut)
@@ -81,4 +82,8 @@ func (m *Midi) Close() {
 // 34 = purple
 func print(arg interface{}) {
 	fmt.Printf("\033[2;34m" + fmt.Sprintf("%v ", arg) + "\033[0m")
+}
+
+func info(arg interface{}) {
+	fmt.Printf("\033[2;33m" + fmt.Sprintf("%v ", arg) + "\033[0m")
 }
