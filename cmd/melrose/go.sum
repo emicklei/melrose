@@ -5,6 +5,8 @@ github.com/davecgh/go-spew v0.0.0-20161028175848-04cdfd42973b/go.mod h1:J7Y8YcW2
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/emicklei/melrose v0.5.1 h1:IoDlPhmxlOwfet+mngy4LWl4o0PseNpmU0Bw6ILUM54=
 github.com/emicklei/melrose v0.5.1/go.mod h1:TbD5HQEOHn8k7VdumLczbhqAgTm8xzcR0kQmH3nbZn4=
+github.com/emicklei/melrose v0.6.0 h1:bNWMvL4SNv5q9yI3TGBRPR6YW3U+3vxmY7jQyfkn+pA=
+github.com/emicklei/melrose v0.6.0/go.mod h1:TbD5HQEOHn8k7VdumLczbhqAgTm8xzcR0kQmH3nbZn4=
 github.com/gdamore/encoding v1.0.0/go.mod h1:alR0ol34c49FCSBLjhosxzcPHQbf2trDkoo5dl+VrEg=
 github.com/gdamore/tcell v1.3.0/go.mod h1:Hjvr+Ofd+gLglo7RYKxxnzCBmev3BzsS67MebKS4zMM=
 github.com/lucasb-eyer/go-colorful v1.0.2/go.mod h1:0MS4r+7BZKSJ5mw4/S5MPN+qHFF1fYclkSPilDOKW0s=

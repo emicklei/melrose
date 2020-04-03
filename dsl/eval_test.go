@@ -5,7 +5,7 @@ import (
 )
 
 func TestNestedFunctions(t *testing.T) {
-	input := `pitch(1,repeat(1,reverse(join(note('E'),seq('F G')))))`
+	input := `pitch(1,repeat(1,reverse(join(note('E'),sequence('F G')))))`
 	v, err := Evaluate(NewVariableStore(), input)
 	if err != nil {
 		t.Error(err)
@@ -14,7 +14,7 @@ func TestNestedFunctions(t *testing.T) {
 }
 
 func TestMulitLineEvaluate(t *testing.T) {
-	input := `seq("
+	input := `sequence("
 		C D E C 
 		C D E C 
 		E F 2G

@@ -19,7 +19,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval := map[string]Function{}
 	eval["chord"] = Function{
 		Description: "create a triad Chord with a Note",
-		Sample:      `chord("C4")`,
+		Sample:      `chord('')`,
 		Func: func(note string) FunctionResult {
 			n, err := melrose.ParseNote(note)
 			if err != nil {
@@ -30,7 +30,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 
 	eval["pitch"] = Function{
 		Description: "change the pitch with a delta of semitones",
-		Sample:      `pitch(1,?)`,
+		Sample:      `pitch(1,)`,
 		Func: func(semitones int, m interface{}) FunctionResult {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -41,7 +41,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 
 	eval["reverse"] = Function{
 		Description: "reverse the (groups of) notes in a sequence",
-		Sample:      `reverse(?)`,
+		Sample:      `reverse()`,
 		Func: func(m interface{}) FunctionResult {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -52,7 +52,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 
 	eval["repeat"] = Function{
 		Description: "repeat the musical object a number of times",
-		Sample:      `repeat(2,?)`,
+		Sample:      `repeat(2,)`,
 		Func: func(howMany int, m interface{}) FunctionResult {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -141,7 +141,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 
 	eval["ungroup"] = Function{
 		Description: "ungroup any groups of a musical object (mo)",
-		Sample:      `ungroup(mo)`,
+		Sample:      `ungroup()`,
 		Func: func(value interface{}) FunctionResult {
 			if s, ok := getSequenceable(value); ok {
 				return result(melrose.Ungroup{Target: s}, nil)
@@ -153,7 +153,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval["record"] = Function{
 		Description:   "creates a recorded sequence of notes from device ID and stop after T seconds of inactivity",
 		ControlsAudio: true,
-		Sample:        `record(ID,T)`,
+		Sample:        `record(,)`,
 		Func: func(deviceID int, secondsInactivity int) FunctionResult {
 			seq, err := melrose.CurrentDevice().Record(deviceID, time.Duration(secondsInactivity)*time.Second)
 			return result(seq, notify.Error(err))
@@ -161,7 +161,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 
 	eval["undynamic"] = Function{
 		Description: "undynamic all the notes in a musical object (mo)",
-		Sample:      `undynamic(mo)`,
+		Sample:      `undynamic()`,
 		Func: func(value interface{}) FunctionResult {
 			if s, ok := getSequenceable(value); ok {
 				return result(melrose.Undynamic{Target: s}, nil)
@@ -172,7 +172,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 
 	eval["flatten"] = Function{
 		Description: "flatten all operations on a musical object (mo) to a new sequence",
-		Sample:      `flatten(mo)`,
+		Sample:      `flatten()`,
 		Func: func(value interface{}) FunctionResult {
 			if s, ok := getSequenceable(value); ok {
 				return result(s.S(), nil)

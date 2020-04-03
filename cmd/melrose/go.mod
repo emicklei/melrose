@@ -7,4 +7,4 @@ require (
     github.com/peterh/liner v1.2.0
 )
 
-//replace github.com/emicklei/melrose => ../../
+replace github.com/emicklei/melrose => ../../

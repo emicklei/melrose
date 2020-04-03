@@ -1,49 +1,43 @@
 package main
 
 import (
-	"reflect"
+	"sort"
 	"strings"
 	"unicode"
 
 	"github.com/emicklei/melrose/dsl"
 )
 
-func availableMethodNames(v interface{}, prefix string) (list []string) {
-	rt := reflect.TypeOf(v)
-	for i := 0; i < rt.NumMethod(); i++ {
-		m := rt.Method(i)
-		if strings.HasPrefix(m.Name, prefix) {
-			list = append(list, m.Name)
-		}
-	}
-	return
-}
-
 func completeMe(line string, pos int) (head string, c []string, tail string) {
 	start := pos
-	// given pos go back to last separator
-	runes := []rune(line)
-	for i := start; i != 0; i-- {
-		if i >= len(runes) {
-			continue
+
+	if pos > 0 {
+		// go back to last separator
+		runes := []rune(line)
+		for i := start - 1; i >= 0; i-- {
+			r := runes[i]
+			if !unicode.IsLetter(r) && r != '_' {
+				break
+			}
+			start = i
 		}
-		r := runes[i]
-		if !unicode.IsLetter(r) && r != '_' {
-			start = i + 1
-			break
-		}
+	}
+	prefix := line[start:pos]
+	if len(prefix) == 0 {
+		return line[0:pos], c, line[pos:]
 	}
 	// vars first
 	for k, _ := range varStore.Variables() {
-		if strings.HasPrefix(k, line[start:]) {
-			c = append(c, k)
+		if strings.HasPrefix(k, prefix) {
+			c = append(c, k[len(prefix):])
 		}
 	}
 	for k, f := range dsl.EvalFunctions(varStore) {
 		// TODO start from closest (
-		if strings.HasPrefix(k, line[start:]) {
-			c = append(c, f.Sample)
+		if strings.HasPrefix(k, prefix) {
+			c = append(c, f.Sample[len(prefix):])
 		}
 	}
-	return line[0:start], c, line[pos:]
+	sort.Strings(c)
+	return line[0:pos], c, line[pos:]
 }

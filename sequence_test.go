@@ -33,7 +33,7 @@ func ExampleSequenceParseGroups() {
 
 func TestSequence_Storex(t *testing.T) {
 	m, _ := ParseSequence("C [E G]")
-	if got, want := m.Storex(), `seq('C [E G]')`; got != want {
+	if got, want := m.Storex(), `sequence('C [E G]')`; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
