@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	version = "v0.1"
 	verbose = flag.Bool("v", false, "verbose logging")
 
 	history  = ".melrose.history"
@@ -37,7 +38,7 @@ func main() {
 }
 
 func welcome() {
-	fmt.Println("\033[1;34mmelrose\033[0m" + " - v0.1")
+	fmt.Println("\033[1;34mmelrose\033[0m" + fmt.Sprintf(" - %s - syntax %s", version, dsl.Syntax))
 }
 
 var functionNames = []string{"play"}

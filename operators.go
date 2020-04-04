@@ -98,7 +98,7 @@ func (a Ungroup) S() Sequence {
 }
 
 func (a Ungroup) Storex() string {
-	return fmt.Sprintf("flat(%s)", a.Target.Storex())
+	return fmt.Sprintf("ungroup(%s)", a.Target.Storex())
 }
 
 type Undynamic struct {

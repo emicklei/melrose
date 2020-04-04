@@ -34,12 +34,12 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval["chord"] = Function{
 		Description: "create a triad Chord with a Note",
 		Sample:      `chord('')`,
-		Func: func(note string) FunctionResult {
-			n, err := melrose.ParseNote(note)
+		Func: func(chord string) FunctionResult {
+			c, err := melrose.ParseChord(chord)
 			if err != nil {
 				return result(nil, notify.Errorf("%v", err))
 			}
-			return result(n.Chord(), nil)
+			return result(c, nil)
 		}}
 
 	eval["pitch"] = Function{

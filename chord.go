@@ -1,8 +1,10 @@
 package melrose
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"regexp"
 	"strings"
 )
@@ -10,9 +12,9 @@ import (
 // https://en.wikipedia.org/wiki/Chord_(music)
 type Chord struct {
 	start     Note
-	inversion int
-	interval  int
-	quality   int
+	inversion int // Ground,Inversion1,Inversion2,Inversion3
+	interval  int // Triad,Seventh,Sixth
+	quality   int // Major,Minor,Dominant,Augmented
 }
 
 func zeroChord() Chord {
@@ -20,7 +22,54 @@ func zeroChord() Chord {
 }
 
 func (c Chord) Storex() string {
-	return fmt.Sprintf("chord('%v')", c.start)
+	var b bytes.Buffer
+	fmt.Fprintf(&b, "chord('%s", c.start.String())
+	endsWithColon := false
+	emitColon := func() {
+		if !endsWithColon {
+			io.WriteString(&b, ":")
+		}
+		endsWithColon = false
+	}
+
+	if c.quality != Major {
+		switch c.quality {
+		case Minor:
+			emitColon()
+			io.WriteString(&b, "m")
+		case Dominant:
+			emitColon()
+			io.WriteString(&b, "D")
+		case Augmented:
+			emitColon()
+			io.WriteString(&b, "A")
+		}
+	}
+	if c.interval != Triad {
+		switch c.interval {
+		case Sixth:
+			emitColon()
+			io.WriteString(&b, "6")
+		case Seventh:
+			emitColon()
+			io.WriteString(&b, "7")
+		}
+	}
+	if c.inversion != Ground {
+		switch c.inversion {
+		case Inversion1:
+			emitColon()
+			io.WriteString(&b, "1")
+		case Inversion2:
+			emitColon()
+			io.WriteString(&b, "2")
+		case Inversion3:
+			emitColon()
+			io.WriteString(&b, "3")
+		}
+	}
+	fmt.Fprintf(&b, "')")
+	return b.String()
 }
 
 func (c Chord) Modified(modifiers ...int) Chord {
@@ -53,6 +102,14 @@ func (c Chord) S() Sequence {
 	for _, each := range semitones {
 		next := c.start.Pitched(each)
 		notes = append(notes, next)
+	}
+	// apply inversion
+	if c.inversion == Inversion1 {
+		notes = append(notes, notes[0].Octaved(1))[1:]
+	}
+	if c.inversion == Inversion2 {
+		notes = append(notes, notes[0].Octaved(1))[1:]
+		notes = append(notes, notes[0].Octaved(1))[1:]
 	}
 	return Sequence{[][]Note{notes}}
 }

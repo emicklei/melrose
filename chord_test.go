@@ -40,6 +40,12 @@ func TestParseChord(t *testing.T) {
 			Chord{start: N("C"), quality: Major, interval: Sixth, inversion: Inversion2},
 			false,
 		},
+		{
+			"C sharp major 1nd inversion",
+			args{"C#:1"},
+			Chord{start: N("C#"), quality: Major, interval: Triad, inversion: Inversion1},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

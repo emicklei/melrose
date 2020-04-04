@@ -1,2 +1,0 @@
-run:
-	go install && melrose

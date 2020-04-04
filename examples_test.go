@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func ExampleChord() {
+func _ExampleChord() {
 	// major triad
 	c1, _ := ParseChord("C")
 	// major sixth
@@ -40,10 +40,18 @@ func ExampleChord() {
 	// [C E♭ G]
 }
 
-func ExampleChordInversion() {
+func ExampleChordInversion1() {
+	// major triad second inversion
+	c1, _ := ParseChord("C:1")
+	fmt.Println(c1.S())
+	// Output:
+	// [E G C5]
+}
+
+func ExampleChordInversion2() {
 	// major triad second inversion
 	c1, _ := ParseChord("C:2")
 	fmt.Println(c1.S())
 	// Output:
-	// [C E G]
+	// [G C5 E5]
 }

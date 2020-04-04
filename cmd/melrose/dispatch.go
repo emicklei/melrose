@@ -14,7 +14,6 @@ func dispatch(entry string) error {
 		return nil
 	}
 	if value, ok := varStore.Get(entry); ok {
-		fmt.Printf(entry)
 		printValue(value)
 		return nil
 	}
