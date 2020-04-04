@@ -16,14 +16,12 @@ const (
 
 	Major
 	Minor // Natural
-	HarmonicMinor
-	MelodicMinor
-
+	Dominant
+	Augmented
 	// https://en.wikipedia.org/wiki/Chord_(music)#Common_types_of_chords
-	MajorTriad
-	MajorSeventh
 	Triad
 	Seventh
+	Sixth
 
 	Ground
 	Inversion1

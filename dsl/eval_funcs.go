@@ -1,11 +1,25 @@
 package dsl
 
 import (
+	"strings"
 	"time"
 
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
 )
+
+// Syntax tells what language version this package is supporting.
+const Syntax = "1.0" // major,minor
+
+func IsCompatibleSyntax(s string) bool {
+	if len(s) == 0 {
+		// ignore syntax ; you are on your own
+		return true
+	}
+	mm := strings.Split(Syntax, ".")
+	ss := strings.Split(s, ".")
+	return mm[0] == ss[0] && ss[1] <= mm[1]
+}
 
 type Function struct {
 	Description   string

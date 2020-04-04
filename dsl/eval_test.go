@@ -4,6 +4,18 @@ import (
 	"testing"
 )
 
+func TestIsCompatible(t *testing.T) {
+	if got, want := true, IsCompatibleSyntax("1.0"); got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+	if got, want := false, IsCompatibleSyntax("2.0"); got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+	if got, want := false, IsCompatibleSyntax("1.1"); got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+}
+
 func TestNestedFunctions(t *testing.T) {
 	input := `pitch(1,repeat(1,reverse(join(note('E'),sequence('F G')))))`
 	v, err := Evaluate(NewVariableStore(), input)

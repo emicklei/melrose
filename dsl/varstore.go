@@ -127,6 +127,7 @@ func (v *VariableStore) ListVariables(args []string) notify.Message {
 type Snapshot struct {
 	Author        string            `json:"author"`
 	LastModified  time.Time         `json:"lastModified"`
+	Syntax        string            `json:"syntax"`
 	Variables     map[string]string `json:"variables"`
 	Configuration map[string]string `json:"configuration"`
 }
@@ -149,6 +150,10 @@ func (s *VariableStore) LoadMemoryFromDisk(args []string) notify.Message {
 	dec := json.NewDecoder(f)
 	if err := dec.Decode(&snap); err != nil {
 		return notify.Error(err)
+	}
+
+	if !IsCompatibleSyntax(snap.Syntax) {
+		return notify.Errorf("syntax incompatible source detected, got %q want %q", snap.Syntax, Syntax)
 	}
 
 	toProcess := snap.Variables
@@ -221,6 +226,7 @@ func (s *VariableStore) SaveMemoryToDisk(args []string) notify.Message {
 	snap := Snapshot{
 		Author:       os.Getenv("USER"),
 		LastModified: time.Now(),
+		Syntax:       Syntax,
 		Variables:    storeMap,
 		Configuration: map[string]string{
 			"bpm": fmt.Sprintf("%v", melrose.CurrentDevice().BeatsPerMinute()),
