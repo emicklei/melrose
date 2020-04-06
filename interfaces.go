@@ -18,7 +18,7 @@ type Storable interface {
 type AudioDevice interface {
 	PrintInfo()
 
-	Play(seq Sequence, echo bool)
+	Play(seq Sequenceable, echo bool)
 	Record(deviceID int, stopAfterInactivity time.Duration) (Sequence, error)
 
 	SetBeatsPerMinute(bpm float64)

@@ -103,7 +103,7 @@ func (v *VariableStore) ListVariables(args []string) notify.Message {
 	width := 0
 	for k, _ := range v.variables {
 		// if filtering is wanted
-		if len(args) == 2 && !strings.HasPrefix(k, args[1]) {
+		if len(args) == 1 && !strings.HasPrefix(k, args[0]) {
 			continue
 		}
 		if len(k) > width {
@@ -137,8 +137,8 @@ const defaultStorageFilename = "melrose.json"
 // LoadMemoryFromDisk loads all variables by decoding JSON from a filename.
 func (s *VariableStore) LoadMemoryFromDisk(args []string) notify.Message {
 	filename := defaultStorageFilename
-	if len(args) == 2 {
-		filename = makeJSONFilename(args[1])
+	if len(args) > 0 {
+		filename = makeJSONFilename(args[0])
 	}
 	f, err := os.Open(filename)
 	if err != nil {
@@ -194,7 +194,10 @@ func (s *VariableStore) LoadMemoryFromDisk(args []string) notify.Message {
 		if err != nil {
 			return notify.Errorf("invalid value for bpm (beat-per-minute):%v", v)
 		} else {
-			melrose.CurrentDevice().SetBeatsPerMinute(f)
+			// TODO do not like this dependency on a device
+			if melrose.CurrentDevice() != nil {
+				melrose.CurrentDevice().SetBeatsPerMinute(f)
+			}
 		}
 	}
 	return notify.Infof("loaded %d variables. use \":v\" to list them", len(snap.Variables))
@@ -203,8 +206,8 @@ func (s *VariableStore) LoadMemoryFromDisk(args []string) notify.Message {
 // SaveMemoryToDisk saves all known variables in JSON to a filename.
 func (s *VariableStore) SaveMemoryToDisk(args []string) notify.Message {
 	filename := defaultStorageFilename
-	if len(args) == 2 {
-		filename = makeJSONFilename(args[1])
+	if len(args) == 1 {
+		filename = makeJSONFilename(args[0])
 	}
 	f, err := os.Create(filename)
 	if err != nil {

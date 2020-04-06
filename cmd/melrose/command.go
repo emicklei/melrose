@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
 )
@@ -24,11 +26,11 @@ type Command struct {
 	Func        func(args []string) notify.Message
 }
 
-func lookupCommand(args []string) (Command, bool) {
-	if len(args) == 0 {
+func lookupCommand(cmd string) (Command, bool) {
+	if len(cmd) == 0 {
 		return Command{}, false
 	}
-	if cmd, ok := cmdFuncMap[args[0]]; ok {
+	if cmd, ok := cmdFuncMap[strings.ToLower(cmd)]; ok {
 		return cmd, true
 	}
 	return Command{}, false

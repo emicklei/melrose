@@ -72,12 +72,12 @@ func loop(line *liner.State) {
 		entry = strings.TrimSpace(entry)
 		if strings.HasPrefix(entry, ":") {
 			// special case
-			if entry == ":q" {
+			if entry == ":q" || entry == ":Q" {
 				goto exit
 			}
 			args := strings.Split(entry, " ")
-			if cmd, ok := lookupCommand(args); ok {
-				if msg := cmd.Func(args); msg != nil {
+			if cmd, ok := lookupCommand(args[0]); ok {
+				if msg := cmd.Func(args[1:]); msg != nil {
 					notify.Print(msg)
 				}
 				continue

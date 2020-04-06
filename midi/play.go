@@ -9,12 +9,13 @@ import (
 	"github.com/emicklei/melrose"
 )
 
-func (m *Midi) Play(seq melrose.Sequence, echo bool) {
+func (m *Midi) Play(seq melrose.Sequenceable, echo bool) {
 	if !m.enabled {
 		return
 	}
+	actualSequence := seq.S()
 	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/m.bpm))) * time.Millisecond
-	for _, eachGroup := range seq.Notes {
+	for _, eachGroup := range actualSequence.Notes {
 		if echo {
 			if len(eachGroup) == 1 {
 				print(eachGroup[0])

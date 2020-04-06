@@ -79,9 +79,9 @@ func (m *Midi) Close() {
 	portmidi.Terminate()
 }
 
-// 34 = purple
+// 94 is bright cyan
 func print(arg interface{}) {
-	fmt.Printf("\033[2;34m" + fmt.Sprintf("%v ", arg) + "\033[0m")
+	fmt.Printf("\033[2;96m" + fmt.Sprintf("%v ", arg) + "\033[0m")
 }
 
 func info(arg interface{}) {

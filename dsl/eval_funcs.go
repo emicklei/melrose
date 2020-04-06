@@ -132,7 +132,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
-					melrose.CurrentDevice().Play(s.S(), true)
+					melrose.CurrentDevice().Play(s, true)
 				} else {
 					return result(nil, notify.Warningf("cannot play (%T) %v", p, p))
 				}
@@ -147,7 +147,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
-					go melrose.CurrentDevice().Play(s.S(), false)
+					go melrose.CurrentDevice().Play(s, false)
 				}
 			}
 			return result(nil, nil)
