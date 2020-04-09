@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+
+	"github.com/emicklei/melrose/notify"
 )
 
 type Pitch struct {
@@ -85,11 +87,11 @@ func (r Rotate) Storex() string {
 	return fmt.Sprintf("rotate(%d,%s)", r.Times, r.Target.Storex())
 }
 
-type Ungroup struct {
+type Serial struct {
 	Target Sequenceable
 }
 
-func (a Ungroup) S() Sequence {
+func (a Serial) S() Sequence {
 	n := []Note{}
 	a.Target.S().NotesDo(func(each Note) {
 		n = append(n, each)
@@ -97,8 +99,8 @@ func (a Ungroup) S() Sequence {
 	return BuildSequence(n)
 }
 
-func (a Ungroup) Storex() string {
-	return fmt.Sprintf("ungroup(%s)", a.Target.Storex())
+func (a Serial) Storex() string {
+	return fmt.Sprintf("serial(%s)", a.Target.Storex())
 }
 
 type Undynamic struct {
@@ -116,4 +118,42 @@ func (u Undynamic) S() Sequence {
 
 func (u Undynamic) Storex() string {
 	return fmt.Sprintf("undynamic(%s)", u.Target.Storex())
+}
+
+type Parallel struct {
+	Target Sequenceable
+}
+
+func (p Parallel) S() Sequence {
+	n := []Note{}
+	p.Target.S().NotesDo(func(each Note) {
+		n = append(n, each)
+	})
+	return Sequence{Notes: [][]Note{n}}
+}
+
+func (p Parallel) Storex() string {
+	return fmt.Sprintf("parallel(%s)", p.Target.Storex())
+}
+
+type Pattern struct {
+	Target  Sequenceable
+	Indices []int
+}
+
+func (p Pattern) S() Sequence {
+	seq := p.Target.S()
+	groups := [][]Note{}
+	for j, i := range p.Indices {
+		if i < 0 || i > len(seq.Notes) {
+			notify.Print(notify.Warningf("index out of sequence range: %d=%d", j, i))
+		} else {
+			groups = append(groups, seq.Notes[i-1])
+		}
+	}
+	return Sequence{Notes: groups}
+}
+
+func (p Pattern) Storex() string {
+	return fmt.Sprintf("pattern(%s)", p.Target.Storex())
 }

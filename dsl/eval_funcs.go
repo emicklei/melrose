@@ -153,14 +153,14 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 			return result(nil, nil)
 		}}
 
-	eval["ungroup"] = Function{
-		Description: "ungroup any groups of a musical object (mo)",
-		Sample:      `ungroup()`,
+	eval["serial"] = Function{
+		Description: "serialise any parallelisation of notes in a musical object",
+		Sample:      `serial()`,
 		Func: func(value interface{}) FunctionResult {
 			if s, ok := getSequenceable(value); ok {
-				return result(melrose.Ungroup{Target: s}, nil)
+				return result(melrose.Serial{Target: s}, nil)
 			} else {
-				return result(nil, notify.Warningf("cannot flat (%T) %v", value, value))
+				return result(nil, notify.Warningf("cannot serial (%T) %v", value, value))
 			}
 		}}
 
@@ -174,7 +174,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["undynamic"] = Function{
-		Description: "undynamic all the notes in a musical object (mo)",
+		Description: "undynamic all the notes in a musical object",
 		Sample:      `undynamic()`,
 		Func: func(value interface{}) FunctionResult {
 			if s, ok := getSequenceable(value); ok {
@@ -192,6 +192,17 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 				return result(s.S(), nil)
 			} else {
 				return result(nil, notify.Warningf("cannot flatten (%T) %v", value, value))
+			}
+		}}
+
+	eval["parallel"] = Function{
+		Description: "create a new sequence in which all notes of a musical object will be played in parallel",
+		Sample:      `parallel()`,
+		Func: func(value interface{}) FunctionResult {
+			if s, ok := getSequenceable(value); ok {
+				return result(melrose.Parallel{Target: s}, nil)
+			} else {
+				return result(nil, notify.Warningf("cannot parallel (%T) %v", value, value))
 			}
 		}}
 
