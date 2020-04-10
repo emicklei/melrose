@@ -21,6 +21,7 @@ func main() {
 	var err error
 	audio, err = midi.Open()
 	check(err)
+	audio.SetBeatsPerMinute(200)
 	defer audio.Close()
 
 	switch *nr {
@@ -28,6 +29,8 @@ func main() {
 		example1()
 	case 2:
 		example2()
+	case 3:
+		example3()
 	default:
 		fmt.Println("run with -nr 1 to hear example1")
 	}
@@ -56,12 +59,29 @@ func example2() {
 
 	// play with Classics>Micro Pulse
 	audio.SetBeatsPerMinute(280)
-	p := Pattern{Target: y, Indices: []int{3, 4, 2, 5, 1, 6, 2, 5}}
+	p := IndexMapper{Target: y, Indices: []int{3, 4, 2, 5, 1, 6, 2, 5}}
 	jp := Join{List: []Sequenceable{
 		Repeat{Target: p, Times: 2},
 		Repeat{Target: Pitch{Target: p, Semitones: 1}, Times: 2},
 		Repeat{Target: Pitch{Target: p, Semitones: -2}, Times: 2},
-		Repeat{Target: Pitch{Target: p, Semitones: 3}, Times: 1},
+		Repeat{Target: Pitch{Target: p, Semitones: 3}, Times: 2},
 	}}
 	audio.Play(Repeat{Target: jp, Times: 4}, echoNotes)
+}
+
+// go run main.go -nr 3
+func example3() {
+	f := Fluent{} // use CLI-like syntax
+
+	f1 := f.Sequence("C D E C")
+	f2 := f.Sequence("E F ½G")
+	f3 := f.Sequence("⅛G ⅛A ⅛G ⅛F E C")
+	f4 := f.Sequence("½C ½G3 ½C 1=")
+	r8 := f.Repeat(8, f.Rest())
+
+	v1 := f.Join(f1, f1, f2, f2, f3, f3, f4)
+	v2 := f.Join(r8, v1)
+	v3 := f.Join(r8, v2)
+
+	f.Go(audio, v1, v2, v3)
 }

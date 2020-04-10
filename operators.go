@@ -136,12 +136,12 @@ func (p Parallel) Storex() string {
 	return fmt.Sprintf("parallel(%s)", p.Target.Storex())
 }
 
-type Pattern struct {
+type IndexMapper struct {
 	Target  Sequenceable
 	Indices []int
 }
 
-func (p Pattern) S() Sequence {
+func (p IndexMapper) S() Sequence {
 	seq := p.Target.S()
 	groups := [][]Note{}
 	for j, i := range p.Indices {
@@ -154,6 +154,6 @@ func (p Pattern) S() Sequence {
 	return Sequence{Notes: groups}
 }
 
-func (p Pattern) Storex() string {
-	return fmt.Sprintf("pattern(%s)", p.Target.Storex())
+func (p IndexMapper) Storex() string {
+	return fmt.Sprintf("indexmap(%s)", p.Target.Storex())
 }
