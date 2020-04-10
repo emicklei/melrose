@@ -37,3 +37,9 @@ func (f Fluent) Go(a AudioDevice, s ...Sequenceable) {
 	}
 	wg.Wait()
 }
+
+// IndexMap creates a IndexMapper from indices.
+// Example of indices: "1 (2 3 4) 5 (6 7)". One-based indexes.
+func (f Fluent) IndexMap(s Sequenceable, indices string) Sequenceable {
+	return IndexMapper{Target: s, Indices: parseIndices(indices)}
+}

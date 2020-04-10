@@ -7,7 +7,6 @@ type Transformer interface {
 }
 
 type Sequenceable interface {
-	Storable
 	S() Sequence
 }
 

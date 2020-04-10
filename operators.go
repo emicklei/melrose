@@ -18,7 +18,10 @@ func (p Pitch) S() Sequence {
 }
 
 func (p Pitch) Storex() string {
-	return fmt.Sprintf("pitch(%d,%s)", p.Semitones, p.Target.Storex())
+	if s, ok := p.Target.(Storable); ok {
+		return fmt.Sprintf("pitch(%d,%s)", p.Semitones, s.Storex())
+	}
+	return ""
 }
 
 type Join struct {
@@ -29,7 +32,11 @@ func (j Join) Storex() string {
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "join(")
 	for i, each := range j.List {
-		fmt.Fprintf(&b, "%s", each.Storex())
+		s, ok := each.(Storable)
+		if !ok {
+			return ""
+		}
+		fmt.Fprintf(&b, "%s", s.Storex())
 		if i < len(j.List)-1 {
 			io.WriteString(&b, ",")
 		}
@@ -59,7 +66,10 @@ func (r Repeat) S() Sequence {
 }
 
 func (r Repeat) Storex() string {
-	return fmt.Sprintf("repeat(%d,%s)", r.Times, r.Target.Storex())
+	if s, ok := r.Target.(Storable); ok {
+		return fmt.Sprintf("repeat(%d,%s)", r.Times, s.Storex())
+	}
+	return ""
 }
 
 type Reverse struct {
@@ -71,7 +81,10 @@ func (r Reverse) S() Sequence {
 }
 
 func (r Reverse) Storex() string {
-	return fmt.Sprintf("reverse(%s)", r.Target.Storex())
+	if s, ok := r.Target.(Storable); ok {
+		return fmt.Sprintf("reverse(%s)", s.Storex())
+	}
+	return ""
 }
 
 type Rotate struct {
@@ -84,7 +97,10 @@ func (r Rotate) S() Sequence {
 }
 
 func (r Rotate) Storex() string {
-	return fmt.Sprintf("rotate(%d,%s)", r.Times, r.Target.Storex())
+	if s, ok := r.Target.(Storable); ok {
+		return fmt.Sprintf("rotate(%d,%s)", r.Times, s.Storex())
+	}
+	return ""
 }
 
 type Serial struct {
@@ -100,7 +116,10 @@ func (a Serial) S() Sequence {
 }
 
 func (a Serial) Storex() string {
-	return fmt.Sprintf("serial(%s)", a.Target.Storex())
+	if s, ok := a.Target.(Storable); ok {
+		return fmt.Sprintf("serial(%s)", s.Storex())
+	}
+	return ""
 }
 
 type Undynamic struct {
@@ -117,7 +136,10 @@ func (u Undynamic) S() Sequence {
 }
 
 func (u Undynamic) Storex() string {
-	return fmt.Sprintf("undynamic(%s)", u.Target.Storex())
+	if s, ok := u.Target.(Storable); ok {
+		return fmt.Sprintf("undynamic(%s)", s.Storex())
+	}
+	return ""
 }
 
 type Parallel struct {
@@ -133,27 +155,39 @@ func (p Parallel) S() Sequence {
 }
 
 func (p Parallel) Storex() string {
-	return fmt.Sprintf("parallel(%s)", p.Target.Storex())
+	if s, ok := p.Target.(Storable); ok {
+		return fmt.Sprintf("parallel(%s)", s.Storex())
+	}
+	return ""
+
 }
 
 type IndexMapper struct {
 	Target  Sequenceable
-	Indices []int
+	Indices [][]int
 }
 
 func (p IndexMapper) S() Sequence {
 	seq := p.Target.S()
 	groups := [][]Note{}
-	for j, i := range p.Indices {
-		if i < 0 || i > len(seq.Notes) {
-			notify.Print(notify.Warningf("index out of sequence range: %d=%d", j, i))
-		} else {
-			groups = append(groups, seq.Notes[i-1])
+	for _, group := range p.Indices {
+		mappedGroup := []Note{}
+		for j, each := range group {
+			if each < 0 || each > len(seq.Notes) {
+				notify.Print(notify.Warningf("index out of sequence range: %d=%d", j, each))
+			} else {
+				// TODO what if sequence had a multi note group?
+				mappedGroup = append(mappedGroup, seq.Notes[each-1][0])
+			}
 		}
+		groups = append(groups, mappedGroup)
 	}
 	return Sequence{Notes: groups}
 }
 
 func (p IndexMapper) Storex() string {
-	return fmt.Sprintf("indexmap(%s)", p.Target.Storex())
+	if s, ok := p.Target.(Storable); ok {
+		return fmt.Sprintf("indexmap(%s)", s.Storex())
+	}
+	return ""
 }

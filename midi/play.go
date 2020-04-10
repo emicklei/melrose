@@ -9,9 +9,26 @@ import (
 	"github.com/emicklei/melrose"
 )
 
+type ChannelSelector struct {
+	Target melrose.Sequenceable
+	Number int
+}
+
+func (c ChannelSelector) S() melrose.Sequence {
+	return c.Target.S()
+}
+
+func Channel(s melrose.Sequenceable, nr int) ChannelSelector {
+	return ChannelSelector{Target: s, Number: nr}
+}
+
 func (m *Midi) Play(seq melrose.Sequenceable, echo bool) {
 	if !m.enabled {
 		return
+	}
+	channel := 1 // default
+	if ch, ok := seq.(ChannelSelector); ok {
+		channel = ch.Number
 	}
 	actualSequence := seq.S()
 	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/m.bpm))) * time.Millisecond
@@ -27,7 +44,7 @@ func (m *Midi) Play(seq melrose.Sequenceable, echo bool) {
 		for _, eachNote := range eachGroup {
 			wg.Add(1)
 			go func(n melrose.Note) {
-				m.playNote(1, int(float32(m.baseVelocity)*n.VelocityFactor()), n, wholeNoteDuration)
+				m.playNote(channel, int(float32(m.baseVelocity)*n.VelocityFactor()), n, wholeNoteDuration)
 				wg.Done()
 			}(eachNote)
 		}

@@ -31,6 +31,8 @@ func main() {
 		example2()
 	case 3:
 		example3()
+	case 4:
+		example4()
 	default:
 		fmt.Println("run with -nr 1 to hear example1")
 	}
@@ -59,7 +61,7 @@ func example2() {
 
 	// play with Classics>Micro Pulse
 	audio.SetBeatsPerMinute(280)
-	p := IndexMapper{Target: y, Indices: []int{3, 4, 2, 5, 1, 6, 2, 5}}
+	p := Fluent{}.IndexMap(y, "3 4 2 5 1 6 2 5")
 	jp := Join{List: []Sequenceable{
 		Repeat{Target: p, Times: 2},
 		Repeat{Target: Pitch{Target: p, Semitones: 1}, Times: 2},
@@ -84,4 +86,23 @@ func example3() {
 	v3 := f.Join(r8, v2)
 
 	f.Go(audio, v1, v2, v3)
+}
+
+var m Fluent
+
+// go run main.go -nr 4
+func example4() {
+	y := m.Sequence("C♯2 G♯2 C♯3 E3 G♯3 E")
+
+	audio.SetBeatsPerMinute(280)
+	mapped := m.IndexMap(y, "1 (4 5 6) 2 (4 5 6) 3 (4 5 6) 2 (4 5 6)")
+
+	boomTikTik := m.Sequence("2C2 F#2 F#2")
+	left := m.Repeat(8, boomTikTik)
+	right := m.Repeat(4, mapped)
+
+	m.Go(
+		audio,
+		midi.Channel(left, 1),
+		midi.Channel(right, 2))
 }

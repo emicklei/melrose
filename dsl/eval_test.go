@@ -18,11 +18,10 @@ func TestIsCompatible(t *testing.T) {
 
 func TestNestedFunctions(t *testing.T) {
 	input := `pitch(1,repeat(1,reverse(join(note('E'),sequence('F G')))))`
-	v, err := Evaluate(NewVariableStore(), input)
+	_, err := Evaluate(NewVariableStore(), input)
 	if err != nil {
 		t.Error(err)
 	}
-	t.Logf("%#v", v)
 }
 
 func TestMulitLineEvaluate(t *testing.T) {
@@ -36,7 +35,6 @@ func TestMulitLineEvaluate(t *testing.T) {
 		2C 2G3 2C
 		2C 2G3 2C
 		")`
-	t.Log(input)
 	_, err := Evaluate(NewVariableStore(), input)
 	if err != nil {
 		t.Error(err)
