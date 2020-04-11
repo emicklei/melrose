@@ -104,6 +104,7 @@ var pitchers = []struct {
 	{"D", -2, "C"},
 	{"C", 12, "C5"},
 	{"C5", 2, "D5"},
+	{"C#3", 0, "C♯3"},
 }
 
 func TestModifiedPitch(t *testing.T) {

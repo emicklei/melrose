@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"regexp"
 	"strings"
 )
@@ -21,13 +22,14 @@ func zeroChord() Chord {
 	return Chord{start: N("C"), inversion: Ground, quality: Major, interval: Triad}
 }
 
+// Storex implements Storable
 func (c Chord) Storex() string {
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "chord('%s", c.start.String())
 	endsWithColon := false
-	emitColon := func() {
+	emitSeparator := func() {
 		if !endsWithColon {
-			io.WriteString(&b, ":")
+			io.WriteString(&b, "/")
 		}
 		endsWithColon = false
 	}
@@ -35,36 +37,36 @@ func (c Chord) Storex() string {
 	if c.quality != Major {
 		switch c.quality {
 		case Minor:
-			emitColon()
+			emitSeparator()
 			io.WriteString(&b, "m")
 		case Dominant:
-			emitColon()
+			emitSeparator()
 			io.WriteString(&b, "D")
 		case Augmented:
-			emitColon()
+			emitSeparator()
 			io.WriteString(&b, "A")
 		}
 	}
 	if c.interval != Triad {
 		switch c.interval {
 		case Sixth:
-			emitColon()
+			emitSeparator()
 			io.WriteString(&b, "6")
 		case Seventh:
-			emitColon()
+			emitSeparator()
 			io.WriteString(&b, "7")
 		}
 	}
 	if c.inversion != Ground {
 		switch c.inversion {
 		case Inversion1:
-			emitColon()
+			emitSeparator()
 			io.WriteString(&b, "1")
 		case Inversion2:
-			emitColon()
+			emitSeparator()
 			io.WriteString(&b, "2")
 		case Inversion3:
-			emitColon()
+			emitSeparator()
 			io.WriteString(&b, "3")
 		}
 	}
@@ -116,12 +118,12 @@ func (c Chord) S() Sequence {
 
 var chordRegexp = regexp.MustCompile("([MmDA]?)([67]?)")
 
-//  C:D7:2 = C dominant 7, 2nd inversion
+//  C/D7/2 = C dominant 7, 2nd inversion
 func ParseChord(s string) (Chord, error) {
 	if len(s) == 0 {
 		return Chord{}, errors.New("illegal chord: missing note")
 	}
-	parts := strings.Split(s, ":")
+	parts := strings.Split(s, "/")
 	start, err := ParseNote(parts[0])
 	if err != nil {
 		return Chord{}, err
@@ -176,4 +178,12 @@ func readInversion(s string) int {
 	default:
 		return Ground
 	}
+}
+
+func MustParseChord(s string) Chord {
+	c, err := ParseChord(s)
+	if err != nil {
+		log.Fatal("ParseChord failed:", err)
+	}
+	return c
 }

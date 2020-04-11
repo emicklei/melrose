@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/emicklei/melrose"
 	. "github.com/emicklei/melrose"
@@ -33,6 +34,8 @@ func main() {
 		example3()
 	case 4:
 		example4()
+	case 5:
+		example5()
 	default:
 		fmt.Println("run with -nr 1 to hear example1")
 	}
@@ -73,22 +76,20 @@ func example2() {
 
 // go run main.go -nr 3
 func example3() {
-	f := Fluent{} // use CLI-like syntax
+	f1 := m.Sequence("C D E C")
+	f2 := m.Sequence("E F ½G")
+	f3 := m.Sequence("⅛G ⅛A ⅛G ⅛F E C")
+	f4 := m.Sequence("½C ½G3 ½C 1=")
+	r8 := m.Repeat(8, m.Note("="))
 
-	f1 := f.Sequence("C D E C")
-	f2 := f.Sequence("E F ½G")
-	f3 := f.Sequence("⅛G ⅛A ⅛G ⅛F E C")
-	f4 := f.Sequence("½C ½G3 ½C 1=")
-	r8 := f.Repeat(8, f.Rest())
+	v1 := m.Join(f1, f1, f2, f2, f3, f3, f4)
+	v2 := m.Join(r8, v1)
+	v3 := m.Join(r8, v2)
 
-	v1 := f.Join(f1, f1, f2, f2, f3, f3, f4)
-	v2 := f.Join(r8, v1)
-	v3 := f.Join(r8, v2)
-
-	f.Go(audio, v1, v2, v3)
+	m.Go(audio, v1, v2, v3)
 }
 
-var m Fluent
+var m Fluent // use CLI-like syntax
 
 // go run main.go -nr 4
 func example4() {
@@ -103,6 +104,27 @@ func example4() {
 
 	m.Go(
 		audio,
-		midi.Channel(left, 1),
-		midi.Channel(right, 2))
+		midi.Channel(left, 1),  // DrumKit/SoCal
+		midi.Channel(right, 2)) // Classics>Micro Pulse
+}
+
+// go run main.go -nr 5
+func example5() {
+	c := m.Chord("C#3/m")
+	audio.SetBeatsPerMinute(100)
+	audio.Play(m.Join(c, c.Modified(Inversion1), c.Modified(Inversion2)), echoNotes)
+
+	time.Sleep(1 * time.Second)
+
+	audio.SetBeatsPerMinute(200)
+	for o := 0; o < 3; o++ {
+		c0 := m.Pitch(o*12, c)
+		c1 := m.Pitch(o*12, c.Modified(Inversion1))
+		c2 := m.Pitch(o*12, c.Modified(Inversion2))
+		audio.Play(m.Join(
+			m.Serial(c0),
+			m.Serial(c1),
+			m.Serial(c2)),
+			echoNotes)
+	}
 }

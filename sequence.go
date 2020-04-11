@@ -3,6 +3,7 @@ package melrose
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -65,11 +66,11 @@ var S = MustParseSequence
 
 func MustParseSequence(input string) Sequence {
 	if s, err := ParseSequence(input); err != nil {
-		panic("MustParseSequence failed:" + err.Error())
+		log.Fatal("MustParseSequence failed:", err.Error())
+		return s
 	} else {
 		return s
 	}
-
 }
 
 // ParseSequence creates a Sequence by reading the format "Note* [Note Note*]* Note*"

@@ -20,7 +20,7 @@ func (f Fluent) Parallel(s Sequenceable) Sequenceable {
 	return Parallel{Target: s}
 }
 
-func (f Fluent) Rest() Note { return MustParseNote("=") }
+func (f Fluent) Note(s string) Note { return MustParseNote(s) }
 
 func (f Fluent) Join(s ...Sequenceable) Sequenceable {
 	return Join{List: s}
@@ -42,4 +42,14 @@ func (f Fluent) Go(a AudioDevice, s ...Sequenceable) {
 // Example of indices: "1 (2 3 4) 5 (6 7)". One-based indexes.
 func (f Fluent) IndexMap(s Sequenceable, indices string) Sequenceable {
 	return IndexMapper{Target: s, Indices: parseIndices(indices)}
+}
+
+// Chord creates a new Chord by parsing the input. See Chord for the syntax.
+func (f Fluent) Chord(s string) Chord {
+	return MustParseChord(s)
+}
+
+// Serial returns a new object that serialises all the notes of the argument.
+func (f Fluent) Serial(s Sequenceable) Sequenceable {
+	return Serial{Target: s}
 }

@@ -8,6 +8,9 @@ func (s Sequence) Pitched(semitones int) Sequence {
 	if len(s.Notes) == 0 {
 		return s
 	}
+	if semitones == 0 {
+		return s
+	}
 	groups := [][]Note{}
 	for _, group := range s.Notes {
 		changed := []Note{}
