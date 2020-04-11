@@ -35,6 +35,13 @@
 | [C E] [d5 f5] | 2 doublets
 
 
+## Chord notation
+
+| Notation    | Description 
+|-------------|---
+| C#5/m/2     | C sharp triad, Octave 5, Minor, 2nd inversion
+
+
 # Melrose Live Coding
 
 Using the command-line tool called `melrose` and a MIDI controlled synthesizer.
@@ -51,7 +58,7 @@ To delete a variable, assign it to the special value `nil`.
 
 Functions create or augment musical objects. 
 Objects cannot be changed after creation.
-Each function returns a new object or an object wrapped in an operation.
+Each function returns a new object or an object wrapped in a function.
 
 ### audio functions
 
@@ -60,29 +67,30 @@ These functions control the audio device (playing, changing settings).
 ## help
 
     𝄞 :h
-    info:
-        chord --- create a triad Chord with a Note
-      flatten --- flatten all operations on a musical object (mo) to a new sequence
-         join --- join two or more musical objects
-         note --- create a Note from a string
-        pitch --- change the pitch with a delta of semitones
-       repeat --- repeat the musical object a number of times
-      reverse --- reverse the (groups of) notes in a sequence
-     sequence --- create a Sequence from a string of notes
-    undynamic --- undynamic all the notes in a musical object (mo)
-      ungroup --- ungroup any groups of a musical object (mo)
+      info: 
+         chord --- create a Chord
+       flatten --- flatten all operations on a musical object to a new sequence
+          join --- join two or more musical objects
+          note --- create a Note from a string
+      parallel --- create a new sequence in which all notes of a musical object will be played in parallel
+         pitch --- change the pitch with a delta of semitones
+        repeat --- repeat the musical object a number of times
+       reverse --- reverse the (groups of) notes in a sequence
+      sequence --- create a Sequence from a string of notes
+        serial --- serialise any parallelisation of notes in a musical object
+     undynamic --- undynamic all the notes in a musical object
 
-       bpm --- get or set the Beats Per Minute value [1..300], default is 120
-        go --- play all musical objects in parallel
-      play --- play a musical object such as Note,Chord,Sequence,...
-    record --- creates a recorded sequence of notes from device ID and stop after T seconds of inactivity
+         bpm --- get or set the Beats Per Minute value [1..300], default is 120
+          go --- play all musical objects in parallel
+        play --- play a musical object such as Note,Chord,Sequence,...
+      record --- creates a recorded sequence of notes from device ID and stop after T seconds of inactivity
 
-    :h --- show help on a command or function, e.g :h seq
-    :l --- load memory from disk
-    :m --- show MIDI information
-    :q --- quit
-    :s --- save memory to disk
-    :v --- show variables
+      :h --- show help, optional on a command or function
+      :l --- load memory from disk, optional use given filename
+      :m --- show MIDI information
+      :q --- quit
+      :s --- save memory to disk, optional use given filename
+      :v --- show variables, optional filter on given prefix
 
 
 ## line editing

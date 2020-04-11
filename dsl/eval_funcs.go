@@ -32,7 +32,7 @@ type Function struct {
 func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval := map[string]Function{}
 	eval["chord"] = Function{
-		Description: "create a triad Chord with a Note",
+		Description: "create a Chord",
 		Sample:      `chord('')`,
 		Func: func(chord string) FunctionResult {
 			c, err := melrose.ParseChord(chord)
@@ -185,7 +185,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["flatten"] = Function{
-		Description: "flatten all operations on a musical object (mo) to a new sequence",
+		Description: "flatten all operations on a musical object to a new sequence",
 		Sample:      `flatten()`,
 		Func: func(value interface{}) FunctionResult {
 			if s, ok := getSequenceable(value); ok {
