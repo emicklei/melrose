@@ -42,7 +42,7 @@ func _ExampleChord() {
 
 func ExampleChordInversion1() {
 	// major triad second inversion
-	c1, _ := ParseChord("C:1")
+	c1, _ := ParseChord("C/1")
 	fmt.Println(c1.S())
 	// Output:
 	// [E G C5]
@@ -50,7 +50,7 @@ func ExampleChordInversion1() {
 
 func ExampleChordInversion2() {
 	// major triad second inversion
-	c1, _ := ParseChord("C:2")
+	c1, _ := ParseChord("C/2")
 	fmt.Println(c1.S())
 	// Output:
 	// [G C5 E5]
