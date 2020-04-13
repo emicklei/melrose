@@ -18,6 +18,10 @@ func (l Loop) Storex() string {
 
 }
 
+func (l *Loop) IsRunning() bool {
+	return l.isRunning
+}
+
 func (l *Loop) Start(d AudioDevice) *Loop {
 	if l.isRunning {
 		return l

@@ -104,7 +104,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 				return melrose.CurrentDevice().BeatsPerMinute()
 			}
 			melrose.CurrentDevice().SetBeatsPerMinute(f[0])
-			return f[0]
+			return nil
 		}}
 
 	eval["sequence"] = Function{
@@ -231,36 +231,62 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 				return &melrose.Loop{Target: s}
 			}
 		}}
-	eval["start"] = Function{
-		Description:   "start a loop. Ignore if it was running.",
+	eval["run"] = Function{
+		Description:   "start loop(s). Ignore if it was running.",
 		ControlsAudio: true,
-		Sample:        `start(l)`,
-		Func: func(v variable) interface{} {
-			l, ok := v.Value().(*melrose.Loop)
-			if !ok {
-				notify.Print(notify.Warningf("cannot start (%T) %v", l, l))
-				return nil
+		Sample:        `run(l)`,
+		Func: func(vars ...variable) interface{} {
+			for _, each := range vars {
+				l, ok := each.Value().(*melrose.Loop)
+				if !ok {
+					notify.Print(notify.Warningf("cannot start (%T) %v", l, l))
+					continue
+				}
+				l.Start(melrose.CurrentDevice())
+				notify.Print(notify.Infof("started loop: %s", each.Name))
 			}
-			l.Start(melrose.CurrentDevice())
-			notify.Print(notify.Infof("started loop: %s", v.Name))
 			return nil
 		}}
 	eval["stop"] = Function{
-		Description:   "stop a running loop. Ignore if it was stopped.",
+		Description:   "stop running loop(s). Ignore if it was stopped.",
 		ControlsAudio: true,
 		Sample:        `stop(l)`,
-		Func: func(v variable) interface{} {
-			l, ok := v.Value().(*melrose.Loop)
-			if !ok {
-				notify.Print(notify.Warningf("cannot stop (%T) %v", l, l))
+		Func: func(vars ...variable) interface{} {
+			if len(vars) == 0 {
+				StopAllLoops(varStore)
 				return nil
 			}
-			notify.Print(notify.Infof("stopping loop: %s", v.Name))
-			l.Stop()
+			for _, each := range vars {
+				l, ok := each.Value().(*melrose.Loop)
+				if !ok {
+					notify.Print(notify.Warningf("cannot stop (%T) %v", l, l))
+					continue
+				}
+				notify.Print(notify.Infof("stopping loop: %s", each.Name))
+				l.Stop()
+			}
 			return nil
 		}}
 	// END Loop and control
-
+	eval["channel"] = Function{
+		Description:   "select a MIDI channel, must be in [1..16]",
+		ControlsAudio: true,
+		Sample:        `channel()`,
+		Func: func(midiChannel, m interface{}) interface{} {
+			s, ok := getSequenceable(m)
+			if !ok {
+				notify.Print(notify.Warningf("cannot decorate with channel (%T) %v", m, m))
+				return nil
+			}
+			return melrose.ChannelSelector{Target: s, Number: getValueable(midiChannel)}
+		}}
+	eval["interval"] = Function{
+		Description:   "create an integer interval [from..to] with a by.",
+		ControlsAudio: true,
+		Sample:        `interval()`,
+		Func: func(from, to, by int) *melrose.Interval {
+			return melrose.NewInterval(from, to, by)
+		}}
 	return eval
 }
 

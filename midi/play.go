@@ -9,26 +9,13 @@ import (
 	"github.com/emicklei/melrose"
 )
 
-type ChannelSelector struct {
-	Target melrose.Sequenceable
-	Number int
-}
-
-func (c ChannelSelector) S() melrose.Sequence {
-	return c.Target.S()
-}
-
-func Channel(s melrose.Sequenceable, nr int) ChannelSelector {
-	return ChannelSelector{Target: s, Number: nr}
-}
-
 func (m *Midi) Play(seq melrose.Sequenceable, echo bool) {
 	if !m.enabled {
 		return
 	}
-	channel := 1 // default
-	if ch, ok := seq.(ChannelSelector); ok {
-		channel = ch.Number
+	channel := m.defaultChannel
+	if sel, ok := seq.(melrose.ChannelSelector); ok {
+		channel = sel.Channel()
 	}
 	actualSequence := seq.S()
 	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/m.bpm))) * time.Millisecond
@@ -71,13 +58,13 @@ func (m *Midi) playNote(channel int, velocity int, note melrose.Note, wholeNoteD
 
 	//fmt.Println("on", data1, actualDuration)
 	m.mutex.Lock()
-	m.stream.WriteShort(int64(noteOn|channel), int64(data1), int64(velocity))
+	m.stream.WriteShort(int64(noteOn|(channel-1)), int64(data1), int64(velocity))
 	m.mutex.Unlock()
 
 	time.Sleep(actualDuration)
 
 	//fmt.Println("off", data1)
 	m.mutex.Lock()
-	m.stream.WriteShort(int64(noteOff|channel), int64(data1), 100)
+	m.stream.WriteShort(int64(noteOff|(channel-1)), int64(data1), 100)
 	m.mutex.Unlock()
 }

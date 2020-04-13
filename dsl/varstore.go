@@ -3,6 +3,7 @@ package dsl
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"reflect"
 	"sort"
@@ -187,6 +188,11 @@ func (s *VariableStore) SaveMemoryToDisk(args []string) notify.Message {
 	if len(args) == 1 {
 		filename = makeJSONFilename(args[0])
 	}
+	// make backup if exist
+	if _, err := os.Stat(filename); err == nil {
+		copyFile(filename, "backup_"+filename)
+	}
+
 	f, err := os.Create(filename)
 	if err != nil {
 		return notify.Errorf("unable to save:%v", err)
@@ -227,4 +233,17 @@ func makeJSONFilename(entry string) string {
 		return entry
 	}
 	return entry + ".json"
+}
+
+func copyFile(from, to string) {
+	input, err := ioutil.ReadFile(from)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = ioutil.WriteFile(to, input, 0644)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }

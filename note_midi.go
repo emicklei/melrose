@@ -1,6 +1,9 @@
 package melrose
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // noteMidiOffsets maps a tone index (C=0) to the number of semitones on the scale
 var noteMidiOffsets = []int{0, 2, 4, 5, 7, 9, 11}
@@ -49,4 +52,24 @@ func MIDItoNote(nr int, f float32) Note {
 	}
 	nn, _ := NewNote(string(NonRestNoteNames[offsetIndex]), octave, 0.25, accidental, false, float32(velocityFactor))
 	return nn
+}
+
+type ChannelSelector struct {
+	Target Sequenceable
+	Number Valueable
+}
+
+func (c ChannelSelector) S() Sequence {
+	return c.Target.S()
+}
+
+func (c ChannelSelector) Channel() int {
+	return Int(c.Number)
+}
+
+func (c ChannelSelector) Storex() string {
+	if s, ok := c.Target.(Storable); ok {
+		return fmt.Sprintf("channel(%v,%s)", c.Number, s.Storex())
+	}
+	return ""
 }

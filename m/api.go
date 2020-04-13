@@ -55,3 +55,7 @@ func Chord(s string) melrose.Chord {
 func Serial(s melrose.Sequenceable) melrose.Sequenceable {
 	return melrose.Serial{Target: s}
 }
+
+func Channel(nr int, s melrose.Sequenceable) melrose.ChannelSelector {
+	return melrose.ChannelSelector{Target: s, Number: melrose.On(nr)}
+}

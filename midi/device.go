@@ -9,20 +9,25 @@ import (
 )
 
 type Midi struct {
-	enabled      bool
-	stream       *portmidi.Stream
-	mutex        *sync.Mutex
-	deviceID     int
-	echo         bool
-	bpm          float64
-	baseVelocity int
+	enabled        bool
+	stream         *portmidi.Stream
+	mutex          *sync.Mutex
+	deviceID       int
+	echo           bool
+	bpm            float64
+	baseVelocity   int
+	defaultChannel int
 }
 
 const (
-	noteOn          int = 0x90
-	noteOff         int = 0x80
-	DefaultVelocity     = 70
-	DefaultBPM          = 120
+	noteOn  int = 0x90
+	noteOff int = 0x80
+)
+
+var (
+	DefaultVelocity = 70
+	DefaultBPM      = 120.0
+	DefaultChannel  = 1
 )
 
 // BeatsPerMinute (BPM) ; beats each the length of a quarter note per minute.
@@ -37,9 +42,18 @@ func (m *Midi) BeatsPerMinute() float64 {
 	return m.bpm
 }
 
+func (m *Midi) SetDefaultChannel(channel int) {
+	if channel < 1 || channel > 16 {
+		info("illegal channel, must be in [1..16]")
+		return
+	}
+	m.defaultChannel = channel
+}
+
 func (m *Midi) PrintInfo() {
 	fmt.Println("[midi] BPM:", m.bpm)
 	fmt.Println("[midi] Base Velocity:", m.baseVelocity)
+	fmt.Println("[midi] Default Channel:", m.defaultChannel)
 	var midiDeviceInfo *portmidi.DeviceInfo
 	defaultOut := portmidi.DefaultOutputDeviceID()
 	fmt.Println("[midi] default output device id:", defaultOut)
@@ -67,6 +81,7 @@ func Open() (*Midi, error) {
 	m.stream = out
 	m.bpm = DefaultBPM
 	m.baseVelocity = DefaultVelocity
+	m.defaultChannel = DefaultChannel
 	m.mutex = new(sync.Mutex)
 	return m, nil
 }

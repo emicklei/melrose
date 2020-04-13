@@ -43,8 +43,8 @@ func printValue(v interface{}) {
 		return
 	}
 	if s, ok := v.(melrose.Storable); ok {
-		fmt.Printf("\033[1;95m(%T)\033[0m %s\n", v, s.Storex())
+		fmt.Printf("\033[94m(%T)\033[0m %s\n", v, s.Storex())
 	} else {
-		fmt.Printf("\033[1;95m(%T)\033[0m %v\n", v, v)
+		fmt.Printf("\033[94m(%T)\033[0m %v\n", v, v)
 	}
 }

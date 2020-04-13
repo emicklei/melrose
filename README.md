@@ -68,22 +68,25 @@ These functions control the audio device (playing, changing settings).
 
     𝄞 :h
       info: 
-         chord --- create a Chord
-       flatten --- flatten all operations on a musical object to a new sequence
-          join --- join two or more musical objects
-          note --- create a Note from a string
-      parallel --- create a new sequence in which all notes of a musical object will be played in parallel
-         pitch --- change the pitch with a delta of semitones
-        repeat --- repeat the musical object a number of times
-       reverse --- reverse the (groups of) notes in a sequence
-      sequence --- create a Sequence from a string of notes
-        serial --- serialise any parallelisation of notes in a musical object
-     undynamic --- undynamic all the notes in a musical object
+          chord --- create a Chord
+        flatten --- flatten all operations on a musical object to a new sequence
+           join --- join two or more musical objects
+           loop --- create a new loop
+           note --- create a Note from a string
+       parallel --- create a new sequence in which all notes of a musical object will be played in parallel
+          pitch --- change the pitch with a delta of semitones
+         repeat --- repeat the musical object a number of times
+        reverse --- reverse the (groups of) notes in a sequence
+       sequence --- create a Sequence from a string of notes
+         serial --- serialise any parallelisation of notes in a musical object
+      undynamic --- undynamic all the notes in a musical object
 
          bpm --- get or set the Beats Per Minute value [1..300], default is 120
           go --- play all musical objects in parallel
         play --- play a musical object such as Note,Chord,Sequence,...
       record --- creates a recorded sequence of notes from device ID and stop after T seconds of inactivity
+       start --- start loop(s). Ignore if it was running.
+        stop --- stop running loop(s). Ignore if it was stopped.
 
       :h --- show help, optional on a command or function
       :l --- load memory from disk, optional use given filename

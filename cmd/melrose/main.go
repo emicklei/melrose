@@ -90,15 +90,5 @@ func loop(line *liner.State) {
 		line.AppendHistory(entry)
 	}
 exit:
-	cleanup()
-}
-
-func cleanup() {
-	// stop any running loops
-	for k, v := range varStore.Variables() {
-		if l, ok := v.(*melrose.Loop); ok {
-			notify.Print(notify.Infof("stopping loop [%s]", k))
-			l.Stop()
-		}
-	}
+	dsl.StopAllLoops(varStore)
 }

@@ -20,6 +20,7 @@ type AudioDevice interface {
 	Play(seq Sequenceable, echo bool)
 	Record(deviceID int, stopAfterInactivity time.Duration) (Sequence, error)
 
+	SetDefaultChannel(channel int)
 	SetBeatsPerMinute(bpm float64)
 	BeatsPerMinute() float64
 

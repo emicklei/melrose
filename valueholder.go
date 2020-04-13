@@ -14,6 +14,10 @@ func Int(h Valueable) int {
 	if v, ok := h.Value().(int); ok {
 		return v
 	}
+	// maybe the value is a Valueable
+	if vv, ok := h.Value().(Valueable); ok {
+		return Int(vv)
+	}
 	notify.Print(notify.Warningf("expected [int] but got [%T]", h.Value()))
 	return 0
 }
