@@ -34,45 +34,49 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval["chord"] = Function{
 		Description: "create a Chord",
 		Sample:      `chord('')`,
-		Func: func(chord string) FunctionResult {
+		Func: func(chord string) interface{} {
 			c, err := melrose.ParseChord(chord)
 			if err != nil {
-				return result(nil, notify.Errorf("%v", err))
+				notify.Print(notify.Errorf("%v", err))
+				return nil
 			}
-			return result(c, nil)
+			return c
 		}}
 
 	eval["pitch"] = Function{
 		Description: "change the pitch with a delta of semitones",
-		Sample:      `pitch(1,)`,
-		Func: func(semitones int, m interface{}) FunctionResult {
+		Sample:      `pitch(,)`,
+		Func: func(semitones, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
-				return result(nil, notify.Warningf("cannot pitch (%T) %v", m, m))
+				notify.Print(notify.Warningf("cannot pitch (%T) %v", m, m))
+				return nil
 			}
-			return result(melrose.Pitch{Target: s, Semitones: semitones}, nil)
+			return melrose.Pitch{Target: s, Semitones: getValueable(semitones)}
 		}}
 
 	eval["reverse"] = Function{
 		Description: "reverse the (groups of) notes in a sequence",
 		Sample:      `reverse()`,
-		Func: func(m interface{}) FunctionResult {
+		Func: func(m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
-				return result(nil, notify.Warningf("cannot reverse (%T) %v", m, m))
+				notify.Print(notify.Warningf("cannot reverse (%T) %v", m, m))
+				return nil
 			}
-			return result(melrose.Reverse{Target: s}, nil)
+			return melrose.Reverse{Target: s}
 		}}
 
 	eval["repeat"] = Function{
 		Description: "repeat the musical object a number of times",
 		Sample:      `repeat(2,)`,
-		Func: func(howMany int, m interface{}) FunctionResult {
+		Func: func(howMany int, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
-				return result(nil, notify.Warningf("cannot repeat (%T) %v", m, m))
+				notify.Print(notify.Warningf("cannot repeat (%T) %v", m, m))
+				return nil
 			}
-			return result(melrose.Repeat{Target: s, Times: howMany}, nil)
+			return melrose.Repeat{Target: s, Times: howMany}
 		}}
 
 	eval["join"] = Function{
@@ -81,86 +85,90 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
 			joined := []melrose.Sequenceable{}
 			for _, p := range playables {
-				if s, ok := getSequenceable(p); ok {
-					joined = append(joined, s)
+				if s, ok := getSequenceable(p); !ok {
+					notify.Print(notify.Warningf("cannot join (%T) %v", p, p))
+					return nil
 				} else {
-					return result(nil, notify.Warningf("cannot join (%T) %v", p, p))
+					joined = append(joined, s)
 				}
 			}
-			return result(melrose.Join{List: joined}, nil)
+			return melrose.Join{List: joined}
 		}}
 
 	eval["bpm"] = Function{
 		Description:   "get or set the Beats Per Minute value [1..300], default is 120",
 		ControlsAudio: true,
 		Sample:        `bpm(180)`,
-		Func: func(f ...float64) FunctionResult {
+		Func: func(f ...float64) interface{} {
 			if len(f) == 0 {
-				return result(melrose.CurrentDevice().BeatsPerMinute(), nil)
+				return melrose.CurrentDevice().BeatsPerMinute()
 			}
 			melrose.CurrentDevice().SetBeatsPerMinute(f[0])
-			return result(f[0], nil)
+			return f[0]
 		}}
 
 	eval["sequence"] = Function{
 		Description: "create a Sequence from a string of notes",
 		Sample:      `sequence('')`,
 		Aliasses:    "seq",
-		Func: func(s string) FunctionResult {
-			n, err := melrose.ParseSequence(s)
+		Func: func(s string) interface{} {
+			sq, err := melrose.ParseSequence(s)
 			if err != nil {
-				return result(nil, notify.Error(err))
+				notify.Print(notify.Error(err))
+				return nil
 			}
-			return result(n, nil)
+			return sq
 		}}
 
 	eval["note"] = Function{
 		Description: "create a Note from a string",
 		Sample:      `note('')`,
-		Func: func(s string) FunctionResult {
+		Func: func(s string) interface{} {
 			n, err := melrose.ParseNote(s)
 			if err != nil {
-				return result(nil, notify.Error(err))
+				notify.Print(notify.Error(err))
+				return nil
 			}
-			return result(n, nil)
+			return n
 		}}
 
 	eval["play"] = Function{
 		Description:   "play a musical object such as Note,Chord,Sequence,...",
 		ControlsAudio: true,
 		Sample:        `play()`,
-		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
+		Func: func(playables ...interface{}) interface{} {
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
 					melrose.CurrentDevice().Play(s, true)
 				} else {
-					return result(nil, notify.Warningf("cannot play (%T) %v", p, p))
+					notify.Print(notify.Warningf("cannot play (%T) %v", p, p))
 				}
 			}
-			return result(nil, nil)
+			return nil
 		}}
 
 	eval["go"] = Function{
 		Description:   "play all musical objects in parallel",
 		ControlsAudio: true,
 		Sample:        `go()`,
-		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
+		Func: func(playables ...interface{}) interface{} {
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
 					go melrose.CurrentDevice().Play(s, false)
 				}
 			}
-			return result(nil, nil)
+			return nil
 		}}
 
 	eval["serial"] = Function{
 		Description: "serialise any parallelisation of notes in a musical object",
 		Sample:      `serial()`,
-		Func: func(value interface{}) FunctionResult {
-			if s, ok := getSequenceable(value); ok {
-				return result(melrose.Serial{Target: s}, nil)
+		Func: func(value interface{}) interface{} {
+			if s, ok := getSequenceable(value); !ok {
+				notify.Print(notify.Warningf("cannot serial (%T) %v", value, value))
+				return nil
 			} else {
-				return result(nil, notify.Warningf("cannot serial (%T) %v", value, value))
+				return melrose.Serial{Target: s}
 			}
 		}}
 
@@ -168,43 +176,90 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Description:   "creates a recorded sequence of notes from device ID and stop after T seconds of inactivity",
 		ControlsAudio: true,
 		Sample:        `record(,)`,
-		Func: func(deviceID int, secondsInactivity int) FunctionResult {
+		Func: func(deviceID int, secondsInactivity int) interface{} {
 			seq, err := melrose.CurrentDevice().Record(deviceID, time.Duration(secondsInactivity)*time.Second)
-			return result(seq, notify.Error(err))
+			if err != nil {
+				notify.Print(notify.Error(err))
+				return nil
+			}
+			return seq
 		}}
-
 	eval["undynamic"] = Function{
 		Description: "undynamic all the notes in a musical object",
 		Sample:      `undynamic()`,
-		Func: func(value interface{}) FunctionResult {
-			if s, ok := getSequenceable(value); ok {
-				return result(melrose.Undynamic{Target: s}, nil)
+		Func: func(value interface{}) interface{} {
+			if s, ok := getSequenceable(value); !ok {
+				notify.Print(notify.Warningf("cannot undynamic (%T) %v", value, value))
+				return nil
 			} else {
-				return result(nil, notify.Warningf("cannot undynamic (%T) %v", value, value))
+				return melrose.Undynamic{Target: s}
 			}
 		}}
 
 	eval["flatten"] = Function{
 		Description: "flatten all operations on a musical object to a new sequence",
 		Sample:      `flatten()`,
-		Func: func(value interface{}) FunctionResult {
-			if s, ok := getSequenceable(value); ok {
-				return result(s.S(), nil)
+		Func: func(value interface{}) interface{} {
+			if s, ok := getSequenceable(value); !ok {
+				notify.Print(notify.Warningf("cannot flatten (%T) %v", value, value))
+				return nil
 			} else {
-				return result(nil, notify.Warningf("cannot flatten (%T) %v", value, value))
+				return s.S()
 			}
 		}}
 
 	eval["parallel"] = Function{
 		Description: "create a new sequence in which all notes of a musical object will be played in parallel",
 		Sample:      `parallel()`,
-		Func: func(value interface{}) FunctionResult {
-			if s, ok := getSequenceable(value); ok {
-				return result(melrose.Parallel{Target: s}, nil)
+		Func: func(value interface{}) interface{} {
+			if s, ok := getSequenceable(value); !ok {
+				notify.Print(notify.Warningf("cannot parallel (%T) %v", value, value))
+				return nil
 			} else {
-				return result(nil, notify.Warningf("cannot parallel (%T) %v", value, value))
+				return melrose.Parallel{Target: s}
 			}
 		}}
+	// BEGIN Loop and control
+	eval["loop"] = Function{
+		Description: "create a new loop",
+		Sample:      `loop(s)`,
+		Func: func(value interface{}) interface{} {
+			if s, ok := getSequenceable(value); !ok {
+				notify.Print(notify.Warningf("cannot loop (%T) %v", value, value))
+				return nil
+			} else {
+				return &melrose.Loop{Target: s}
+			}
+		}}
+	eval["start"] = Function{
+		Description:   "start a loop. Ignore if it was running.",
+		ControlsAudio: true,
+		Sample:        `start(l)`,
+		Func: func(v variable) interface{} {
+			l, ok := v.Value().(*melrose.Loop)
+			if !ok {
+				notify.Print(notify.Warningf("cannot start (%T) %v", l, l))
+				return nil
+			}
+			l.Start(melrose.CurrentDevice())
+			notify.Print(notify.Infof("started loop: %s", v.Name))
+			return nil
+		}}
+	eval["stop"] = Function{
+		Description:   "stop a running loop. Ignore if it was stopped.",
+		ControlsAudio: true,
+		Sample:        `stop(l)`,
+		Func: func(v variable) interface{} {
+			l, ok := v.Value().(*melrose.Loop)
+			if !ok {
+				notify.Print(notify.Warningf("cannot stop (%T) %v", l, l))
+				return nil
+			}
+			notify.Print(notify.Infof("stopping loop: %s", v.Name))
+			l.Stop()
+			return nil
+		}}
+	// END Loop and control
 
 	return eval
 }
@@ -213,11 +268,12 @@ func getSequenceable(v interface{}) (melrose.Sequenceable, bool) {
 	if s, ok := v.(melrose.Sequenceable); ok {
 		return s, ok
 	}
-	if f, ok := v.(FunctionResult); ok {
-		if f.Notification != nil {
-			notify.Print(f.Notification)
-		}
-		return getSequenceable(f.Result)
-	}
 	return nil, false
+}
+
+func getValueable(val interface{}) melrose.Valueable {
+	if v, ok := val.(melrose.Valueable); ok {
+		return v
+	}
+	return melrose.On(val)
 }

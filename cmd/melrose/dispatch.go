@@ -5,7 +5,6 @@ import (
 
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
-	"github.com/emicklei/melrose/notify"
 )
 
 func dispatch(entry string) error {
@@ -22,19 +21,11 @@ func dispatch(entry string) error {
 		if err != nil {
 			return err
 		}
-		if er, ok := r.(dsl.FunctionResult); ok {
-			notify.Print(er.Notification)
-			// TODO check that we do not use a function name as variable
-			varStore.Put(variable, er.Result)
-			printValue(er.Result)
+		// check delete
+		if r == nil {
+			varStore.Delete(variable)
 		} else {
-			// check delete
-			if r == nil {
-				varStore.Delete(variable)
-			} else {
-				varStore.Put(variable, r)
-				printValue(r)
-			}
+			varStore.Put(variable, r)
 		}
 		return nil
 	}
@@ -43,15 +34,7 @@ func dispatch(entry string) error {
 	if err != nil {
 		return err
 	}
-	if er, ok := r.(dsl.FunctionResult); ok {
-		// info,warn,error
-		notify.Print(er.Notification)
-		// still can have a result
-		printValue(er.Result)
-	} else {
-		// should not happen
-		printValue(r)
-	}
+	printValue(r)
 	return nil
 }
 
@@ -60,8 +43,8 @@ func printValue(v interface{}) {
 		return
 	}
 	if s, ok := v.(melrose.Storable); ok {
-		fmt.Printf("%s\n", s.Storex())
+		fmt.Printf("\033[1;95m(%T)\033[0m %s\n", v, s.Storex())
 	} else {
-		fmt.Printf("%v\n", v)
+		fmt.Printf("\033[1;95m(%T)\033[0m %v\n", v, v)
 	}
 }

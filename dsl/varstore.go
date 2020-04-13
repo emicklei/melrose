@@ -15,26 +15,6 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-type variable struct {
-	Name  string
-	store *VariableStore
-}
-
-func (v variable) Storex() string {
-	return v.Name
-}
-
-func (v variable) S() melrose.Sequence {
-	m, ok := v.store.Get(v.Name)
-	if !ok {
-		return melrose.Sequence{}
-	}
-	if s, ok := m.(melrose.Sequenceable); ok {
-		return s.S()
-	}
-	return melrose.Sequence{}
-}
-
 // VariableStore is an in-memory storage of values by name.
 // Access to this store is go-routine safe.
 type VariableStore struct {
@@ -173,9 +153,7 @@ func (s *VariableStore) LoadMemoryFromDisk(args []string) notify.Message {
 				toProcessNext[k] = storex
 				continue
 			}
-			if r, ok := v.(FunctionResult); ok {
-				s.Put(k, r.Result)
-			}
+			s.Put(k, v)
 		}
 		toProcess = toProcessNext
 	}
@@ -222,7 +200,7 @@ func (s *VariableStore) SaveMemoryToDisk(args []string) notify.Message {
 		if s, ok := v.(melrose.Storable); ok {
 			storeMap[k] = s.Storex()
 		} else {
-			return notify.Errorf("cannot store %q:%T\n", k, v)
+			storeMap[k] = fmt.Sprintf("%v", v)
 		}
 	}
 

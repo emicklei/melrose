@@ -10,16 +10,16 @@ import (
 
 type Pitch struct {
 	Target    Sequenceable
-	Semitones int
+	Semitones Valueable
 }
 
 func (p Pitch) S() Sequence {
-	return p.Target.S().Pitched(p.Semitones)
+	return p.Target.S().Pitched(Int(p.Semitones))
 }
 
 func (p Pitch) Storex() string {
 	if s, ok := p.Target.(Storable); ok {
-		return fmt.Sprintf("pitch(%d,%s)", p.Semitones, s.Storex())
+		return fmt.Sprintf("pitch(%v,%s)", p.Semitones, s.Storex())
 	}
 	return ""
 }
@@ -183,6 +183,10 @@ func (p IndexMapper) S() Sequence {
 		groups = append(groups, mappedGroup)
 	}
 	return Sequence{Notes: groups}
+}
+
+func NewIndexMapper(s Sequenceable, indices string) IndexMapper {
+	return IndexMapper{Target: s, Indices: parseIndices(indices)}
 }
 
 func (p IndexMapper) Storex() string {

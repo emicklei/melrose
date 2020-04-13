@@ -54,14 +54,17 @@ func Print(m Message) {
 	}
 }
 
+// Println is to inject a function that can report info,error and warning
+var Println = fmt.Println
+
 func printInfo(args ...interface{}) {
-	fmt.Println(append([]interface{}{"\033[1;32minfo:\033[0m"}, args...)...)
+	Println(append([]interface{}{"\033[1;32minfo:\033[0m"}, args...)...)
 }
 
 func printError(args ...interface{}) {
-	fmt.Println(append([]interface{}{"\033[1;31merror:\033[0m"}, args...)...)
+	Println(append([]interface{}{"\033[1;31merror:\033[0m"}, args...)...)
 }
 
 func printWarning(args ...interface{}) {
-	fmt.Println(append([]interface{}{"\033[1;33mwarning:\033[0m"}, args...)...)
+	Println(append([]interface{}{"\033[1;33mwarning:\033[0m"}, args...)...)
 }
