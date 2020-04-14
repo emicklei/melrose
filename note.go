@@ -28,7 +28,7 @@ type Note struct {
 	Accidental int    // -1 Flat, +1 Sharp, 0 Normal
 	Dotted     bool   // if true then reported duration is increased by half
 
-	duration       float32 // {0.125,0.25,0.5,1}
+	duration       float32 // {0.0625,0.125,0.25,0.5,1}
 	velocityFactor float32 // {0.8,0.6,0.2,1.0,1.2,1.6,1.8}
 }
 
@@ -76,12 +76,13 @@ func NewNote(name string, octave int, duration float32, accidental int, dot bool
 		return rest, fmt.Errorf("invalid octave [0..9]:" + string(octave))
 	}
 	switch duration {
+	case 0.0625:
 	case 0.125:
 	case 0.25:
 	case 0.5:
 	case 1:
 	default:
-		return rest, fmt.Errorf("invalid duration [1,0.5,0.25,0.125]:%v\n", duration)
+		return rest, fmt.Errorf("invalid duration [1,0.5,0.25,0.125,0.0625]:%v\n", duration)
 	}
 
 	if accidental != 0 && accidental != -1 && accidental != 1 {
@@ -214,7 +215,7 @@ func (n Note) MezzoForte() Note {
 
 // Conversion
 
-var noteRegexp = regexp.MustCompile("([½¼⅛1248]?)([CDEFGAB=])([#♯_♭]?)(\\.?)([0-9]?)([-+]?[-+]?[-+]?)")
+var noteRegexp = regexp.MustCompile("([1]?[½¼⅛12468]?)([CDEFGAB=])([#♯_♭]?)(\\.?)([0-9]?)([-+]?[-+]?[-+]?)")
 
 // MustParseNote returns a Note by parsing the input. Panic if it fails.
 func MustParseNote(input string) Note {
@@ -236,17 +237,13 @@ func ParseNote(input string) (Note, error) {
 
 	var duration float32
 	switch matches[1] {
-	case "⅛":
+	case "16":
+		duration = 0.0625
+	case "⅛", "8":
 		duration = 0.125
-	case "8":
-		duration = 0.125
-	case "¼":
+	case "¼", "4":
 		duration = 0.25
-	case "4":
-		duration = 0.25
-	case "½":
-		duration = 0.5
-	case "2":
+	case "½", "2":
 		duration = 0.5
 	case "1":
 		duration = 1
@@ -323,6 +320,8 @@ func (n Note) accidentalf(encoded bool) string {
 
 func (n Note) durationf(encoded bool) string {
 	switch n.duration {
+	case 0.0625:
+		return "16"
 	case 0.125:
 		if encoded {
 			return "8"

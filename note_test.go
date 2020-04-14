@@ -19,6 +19,7 @@ var parsetests = []struct {
 	{"4C3", "C", 3, 0.25, 0, false, 1.0},
 	{"C#3", "C", 3, 0.25, 1, false, 1.0},
 	{"4C#.3", "C", 3, 0.25, 1, true, 1.0},
+	{"16C", "C", 4, 0.0625, 0, false, 1.0},
 	{"4C#", "C", 4, 0.25, 1, false, 1.0},
 	{"C#", "C", 4, 0.25, 1, false, 1.0},
 	{"B_", "B", 4, 0.25, -1, false, 1.0}, //8
@@ -232,14 +233,6 @@ func ExamplePrintString_Sharp() {
 }
 
 // Failures
-
-func PanicDetector(t *testing.T) {
-	if r := recover(); r != nil {
-		t.Log("Good!, panic situation detected: ", r)
-	} else {
-		t.Fatal("Bummer!, should have panic-ed")
-	}
-}
 
 func TestFailedNewNote_BadName(t *testing.T) {
 	// name string, octave int, duration float32, accidental int, dot bool

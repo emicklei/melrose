@@ -1,6 +1,26 @@
 # Melrose
 
-## Note notation
+The basic musical objects in Melrose are:
+- Note
+- Sequence
+- Chord
+
+Musical objects can be composed using:
+- Repeat
+- Pitch
+- Reverse
+- Rotate
+- Join
+- Parallel
+- Serial (arpeggio)
+- Undynamic
+- IndexMapper
+
+Parameters of compositions can be:
+- Scalar values (integer, float)
+- Interval
+
+### Note notation
 
 | Notation | Alternative | Description 
 |----------|-------|-------------
@@ -14,34 +34,37 @@
 | 2=       | ½=    | half rest
 | 1=       | 1=    | full rest
 | D+       | d+    | quarter D octave 4 MezzoForte
+| 16E#.--  | 16e♯.-- | sixteenth E sharp duration x 1.5 Piano
 
 ### Note dynamics
 
-	Pianissimo // ---
-	Piano      // --
-	MezzoPiano // -
-	MezzoForte // +
-	Forte      // ++
-	Fortissimo // +++
+| Notation    | Description 
+|-------------|---
+| --- |Pianissimo
+| --	|Piano
+| -	  |MezzoPiano
+| +	  |MezzoForte
+| ++	|Forte     
+| +++ |Fortissimo
 
-## Sequence notation
+### Sequence notation
 
 | Notation    | Description 
 |-------------|---
 | C D E F       | 4 quarter tones
 | [C E] [d5 f5] | 2 doublets
+| [1C 1E 1G]    | C Chord
 
-
-## Chord notation
+### Chord notation
 
 | Notation    | Description 
 |-------------|---
 | C#5/m/2     | C sharp triad, Octave 5, Minor, 2nd inversion
 
 
-# Melrose Live Coding
+# Melrose REPL 
 
-Using the command-line tool called `melrose` and a MIDI controlled synthesizer.
+Using the command-line tool `melrose`, which is a Read–eval–print loop (REPL) and a MIDI controlled synthesizer.
 
 ## language
 
@@ -82,8 +105,8 @@ These functions control the audio device (playing, changing settings).
           go --- play all musical objects in parallel
         play --- play a musical object such as Note,Chord,Sequence,...
       record --- creates a recorded sequence of notes from device ID and stop after T seconds of inactivity
-       start --- start loop(s). Ignore if it was running.
-        stop --- stop running loop(s). Ignore if it was stopped.
+         run --- start loop(s). Ignore if any was running.
+        stop --- stop running loop(s). Ignore if any was stopped.
 
       :h --- show help, optional on a command or function
       :l --- load memory from disk, optional use given filename
