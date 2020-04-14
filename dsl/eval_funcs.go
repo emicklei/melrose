@@ -284,8 +284,8 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Description:   "create an integer interval [from..to] with a by.",
 		ControlsAudio: true,
 		Sample:        `interval()`,
-		Func: func(from, to, by int) *melrose.Interval {
-			return melrose.NewInterval(from, to, by)
+		Func: func(from, to, by interface{}) *melrose.Interval {
+			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by))
 		}}
 	return eval
 }
