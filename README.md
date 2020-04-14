@@ -16,35 +16,35 @@ See [documentation] how to install and use `melrose` for live performance.
 
 ### Package
 
-  package main
+    package main
 
-  import (
-    "log"
+    import (
+      "log"
 
-    "github.com/emicklei/melrose/m"
-    "github.com/emicklei/melrose/midi"
-  )
+      "github.com/emicklei/melrose/m"
+      "github.com/emicklei/melrose/midi"
+    )
 
-  func main() {
-    audio, err := midi.Open()
-    if err != nil {
-      log.Fatal(err)
+    func main() {
+      audio, err := midi.Open()
+      if err != nil {
+        log.Fatal(err)
+      }
+      audio.SetBeatsPerMinute(200)
+      defer audio.Close()
+
+      f1 := m.Sequence("C D E C")
+      f2 := m.Sequence("E F ½G")
+      f3 := m.Sequence("8G 8A 8G 8F E C")
+      f4 := m.Sequence("2C 2G3 2C 1=")
+      r8 := m.Repeat(8, m.Note("="))
+
+      v1 := m.Join(f1, f1, f2, f2, f3, f3, f4)
+      v2 := m.Join(r8, v1)
+      v3 := m.Join(r8, v2)
+
+      m.Go(audio, v1, v2, v3)
     }
-    audio.SetBeatsPerMinute(200)
-    defer audio.Close()
-
-    f1 := m.Sequence("C D E C")
-    f2 := m.Sequence("E F ½G")
-    f3 := m.Sequence("⅛G ⅛A ⅛G ⅛F E C")
-    f4 := m.Sequence("½C ½G3 ½C 1=")
-    r8 := m.Repeat(8, m.Note("="))
-
-    v1 := m.Join(f1, f1, f2, f2, f3, f3, f4)
-    v2 := m.Join(r8, v1)
-    v3 := m.Join(r8, v2)
-
-    m.Go(audio, v1, v2, v3)
-  }
 
 
 Software is licensed under [Apache 2.0 license](LICENSE).
