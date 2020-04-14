@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
@@ -10,6 +11,10 @@ import (
 func dispatch(entry string) error {
 	if len(entry) == 0 {
 		fmt.Println()
+		return nil
+	}
+	// check comment line
+	if strings.HasPrefix(entry, "//") {
 		return nil
 	}
 	if value, ok := varStore.Get(entry); ok {

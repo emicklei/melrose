@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 
@@ -13,8 +14,9 @@ import (
 )
 
 var (
-	version = "v0.1"
-	verbose = flag.Bool("v", false, "verbose logging")
+	version   = "v0.1"
+	verbose   = flag.Bool("v", false, "verbose logging")
+	inputFile = flag.String("i", "", "read expressions from a file")
 
 	history  = ".melrose.history"
 	varStore = dsl.NewVariableStore()
@@ -28,6 +30,11 @@ func main() {
 	currentDevice := setupAudio("midi")
 	defer currentDevice.Close()
 	melrose.SetCurrentDevice(currentDevice)
+
+	// process file if given
+	if len(*inputFile) > 0 {
+		processInputFile(*inputFile)
+	}
 
 	// start REPL
 	line := liner.NewLiner()
@@ -91,4 +98,18 @@ func loop(line *liner.State) {
 	}
 exit:
 	dsl.StopAllLoops(varStore)
+}
+
+func processInputFile(fileName string) {
+	data, err := ioutil.ReadFile(*inputFile)
+	if err != nil {
+		notify.Print(notify.Errorf("unable to read file:%v", err))
+		return
+	}
+	for line, each := range strings.Split(string(data), "\n") {
+		entry := strings.TrimSpace(each)
+		if err := dispatch(entry); err != nil {
+			notify.Print(notify.Errorf("line %d:%v", line, err))
+		}
+	}
 }

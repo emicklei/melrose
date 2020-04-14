@@ -84,6 +84,10 @@ Each function returns a new object or an object wrapped in a function.
 
 These functions control the audio device (playing, changing settings).
 
+### comment
+
+Use `//` at the start of a line to add comment.
+
 ## help
 
     𝄞 :h
