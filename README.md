@@ -10,11 +10,11 @@
 
 This software can be used both as a library (Go package) or as part of the command line tool called `melrose` for live music coding.
 
-### Tool
+### Use the tool
 
-See [documentation] how to install and use `melrose` for live performance.
+See [documentation](https://emicklei.github.io/melrose/) how to install and use `melrose` for live performance.
 
-### Package
+### Use the Go Package
 
     package main
 
