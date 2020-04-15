@@ -19,6 +19,7 @@ Musical objects can be composed using:
 Parameters of compositions can be:
 - Scalar values (integer, float)
 - Interval
+- Variable to a scalar or interval
 
 ### Note notation
 
@@ -62,11 +63,11 @@ Parameters of compositions can be:
 | C#5/m/2     | C sharp triad, Octave 5, Minor, 2nd inversion
 
 
-# Melrose REPL 
+## Melrose REPL 
 
 Using the command-line tool `melrose`, which is a Read–eval–print loop (REPL) and a MIDI controlled synthesizer.
 
-## language
+### language
 
 ### variables
 
