@@ -6,25 +6,25 @@ import (
 	"github.com/emicklei/melrose"
 )
 
-func Sequence(notation string) melrose.Sequenceable {
+func Sequence(notation string) melrose.Sequence {
 	return melrose.MustParseSequence(notation)
 }
 
-func Repeat(times int, s melrose.Sequenceable) melrose.Sequenceable {
+func Repeat(times int, s melrose.Sequenceable) melrose.Repeat {
 	return melrose.Repeat{Target: s, Times: times}
 }
 
-func Pitch(semitones int, s melrose.Sequenceable) melrose.Sequenceable {
+func Pitch(semitones int, s melrose.Sequenceable) melrose.Pitch {
 	return melrose.Pitch{Target: s, Semitones: melrose.On(semitones)}
 }
 
-func Parallel(s melrose.Sequenceable) melrose.Sequenceable {
+func Parallel(s melrose.Sequenceable) melrose.Parallel {
 	return melrose.Parallel{Target: s}
 }
 
 func Note(s string) melrose.Note { return melrose.MustParseNote(s) }
 
-func Join(s ...melrose.Sequenceable) melrose.Sequenceable {
+func Join(s ...melrose.Sequenceable) melrose.Join {
 	return melrose.Join{List: s}
 }
 
@@ -42,7 +42,7 @@ func Go(a melrose.AudioDevice, s ...melrose.Sequenceable) {
 
 // IndexMap creates a IndexMapper from indices.
 // Example of indices: "1 (2 3 4) 5 (6 7)". One-based indexes.
-func IndexMap(s melrose.Sequenceable, indices string) melrose.Sequenceable {
+func IndexMap(s melrose.Sequenceable, indices string) melrose.IndexMapper {
 	return melrose.NewIndexMapper(s, indices)
 }
 
@@ -52,7 +52,7 @@ func Chord(s string) melrose.Chord {
 }
 
 // Serial returns a new object that serialises all the notes of the argument.
-func Serial(s melrose.Sequenceable) melrose.Sequenceable {
+func Serial(s melrose.Sequenceable) melrose.Serial {
 	return melrose.Serial{Target: s}
 }
 
