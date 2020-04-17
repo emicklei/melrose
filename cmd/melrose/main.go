@@ -9,6 +9,7 @@ import (
 
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
+	"github.com/emicklei/melrose/js"
 	"github.com/emicklei/melrose/notify"
 	"github.com/peterh/liner"
 )
@@ -17,6 +18,7 @@ var (
 	version   = "v0.1"
 	verbose   = flag.Bool("v", false, "verbose logging")
 	inputFile = flag.String("i", "", "read expressions from a file")
+	httpPort  = flag.String("http", ":8118", "address on which to listen for HTTP requests")
 
 	history  = ".melrose.history"
 	varStore = dsl.NewVariableStore()
@@ -34,6 +36,13 @@ func main() {
 	// process file if given
 	if len(*inputFile) > 0 {
 		processInputFile(*inputFile)
+	}
+
+	if len(*httpPort) > 0 {
+		// start DSL server
+		vm := js.NewVirtualMachine()
+		srv := js.NewLanguageServer(vm, *httpPort)
+		go srv.Start()
 	}
 
 	// start REPL

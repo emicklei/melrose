@@ -1,11 +1,15 @@
 # Melrose
 
+[[How to install]](install.html)
+
 The basic musical objects in Melrose are:
+
 - Note
 - Sequence
 - Chord
 
 Musical objects can be composed using:
+
 - Repeat
 - Pitch
 - Reverse
@@ -17,9 +21,12 @@ Musical objects can be composed using:
 - IndexMapper
 
 Parameters of compositions can be:
+
 - Scalar values (integer, float)
 - Interval
 - Variable to a scalar or interval
+
+## Notations
 
 ### Note notation
 
@@ -39,18 +46,18 @@ Parameters of compositions can be:
 
 ### Note dynamics
 
-| Notation    | Description 
+| Notation    | Description
 |-------------|---
 | --- |Pianissimo
 | --	|Piano
 | -	  |MezzoPiano
 | +	  |MezzoForte
-| ++	|Forte     
+| ++	|Forte
 | +++ |Fortissimo
 
 ### Sequence notation
 
-| Notation    | Description 
+| Notation    | Description
 |-------------|---
 | C D E F       | 4 quarter tones
 | [C E] [d5 f5] | 2 doublets
@@ -58,12 +65,11 @@ Parameters of compositions can be:
 
 ### Chord notation
 
-| Notation    | Description 
+| Notation    | Description
 |-------------|---
 | C#5/m/2     | C sharp triad, Octave 5, Minor, 2nd inversion
 
-
-## Melrose REPL 
+## Melrose REPL
 
 Using the command-line tool `melrose`, which is a Read–eval–print loop (REPL) and a MIDI controlled synthesizer.
 
