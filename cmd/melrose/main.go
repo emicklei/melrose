@@ -9,8 +9,8 @@ import (
 
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
-	"github.com/emicklei/melrose/js"
 	"github.com/emicklei/melrose/notify"
+	"github.com/emicklei/melrose/server"
 	"github.com/peterh/liner"
 )
 
@@ -40,11 +40,7 @@ func main() {
 
 	if len(*httpPort) > 0 {
 		// start DSL server
-		nonVMStore := varStore
-		vm, vmStore := js.NewVirtualMachineAndStorage(nonVMStore)
-		// use this as global store
-		varStore = vmStore
-		go js.NewLanguageServer(vm, nonVMStore, *httpPort).Start()
+		go server.NewLanguageServer(varStore, *httpPort).Start()
 	}
 
 	// start REPL
@@ -81,6 +77,7 @@ func setup(line *liner.State) {
 }
 
 func loop(line *liner.State) {
+	eval := dsl.NewEvaluator(varStore)
 	for {
 		entry, err := line.Prompt("𝄞 ")
 		if err != nil {
@@ -101,9 +98,13 @@ func loop(line *liner.State) {
 				continue
 			}
 		}
-		if err := dispatch(entry); err != nil {
+		if result, err := eval.Dispatch(entry); err != nil {
 			notify.Print(notify.Error(err))
 			// even on error, add entry to history so we can edit/fix it
+		} else {
+			if result != nil {
+				printValue(result)
+			}
 		}
 		line.AppendHistory(entry)
 	}
@@ -117,10 +118,22 @@ func processInputFile(fileName string) {
 		notify.Print(notify.Errorf("unable to read file:%v", err))
 		return
 	}
+	eval := dsl.NewEvaluator(varStore)
 	for line, each := range strings.Split(string(data), "\n") {
 		entry := strings.TrimSpace(each)
-		if err := dispatch(entry); err != nil {
+		if _, err := eval.Dispatch(entry); err != nil {
 			notify.Print(notify.Errorf("line %d:%v", line, err))
 		}
+	}
+}
+
+func printValue(v interface{}) {
+	if v == nil {
+		return
+	}
+	if s, ok := v.(melrose.Storable); ok {
+		fmt.Printf("\033[94m(%T)\033[0m %s\n", v, s.Storex())
+	} else {
+		fmt.Printf("\033[94m(%T)\033[0m %v\n", v, v)
 	}
 }

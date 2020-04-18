@@ -46,6 +46,7 @@ func LoadMemoryFromDisk(storage VariableStorage, args []string) notify.Message {
 		return notify.Errorf("syntax incompatible source detected, got %q want %q", snap.Syntax, Syntax)
 	}
 
+	eval := NewEvaluator(storage)
 	toProcess := snap.Variables
 	pass := 0
 	for {
@@ -58,7 +59,7 @@ func LoadMemoryFromDisk(storage VariableStorage, args []string) notify.Message {
 		}
 		toProcessNext := map[string]string{}
 		for k, storex := range toProcess {
-			v, err := Evaluate(storage, storex)
+			v, err := eval.Evaluate(storex)
 			if err != nil {
 				toProcessNext[k] = storex
 				continue

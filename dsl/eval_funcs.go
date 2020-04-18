@@ -50,7 +50,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Title:       "Pitch modifier",
 		Description: "change the pitch with a delta of semitones",
 		Prefix:      "pit",
-		Sample:      `pitch(${1:semitones},${1:sequenceable})`,
+		Sample:      `pitch(${1:semitones},${2:sequenceable})`,
 		Func: func(semitones, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -63,7 +63,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 	eval["reverse"] = Function{
 		Title:       "Reverse modifier",
 		Description: "reverse the (groups of) notes in a sequence",
-		Prefix:      "pit",
+		Prefix:      "rev",
 		Sample:      `reverse(${1:sequenceable})`,
 		Func: func(m interface{}) interface{} {
 			s, ok := getSequenceable(m)
@@ -322,9 +322,24 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Title:         "Integer Interval creator",
 		Description:   "create an integer repeating interval (from,to,by)",
 		ControlsAudio: true,
+		Prefix:        "int",
 		Sample:        `interval(${1:from},${2:to},${3:by})`,
 		Func: func(from, to, by interface{}) *melrose.Interval {
 			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by))
+		}}
+	eval["indexmap"] = Function{
+		Title:         "Integer Index Map modifier",
+		Description:   "create a Mapper of Notes by index (1-based)",
+		ControlsAudio: true,
+		Prefix:        "ind",
+		Sample:        `indexmap('${0:space-separated-1-based-indices}',${1:sequenceable})`,
+		Func: func(indices string, m interface{}) interface{} {
+			s, ok := getSequenceable(m)
+			if !ok {
+				notify.Print(notify.Warningf("cannot create index mapper on (%T) %v", m, m))
+				return nil
+			}
+			return melrose.NewIndexMapper(s, indices)
 		}}
 	return eval
 }

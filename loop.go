@@ -23,7 +23,7 @@ func (l *Loop) IsRunning() bool {
 }
 
 func (l *Loop) Start(d AudioDevice) *Loop {
-	if l.isRunning {
+	if l.isRunning || d == nil {
 		return l
 	}
 	l.stopChan = make(chan bool)

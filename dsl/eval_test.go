@@ -17,14 +17,16 @@ func TestIsCompatible(t *testing.T) {
 }
 
 func TestNestedFunctions(t *testing.T) {
+	e := NewEvaluator(NewVariableStore())
 	input := `pitch(1,repeat(1,reverse(join(note('E'),sequence('F G')))))`
-	_, err := Evaluate(NewVariableStore(), input)
+	_, err := e.Evaluate(input)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestMulitLineEvaluate(t *testing.T) {
+	e := NewEvaluator(NewVariableStore())
 	input := `sequence("
 		C D E C 
 		C D E C 
@@ -35,7 +37,7 @@ func TestMulitLineEvaluate(t *testing.T) {
 		2C 2G3 2C
 		2C 2G3 2C
 		")`
-	_, err := Evaluate(NewVariableStore(), input)
+	_, err := e.Dispatch(input)
 	if err != nil {
 		t.Error(err)
 	}
@@ -62,6 +64,12 @@ func Test_isAssignment(t *testing.T) {
 			args{" a = note('=')"},
 			"a",
 			"note('=')",
+			true,
+		},
+		{"multi line",
+			args{`j2 = join(  repeat(2,i2) )`},
+			"j2",
+			"join(  repeat(2,i2) )",
 			true,
 		},
 	}

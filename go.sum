@@ -10,6 +10,8 @@ github.com/dlclark/regexp2 v1.2.0 h1:8sAhBGEM0dRWogWqWyQeIJnxjWO6oIjl8FKqREDsGfk
 github.com/dlclark/regexp2 v1.2.0/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
 github.com/dop251/goja v0.0.0-20200414142002-77e84ffb8c65 h1:Nud597JuGCF/MScrb6NNVDRgmuk8X7w3pFc5GvSsm5E=
 github.com/dop251/goja v0.0.0-20200414142002-77e84ffb8c65/go.mod h1:Mw6PkjjMXWbTj+nnj4s3QPXq1jaT0s5pC0iFD4+BOAA=
+github.com/emicklei/tre v1.2.0 h1:RBwuH30DDlaDGBXsoRbHAf20Q6ZN3F/UgAbtaiupRuE=
+github.com/emicklei/tre v1.2.0/go.mod h1:sjoUs9HVn5hfWdb6j2rv71rEQlfM2e/WPeEV4d99+38=
 github.com/gdamore/encoding v1.0.0/go.mod h1:alR0ol34c49FCSBLjhosxzcPHQbf2trDkoo5dl+VrEg=
 github.com/gdamore/tcell v1.3.0/go.mod h1:Hjvr+Ofd+gLglo7RYKxxnzCBmev3BzsS67MebKS4zMM=
 github.com/go-sourcemap/sourcemap v1.0.5 h1:oaGf6nqLxwhWPrW5jjNWUYM1SWqHIsJSFcPZojn23Mc=
