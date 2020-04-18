@@ -19,7 +19,7 @@ func NewVirtualMachine() *goja.Runtime {
 
 	// TODO can we use the DSL functions directly?
 
-	vm.Set("seq", func(s string) melrose.Sequence {
+	vm.Set("sequence", func(s string) melrose.Sequence {
 		return melrose.MustParseSequence(s)
 	})
 	vm.Set("play", func(s melrose.Sequenceable) interface{} {

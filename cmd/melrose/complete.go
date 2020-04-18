@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"sort"
 	"strings"
 	"unicode"
@@ -35,9 +36,30 @@ func completeMe(line string, pos int) (head string, c []string, tail string) {
 	for k, f := range dsl.EvalFunctions(varStore) {
 		// TODO start from closest (
 		if strings.HasPrefix(k, prefix) {
-			c = append(c, f.Sample[len(prefix):])
+			stripped := stripParameters(f.Sample)
+			c = append(c, stripped[len(prefix):])
 		}
 	}
 	sort.Strings(c)
 	return line[0:pos], c, line[pos:]
+}
+
+// to strip:  ${1:param}
+func stripParameters(sample string) string {
+	var buf bytes.Buffer
+	inparam := false
+	for _, each := range []rune(sample) {
+		if each == '$' {
+			inparam = true
+			continue
+		}
+		if each == '}' {
+			inparam = false
+			continue
+		}
+		if !inparam {
+			buf.WriteRune(each)
+		}
+	}
+	return buf.String()
 }

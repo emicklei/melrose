@@ -22,8 +22,9 @@ func IsCompatibleSyntax(s string) bool {
 }
 
 type Function struct {
+	Title         string
 	Description   string
-	Aliasses      string // space separated keywords
+	Prefix        string // for autocomplete
 	Sample        string
 	ControlsAudio bool
 	Func          interface{}
@@ -32,8 +33,10 @@ type Function struct {
 func EvalFunctions(varStore *VariableStore) map[string]Function {
 	eval := map[string]Function{}
 	eval["chord"] = Function{
+		Title:       "Chord creator",
 		Description: "create a Chord",
-		Sample:      `chord('')`,
+		Prefix:      "cho",
+		Sample:      `chord('${1:note}')`,
 		Func: func(chord string) interface{} {
 			c, err := melrose.ParseChord(chord)
 			if err != nil {
@@ -44,8 +47,10 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["pitch"] = Function{
+		Title:       "Pitch modifier",
 		Description: "change the pitch with a delta of semitones",
-		Sample:      `pitch(,)`,
+		Prefix:      "pit",
+		Sample:      `pitch(${1:semitones},${1:sequenceable})`,
 		Func: func(semitones, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -56,8 +61,10 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["reverse"] = Function{
+		Title:       "Reverse modifier",
 		Description: "reverse the (groups of) notes in a sequence",
-		Sample:      `reverse()`,
+		Prefix:      "pit",
+		Sample:      `reverse(${1:sequenceable})`,
 		Func: func(m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -68,8 +75,10 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["repeat"] = Function{
+		Title:       "Repeat modifier",
 		Description: "repeat the musical object a number of times",
-		Sample:      `repeat(2,)`,
+		Prefix:      "rep",
+		Sample:      `repeat(${1:times},${2:sequenceable})`,
 		Func: func(howMany int, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -80,8 +89,10 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["join"] = Function{
+		Title:       "Join modifier",
 		Description: "join two or more musical objects",
-		Sample:      `join(,)`,
+		Prefix:      "joi",
+		Sample:      `join(${1:first},${2:second})`,
 		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
 			joined := []melrose.Sequenceable{}
 			for _, p := range playables {
@@ -96,9 +107,11 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["bpm"] = Function{
+		Title:         "Beats Per Minute",
 		Description:   "get or set the Beats Per Minute value [1..300], default is 120",
 		ControlsAudio: true,
-		Sample:        `bpm(180)`,
+		Prefix:        "bpm",
+		Sample:        `bpm(${1:beats-per-minute})`,
 		Func: func(f ...float64) interface{} {
 			if len(f) == 0 {
 				return melrose.CurrentDevice().BeatsPerMinute()
@@ -108,9 +121,10 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["sequence"] = Function{
+		Title:       "Sequence creator",
 		Description: "create a Sequence from a string of notes",
-		Sample:      `sequence('')`,
-		Aliasses:    "seq",
+		Prefix:      "seq",
+		Sample:      `sequence('${1:space-separated-notes}')`,
 		Func: func(s string) interface{} {
 			sq, err := melrose.ParseSequence(s)
 			if err != nil {
@@ -121,8 +135,10 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["note"] = Function{
-		Description: "create a Note from a string",
-		Sample:      `note('')`,
+		Title:       "Note creator",
+		Prefix:      "no",
+		Description: "Note, e.g. C 2G#5. =",
+		Sample:      `note('${1:letter}')`,
 		Func: func(s string) interface{} {
 			n, err := melrose.ParseNote(s)
 			if err != nil {
@@ -133,9 +149,11 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["play"] = Function{
-		Description:   "play a musical object such as Note,Chord,Sequence,...",
+		Title:         "Player (foreground)",
+		Description:   "play musical objects such as Note,Chord,Sequence,...",
 		ControlsAudio: true,
-		Sample:        `play()`,
+		Prefix:        "pla",
+		Sample:        `play(${1:sequenceable})`,
 		Func: func(playables ...interface{}) interface{} {
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
@@ -148,9 +166,11 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["go"] = Function{
+		Title:         "Player (background)",
 		Description:   "play all musical objects in parallel",
 		ControlsAudio: true,
-		Sample:        `go()`,
+		Prefix:        "go",
+		Sample:        `go(${1:sequenceable})`,
 		Func: func(playables ...interface{}) interface{} {
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
@@ -161,8 +181,10 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["serial"] = Function{
+		Title:       "Serial modifier",
 		Description: "serialise any parallelisation of notes in a musical object",
-		Sample:      `serial()`,
+		Prefix:      "ser",
+		Sample:      `serial(${1:sequenceable})`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot serial (%T) %v", value, value))
@@ -173,9 +195,11 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["record"] = Function{
+		Title:         "Recorder",
 		Description:   "creates a recorded sequence of notes from device ID and stop after T seconds of inactivity",
 		ControlsAudio: true,
-		Sample:        `record(,)`,
+		Prefix:        "rec",
+		Sample:        `record(${1:input-device-id},${1:seconds-inactivity})`,
 		Func: func(deviceID int, secondsInactivity int) interface{} {
 			seq, err := melrose.CurrentDevice().Record(deviceID, time.Duration(secondsInactivity)*time.Second)
 			if err != nil {
@@ -185,8 +209,10 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 			return seq
 		}}
 	eval["undynamic"] = Function{
+		Title:       "Undo Dynamic modifier",
 		Description: "undynamic all the notes in a musical object",
-		Sample:      `undynamic()`,
+		Prefix:      "und",
+		Sample:      `undynamic(${1:sequenceable})`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot undynamic (%T) %v", value, value))
@@ -197,8 +223,10 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["flatten"] = Function{
+		Title:       "Flatten modifier",
 		Description: "flatten all operations on a musical object to a new sequence",
-		Sample:      `flatten()`,
+		Prefix:      "flat",
+		Sample:      `flatten(${1:sequenceable})`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot flatten (%T) %v", value, value))
@@ -209,8 +237,10 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 
 	eval["parallel"] = Function{
+		Title:       "Parallel modifier",
 		Description: "create a new sequence in which all notes of a musical object will be played in parallel",
-		Sample:      `parallel()`,
+		Prefix:      "par",
+		Sample:      `parallel(${1:sequenceable})`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot parallel (%T) %v", value, value))
@@ -221,8 +251,10 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 	// BEGIN Loop and control
 	eval["loop"] = Function{
+		Title:       "Loop creator",
 		Description: "create a new loop",
-		Sample:      `loop(s)`,
+		Prefix:      "loo",
+		Sample:      `loop(${1:sequenceable})`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot loop (%T) %v", value, value))
@@ -232,9 +264,11 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 			}
 		}}
 	eval["run"] = Function{
+		Title:         "Loop runner",
 		Description:   "start loop(s). Ignore if it was running.",
 		ControlsAudio: true,
-		Sample:        `run(l)`,
+		Prefix:        "run",
+		Sample:        `run(${1:loop})`,
 		Func: func(vars ...variable) interface{} {
 			for _, each := range vars {
 				l, ok := each.Value().(*melrose.Loop)
@@ -248,9 +282,11 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 			return nil
 		}}
 	eval["stop"] = Function{
+		Title:         "Loop stopper",
 		Description:   "stop running loop(s). Ignore if it was stopped.",
 		ControlsAudio: true,
-		Sample:        `stop(l)`,
+		Prefix:        "sto",
+		Sample:        `stop(${1:loop-or-empty})`,
 		Func: func(vars ...variable) interface{} {
 			if len(vars) == 0 {
 				StopAllLoops(varStore)
@@ -269,9 +305,11 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		}}
 	// END Loop and control
 	eval["channel"] = Function{
-		Description:   "select a MIDI channel, must be in [1..16]",
+		Title:         "MIDI channel modifier",
+		Description:   "select a MIDI channel, must be in [0..16]",
 		ControlsAudio: true,
-		Sample:        `channel()`,
+		Prefix:        "chan",
+		Sample:        `channel(${1:number},${2:sequenceable})`,
 		Func: func(midiChannel, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -281,9 +319,10 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 			return melrose.ChannelSelector{Target: s, Number: getValueable(midiChannel)}
 		}}
 	eval["interval"] = Function{
-		Description:   "create an integer interval [from..to] with a by.",
+		Title:         "Integer Interval creator",
+		Description:   "create an integer repeating interval (from,to,by)",
 		ControlsAudio: true,
-		Sample:        `interval()`,
+		Sample:        `interval(${1:from},${2:to},${3:by})`,
 		Func: func(from, to, by interface{}) *melrose.Interval {
 			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by))
 		}}

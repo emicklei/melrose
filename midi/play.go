@@ -58,13 +58,13 @@ func (m *Midi) playNote(channel int, velocity int, note melrose.Note, wholeNoteD
 
 	//fmt.Println("on", data1, actualDuration)
 	m.mutex.Lock()
-	m.stream.WriteShort(int64(noteOn|(channel-1)), int64(data1), int64(velocity))
+	m.stream.WriteShort(int64(noteOn|(channel)), int64(data1), int64(velocity))
 	m.mutex.Unlock()
 
 	time.Sleep(actualDuration)
 
 	//fmt.Println("off", data1)
 	m.mutex.Lock()
-	m.stream.WriteShort(int64(noteOff|(channel-1)), int64(data1), 100)
+	m.stream.WriteShort(int64(noteOff|(channel)), int64(data1), 100)
 	m.mutex.Unlock()
 }

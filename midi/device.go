@@ -27,7 +27,7 @@ const (
 var (
 	DefaultVelocity = 70
 	DefaultBPM      = 120.0
-	DefaultChannel  = 1
+	DefaultChannel  = 0
 )
 
 // BeatsPerMinute (BPM) ; beats each the length of a quarter note per minute.
