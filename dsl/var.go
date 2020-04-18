@@ -2,9 +2,17 @@ package dsl
 
 import "github.com/emicklei/melrose"
 
+type VariableStorage interface {
+	NameFor(value interface{}) string
+	Get(key string) (interface{}, bool)
+	Put(key string, value interface{})
+	Delete(key string)
+	Variables() map[string]interface{}
+}
+
 type variable struct {
 	Name  string
-	store *VariableStore
+	store VariableStorage
 }
 
 func (v variable) Storex() string {

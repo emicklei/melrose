@@ -9,47 +9,31 @@ import (
 	"sync"
 
 	"github.com/dop251/goja"
-	"github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
 )
 
-// NewVirtualMachine returns a Javascript runtime with DSL functions
-func NewVirtualMachine() *goja.Runtime {
+// NewVirtualMachineAndStorage returns a Javascript runtime with DSL functions
+func NewVirtualMachineAndStorage(store dsl.VariableStorage) (*goja.Runtime, dsl.VariableStorage) {
 	vm := goja.New()
-
-	// TODO can we use the DSL functions directly?
-
-	vm.Set("sequence", func(s string) melrose.Sequence {
-		return melrose.MustParseSequence(s)
-	})
-	vm.Set("play", func(s melrose.Sequenceable) interface{} {
-		melrose.CurrentDevice().Play(s, true)
-		return nil
-	})
-	vm.Set("loop", func(s ...melrose.Sequenceable) *melrose.Loop {
-		l := &melrose.Loop{Target: melrose.Join{List: s}}
-		return l
-	})
-	vm.Set("run", func(l *melrose.Loop) *melrose.Loop {
-		l.Start(melrose.CurrentDevice())
-		return l
-	})
-	vm.Set("note", func(s string) melrose.Note {
-		return melrose.MustParseNote(s)
-	})
-	return vm
+	storeWrapper := newAdaptorOn(vm, store)
+	for k, v := range dsl.EvalFunctions(storeWrapper) {
+		vm.Set(k, v.Func)
+	}
+	return vm, storeWrapper
 }
 
 // LanguageServer can execute DSL statements received over HTTP
 type LanguageServer struct {
 	vm      *goja.Runtime
 	mutex   *sync.Mutex
+	store   dsl.VariableStorage
 	address string
 }
 
 // NewLanguageServer returns a new LanguageService. It is not started.
-func NewLanguageServer(vm *goja.Runtime, addr string) *LanguageServer {
-	return &LanguageServer{vm: vm, address: addr, mutex: new(sync.Mutex)}
+func NewLanguageServer(vm *goja.Runtime, store dsl.VariableStorage, addr string) *LanguageServer {
+	return &LanguageServer{vm: vm, store: store, address: addr, mutex: new(sync.Mutex)}
 }
 
 // Start will start a HTTP listener for serving DSL statements
@@ -75,18 +59,26 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	// the vm is for single thread usage
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
-	returnValue, err := l.vm.RunString(string(data))
+	entry := string(data)
+	returnValue, err := l.vm.RunString(entry)
 	var response interface{}
 	if err != nil {
+		// evaluation failed.
 		w.WriteHeader(http.StatusInternalServerError)
 		notify.Print(notify.Errorf("melrose.js:%s", err.Error()))
+		fmt.Println()
 		if jserr, ok := err.(*goja.Exception); ok {
 			response = errorFrom(jserr)
 		} else {
 			response = errorFrom(err)
 		}
 	} else {
+		// evaluation was ok.
 		if gov := returnValue.Export(); gov != nil {
+			// if assignment then make sure our storage knows about the gov.
+			if variable, _, ok := dsl.IsAssignment(entry); ok {
+				l.store.Put(variable, gov)
+			}
 			response = resultFrom(gov)
 		}
 	}

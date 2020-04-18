@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -12,9 +13,15 @@ var cmdFuncMap = cmdFunctions()
 func cmdFunctions() map[string]Command {
 	cmds := map[string]Command{}
 	cmds[":h"] = Command{Description: "show help, optional on a command or function", Func: showHelp}
-	cmds[":s"] = Command{Description: "save memory to disk, optional use given filename", Func: varStore.SaveMemoryToDisk}
-	cmds[":l"] = Command{Description: "load memory from disk, optional use given filename", Func: varStore.LoadMemoryFromDisk}
-	cmds[":v"] = Command{Description: "show variables, optional filter on given prefix", Func: varStore.ListVariables}
+	cmds[":s"] = Command{Description: "save memory to disk, optional use given filename", Func: func(args []string) notify.Message {
+		return dsl.SaveMemoryToDisk(varStore, args)
+	}}
+	cmds[":l"] = Command{Description: "load memory from disk, optional use given filename", Func: func(args []string) notify.Message {
+		return dsl.LoadMemoryFromDisk(varStore, args)
+	}}
+	cmds[":v"] = Command{Description: "show variables, optional filter on given prefix", Func: func(args []string) notify.Message {
+		return dsl.ListVariables(varStore, args)
+	}}
 	cmds[":m"] = Command{Description: "show MIDI information", Func: ShowDeviceInfo}
 	cmds[":q"] = Command{Description: "quit"} // no Func because it is handled in the main loop
 	return cmds

@@ -30,7 +30,7 @@ type Function struct {
 	Func          interface{}
 }
 
-func EvalFunctions(varStore *VariableStore) map[string]Function {
+func EvalFunctions(storage VariableStorage) map[string]Function {
 	eval := map[string]Function{}
 	eval["chord"] = Function{
 		Title:       "Chord creator",
@@ -289,7 +289,7 @@ func EvalFunctions(varStore *VariableStore) map[string]Function {
 		Sample:        `stop(${1:loop-or-empty})`,
 		Func: func(vars ...variable) interface{} {
 			if len(vars) == 0 {
-				StopAllLoops(varStore)
+				StopAllLoops(storage)
 				return nil
 			}
 			for _, each := range vars {

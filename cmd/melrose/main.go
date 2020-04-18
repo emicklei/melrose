@@ -20,8 +20,8 @@ var (
 	inputFile = flag.String("i", "", "read expressions from a file")
 	httpPort  = flag.String("http", ":8118", "address on which to listen for HTTP requests")
 
-	history  = ".melrose.history"
-	varStore = dsl.NewVariableStore()
+	history                      = ".melrose.history"
+	varStore dsl.VariableStorage = dsl.NewVariableStore()
 )
 
 func main() {
@@ -40,9 +40,11 @@ func main() {
 
 	if len(*httpPort) > 0 {
 		// start DSL server
-		vm := js.NewVirtualMachine()
-		srv := js.NewLanguageServer(vm, *httpPort)
-		go srv.Start()
+		nonVMStore := varStore
+		vm, vmStore := js.NewVirtualMachineAndStorage(nonVMStore)
+		// use this as global store
+		varStore = vmStore
+		go js.NewLanguageServer(vm, nonVMStore, *httpPort).Start()
 	}
 
 	// start REPL

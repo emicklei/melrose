@@ -9,16 +9,16 @@ import (
 
 // Evaluate returns the result of an expression (entry) using a given store of variables.
 // The result is either FunctionResult or a "raw" Go object.
-func Evaluate(varStore *VariableStore, entry string) (interface{}, error) {
+func Evaluate(storage VariableStorage, entry string) (interface{}, error) {
 	// flatten multiline ; expr does not support multiline strings
 	entry = strings.Replace(entry, "\n", " ", -1)
 
 	env := map[string]interface{}{}
-	for k, f := range EvalFunctions(varStore) { // cache this?
+	for k, f := range EvalFunctions(storage) { // cache this?
 		env[k] = f.Func
 	}
-	for k, _ := range varStore.Variables() {
-		env[k] = variable{Name: k, store: varStore}
+	for k, _ := range storage.Variables() {
+		env[k] = variable{Name: k, store: storage}
 	}
 	program, err := expr.Compile(entry, expr.Env(env))
 	if err != nil {

@@ -2,7 +2,7 @@ run: test build
 	melrose
 
 test:
-	go test -v -cover ./...
+	go test -cover ./...
 
 build:
 	go install github.com/emicklei/melrose/cmd/melrose
