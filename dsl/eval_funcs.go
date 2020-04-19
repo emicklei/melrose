@@ -108,15 +108,35 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 
 	eval["bpm"] = Function{
 		Title:         "Beats Per Minute",
-		Description:   "get or set the Beats Per Minute value [1..300], default is 120",
+		Description:   "set the Beats Per Minute [1..300], default is 120",
 		ControlsAudio: true,
 		Prefix:        "bpm",
 		Sample:        `bpm(${1:beats-per-minute})`,
-		Func: func(f ...float64) interface{} {
-			if len(f) == 0 {
-				return melrose.CurrentDevice().BeatsPerMinute()
-			}
-			melrose.CurrentDevice().SetBeatsPerMinute(f[0])
+		Func: func(f float64) interface{} {
+			melrose.CurrentDevice().SetBeatsPerMinute(f)
+			return nil
+		}}
+
+	eval["velocity"] = Function{
+		Title:         "controls softness",
+		Description:   "set the base velocity [1..127], default is 70",
+		ControlsAudio: true,
+		Prefix:        "vel",
+		Sample:        `velocity(${1:velocity})`,
+		Func: func(i int) interface{} {
+			// TODO check range
+			melrose.CurrentDevice().SetBaseVelocity(i)
+			return nil
+		}}
+
+	eval["echo"] = Function{
+		Title:         "the notes being played",
+		Description:   "Echo the notes being played (default is true)",
+		ControlsAudio: true,
+		Prefix:        "ech",
+		Sample:        `echo(${0:true|false})`,
+		Func: func(on bool) interface{} {
+			melrose.CurrentDevice().SetEchoNotes(on)
 			return nil
 		}}
 
@@ -157,7 +177,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Func: func(playables ...interface{}) interface{} {
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
-					melrose.CurrentDevice().Play(s, true)
+					melrose.CurrentDevice().Play(s)
 				} else {
 					notify.Print(notify.Warningf("cannot play (%T) %v", p, p))
 				}
@@ -174,7 +194,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Func: func(playables ...interface{}) interface{} {
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
-					go melrose.CurrentDevice().Play(s, false)
+					go melrose.CurrentDevice().Play(s)
 				}
 			}
 			return nil

@@ -8,6 +8,7 @@ import (
 	"github.com/rakyll/portmidi"
 )
 
+// Record is part of melrose.AudioDevice
 func (m *Midi) Record(deviceID int, stopAfterInactivity time.Duration) (melrose.Sequence, error) {
 	in, err := portmidi.NewInputStream(portmidi.DeviceID(deviceID), 1024) // buffer
 	if err != nil {
@@ -16,7 +17,7 @@ func (m *Midi) Record(deviceID int, stopAfterInactivity time.Duration) (melrose.
 	defer in.Close()
 
 	midiDeviceInfo := portmidi.Info(portmidi.DeviceID(deviceID))
-	info(fmt.Sprintf("listening to %s/%s ...\n", midiDeviceInfo.Interface, midiDeviceInfo.Name))
+	info(fmt.Sprintf("recording from %s/%s ... [until %v silence]\n", midiDeviceInfo.Interface, midiDeviceInfo.Name, stopAfterInactivity))
 
 	// listing on all channels TODO
 	noteMap := map[int64]portmidi.Event{}

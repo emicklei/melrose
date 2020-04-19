@@ -34,7 +34,7 @@ func (l *Loop) Start(d AudioDevice) *Loop {
 			case <-l.stopChan:
 				goto stop
 			default:
-				d.Play(l.Target, false)
+				d.Play(l.Target)
 			}
 		}
 	stop:

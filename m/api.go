@@ -33,7 +33,7 @@ func Go(a melrose.AudioDevice, s ...melrose.Sequenceable) {
 	for _, each := range s {
 		wg.Add(1)
 		go func(p melrose.Sequenceable) {
-			a.Play(p, true)
+			a.Play(p)
 			wg.Done()
 		}(each)
 	}

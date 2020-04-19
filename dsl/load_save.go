@@ -119,13 +119,11 @@ func SaveMemoryToDisk(storage VariableStorage, args []string) notify.Message {
 	}
 
 	snap := Snapshot{
-		Author:       os.Getenv("USER"),
-		LastModified: time.Now(),
-		Syntax:       Syntax,
-		Variables:    storeMap,
-		Configuration: map[string]string{
-			"bpm": fmt.Sprintf("%v", melrose.CurrentDevice().BeatsPerMinute()),
-		},
+		Author:        os.Getenv("USER"),
+		LastModified:  time.Now(),
+		Syntax:        Syntax,
+		Variables:     storeMap,
+		Configuration: map[string]string{},
 	}
 
 	enc := json.NewEncoder(f)

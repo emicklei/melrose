@@ -3,20 +3,26 @@ package midi
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"sync"
 
+	"github.com/emicklei/melrose/notify"
 	"github.com/rakyll/portmidi"
 )
 
+// Midi is an melrose.AudioDevice
 type Midi struct {
-	enabled        bool
-	stream         *portmidi.Stream
-	mutex          *sync.Mutex
-	deviceID       int
-	echo           bool
-	bpm            float64
-	baseVelocity   int
-	defaultChannel int
+	enabled      bool
+	stream       *portmidi.Stream
+	mutex        *sync.Mutex
+	deviceID     int
+	echo         bool
+	bpm          float64
+	baseVelocity int
+
+	defaultOutputChannel  int
+	currentOutputDeviceID int
+	currentInputDeviceID  int
 }
 
 const (
@@ -30,7 +36,7 @@ var (
 	DefaultChannel  = 0
 )
 
-// BeatsPerMinute (BPM) ; beats each the length of a quarter note per minute.
+// SetBeatsPerMinute (BPM) ; beats each the length of a quarter note per minute.
 func (m *Midi) SetBeatsPerMinute(bpm float64) {
 	if bpm <= 0 {
 		return
@@ -38,54 +44,129 @@ func (m *Midi) SetBeatsPerMinute(bpm float64) {
 	m.bpm = bpm
 }
 
-func (m *Midi) BeatsPerMinute() float64 {
-	return m.bpm
-}
-
-func (m *Midi) SetDefaultChannel(channel int) {
-	if channel < 1 || channel > 16 {
-		info("illegal channel, must be in [1..16]")
+// SetBaseVelocity is part of melrose.AudioDevice
+func (m *Midi) SetBaseVelocity(velocity int) {
+	if velocity < 0 || velocity > 127 {
 		return
 	}
-	m.defaultChannel = channel
+	m.baseVelocity = velocity
 }
 
-func (m *Midi) PrintInfo() {
-	fmt.Println("[midi] BPM:", m.bpm)
-	fmt.Println("[midi] Base Velocity:", m.baseVelocity)
-	fmt.Println("[midi] Default Channel:", m.defaultChannel)
+// SetEchoNotes is part of melrose.AudioDevice
+func (m *Midi) SetEchoNotes(echo bool) {
+	m.echo = echo
+}
+
+// Command is part of melrose.AudioDevice
+func (m *Midi) Command(args []string) notify.Message {
+	if len(args) == 0 {
+		m.printInfo()
+		return nil
+	}
+	switch args[0] {
+	case "input":
+		if len(args) != 2 {
+			return notify.Warningf("missing device number")
+		}
+		nr, err := strconv.Atoi(args[1])
+		if err != nil {
+			return notify.Errorf("bad device number:%v", err)
+		}
+		m.currentInputDeviceID = nr
+		return notify.Infof("Current input device id:%v", m.currentInputDeviceID)
+	case "output":
+		if len(args) != 2 {
+			return notify.Warningf("missing device number")
+		}
+		nr, err := strconv.Atoi(args[1])
+		if err != nil {
+			return notify.Errorf("bad device number:%v", err)
+		}
+		if err := m.changeOutputDeviceID(nr); err != nil {
+			return err
+		}
+		return notify.Infof("Current output device id:%v", m.currentOutputDeviceID)
+	default:
+		return notify.Warningf("unknown midi command: %s", args[0])
+	}
+}
+
+func (m *Midi) printInfo() {
+	fmt.Println("Usage:")
+	fmt.Println(":m input  <device-id> --- change the current MIDI input device id")
+	fmt.Println(":m output <device-id> --- change the current MIDI output device id")
+	fmt.Println()
+	fmt.Println("MIDI: Beats per minute (bpm):", m.bpm)
+	fmt.Printf("MIDI: Base velocity :%d\n", m.baseVelocity)
+	fmt.Printf("MIDI: Echo notes :%v\n", m.echo)
+	fmt.Println("MIDI: Default output channel:", m.defaultOutputChannel)
 	var midiDeviceInfo *portmidi.DeviceInfo
 	defaultOut := portmidi.DefaultOutputDeviceID()
-	fmt.Println("[midi] default output device id:", defaultOut)
+	fmt.Println("MIDI: Default output device id:", defaultOut)
+	fmt.Println("MIDI: Current output device id:", m.currentOutputDeviceID)
+
+	defaultIn := portmidi.DefaultInputDeviceID()
+	fmt.Println("MIDI: Default input device id:", defaultIn)
+	fmt.Println("MIDI: Current input device id:", m.currentInputDeviceID)
+
 	for i := 0; i < portmidi.CountDevices(); i++ {
 		midiDeviceInfo = portmidi.Info(portmidi.DeviceID(i)) // returns info about a MIDI device
-		fmt.Printf("[midi] %v: ", i)
-		fmt.Print("\"", midiDeviceInfo.Interface, "/", midiDeviceInfo.Name, "\"")
+		fmt.Printf("MIDI: %v: ", i)
+		usage := "output"
+		if midiDeviceInfo.IsInputAvailable {
+			usage = "input"
+		}
+		fmt.Print("\"", midiDeviceInfo.Interface, "/", midiDeviceInfo.Name, "\"",
+			", open=", midiDeviceInfo.IsOpened,
+			", usage=", usage)
 		fmt.Println()
 	}
 }
 
 func Open() (*Midi, error) {
 	m := new(Midi)
+	m.mutex = new(sync.Mutex)
 	m.enabled = false
 	portmidi.Initialize()
 	deviceID := portmidi.DefaultOutputDeviceID()
 	if deviceID == -1 {
-		return nil, errors.New("no default output device available")
-	}
-	out, err := portmidi.NewOutputStream(deviceID, 1024, 0)
-	if err != nil {
-		return nil, err
+		return nil, errors.New("no default output MIDI device available")
 	}
 	m.enabled = true
-	m.stream = out
 	m.bpm = DefaultBPM
 	m.baseVelocity = DefaultVelocity
-	m.defaultChannel = DefaultChannel
-	m.mutex = new(sync.Mutex)
+	m.echo = true
+	// for output
+	m.defaultOutputChannel = DefaultChannel
+	m.changeOutputDeviceID(int(portmidi.DefaultOutputDeviceID()))
 	return m, nil
 }
 
+func (m *Midi) changeOutputDeviceID(id int) notify.Message {
+	if !m.enabled {
+		return notify.Warningf("MIDI is not enabled")
+	}
+	if m.currentOutputDeviceID == id {
+		// check stream
+		if m.stream != nil {
+			return nil
+		}
+	}
+	// open new
+	out, err := portmidi.NewOutputStream(portmidi.DeviceID(id), 1024, 0)
+	if err != nil {
+		return notify.Error(err)
+	}
+	if m.stream != nil {
+		// close old stream
+		m.stream.Close()
+	}
+	m.stream = out
+	m.currentOutputDeviceID = id
+	return nil
+}
+
+// Close is part of melrose.AudioDevice
 func (m *Midi) Close() {
 	if m.enabled {
 		m.stream.Abort()

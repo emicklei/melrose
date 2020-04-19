@@ -14,3 +14,4 @@
 
 - capture timing of recorded notes
 - sync loop with the beat
+- remove JS

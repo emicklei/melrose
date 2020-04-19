@@ -22,11 +22,16 @@ func cmdFunctions() map[string]Command {
 	cmds[":v"] = Command{Description: "show variables, optional filter on given prefix", Func: func(args []string) notify.Message {
 		return dsl.ListVariables(varStore, args)
 	}}
-	cmds[":m"] = Command{Description: "show MIDI information", Func: ShowDeviceInfo}
+	cmds[":k"] = Command{Description: "stop all running Loops", Func: func(args []string) notify.Message {
+		dsl.StopAllLoops(varStore)
+		return nil
+	}}
+	cmds[":m"] = Command{Description: "MIDI settings", Func: handleMIDISetting}
 	cmds[":q"] = Command{Description: "quit"} // no Func because it is handled in the main loop
 	return cmds
 }
 
+// Command represents a REPL action that starts with c colon, ":"
 type Command struct {
 	Description string
 	Sample      string
@@ -43,8 +48,6 @@ func lookupCommand(cmd string) (Command, bool) {
 	return Command{}, false
 }
 
-func ShowDeviceInfo(args []string) notify.Message {
-	// TODO
-	melrose.CurrentDevice().PrintInfo()
-	return nil
+func handleMIDISetting(args []string) notify.Message {
+	return melrose.CurrentDevice().Command(args)
 }

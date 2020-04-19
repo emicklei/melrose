@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
@@ -47,6 +49,8 @@ func main() {
 	line := liner.NewLiner()
 	defer line.Close()
 	defer tearDown(line)
+	// TODO liner catches control+c
+	//setupCloseHandler(line)
 	setup(line)
 	loop(line)
 }
@@ -58,6 +62,7 @@ func welcome() {
 var functionNames = []string{"play"}
 
 func tearDown(line *liner.State) {
+	dsl.StopAllLoops(varStore)
 	if f, err := os.Create(history); err != nil {
 		notify.Print(notify.Errorf("error writing history file:%v", err))
 	} else {
@@ -109,7 +114,6 @@ func loop(line *liner.State) {
 		line.AppendHistory(entry)
 	}
 exit:
-	dsl.StopAllLoops(varStore)
 }
 
 func processInputFile(fileName string) {
@@ -136,4 +140,18 @@ func printValue(v interface{}) {
 	} else {
 		fmt.Printf("\033[94m(%T)\033[0m %v\n", v, v)
 	}
+}
+
+// setupCloseHandler creates a 'listener' on a new goroutine which will notify the
+// program if it receives an interrupt from the OS. We then handle this by calling
+// our clean up procedure and exiting the program.
+func setupCloseHandler(line *liner.State) {
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		fmt.Println("\r- Ctrl+C pressed in Terminal")
+		tearDown(line)
+		os.Exit(0)
+	}()
 }

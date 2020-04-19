@@ -9,18 +9,19 @@ import (
 	"github.com/emicklei/melrose"
 )
 
-func (m *Midi) Play(seq melrose.Sequenceable, echo bool) {
+// Play is part of melrose.AudioDevice
+func (m *Midi) Play(seq melrose.Sequenceable) {
 	if !m.enabled {
 		return
 	}
-	channel := m.defaultChannel
+	channel := m.defaultOutputChannel
 	if sel, ok := seq.(melrose.ChannelSelector); ok {
 		channel = sel.Channel()
 	}
 	actualSequence := seq.S()
 	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/m.bpm))) * time.Millisecond
 	for _, eachGroup := range actualSequence.Notes {
-		if echo {
+		if m.echo {
 			if len(eachGroup) == 1 {
 				print(eachGroup[0])
 			} else {
@@ -37,7 +38,7 @@ func (m *Midi) Play(seq melrose.Sequenceable, echo bool) {
 		}
 		wg.Wait()
 	}
-	if echo {
+	if m.echo {
 		fmt.Println()
 	}
 }

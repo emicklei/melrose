@@ -1,6 +1,10 @@
 package melrose
 
-import "time"
+import (
+	"time"
+
+	"github.com/emicklei/melrose/notify"
+)
 
 type Transformer interface {
 	Transform(Sequence) Sequence
@@ -15,14 +19,15 @@ type Storable interface {
 }
 
 type AudioDevice interface {
-	PrintInfo()
+	// Per device specific commands
+	Command(args []string) notify.Message
 
-	Play(seq Sequenceable, echo bool)
+	Play(seq Sequenceable)
 	Record(deviceID int, stopAfterInactivity time.Duration) (Sequence, error)
 
-	SetDefaultChannel(channel int)
 	SetBeatsPerMinute(bpm float64)
-	BeatsPerMinute() float64
+	SetBaseVelocity(velocity int)
+	SetEchoNotes(echo bool)
 
 	Close()
 }
