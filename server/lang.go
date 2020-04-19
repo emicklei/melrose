@@ -48,8 +48,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		// evaluation failed.
 		w.WriteHeader(http.StatusInternalServerError)
-		notify.Print(notify.Errorf("melrose.js:%s", err.Error()))
-		fmt.Println()
+		notify.Print(notify.Errorf("yourfile.mel: %s\n", err.Error()))
 		response = errorFrom(err)
 	} else {
 		// evaluation was ok.
