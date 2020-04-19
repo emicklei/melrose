@@ -15,7 +15,7 @@ func showHelp(args []string) notify.Message {
 	var b bytes.Buffer
 
 	fmt.Fprintf(&b, "\nversion %s, syntax: %s\n", version, dsl.Syntax)
-	fmt.Fprintf(&b, "    doc https://emicklei.github.io/melrose \n\n")
+	fmt.Fprintf(&b, "https://emicklei.github.io/melrose \n")
 
 	// detect help for a command or function
 	if len(args) > 0 {

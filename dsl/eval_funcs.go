@@ -319,7 +319,8 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 					continue
 				}
 				notify.Print(notify.Infof("stopping loop: %s", each.Name))
-				l.Stop()
+				// Stop waits for the loop to end so run it in a go-routine
+				go l.Stop()
 			}
 			return nil
 		}}
@@ -352,7 +353,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Description:   "create a Mapper of Notes by index (1-based)",
 		ControlsAudio: true,
 		Prefix:        "ind",
-		Sample:        `indexmap('${0:space-separated-1-based-indices}',${1:sequenceable})`,
+		Sample:        `indexmap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
 		Func: func(indices string, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {

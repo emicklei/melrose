@@ -17,7 +17,7 @@ type Snippet struct {
 	Description string   `json:"description"`
 }
 
-func main() {
+func snippets() {
 	varstore := dsl.NewVariableStore()
 	snippets := map[string]Snippet{}
 	for _, v := range dsl.EvalFunctions(varstore) {
