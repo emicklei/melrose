@@ -254,7 +254,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Title:       "Loop creator",
 		Description: "create a new loop",
 		Prefix:      "loo",
-		Sample:      `loop(${1:sequenceable})`,
+		Sample:      `loop(${1:sequenceable}) // stop(${2:variablename})`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot loop (%T) %v", value, value))
