@@ -9,3 +9,8 @@
 - https://github.com/deadsy/libusb/tree/master/examples/midi
 - https://github.com/lxn/win
 - https://github.com/dbatbold/beep
+
+## todos
+
+- capture timing of recorded notes
+- sync loop with the beat

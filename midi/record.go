@@ -24,24 +24,30 @@ func (m *Midi) Record(deviceID int, stopAfterInactivity time.Duration) (melrose.
 	notes := []melrose.Note{}
 	ch := in.Listen()
 	timeout := time.NewTimer(stopAfterInactivity)
+	needsReset := false
 	for {
-		timeout.Reset(stopAfterInactivity)
+		if needsReset {
+			timeout.Reset(stopAfterInactivity)
+			needsReset = false
+		}
 		select {
-		case each := <-ch:
+		case each := <-ch: // depending on the device, this may not block and other events are received
 			if each.Status == 0x90 {
 				noteMap[each.Data1] = each
+				needsReset = true
 				continue
 			}
 			if each.Status != 0x80 {
 				continue
 			}
+			needsReset = true
 			startEvent := noteMap[each.Data1]
 			//fmt.Println("ts,note,velocity", startEvent.Timestamp, startEvent.Data1, startEvent.Data2)
 			//fmt.Println("ts,note,velocity", each.Timestamp, each.Data1, each.Data2)
 
 			note := m.eventToNote(startEvent, each)
 
-			//fmt.Println(startEvent.Data2, note.VelocityFactor()*float32(m.baseVelocity))
+			// fmt.Println(startEvent.Data2, note.VelocityFactor()*float32(m.baseVelocity))
 
 			print(note)
 			notes = append(notes, note)
