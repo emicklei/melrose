@@ -52,7 +52,7 @@ func main() {
 }
 
 func welcome() {
-	fmt.Println("\033[1;34mmelrose\033[0m" + fmt.Sprintf(" - %s - syntax %s", version, dsl.Syntax))
+	fmt.Println("\033[1;34mmelrose\033[0m" + " - program your melody")
 }
 
 var functionNames = []string{"play"}
