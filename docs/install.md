@@ -2,6 +2,8 @@
 title: Melrose installation guide
 ---
 
+[Home](index.html)
+
 # Install
 
 ## Mac OSX

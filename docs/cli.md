@@ -2,6 +2,8 @@
 title: Melrose Command Line Interface (CLI)
 ---
 
+[Home](index.html)
+
 # Melrose Command Line Interface (CLI)
 
 Using the command-line tool `melrose`, which is a Read–Eval–Print Loop (REPL) that produces or consumes MIDI.
@@ -76,4 +78,5 @@ Ctrl-Y       | Paste from Yank buffer (Alt-Y to paste next yank instead)
 
 ## API server
 
-Melrose starts a HTTP server on port 8181 and evaluates statements on `POST /v1/statements`.
+Melrose starts a HTTP server on port 8118 and evaluates statements on `POST /v1/statements`.
+The port can be changed to e.g. 8000 with the program option `-http :8000`.
