@@ -18,6 +18,7 @@ const (
 	Minor // Natural
 	Dominant
 	Augmented
+	Diminished
 	// https://en.wikipedia.org/wiki/Chord_(music)#Common_types_of_chords
 	Triad
 	Seventh

@@ -1,6 +1,8 @@
 package dsl
 
 import (
+	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -25,6 +27,7 @@ type Function struct {
 	Title         string
 	Description   string
 	Prefix        string // for autocomplete
+	Alias         string // short notation
 	Sample        string
 	ControlsAudio bool
 	Func          interface{}
@@ -36,6 +39,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Title:       "Chord creator",
 		Description: "create a Chord",
 		Prefix:      "cho",
+		Alias:       "C",
 		Sample:      `chord('${1:note}')`,
 		Func: func(chord string) interface{} {
 			c, err := melrose.ParseChord(chord)
@@ -50,6 +54,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Title:       "Pitch modifier",
 		Description: "change the pitch with a delta of semitones",
 		Prefix:      "pit",
+		Alias:       "Pi",
 		Sample:      `pitch(${1:semitones},${2:sequenceable})`,
 		Func: func(semitones, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
@@ -64,6 +69,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Title:       "Reverse modifier",
 		Description: "reverse the (groups of) notes in a sequence",
 		Prefix:      "rev",
+		Alias:       "Rv",
 		Sample:      `reverse(${1:sequenceable})`,
 		Func: func(m interface{}) interface{} {
 			s, ok := getSequenceable(m)
@@ -78,6 +84,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Title:       "Repeat modifier",
 		Description: "repeat the musical object a number of times",
 		Prefix:      "rep",
+		Alias:       "Rp",
 		Sample:      `repeat(${1:times},${2:sequenceable})`,
 		Func: func(howMany int, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
@@ -92,6 +99,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Title:       "Join modifier",
 		Description: "join two or more musical objects",
 		Prefix:      "joi",
+		Alias:       "J",
 		Sample:      `join(${1:first},${2:second})`,
 		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
 			joined := []melrose.Sequenceable{}
@@ -144,6 +152,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Title:       "Sequence creator",
 		Description: "create a Sequence from a string of notes",
 		Prefix:      "seq",
+		Alias:       "S",
 		Sample:      `sequence('${1:space-separated-notes}')`,
 		Func: func(s string) interface{} {
 			sq, err := melrose.ParseSequence(s)
@@ -157,6 +166,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 	eval["note"] = Function{
 		Title:       "Note creator",
 		Prefix:      "no",
+		Alias:       "N",
 		Description: "Note, e.g. C 2G#5. =",
 		Sample:      `note('${1:letter}')`,
 		Func: func(s string) interface{} {
@@ -246,6 +256,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Title:       "Flatten modifier",
 		Description: "flatten all operations on a musical object to a new sequence",
 		Prefix:      "flat",
+		Alias:       "F",
 		Sample:      `flatten(${1:sequenceable})`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
@@ -260,6 +271,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Title:       "Parallel modifier",
 		Description: "create a new sequence in which all notes of a musical object will be played in parallel",
 		Prefix:      "par",
+		Alias:       "Pa",
 		Sample:      `parallel(${1:sequenceable})`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
@@ -274,6 +286,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Title:       "Loop creator",
 		Description: "create a new loop",
 		Prefix:      "loo",
+		Alias:       "L",
 		Sample:      `loop(${1:sequenceable}) // stop(${2:variablename})`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
@@ -330,6 +343,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Description:   "select a MIDI channel, must be in [0..16]",
 		ControlsAudio: true,
 		Prefix:        "chan",
+		Alias:         "Ch",
 		Sample:        `channel(${1:number},${2:sequenceable})`,
 		Func: func(midiChannel, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
@@ -344,6 +358,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Description:   "create an integer repeating interval (from,to,by)",
 		ControlsAudio: true,
 		Prefix:        "int",
+		Alias:         "I",
 		Sample:        `interval(${1:from},${2:to},${3:by})`,
 		Func: func(from, to, by interface{}) *melrose.Interval {
 			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by))
@@ -353,6 +368,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Description:   "create a Mapper of Notes by index (1-based)",
 		ControlsAudio: true,
 		Prefix:        "ind",
+		Alias:         "Im",
 		Sample:        `indexmap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
 		Func: func(indices string, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
@@ -363,6 +379,23 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 			return melrose.NewIndexMapper(s, indices)
 		}}
 	return eval
+}
+
+func registerFunction(m map[string]Function, k string, f Function) {
+	if dup, ok := m[k]; ok {
+		log.Fatal("duplicate function key detected:", dup)
+	}
+	if len(f.Alias) > 0 {
+		if dup, ok := m[f.Alias]; ok {
+			log.Fatal("duplicate function alias key detected:", dup)
+		}
+	}
+	m[k] = f
+	if len(f.Alias) > 0 {
+		// modify title
+		f.Title = fmt.Sprintf("%s [%s]", f.Title, f.Alias)
+		m[f.Alias] = f
+	}
 }
 
 func getSequenceable(v interface{}) (melrose.Sequenceable, bool) {

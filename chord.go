@@ -15,7 +15,7 @@ type Chord struct {
 	start     Note
 	inversion int // Ground,Inversion1,Inversion2,Inversion3
 	interval  int // Triad,Seventh,Sixth
-	quality   int // Major,Minor,Dominant,Augmented
+	quality   int // Major,Minor,Dominant,Augmented,Diminished
 }
 
 func zeroChord() Chord {
@@ -39,6 +39,12 @@ func (c Chord) Storex() string {
 		case Minor:
 			emitSeparator()
 			io.WriteString(&b, "m")
+		case Major:
+			emitSeparator()
+			io.WriteString(&b, "M")
+		case Diminished:
+			emitSeparator()
+			io.WriteString(&b, "d")
 		case Dominant:
 			emitSeparator()
 			io.WriteString(&b, "D")
@@ -82,6 +88,8 @@ func (c Chord) Modified(modifiers ...int) Chord {
 			modified.quality = Major
 		case Minor:
 			modified.quality = Minor
+		case Diminished:
+			modified.quality = Diminished
 		case Ground:
 			modified.inversion = Ground
 		case Inversion1:
@@ -93,13 +101,16 @@ func (c Chord) Modified(modifiers ...int) Chord {
 	return modified
 }
 
+// S converts a Chord into a Sequence
 func (c Chord) S() Sequence {
 	notes := []Note{c.start}
 	var semitones []int
-	if Major == c.quality {
-		semitones = []int{4, 7}
-	} else if Minor == c.quality {
-		semitones = []int{3, 7}
+	if c.interval == Triad {
+		if Major == c.quality {
+			semitones = []int{4, 7}
+		} else if Minor == c.quality {
+			semitones = []int{3, 7}
+		}
 	}
 	for _, each := range semitones {
 		next := c.start.Pitched(each)
@@ -116,7 +127,7 @@ func (c Chord) S() Sequence {
 	return Sequence{[][]Note{notes}}
 }
 
-var chordRegexp = regexp.MustCompile("([MmDA]?)([67]?)")
+var chordRegexp = regexp.MustCompile("([MmdDA]?)([67]?)")
 
 //  C/D7/2 = C dominant 7, 2nd inversion
 func ParseChord(s string) (Chord, error) {
@@ -148,6 +159,8 @@ func ParseChord(s string) (Chord, error) {
 		chord.quality = Minor
 	case "D":
 		chord.quality = Dominant
+	case "d":
+		chord.quality = Diminished
 	case "A":
 		chord.quality = Augmented
 	}
