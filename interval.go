@@ -15,12 +15,21 @@ type Interval struct {
 // Value returns the current value of the interval and increases its value with [by].
 func (i *Interval) Value() interface{} {
 	c := i.value
-	next := c + Int(i.by)
-	if c > Int(i.to) {
-		i.value = Int(i.from)
-	} else {
-		i.value = next
+	by := Int(i.by)
+	next := c + by
+	if by < 0 {
+		if next < Int(i.from) {
+			i.value = Int(i.to)
+			return c
+		}
 	}
+	if by > 0 {
+		if next > Int(i.to) {
+			i.value = Int(i.from)
+			return c
+		}
+	}
+	i.value = next
 	return c
 }
 
