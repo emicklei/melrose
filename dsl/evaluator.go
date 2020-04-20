@@ -21,7 +21,11 @@ func NewEvaluator(store VariableStorage) *Evaluator {
 	}
 }
 
-func (e *Evaluator) Dispatch(entry string) (interface{}, error) {
+func (e *Evaluator) EvaluateProgram(source string) error {
+	return nil
+}
+
+func (e *Evaluator) EvaluateStatement(entry string) (interface{}, error) {
 	// flatten multiline ; expr does not support multiline strings
 	entry = strings.Replace(entry, "\n", " ", -1)
 	entry = strings.Replace(entry, "\t", " ", -1)
@@ -41,7 +45,7 @@ func (e *Evaluator) Dispatch(entry string) (interface{}, error) {
 		return value, nil
 	}
 	if variable, expression, ok := IsAssignment(entry); ok {
-		r, err := e.Evaluate(expression)
+		r, err := e.EvaluateExpression(expression)
 		if err != nil {
 			return nil, err
 		}
@@ -80,7 +84,7 @@ func (e *Evaluator) Dispatch(entry string) (interface{}, error) {
 		return r, nil
 	}
 	// evaluate and print
-	r, err := e.Evaluate(entry)
+	r, err := e.EvaluateExpression(entry)
 	// special case for Loop
 	if theLoop, ok := r.(*melrose.Loop); ok {
 		return nil, fmt.Errorf("cannot run an unidentified Loop, use myLoop = %s", theLoop.Storex())
@@ -91,9 +95,9 @@ func (e *Evaluator) Dispatch(entry string) (interface{}, error) {
 	return r, nil
 }
 
-// Evaluate returns the result of an expression (entry) using a given store of variables.
+// EvaluateExpression returns the result of an expression (entry) using a given store of variables.
 // The result is either FunctionResult or a "raw" Go object.
-func (e *Evaluator) Evaluate(entry string) (interface{}, error) {
+func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
 	env := map[string]interface{}{}
 	for k, f := range e.funcs {
 		env[k] = f.Func

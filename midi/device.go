@@ -33,7 +33,7 @@ const (
 var (
 	DefaultVelocity = 70
 	DefaultBPM      = 120.0
-	DefaultChannel  = 0
+	DefaultChannel  = 1
 )
 
 // SetBeatsPerMinute (BPM) ; beats each the length of a quarter note per minute.
@@ -46,7 +46,7 @@ func (m *Midi) SetBeatsPerMinute(bpm float64) {
 
 // SetBaseVelocity is part of melrose.AudioDevice
 func (m *Midi) SetBaseVelocity(velocity int) {
-	if velocity < 0 || velocity > 127 {
+	if velocity < 1 || velocity > 127 {
 		return
 	}
 	m.baseVelocity = velocity

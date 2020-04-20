@@ -59,7 +59,7 @@ func LoadMemoryFromDisk(storage VariableStorage, args []string) notify.Message {
 		}
 		toProcessNext := map[string]string{}
 		for k, storex := range toProcess {
-			v, err := eval.Evaluate(storex)
+			v, err := eval.EvaluateExpression(storex)
 			if err != nil {
 				toProcessNext[k] = storex
 				continue

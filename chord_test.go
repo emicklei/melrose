@@ -29,8 +29,7 @@ func TestParseChord(t *testing.T) {
 			"C diminished 7th",
 			args{"C/d7"},
 			Chord{start: N("C"), quality: Diminished, interval: Seventh, inversion: Ground},
-			// TODO
-			"('C')",
+			"('[C E♭ G♭ A]')",
 			false,
 		},
 		{
@@ -45,8 +44,14 @@ func TestParseChord(t *testing.T) {
 			"C minor 7",
 			args{"C/m7"},
 			Chord{start: N("C"), quality: Minor, interval: Seventh, inversion: Ground},
-			// TODO
-			"('C')",
+			"('[C E♭ G B♭]')",
+			false,
+		},
+		{
+			"C major 7",
+			args{"C/7"},
+			Chord{start: N("C"), quality: Major, interval: Seventh, inversion: Ground},
+			"('[C E G B]')",
 			false,
 		},
 		{

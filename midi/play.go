@@ -47,7 +47,7 @@ func (m *Midi) playNote(channel int, velocity int, note melrose.Note, wholeNoteD
 	if velocity > 127 {
 		velocity = 127
 	}
-	if velocity < 0 {
+	if velocity < 1 {
 		velocity = DefaultVelocity
 	}
 	actualDuration := time.Duration(float32(wholeNoteDuration) * note.DurationFactor())
@@ -57,15 +57,15 @@ func (m *Midi) playNote(channel int, velocity int, note melrose.Note, wholeNoteD
 	}
 	data1 := note.MIDI()
 
-	//fmt.Println("on", data1, actualDuration)
+	// fmt.Println("channel", channel, "on", data1, "dur", actualDuration)
 	m.mutex.Lock()
-	m.stream.WriteShort(int64(noteOn|(channel)), int64(data1), int64(velocity))
+	m.stream.WriteShort(int64(noteOn|(channel-1)), int64(data1), int64(velocity))
 	m.mutex.Unlock()
 
 	time.Sleep(actualDuration)
 
 	//fmt.Println("off", data1)
 	m.mutex.Lock()
-	m.stream.WriteShort(int64(noteOff|(channel)), int64(data1), 100)
+	m.stream.WriteShort(int64(noteOff|(channel-1)), int64(data1), 100)
 	m.mutex.Unlock()
 }

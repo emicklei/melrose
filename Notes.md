@@ -9,6 +9,7 @@
 - https://github.com/deadsy/libusb/tree/master/examples/midi
 - https://github.com/lxn/win
 - https://github.com/dbatbold/beep
+- https://www.basicmusictheory.com/
 
 ## todos
 

@@ -170,11 +170,11 @@ type IndexMapper struct {
 func (p IndexMapper) S() Sequence {
 	seq := p.Target.S()
 	groups := [][]Note{}
-	for _, group := range p.Indices {
+	for _, indexEntry := range p.Indices {
 		mappedGroup := []Note{}
-		for j, each := range group {
+		for j, each := range indexEntry {
 			if each < 0 || each > len(seq.Notes) {
-				notify.Print(notify.Warningf("index out of sequence range: %d=%d", j, each))
+				notify.Print(notify.Warningf("index out of sequence range: %d, len=%d", j+1, len(seq.Notes)))
 			} else {
 				// TODO what if sequence had a multi note group?
 				mappedGroup = append(mappedGroup, seq.Notes[each-1][0])

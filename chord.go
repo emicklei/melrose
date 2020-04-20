@@ -112,6 +112,15 @@ func (c Chord) S() Sequence {
 			semitones = []int{3, 7}
 		}
 	}
+	if c.interval == Seventh {
+		if c.quality == Diminished {
+			semitones = []int{3, 6, 9}
+		} else if Minor == c.quality {
+			semitones = []int{3, 7, 10}
+		} else if Major == c.quality {
+			semitones = []int{4, 7, 11}
+		}
+	}
 	for _, each := range semitones {
 		next := c.start.Pitched(each)
 		notes = append(notes, next)

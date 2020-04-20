@@ -103,7 +103,7 @@ func loop(line *liner.State) {
 				continue
 			}
 		}
-		if result, err := eval.Dispatch(entry); err != nil {
+		if result, err := eval.EvaluateStatement(entry); err != nil {
 			notify.Print(notify.Error(err))
 			// even on error, add entry to history so we can edit/fix it
 		} else {
@@ -125,7 +125,7 @@ func processInputFile(fileName string) {
 	eval := dsl.NewEvaluator(varStore)
 	for line, each := range strings.Split(string(data), "\n") {
 		entry := strings.TrimSpace(each)
-		if _, err := eval.Dispatch(entry); err != nil {
+		if _, err := eval.EvaluateStatement(entry); err != nil {
 			notify.Print(notify.Errorf("line %d:%v", line, err))
 		}
 	}

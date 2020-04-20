@@ -19,7 +19,7 @@ func TestIsCompatible(t *testing.T) {
 func TestNestedFunctions(t *testing.T) {
 	e := NewEvaluator(NewVariableStore())
 	input := `pitch(1,repeat(1,reverse(join(note('E'),sequence('F G')))))`
-	_, err := e.Evaluate(input)
+	_, err := e.EvaluateExpression(input)
 	if err != nil {
 		t.Error(err)
 	}
@@ -37,7 +37,7 @@ func TestMulitLineEvaluate(t *testing.T) {
 		2C 2G3 2C
 		2C 2G3 2C
 		")`
-	_, err := e.Dispatch(input)
+	_, err := e.EvaluateStatement(input)
 	if err != nil {
 		t.Error(err)
 	}
