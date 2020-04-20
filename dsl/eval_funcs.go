@@ -283,11 +283,12 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		}}
 	// BEGIN Loop and control
 	eval["loop"] = Function{
-		Title:       "Loop creator",
-		Description: "create a new loop",
-		Prefix:      "loo",
-		Alias:       "L",
-		Sample:      `loop(${1:sequenceable}) // stop(${2:variablename})`,
+		Title:         "Loop creator",
+		Description:   "create a new loop",
+		ControlsAudio: true,
+		Prefix:        "loo",
+		Alias:         "L",
+		Sample:        `loop(${1:sequenceable}) // stop(${2:variablename})`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot loop (%T) %v", value, value))
@@ -356,7 +357,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 	eval["interval"] = Function{
 		Title:         "Integer Interval creator",
 		Description:   "create an integer repeating interval (from,to,by)",
-		ControlsAudio: true,
+		ControlsAudio: false,
 		Prefix:        "int",
 		Alias:         "I",
 		Sample:        `interval(${1:from},${2:to},${3:by})`,
@@ -366,7 +367,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 	eval["indexmap"] = Function{
 		Title:         "Integer Index Map modifier",
 		Description:   "create a Mapper of Notes by index (1-based)",
-		ControlsAudio: true,
+		ControlsAudio: false,
 		Prefix:        "ind",
 		Alias:         "Im",
 		Sample:        `indexmap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
