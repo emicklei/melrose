@@ -32,6 +32,8 @@ type Function struct {
 	Samples       string // for doc generation
 	ControlsAudio bool
 	Tags          string // space separated
+	IsCore        bool   // creates a core musical object
+	IsComposer    bool   // can decorate a musical object or other decorations
 	Func          interface{}
 }
 
@@ -43,7 +45,9 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Prefix:      "cho",
 		Alias:       "C",
 		Template:    `chord('${1:note}')`,
-		Samples:     `chord('C#5/m/1')`,
+		Samples: `chord('C#5/m/1')
+chord('G/M/2)`,
+		IsCore: true,
 		Func: func(chord string) interface{} {
 			c, err := melrose.ParseChord(chord)
 			if err != nil {
@@ -59,7 +63,9 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Prefix:      "pit",
 		Alias:       "Pi",
 		Template:    `pitch(${1:semitones},${2:sequenceable})`,
-		Samples:     `pitch(-1,sequence('C D E'))`,
+		Samples: `pitch(-1,sequence('C D E'))
+pitch(12,note('C'))`,
+		IsComposer: true,
 		Func: func(semitones, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -75,6 +81,8 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Prefix:      "rev",
 		Alias:       "Rv",
 		Template:    `reverse(${1:sequenceable})`,
+		Samples:     `reverse(chord('A'))`,
+		IsComposer:  true,
 		Func: func(m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -90,6 +98,8 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Prefix:      "rep",
 		Alias:       "Rp",
 		Template:    `repeat(${1:times},${2:sequenceable})`,
+		Samples:     `repeat(4,sequence('C D E'))`,
+		IsComposer:  true,
 		Func: func(howMany int, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -105,6 +115,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Prefix:      "joi",
 		Alias:       "J",
 		Template:    `join(${1:first},${2:second})`,
+		IsComposer:  true,
 		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
 			joined := []melrose.Sequenceable{}
 			for _, p := range playables {
@@ -158,6 +169,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Prefix:      "seq",
 		Alias:       "S",
 		Template:    `sequence('${1:space-separated-notes}')`,
+		IsCore:      true,
 		Func: func(s string) interface{} {
 			sq, err := melrose.ParseSequence(s)
 			if err != nil {
@@ -173,6 +185,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Alias:       "N",
 		Description: "Note, e.g. C 2G#5. =",
 		Template:    `note('${1:letter}')`,
+		IsCore:      true,
 		Func: func(s string) interface{} {
 			n, err := melrose.ParseNote(s)
 			if err != nil {
@@ -187,6 +200,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Prefix:      "sc",
 		Description: "",
 		Template:    `scale('${1:letter}')`,
+		IsCore:      true,
 		Func: func(s string) interface{} {
 			sc, err := melrose.ParseScale(s)
 			if err != nil {
@@ -233,6 +247,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Description: "serialise any parallelisation of notes in a musical object",
 		Prefix:      "ser",
 		Template:    `serial(${1:sequenceable})`,
+		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot serial (%T) %v", value, value))
@@ -261,6 +276,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Description: "undynamic all the notes in a musical object",
 		Prefix:      "und",
 		Template:    `undynamic(${1:sequenceable})`,
+		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot undynamic (%T) %v", value, value))
@@ -276,6 +292,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Prefix:      "flat",
 		Alias:       "F",
 		Template:    `flatten(${1:sequenceable})`,
+		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot flatten (%T) %v", value, value))
@@ -291,6 +308,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Prefix:      "par",
 		Alias:       "Pa",
 		Template:    `parallel(${1:sequenceable})`,
+		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot parallel (%T) %v", value, value))
@@ -379,6 +397,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Prefix:        "int",
 		Alias:         "I",
 		Template:      `interval(${1:from},${2:to},${3:by})`,
+		IsComposer:    true,
 		Func: func(from, to, by interface{}) *melrose.Interval {
 			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by))
 		}}
@@ -389,6 +408,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Prefix:        "ind",
 		Alias:         "Im",
 		Template:      `indexmap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
+		IsComposer:    true,
 		Func: func(indices string, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {

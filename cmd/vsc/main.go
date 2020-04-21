@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 )
 
@@ -12,5 +13,9 @@ func main() {
 		grammar()
 	case "snippets":
 		snippets()
+	case "dslmd":
+		dslmarkdown()
+	default:
+		fmt.Println("unknown cmd")
 	}
 }
