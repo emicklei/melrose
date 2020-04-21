@@ -24,7 +24,7 @@ func snippets() {
 		if len(v.Prefix) > 0 && len(v.Title) > 0 {
 			snip := Snippet{
 				Prefix:      v.Prefix,
-				Body:        []string{v.Sample},
+				Body:        []string{v.Template},
 				Description: v.Description,
 			}
 			snippets[v.Title] = snip

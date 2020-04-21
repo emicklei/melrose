@@ -1,7 +1,8 @@
 # Melrose
 
 [How to install](install.html)
-[Using the CLI](cli.html)
+[Usage](cli.html)
+[Language](dsl.html)
 
 The basic musical objects in Melrose are:
 
@@ -31,7 +32,7 @@ Parameters of compositions can be:
 
 ## Notations
 
-### Note notation
+### Note
 
 | Notation | Alternative | Description 
 |----------|-------|-------------
@@ -47,7 +48,7 @@ Parameters of compositions can be:
 | D+       | d+    | quarter D octave 4 MezzoForte
 | 16E#.--  | 16e♯.-- | sixteenth E sharp duration x 1.5 Piano
 
-### Note dynamics
+### Note<a name="note-not"></a>
 
 | Notation    | Description
 |-------------|---
@@ -58,7 +59,7 @@ Parameters of compositions can be:
 | ++	|Forte
 | +++ |Fortissimo
 
-### Sequence notation
+### Sequence<a name="sequence-not"></a>
 
 | Notation    | Description
 |-------------|---
@@ -66,13 +67,13 @@ Parameters of compositions can be:
 | [C E] [d5 f5] | 2 doublets
 | [1C 1E 1G]    | C Chord
 
-### Chord notation
+### Chord<a name="chord-not"></a>
 
 | Notation    | Description
 |-------------|---
 | C#5/m/2     | C sharp triad, Octave 5, Minor, 2nd inversion
 
-### Scale notation
+### Scale<a name="scale-not"></a>
 
 | Notation    | Description
 |-------------|---
@@ -87,23 +88,28 @@ Variable names must start with a non-digit character and can zero or more charac
 An assigment `=` is used to create a Variable.
 To delete a variable, assign it to the special value `nil`.
 
-### composition functions
+### creation functions
 
-Functions create or augment musical objects. 
+Functions to create musical objects. 
+
+            chord --- create a Chord
+             note --- Note, e.g. C 2G#5. =
+         sequence --- create a Sequence from a string of notes
+
+### composer functions
+
+Functions to augment musical objects. 
 Objects cannot be changed after creation.
 Each function returns a new object or an object wrapped in a function.
 
-            chord --- create a Chord
           flatten --- flatten all operations on a musical object to a new sequence
          indexmap --- create a Mapper of Notes by index (1-based)
          interval --- create an integer repeating interval (from,to,by)
              join --- join two or more musical objects
-             note --- Note, e.g. C 2G#5. =
          parallel --- create a new sequence in which all notes of a musical object will be played in parallel
             pitch --- change the pitch with a delta of semitones
            repeat --- repeat the musical object a number of times
           reverse --- reverse the (groups of) notes in a sequence
-         sequence --- create a Sequence from a string of notes
            serial --- serialise any parallelisation of notes in a musical object
         undynamic --- undynamic all the notes in a musical object
 

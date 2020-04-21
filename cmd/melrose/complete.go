@@ -36,7 +36,7 @@ func completeMe(line string, pos int) (head string, c []string, tail string) {
 	for k, f := range dsl.EvalFunctions(varStore) {
 		// TODO start from closest (
 		if strings.HasPrefix(k, prefix) {
-			stripped := stripParameters(f.Sample)
+			stripped := stripParameters(f.Template)
 			c = append(c, stripped[len(prefix):])
 		}
 	}

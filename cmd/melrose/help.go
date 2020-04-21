@@ -29,7 +29,7 @@ func showHelp(args []string) notify.Message {
 		if fun, ok := dsl.EvalFunctions(varStore)[cmdfunc]; ok {
 			fmt.Fprintf(&b, "%s\n", cmdfunc)
 			fmt.Fprintf(&b, "%s\n", fun.Description)
-			fmt.Fprintf(&b, "%s\n", fun.Sample)
+			fmt.Fprintf(&b, "%s\n", fun.Template)
 			return notify.Infof("%s", b.String())
 		}
 	}
