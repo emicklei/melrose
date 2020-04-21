@@ -14,6 +14,10 @@ func Repeat(times int, s melrose.Sequenceable) melrose.Repeat {
 	return melrose.Repeat{Target: s, Times: times}
 }
 
+func Reverse(s melrose.Sequenceable) melrose.Reverse {
+	return melrose.Reverse{Target: s}
+}
+
 func Pitch(semitones int, s melrose.Sequenceable) melrose.Pitch {
 	return melrose.Pitch{Target: s, Semitones: melrose.On(semitones)}
 }

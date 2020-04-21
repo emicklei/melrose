@@ -131,7 +131,7 @@ pitch(12,note('C'))`,
 
 	eval["bpm"] = Function{
 		Title:         "Beats Per Minute",
-		Description:   "set the Beats Per Minute [1..300], default is 120",
+		Description:   "set the Beats Per Minute [1..300]; default is 120",
 		ControlsAudio: true,
 		Prefix:        "bpm",
 		Template:      `bpm(${1:beats-per-minute})`,
@@ -142,10 +142,11 @@ pitch(12,note('C'))`,
 
 	eval["velocity"] = Function{
 		Title:         "controls softness",
-		Description:   "set the base velocity [1..127], default is 70",
+		Description:   "set the base velocity [1..127]; default is 70",
 		ControlsAudio: true,
 		Prefix:        "vel",
 		Template:      `velocity(${1:velocity})`,
+		Samples:       `velocity(90)`,
 		Func: func(i int) interface{} {
 			// TODO check range
 			melrose.CurrentDevice().SetBaseVelocity(i)
@@ -154,10 +155,11 @@ pitch(12,note('C'))`,
 
 	eval["echo"] = Function{
 		Title:         "the notes being played",
-		Description:   "Echo the notes being played (default is true)",
+		Description:   "echo the notes being played; default is true",
 		ControlsAudio: true,
 		Prefix:        "ech",
 		Template:      `echo(${0:true|false})`,
+		Samples:       `echo(false)`,
 		Func: func(on bool) interface{} {
 			melrose.CurrentDevice().SetEchoNotes(on)
 			return nil
@@ -165,10 +167,11 @@ pitch(12,note('C'))`,
 
 	eval["sequence"] = Function{
 		Title:       "Sequence creator",
-		Description: "create a Sequence from a string of notes",
+		Description: "create a Sequence from (space separated) notes",
 		Prefix:      "seq",
 		Alias:       "S",
 		Template:    `sequence('${1:space-separated-notes}')`,
+		Samples:     `sequence('C D E')`,
 		IsCore:      true,
 		Func: func(s string) interface{} {
 			sq, err := melrose.ParseSequence(s)
@@ -181,11 +184,13 @@ pitch(12,note('C'))`,
 
 	eval["note"] = Function{
 		Title:       "Note creator",
+		Description: "create a Note from the note notation",
 		Prefix:      "no",
 		Alias:       "N",
-		Description: "Note, e.g. C 2G#5. =",
 		Template:    `note('${1:letter}')`,
-		IsCore:      true,
+		Samples: `note('E')
+note('2E#.--')`,
+		IsCore: true,
 		Func: func(s string) interface{} {
 			n, err := melrose.ParseNote(s)
 			if err != nil {
@@ -201,6 +206,7 @@ pitch(12,note('C'))`,
 		Description: "",
 		Template:    `scale('${1:letter}')`,
 		IsCore:      true,
+		Samples:     `scale('C#/m')`,
 		Func: func(s string) interface{} {
 			sc, err := melrose.ParseScale(s)
 			if err != nil {
@@ -216,6 +222,7 @@ pitch(12,note('C'))`,
 		ControlsAudio: true,
 		Prefix:        "pla",
 		Template:      `play(${1:sequenceable})`,
+		Samples:       `play(s1,s2,s3) // play s3 after s2 after s1`,
 		Func: func(playables ...interface{}) interface{} {
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
@@ -233,6 +240,7 @@ pitch(12,note('C'))`,
 		ControlsAudio: true,
 		Prefix:        "go",
 		Template:      `go(${1:sequenceable})`,
+		Samples:       `go(s1,s1,s3) // play s1 and s2 and s3 simultaneously`,
 		Func: func(playables ...interface{}) interface{} {
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
@@ -248,6 +256,7 @@ pitch(12,note('C'))`,
 		Prefix:      "ser",
 		Template:    `serial(${1:sequenceable})`,
 		IsComposer:  true,
+		Samples:     `serial(chord('E')) => E G B`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot serial (%T) %v", value, value))
@@ -263,6 +272,7 @@ pitch(12,note('C'))`,
 		ControlsAudio: true,
 		Prefix:        "rec",
 		Template:      `record(${1:input-device-id},${1:seconds-inactivity})`,
+		Samples:       `record(1,5) // record notes played on device ID=1 and stop recording after 5 seconds`,
 		Func: func(deviceID int, secondsInactivity int) interface{} {
 			seq, err := melrose.CurrentDevice().Record(deviceID, time.Duration(secondsInactivity)*time.Second)
 			if err != nil {
@@ -277,6 +287,7 @@ pitch(12,note('C'))`,
 		Prefix:      "und",
 		Template:    `undynamic(${1:sequenceable})`,
 		IsComposer:  true,
+		Samples:     `undynamic('A+ B++ C-- D-') // =>  A B C D`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot undynamic (%T) %v", value, value))

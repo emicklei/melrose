@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -16,24 +17,23 @@ title: Melrose Language
 
 ## Creation functions
 {{range .Core}}
-### {{.Title}}<a name="{{.Anchor}}"/>
-
+### {{.Title}}<a name="{{.Anchor}}"></a>
 {{.Description}}
 {{ range .Examples }}
 	{{ . }}
 {{ end }}{{end}}
+
 ## Composition functions
 {{range .Composer}}
-### {{.Title}}<a name="{{.Anchor}}"/>
-
+### {{.Title}}<a name="{{.Anchor}}"></a>
 {{.Description}}
 {{ range .Examples }}
 	{{ . }}
 {{ end }}{{end}}
+
 ## Audio control functions
 {{range .Audio}}
-### {{.Title}}<a name="{{.Anchor}}"/>
-
+### {{.Title}}<a name="{{.Anchor}}"></a>
 {{.Description}}
 {{ range .Examples }}
 	{{ . }}
@@ -43,10 +43,11 @@ title: Melrose Language
 `))
 
 type DocumentedFunction struct {
-	Title       string
-	Description string
-	Examples    []string
-	Anchor      string
+	Title            string
+	ShortDescription string
+	Description      string
+	Examples         []string
+	Anchor           string
 }
 
 type GroupedFunctions struct {
@@ -60,10 +61,11 @@ func dslmarkdown() {
 	gf := GroupedFunctions{}
 	for k, each := range dsl.EvalFunctions(varstore) {
 		df := DocumentedFunction{
-			Title:       each.Title,
-			Description: each.Description,
-			Examples:    strings.Split(each.Samples, "\n"),
-			Anchor:      k,
+			Title:            k,
+			ShortDescription: each.Title,
+			Description:      strings.Title(each.Description) + ".",
+			Examples:         strings.Split(each.Samples, "\n"),
+			Anchor:           k,
 		}
 		if each.ControlsAudio {
 			gf.Audio = append(gf.Audio, df)
@@ -75,6 +77,10 @@ func dslmarkdown() {
 			gf.Composer = append(gf.Composer, df)
 		}
 	}
+	sort.Slice(gf.Core, func(i, j int) bool { return gf.Core[i].Title < gf.Core[j].Title })
+	sort.Slice(gf.Composer, func(i, j int) bool { return gf.Composer[i].Title < gf.Composer[j].Title })
+	sort.Slice(gf.Audio, func(i, j int) bool { return gf.Audio[i].Title < gf.Audio[j].Title })
+
 	out, err := os.Create("../../docs/dsl.md")
 	checkErr(err)
 	defer out.Close()
