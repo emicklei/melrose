@@ -118,25 +118,6 @@ func TestModifiedPitch(t *testing.T) {
 	}
 }
 
-func TestMajorOffset(t *testing.T) {
-	for i, each := range []struct {
-		before string
-		by     int
-		after  string
-	}{
-		{"C", 1, "D"},
-		{"C", 7, "C5"},
-		{"C", 3, "F"},
-		{"C", 10, "F5"},
-	} {
-		n, _ := ParseNote(each.before)
-		n = n.Major(each.by)
-		if got, want := n.String(), each.after; got != want {
-			t.Errorf("%d: got %v want %v", i, got, want)
-		}
-	}
-}
-
 func ExampleParseNote() {
 	n1, _ := ParseNote("2C#3")
 	n2, _ := ParseNote("2E_.2")

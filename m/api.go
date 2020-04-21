@@ -24,6 +24,8 @@ func Parallel(s melrose.Sequenceable) melrose.Parallel {
 
 func Note(s string) melrose.Note { return melrose.MustParseNote(s) }
 
+func Scale(s string) melrose.Scale { return melrose.MustParseScale(s) }
+
 func Join(s ...melrose.Sequenceable) melrose.Join {
 	return melrose.Join{List: s}
 }

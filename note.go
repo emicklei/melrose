@@ -165,17 +165,6 @@ func (n Note) Flat() Note {
 	return nn
 }
 
-// Major returns the note left or right on the Major Scale by an offset
-func (n Note) Major(offset int) Note {
-	// C=0
-	nameIndex := strings.Index(NonRestNoteNames, n.Name)
-	// semitones on the scale
-	nameOffset := noteMidiOffsets[nameIndex]
-	majors := offset % 7
-	scales := offset / 7
-	return n.Pitched(-nameOffset).Octaved(scales).Pitched(noteMidiOffsets[majors])
-}
-
 // Duration
 
 func (n Note) Eight() Note {

@@ -178,6 +178,20 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 			return n
 		}}
 
+	eval["scale"] = Function{
+		Title:       "Scale creator",
+		Prefix:      "sc",
+		Description: "",
+		Sample:      `scale('${1:letter}')`,
+		Func: func(s string) interface{} {
+			sc, err := melrose.ParseScale(s)
+			if err != nil {
+				notify.Print(notify.Error(err))
+				return nil
+			}
+			return sc
+		}}
+
 	eval["play"] = Function{
 		Title:         "Player (foreground)",
 		Description:   "play musical objects such as Note,Chord,Sequence,...",

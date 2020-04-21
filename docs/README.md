@@ -8,6 +8,7 @@ The basic musical objects in Melrose are:
 - Note
 - Sequence
 - Chord
+- Scale
 
 Musical objects can be composed using:
 
@@ -70,6 +71,13 @@ Parameters of compositions can be:
 | Notation    | Description
 |-------------|---
 | C#5/m/2     | C sharp triad, Octave 5, Minor, 2nd inversion
+
+### Scale notation
+
+| Notation    | Description
+|-------------|---
+| C5          | C major scale, Octave 5
+| E/m         | E natural minor scale, Octave 4
 
 ## Melrose Language
 
