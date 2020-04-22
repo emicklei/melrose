@@ -1,13 +1,15 @@
 # Melrose
 
-[How to install](install.html)[Usage](cli.html)[Language](dsl.html)
+[How to install](install.html)
+[Usage](cli.html)
+[Language](dsl.html)
 
 The basic musical objects in Melrose are:
 
-- Note [🔗](dsl.html#note)
-- Sequence [🔗](dsl.html#sequence)
-- Chord [🔗](dsl.html#chord)
-- Scale [🔗](dsl.html#scale)
+- [Note](dsl.html#note)
+- [Sequence](dsl.html#sequence)
+- [Chord](dsl.html#chord)
+- [Scale](dsl.html#scale)
 
 Musical objects can be composed using:
 
