@@ -46,7 +46,8 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Alias:       "C",
 		Template:    `chord('${1:note}')`,
 		Samples: `chord('C#5/m/1')
-chord('G/M/2')`,
+chord('G/M/2')
+play(serial(chord('E5/M))`,
 		IsCore: true,
 		Func: func(chord string) interface{} {
 			c, err := melrose.ParseChord(chord)
@@ -64,7 +65,8 @@ chord('G/M/2')`,
 		Alias:       "Pi",
 		Template:    `pitch(${1:semitones},${2:sequenceable})`,
 		Samples: `pitch(-1,sequence('C D E'))
-pitch(12,note('C'))`,
+p = interval(-4,4,1)
+pitch(p,note('C'))`,
 		IsComposer: true,
 		Func: func(semitones, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
@@ -256,7 +258,7 @@ note('2E#.--')`,
 		Prefix:      "ser",
 		Template:    `serial(${1:sequenceable})`,
 		IsComposer:  true,
-		Samples:     `serial(chord('E')) => E G B`,
+		Samples:     `serial(chord('E')) // => E G B`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot serial (%T) %v", value, value))
@@ -268,7 +270,7 @@ note('2E#.--')`,
 
 	eval["record"] = Function{
 		Title:         "Recorder",
-		Description:   "creates a recorded sequence of notes from device ID and stop after T seconds of inactivity",
+		Description:   "creates a recorded sequence of notes from a MIDI device",
 		ControlsAudio: true,
 		Prefix:        "rec",
 		Template:      `record(${1:input-device-id},${1:seconds-inactivity})`,
@@ -282,7 +284,7 @@ note('2E#.--')`,
 			return seq
 		}}
 	eval["undynamic"] = Function{
-		Title:       "Undo Dynamic modifier",
+		Title:       "Undo dynamic modifier",
 		Description: "undynamic all the notes in a musical object",
 		Prefix:      "und",
 		Template:    `undynamic(${1:sequenceable})`,
@@ -303,6 +305,7 @@ note('2E#.--')`,
 		Prefix:      "flat",
 		Alias:       "F",
 		Template:    `flatten(${1:sequenceable})`,
+		Samples:     `flatten(sequence('(C E G) B')) // => C E G B`,
 		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
@@ -315,10 +318,11 @@ note('2E#.--')`,
 
 	eval["parallel"] = Function{
 		Title:       "Parallel modifier",
-		Description: "create a new sequence in which all notes of a musical object will be played in parallel",
+		Description: "create a new sequence in which all notes of a musical object are synched in time",
 		Prefix:      "par",
 		Alias:       "Pa",
 		Template:    `parallel(${1:sequenceable})`,
+		Samples:     `parallel(sequence('C D E')) // => [C D E]`,
 		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
@@ -330,12 +334,13 @@ note('2E#.--')`,
 		}}
 	// BEGIN Loop and control
 	eval["loop"] = Function{
-		Title:         "Loop creator",
+		Title:         "Loop creator ; must be assigned to a variable",
 		Description:   "create a new loop",
 		ControlsAudio: true,
 		Prefix:        "loo",
 		Alias:         "L",
 		Template:      `loop(${1:sequenceable}) // stop(${2:variablename})`,
+		Samples:       `l1 = loop(sequence('C D E F G A B'))`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot loop (%T) %v", value, value))
@@ -350,6 +355,9 @@ note('2E#.--')`,
 		ControlsAudio: true,
 		Prefix:        "run",
 		Template:      `run(${1:loop})`,
+		Samples: `l1 = loop(sequence('C D E F G A B'))
+run(l1)
+stop(l1)`,
 		Func: func(vars ...variable) interface{} {
 			for _, each := range vars {
 				l, ok := each.Value().(*melrose.Loop)
@@ -387,12 +395,13 @@ note('2E#.--')`,
 		}}
 	// END Loop and control
 	eval["channel"] = Function{
-		Title:         "MIDI channel modifier",
+		Title:         "MIDI channel modifier ; must be a top-level modifier",
 		Description:   "select a MIDI channel, must be in [0..16]",
 		ControlsAudio: true,
 		Prefix:        "chan",
 		Alias:         "Ch",
 		Template:      `channel(${1:number},${2:sequenceable})`,
+		Samples:       `play(channel(2,sequence('C2 E3')) // play on instrument connected to MIDI channel 2'`,
 		Func: func(midiChannel, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -408,7 +417,10 @@ note('2E#.--')`,
 		Prefix:        "int",
 		Alias:         "I",
 		Template:      `interval(${1:from},${2:to},${3:by})`,
-		IsComposer:    true,
+		Samples: `i1 = interval(-4,4,1)
+l1 = loop(pitch(i1,sequence('C D E F')))
+run(l1)`,
+		IsComposer: true,
 		Func: func(from, to, by interface{}) *melrose.Interval {
 			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by), melrose.RepeatFromTo)
 		}}

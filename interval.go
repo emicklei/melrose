@@ -3,9 +3,13 @@ package melrose
 import "fmt"
 
 const (
+	// OnceFromTo "once"
 	OnceFromTo = iota
+	// OnceFromToFrom "once-two-way"
 	OnceFromToFrom
+	// RepeatFromTo "repeat"
 	RepeatFromTo
+	// RepeatFromToFrom "repeat-two-way"
 	RepeatFromToFrom
 )
 
@@ -52,17 +56,18 @@ func (i Interval) Storex() string {
 	if i.strategy.id() == OnceFromTo {
 		return fmt.Sprintf("interval(%v,%v,%v)", i.from, i.to, i.by)
 	}
-	name := IntervalStrategy(i.strategy.id())
+	name := intervalStrategyName(i.strategy.id())
 	return fmt.Sprintf("interval(%v,%v,%v,'%s')", i.from, i.to, i.by, name)
 }
 
+// ParseIntervalStrategy return the non-exposed strategy based on the name. If unknown then return OnceFromTo ("once").
 func ParseIntervalStrategy(s string) intervalStrategy {
 	if is, ok := intervalStrategies[s]; ok {
 		return is
 	}
 	return strategyOnceFromTo{}
 }
-func IntervalStrategy(i int) string {
+func intervalStrategyName(i int) string {
 	for name, each := range intervalStrategies {
 		if each.id() == i {
 			return name
@@ -81,6 +86,8 @@ func asIntervalStrategy(i int) intervalStrategy {
 
 type intervalStrategy interface {
 	id() int
+	//reachedTo(i *Interval)
+	//reachedFrom(i *Interval)
 }
 
 var intervalStrategies = map[string]intervalStrategy{
