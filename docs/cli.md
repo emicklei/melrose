@@ -2,7 +2,9 @@
 title: Melrose Command Line Interface (CLI)
 ---
 
-[How to install](install.html)[Usage](cli.html)[Language](dsl.html)
+[How to install](install.html)
+[Usage](cli.html)
+[Language](dsl.html)
 
 # Melrose Command Line Interface (CLI)
 

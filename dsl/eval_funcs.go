@@ -46,7 +46,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Alias:       "C",
 		Template:    `chord('${1:note}')`,
 		Samples: `chord('C#5/m/1')
-chord('G/M/2)`,
+chord('G/M/2')`,
 		IsCore: true,
 		Func: func(chord string) interface{} {
 			c, err := melrose.ParseChord(chord)

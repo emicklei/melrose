@@ -2,7 +2,9 @@
 title: Melrose installation guide
 ---
 
-[How to install](install.html)[Usage](cli.html)[Language](dsl.html)
+[How to install](install.html)
+[Usage](cli.html)
+[Language](dsl.html)
 
 # Install
 
