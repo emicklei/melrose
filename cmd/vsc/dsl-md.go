@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"log"
 	"os"
 	"sort"
 	"strings"
 	"text/template"
+	"unicode"
 
 	"github.com/emicklei/melrose/dsl"
 )
@@ -63,7 +65,7 @@ func dslmarkdown() {
 		df := DocumentedFunction{
 			Title:            k,
 			ShortDescription: each.Title,
-			Description:      strings.Title(each.Description) + ".",
+			Description:      firstUpcaseAndDot(each.Description),
 			Examples:         strings.Split(each.Samples, "\n"),
 			Anchor:           k,
 		}
@@ -92,4 +94,21 @@ func checkErr(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func firstUpcaseAndDot(s string) string {
+	b := bytes.Buffer{}
+	last := ' '
+	for i, each := range []rune(s) {
+		if i == 0 {
+			b.WriteRune(unicode.ToUpper(each))
+		} else {
+			b.WriteRune(each)
+		}
+		last = each
+	}
+	if last != '.' {
+		b.WriteRune('.')
+	}
+	return b.String()
 }

@@ -5,14 +5,14 @@ title: Melrose Language
 ## Creation functions
 
 ### chord<a name="chord"></a>
-Create A Chord.
+Create a Chord.
 
 	chord('C#5/m/1')
 
 	chord('G/M/2)
 
 ### note<a name="note"></a>
-Create A Note From The Note Notation.
+Create a Note from the note notation.
 
 	note('E')
 
@@ -24,7 +24,7 @@ Create A Note From The Note Notation.
 	scale('C#/m')
 
 ### sequence<a name="sequence"></a>
-Create A Sequence From (Space Separated) Notes.
+Create a Sequence from (space separated) notes.
 
 	sequence('C D E')
 
@@ -32,54 +32,54 @@ Create A Sequence From (Space Separated) Notes.
 ## Composition functions
 
 ### flatten<a name="flatten"></a>
-Flatten All Operations On A Musical Object To A New Sequence.
+Flatten all operations on a musical object to a new sequence.
 
 	
 
 ### indexmap<a name="indexmap"></a>
-Create A Mapper Of Notes By Index (1-Based).
+Create a Mapper of Notes by index (1-based).
 
 	
 
 ### interval<a name="interval"></a>
-Create An Integer Repeating Interval (From,To,By).
+Create an integer repeating interval (from,to,by).
 
 	
 
 ### join<a name="join"></a>
-Join Two Or More Musical Objects.
+Join two or more musical objects.
 
 	
 
 ### parallel<a name="parallel"></a>
-Create A New Sequence In Which All Notes Of A Musical Object Will Be Played In Parallel.
+Create a new sequence in which all notes of a musical object will be played in parallel.
 
 	
 
 ### pitch<a name="pitch"></a>
-Change The Pitch With A Delta Of Semitones.
+Change the pitch with a delta of semitones.
 
 	pitch(-1,sequence('C D E'))
 
 	pitch(12,note('C'))
 
 ### repeat<a name="repeat"></a>
-Repeat The Musical Object A Number Of Times.
+Repeat the musical object a number of times.
 
 	repeat(4,sequence('C D E'))
 
 ### reverse<a name="reverse"></a>
-Reverse The (Groups Of) Notes In A Sequence.
+Reverse the (groups of) notes in a sequence.
 
 	reverse(chord('A'))
 
 ### serial<a name="serial"></a>
-Serialise Any Parallelisation Of Notes In A Musical Object.
+Serialise any parallelisation of notes in a musical object.
 
 	serial(chord('E')) => E G B
 
 ### undynamic<a name="undynamic"></a>
-Undynamic All The Notes In A Musical Object.
+Undynamic all the notes in a musical object.
 
 	undynamic('A+ B++ C-- D-') // =>  A B C D
 
@@ -87,52 +87,52 @@ Undynamic All The Notes In A Musical Object.
 ## Audio control functions
 
 ### bpm<a name="bpm"></a>
-Set The Beats Per Minute [1..300]; Default Is 120.
+Set the Beats Per Minute [1..300]; default is 120.
 
 	
 
 ### channel<a name="channel"></a>
-Select A MIDI Channel, Must Be In [0..16].
+Select a MIDI channel, must be in [0..16].
 
 	
 
 ### echo<a name="echo"></a>
-Echo The Notes Being Played; Default Is True.
+Echo the notes being played; default is true.
 
 	echo(false)
 
 ### go<a name="go"></a>
-Play All Musical Objects In Parallel.
+Play all musical objects in parallel.
 
 	go(s1,s1,s3) // play s1 and s2 and s3 simultaneously
 
 ### loop<a name="loop"></a>
-Create A New Loop.
+Create a new loop.
 
 	
 
 ### play<a name="play"></a>
-Play Musical Objects Such As Note,Chord,Sequence,....
+Play musical objects such as Note,Chord,Sequence,...
 
 	play(s1,s2,s3) // play s3 after s2 after s1
 
 ### record<a name="record"></a>
-Creates A Recorded Sequence Of Notes From Device ID And Stop After T Seconds Of Inactivity.
+Creates a recorded sequence of notes from device ID and stop after T seconds of inactivity.
 
 	record(1,5) // record notes played on device ID=1 and stop recording after 5 seconds
 
 ### run<a name="run"></a>
-Start Loop(S). Ignore If It Was Running..
+Start loop(s). Ignore if it was running.
 
 	
 
 ### stop<a name="stop"></a>
-Stop Running Loop(S). Ignore If It Was Stopped..
+Stop running loop(s). Ignore if it was stopped.
 
 	
 
 ### velocity<a name="velocity"></a>
-Set The Base Velocity [1..127];Default Is 70.
+Set the base velocity [1..127]; default is 70.
 
 	velocity(90)
 

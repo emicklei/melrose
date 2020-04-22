@@ -410,7 +410,7 @@ note('2E#.--')`,
 		Template:      `interval(${1:from},${2:to},${3:by})`,
 		IsComposer:    true,
 		Func: func(from, to, by interface{}) *melrose.Interval {
-			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by))
+			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by), melrose.RepeatFromTo)
 		}}
 	eval["indexmap"] = Function{
 		Title:         "Integer Index Map modifier",

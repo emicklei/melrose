@@ -18,30 +18,24 @@ Musical objects can be composed using:
 - Reverse
 - Rotate
 - Join
-- Parallel (chord)
-- Serial (arpeggio)
+- Parallel
+- Serial
 - Undynamic
 - IndexMapper
 - Loop
-
-Parameters of compositions can be:
-
-- Scalar values (integer, float)
-- Interval
-- Variable to a scalar or interval
 
 ## Notations
 
 ### Note
 
-| Notation | Alternative | Description 
+| Notation | Alternative | Description
 |----------|-------|-------------
-| C4       | ¼C,C,c  | quarter C octave 4 
+| C4       | ¼C,C,c  | quarter C octave 4
 | 2E5      | ½E5,½e5 | Halftone (2 x ¼) E octave 5
 | 1C       |        | Full tone C octave 4
 | F#       | F♯,f♯  | F sharp
 | G_       | G♭    | G flat
-| G.       | G.    | duration x 1.5 
+| G.       | G.    | duration x 1.5
 | =        | =     | quarter rest
 | 2=       | ½=    | half rest
 | 1=       | 1=    | full rest
