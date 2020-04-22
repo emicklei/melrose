@@ -1,15 +1,13 @@
 # Melrose
 
-[How to install](install.html)
-[Usage](cli.html)
-[Language](dsl.html)
+[How to install](install.html)[Usage](cli.html)[Language](dsl.html)
 
 The basic musical objects in Melrose are:
 
-- Note
-- Sequence
-- Chord
-- Scale
+- Note [🔗](dsl.html#note)
+- Sequence [🔗](dsl.html#sequence)
+- Chord [🔗](dsl.html#chord)
+- Scale [🔗](dsl.html#scale)
 
 Musical objects can be composed using:
 
@@ -42,7 +40,7 @@ Musical objects can be composed using:
 | D+       | d+    | quarter D octave 4 MezzoForte
 | 16E#.--  | 16e♯.-- | sixteenth E sharp duration x 1.5 Piano
 
-### Note<a name="note-not"></a>
+### Note dynamics<a name="note-not"></a>
 
 | Notation    | Description
 |-------------|---
