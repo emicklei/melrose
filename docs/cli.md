@@ -6,9 +6,13 @@ title: Melrose Command Line Interface (CLI)
 [Usage](cli.html)
 [Language](dsl.html)
 
-# Melrose Command Line Interface (CLI)
+# Melrose
 
-Using the command-line tool `melrose`, which is a Read–Eval–Print Loop (REPL) that produces or consumes MIDI.
+The command-line tool `melrose` is a Read–Eval–Print Loop (REPL) that produces or consumes MIDI. 
+By entering statements using the [language](dsl.html), `melrose` will send out MIDI messages to any connected [DAW](daw.html).
+
+Commands to control the program itself are prefix with a colon `:`.
+With `:h` you get list of known functions and commands.
 
 ## help
 
@@ -82,3 +86,4 @@ Ctrl-Y       | Paste from Yank buffer (Alt-Y to paste next yank instead)
 
 Melrose starts a HTTP server on port 8118 and evaluates statements on `POST /v1/statements`.
 The port can be changed to e.g. 8000 with the program option `-http :8000`.
+This server is used by the `Melrose Plugin for Visual Studio Code`.
