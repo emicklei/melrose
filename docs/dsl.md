@@ -2,6 +2,10 @@
 title: Melrose Language
 ---
 
+[How to install](install.html)
+[Usage](cli.html)
+[Language](dsl.html)
+
 ## Creation functions
 
 ### chord<a name="chord"></a>
@@ -9,7 +13,9 @@ Create a Chord.
 
 	chord('C#5/m/1')
 
-	chord('G/M/2)
+	chord('G/M/2')
+
+	play(serial(chord('E5/M))
 
 ### note<a name="note"></a>
 Create a Note from the note notation.
@@ -34,7 +40,7 @@ Create a Sequence from (space separated) notes.
 ### flatten<a name="flatten"></a>
 Flatten all operations on a musical object to a new sequence.
 
-	
+	flatten(sequence('(C E G) B')) // => C E G B
 
 ### indexmap<a name="indexmap"></a>
 Create a Mapper of Notes by index (1-based).
@@ -44,7 +50,11 @@ Create a Mapper of Notes by index (1-based).
 ### interval<a name="interval"></a>
 Create an integer repeating interval (from,to,by).
 
-	
+	i1 = interval(-4,4,1)
+
+	l1 = loop(pitch(i1,sequence('C D E F')))
+
+	run(l1)
 
 ### join<a name="join"></a>
 Join two or more musical objects.
@@ -52,16 +62,18 @@ Join two or more musical objects.
 	
 
 ### parallel<a name="parallel"></a>
-Create a new sequence in which all notes of a musical object will be played in parallel.
+Create a new sequence in which all notes of a musical object are synched in time.
 
-	
+	parallel(sequence('C D E')) // => [C D E]
 
 ### pitch<a name="pitch"></a>
 Change the pitch with a delta of semitones.
 
 	pitch(-1,sequence('C D E'))
 
-	pitch(12,note('C'))
+	p = interval(-4,4,1)
+
+	pitch(p,note('C'))
 
 ### repeat<a name="repeat"></a>
 Repeat the musical object a number of times.
@@ -76,7 +88,7 @@ Reverse the (groups of) notes in a sequence.
 ### serial<a name="serial"></a>
 Serialise any parallelisation of notes in a musical object.
 
-	serial(chord('E')) => E G B
+	serial(chord('E')) // => E G B
 
 ### undynamic<a name="undynamic"></a>
 Undynamic all the notes in a musical object.
@@ -94,7 +106,7 @@ Set the Beats Per Minute [1..300]; default is 120.
 ### channel<a name="channel"></a>
 Select a MIDI channel, must be in [0..16].
 
-	
+	play(channel(2,sequence('C2 E3')) // play on instrument connected to MIDI channel 2'
 
 ### echo<a name="echo"></a>
 Echo the notes being played; default is true.
@@ -109,7 +121,7 @@ Play all musical objects in parallel.
 ### loop<a name="loop"></a>
 Create a new loop.
 
-	
+	l1 = loop(sequence('C D E F G A B'))
 
 ### play<a name="play"></a>
 Play musical objects such as Note,Chord,Sequence,...
@@ -117,14 +129,18 @@ Play musical objects such as Note,Chord,Sequence,...
 	play(s1,s2,s3) // play s3 after s2 after s1
 
 ### record<a name="record"></a>
-Creates a recorded sequence of notes from device ID and stop after T seconds of inactivity.
+Creates a recorded sequence of notes from a MIDI device.
 
 	record(1,5) // record notes played on device ID=1 and stop recording after 5 seconds
 
 ### run<a name="run"></a>
 Start loop(s). Ignore if it was running.
 
-	
+	l1 = loop(sequence('C D E F G A B'))
+
+	run(l1)
+
+	stop(l1)
 
 ### stop<a name="stop"></a>
 Stop running loop(s). Ignore if it was stopped.
