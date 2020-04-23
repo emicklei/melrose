@@ -13,16 +13,17 @@ The basic musical objects in Melrose are:
 
 Musical objects can be composed using:
 
-- Repeat
-- Pitch
-- Reverse
-- Rotate
-- Join
-- Parallel
-- Serial
-- Undynamic
-- IndexMapper
-- Loop
+- [Repeat](dsl.html#repeat)
+- [Pitch](dsl.html#pitch)
+- [Reverse](dsl.html#reverse)
+- [Rotate](dsl.html#rotate)
+- [Join](dsl.html#join)
+- [Parallel](dsl.html#parallel)
+- [Serial](dsl.html#serial)
+- [Undynamic](dsl.html#undynamci)
+- [IndexMapper](dsl.html#indexmap)
+- [Loop](dsl.html#loop)
+- [Interval](dsl.html#interval)
 
 ## Notations
 
@@ -46,9 +47,9 @@ Musical objects can be composed using:
 
 | Notation    | Description
 |-------------|---
-| --- |Pianissimo
-| --	|Piano
-| -	  |MezzoPiano
+| \-\-\- |Pianissimo
+| \-\-	|Piano
+| \-	  |MezzoPiano
 | +	  |MezzoForte
 | ++	|Forte
 | +++ |Fortissimo
@@ -81,6 +82,10 @@ Musical objects can be composed using:
 Variable names must start with a non-digit character and can zero or more characters in `a-z A-Z _ 0-9`.
 An assigment `=` is used to create a Variable.
 To delete a variable, assign it to the special value `nil`.
+
+### comment
+
+Use `//` to add comment.
 
 ### creation functions
 
@@ -121,7 +126,3 @@ These functions control the audio device (playing, changing settings).
              run --- start loop(s). Ignore if it was running.
             stop --- stop running loop(s). Ignore if it was stopped.
         velocity --- set the base velocity [1..127], default is 70
-
-### comment
-
-Use `//` at the start of a line to add comment.
