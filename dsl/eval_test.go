@@ -2,6 +2,8 @@ package dsl
 
 import (
 	"testing"
+
+	"github.com/emicklei/melrose"
 )
 
 func TestIsCompatible(t *testing.T) {
@@ -17,7 +19,7 @@ func TestIsCompatible(t *testing.T) {
 }
 
 func TestNestedFunctions(t *testing.T) {
-	e := NewEvaluator(NewVariableStore())
+	e := NewEvaluator(NewVariableStore(), melrose.NoLooper)
 	input := `pitch(1,repeat(1,reverse(join(note('E'),sequence('F G')))))`
 	_, err := e.EvaluateExpression(input)
 	if err != nil {
@@ -26,7 +28,7 @@ func TestNestedFunctions(t *testing.T) {
 }
 
 func TestMulitLineEvaluate(t *testing.T) {
-	e := NewEvaluator(NewVariableStore())
+	e := NewEvaluator(NewVariableStore(), melrose.NoLooper)
 	input := `sequence("
 		C D E C 
 		C D E C 

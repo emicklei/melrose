@@ -22,8 +22,8 @@ var (
 	inputFile = flag.String("i", "", "read expressions from a file")
 	httpPort  = flag.String("http", ":8118", "address on which to listen for HTTP requests")
 
-	history                      = ".melrose.history"
-	varStore dsl.VariableStorage = dsl.NewVariableStore()
+	history                         = ".melrose.history"
+	globalStore dsl.VariableStorage = dsl.NewVariableStore()
 )
 
 func main() {
@@ -37,22 +37,25 @@ func main() {
 
 	// process file if given
 	if len(*inputFile) > 0 {
-		processInputFile(*inputFile)
+		processInputFile(globalStore, *inputFile)
 	}
+
+	//loopControl := melrose.NewBeatmaster(120.0) // TODO
+	loopControl := melrose.UnscheduledLooper{}
 
 	if len(*httpPort) > 0 {
 		// start DSL server
-		go server.NewLanguageServer(varStore, *httpPort).Start()
+		go server.NewLanguageServer(globalStore, loopControl, *httpPort).Start()
 	}
 
 	// start REPL
 	line := liner.NewLiner()
 	defer line.Close()
-	defer tearDown(line)
+	defer tearDown(line, globalStore, loopControl)
 	// TODO liner catches control+c
 	//setupCloseHandler(line)
 	setup(line)
-	loop(line)
+	loop(line, globalStore, loopControl)
 }
 
 func welcome() {
@@ -61,8 +64,9 @@ func welcome() {
 
 var functionNames = []string{"play"}
 
-func tearDown(line *liner.State) {
-	dsl.StopAllLoops(varStore)
+func tearDown(line *liner.State, store dsl.VariableStorage, control melrose.LoopController) {
+	dsl.StopAllLoops(store)
+	control.Stop()
 	if f, err := os.Create(history); err != nil {
 		notify.Print(notify.Errorf("error writing history file:%v", err))
 	} else {
@@ -81,8 +85,9 @@ func setup(line *liner.State) {
 	}
 }
 
-func loop(line *liner.State) {
-	eval := dsl.NewEvaluator(varStore)
+func loop(line *liner.State, store dsl.VariableStorage, control melrose.LoopController) {
+	eval := dsl.NewEvaluator(store, control)
+	control.Start()
 	for {
 		entry, err := line.Prompt("𝄞 ")
 		if err != nil {
@@ -116,13 +121,13 @@ func loop(line *liner.State) {
 exit:
 }
 
-func processInputFile(fileName string) {
-	data, err := ioutil.ReadFile(*inputFile)
+func processInputFile(store dsl.VariableStorage, inputFile string) {
+	data, err := ioutil.ReadFile(inputFile)
 	if err != nil {
 		notify.Print(notify.Errorf("unable to read file:%v", err))
 		return
 	}
-	eval := dsl.NewEvaluator(varStore)
+	eval := dsl.NewEvaluator(store, melrose.NoLooper)
 	for line, each := range strings.Split(string(data), "\n") {
 		entry := strings.TrimSpace(each)
 		if _, err := eval.EvaluateStatement(entry); err != nil {
@@ -145,13 +150,13 @@ func printValue(v interface{}) {
 // setupCloseHandler creates a 'listener' on a new goroutine which will notify the
 // program if it receives an interrupt from the OS. We then handle this by calling
 // our clean up procedure and exiting the program.
-func setupCloseHandler(line *liner.State) {
+func setupCloseHandler(line *liner.State, control melrose.LoopController) {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-c
 		fmt.Println("\r- Ctrl+C pressed in Terminal")
-		tearDown(line)
+		tearDown(line, globalStore, control)
 		os.Exit(0)
 	}()
 }

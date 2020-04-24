@@ -148,7 +148,7 @@ func (n Note) Modified(modifiers ...int) Note {
 		case Dot:
 			modified = modified.Dot()
 		case MezzoForte:
-			modified = modified.MezzoForte()
+			modified = modified.ModifiedVelocity(F_MezzoForte)
 		}
 	}
 	return modified
@@ -197,8 +197,8 @@ func (n Note) ModifiedDuration(by float32) Note {
 	return nn
 }
 
-func (n Note) MezzoForte() Note {
-	nn, _ := NewNote(n.Name, n.Octave, n.duration, n.Accidental, false, F_MezzoForte)
+func (n Note) ModifiedVelocity(velo float32) Note {
+	nn, _ := NewNote(n.Name, n.Octave, n.duration, n.Accidental, n.Dotted, velo)
 	return nn
 }
 
@@ -267,24 +267,31 @@ func ParseNote(input string) (Note, error) {
 	}
 	var velocity float32 = 1.0 // audio decides
 	if len(matches[6]) > 0 {
-		plusmin := matches[6]
-		// 0.8,0.6,0.2,1.2,1.6,1.8
-		switch plusmin {
-		case "-":
-			velocity = F_MezzoPiano
-		case "--":
-			velocity = F_Piano
-		case "---":
-			velocity = F_Pianissimo
-		case "+":
-			velocity = F_MezzoForte
-		case "++":
-			velocity = F_Forte
-		case "+++":
-			velocity = F_Fortissimo
-		}
+		velocity = ParseVelocity(matches[6])
 	}
 	return NewNote(matches[2], octave, duration, accidental, dotted, velocity)
+}
+
+func ParseVelocity(plusmin string) (velocity float32) {
+	// 0.8,0.6,0.2,1.2,1.6,1.8
+	switch plusmin {
+	case "-":
+		velocity = F_MezzoPiano
+	case "--":
+		velocity = F_Piano
+	case "---":
+		velocity = F_Pianissimo
+	case "+":
+		velocity = F_MezzoForte
+	case "++":
+		velocity = F_Forte
+	case "+++":
+		velocity = F_Fortissimo
+	default:
+		// 0
+		velocity = 1.0
+	}
+	return
 }
 
 // Formatting

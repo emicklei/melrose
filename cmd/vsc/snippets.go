@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 
+	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 )
 
@@ -20,7 +21,7 @@ type Snippet struct {
 func snippets() {
 	varstore := dsl.NewVariableStore()
 	snippets := map[string]Snippet{}
-	for _, v := range dsl.EvalFunctions(varstore) {
+	for _, v := range dsl.EvalFunctions(varstore, melrose.NoLooper) {
 		if len(v.Prefix) > 0 && len(v.Title) > 0 {
 			snip := Snippet{
 				Prefix:      v.Prefix,

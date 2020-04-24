@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
 )
@@ -26,7 +27,7 @@ func showHelp(args []string) notify.Message {
 			fmt.Fprintf(&b, "%s\n", cmd.Sample)
 			return notify.Infof("%s", b.String())
 		}
-		if fun, ok := dsl.EvalFunctions(varStore)[cmdfunc]; ok {
+		if fun, ok := dsl.EvalFunctions(globalStore, melrose.NoLooper)[cmdfunc]; ok {
 			fmt.Fprintf(&b, "%s\n", cmdfunc)
 			fmt.Fprintf(&b, "%s\n", fun.Description)
 			fmt.Fprintf(&b, "%s\n", fun.Template)
@@ -35,7 +36,7 @@ func showHelp(args []string) notify.Message {
 	}
 	io.WriteString(&b, "\n")
 	{
-		funcs := dsl.EvalFunctions(varStore)
+		funcs := dsl.EvalFunctions(globalStore, melrose.NoLooper)
 		keys := []string{}
 		width := 0
 		for k, f := range funcs {
@@ -55,7 +56,7 @@ func showHelp(args []string) notify.Message {
 	}
 	io.WriteString(&b, "\n")
 	{
-		funcs := dsl.EvalFunctions(varStore)
+		funcs := dsl.EvalFunctions(globalStore, melrose.NoLooper)
 		keys := []string{}
 		width := 0
 		for k, f := range funcs {

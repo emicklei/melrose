@@ -5,8 +5,8 @@ import (
 )
 
 func TestCompleteMe(t *testing.T) {
-	defer func() { varStore.Delete("art") }()
-	varStore.Put("art", "?")
+	defer func() { globalStore.Delete("art") }()
+	globalStore.Put("art", "?")
 	for i, each := range []struct {
 		line          string
 		pos           int

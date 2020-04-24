@@ -65,3 +65,8 @@ func Serial(s melrose.Sequenceable) melrose.Serial {
 func Channel(nr int, s melrose.Sequenceable) melrose.ChannelSelector {
 	return melrose.ChannelSelector{Target: s, Number: melrose.On(nr)}
 }
+
+// Loop returns a new loop for playing a sequence. It is not started.
+func Loop(s melrose.Sequenceable) *melrose.Loop {
+	return &melrose.Loop{Target: s}
+}

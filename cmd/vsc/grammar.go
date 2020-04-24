@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 )
 
@@ -22,7 +23,7 @@ func grammar() {
 
 	varstore := dsl.NewVariableStore()
 	var buffer bytes.Buffer
-	for k, _ := range dsl.EvalFunctions(varstore) {
+	for k, _ := range dsl.EvalFunctions(varstore, melrose.NoLooper) {
 		if buffer.Len() > 0 {
 			fmt.Fprintf(&buffer, "|")
 		}

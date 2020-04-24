@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
 )
@@ -19,8 +20,8 @@ type LanguageServer struct {
 }
 
 // NewLanguageServer returns a new LanguageService. It is not started.
-func NewLanguageServer(store dsl.VariableStorage, addr string) *LanguageServer {
-	return &LanguageServer{store: store, address: addr, evaluator: dsl.NewEvaluator(store)}
+func NewLanguageServer(store dsl.VariableStorage, loopControl melrose.LoopController, addr string) *LanguageServer {
+	return &LanguageServer{store: store, address: addr, evaluator: dsl.NewEvaluator(store, loopControl)}
 }
 
 // Start will start a HTTP listener for serving DSL statements

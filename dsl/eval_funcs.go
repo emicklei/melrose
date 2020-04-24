@@ -37,7 +37,7 @@ type Function struct {
 	Func          interface{}
 }
 
-func EvalFunctions(storage VariableStorage) map[string]Function {
+func EvalFunctions(storage VariableStorage, control melrose.LoopController) map[string]Function {
 	eval := map[string]Function{}
 	eval["chord"] = Function{
 		Title:       "Chord creator",
@@ -46,8 +46,7 @@ func EvalFunctions(storage VariableStorage) map[string]Function {
 		Alias:       "C",
 		Template:    `chord('${1:note}')`,
 		Samples: `chord('C#5/m/1')
-chord('G/M/2')
-play(serial(chord('E5/M))`,
+chord('G/M/2')`,
 		IsCore: true,
 		Func: func(chord string) interface{} {
 			c, err := melrose.ParseChord(chord)
@@ -306,7 +305,7 @@ note('2E#.--')`,
 		Prefix:      "flat",
 		Alias:       "F",
 		Template:    `flatten(${1:sequenceable})`,
-		Samples:     `flatten(sequence('(C E G) B')) // => C E G B`,
+		Samples:     `flatten(sequence('[C E G] B')) // => C E G B`,
 		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
@@ -350,36 +349,34 @@ note('2E#.--')`,
 				return &melrose.Loop{Target: s}
 			}
 		}}
-	eval["run"] = Function{
+	eval["begin"] = Function{
 		Title:         "Loop runner",
-		Description:   "start loop(s). Ignore if it was running.",
+		Description:   "begin loop(s). Ignore if it was running.",
 		ControlsAudio: true,
-		Prefix:        "run",
-		Template:      `run(${1:loop})`,
+		Prefix:        "beg",
+		Template:      `begin(${1:loop})`,
 		Samples: `l1 = loop(sequence('C D E F G A B'))
-run(l1)
-stop(l1)`,
+end(l1)
+begin(l1)`,
 		Func: func(vars ...variable) interface{} {
 			for _, each := range vars {
 				l, ok := each.Value().(*melrose.Loop)
 				if !ok {
-					notify.Print(notify.Warningf("cannot start (%T) %v", l, l))
+					notify.Print(notify.Warningf("cannot begin (%T) %v", l, l))
 					continue
 				}
-				l.Start(melrose.CurrentDevice())
+				control.Begin(l)
 				notify.Print(notify.Infof("started loop: %s", each.Name))
 			}
 			return nil
 		}}
-	eval["stop"] = Function{
-		Title:         "Loop stopper",
-		Description:   "stop running loop(s). Ignore if it was stopped.",
+	eval["end"] = Function{
+		Title:         "Loop terminator",
+		Description:   "end running loop(s). Ignore if it was stopped.",
 		ControlsAudio: true,
-		Prefix:        "sto",
-		Template:      `stop(${1:loop-or-empty})`,
+		Template:      `end(${1:loop-or-empty})`,
 		Samples: `l1 = loop(sequence('C E G))
-run(l1)
-stop(l1)`,
+end(l1)`,
 		Func: func(vars ...variable) interface{} {
 			if len(vars) == 0 {
 				StopAllLoops(storage)
@@ -388,12 +385,11 @@ stop(l1)`,
 			for _, each := range vars {
 				l, ok := each.Value().(*melrose.Loop)
 				if !ok {
-					notify.Print(notify.Warningf("cannot stop (%T) %v", l, l))
+					notify.Print(notify.Warningf("cannot end (%T) %v", l, l))
 					continue
 				}
 				notify.Print(notify.Infof("stopping loop: %s", each.Name))
-				// Stop waits for the loop to end so run it in a go-routine
-				go l.Stop()
+				control.End(l)
 			}
 			return nil
 		}}
@@ -405,7 +401,7 @@ stop(l1)`,
 		Prefix:        "chan",
 		Alias:         "Ch",
 		Template:      `channel(${1:number},${2:sequenceable})`,
-		Samples:       `play(channel(2,sequence('C2 E3')) // play on instrument connected to MIDI channel 2'`,
+		Samples:       `channel(2,sequence('C2 E3') // plays on instrument connected to MIDI channel 2'`,
 		Func: func(midiChannel, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -415,7 +411,7 @@ stop(l1)`,
 			return melrose.ChannelSelector{Target: s, Number: getValueable(midiChannel)}
 		}}
 	eval["interval"] = Function{
-		Title:         "Integer Interval creator",
+		Title:         "Integer Interval creator. Repeats on default",
 		Description:   "create an integer repeating interval (from,to,by)",
 		ControlsAudio: false,
 		Prefix:        "int",
@@ -435,7 +431,7 @@ l1 = loop(pitch(i1,sequence('C D E F')))`,
 		Alias:         "Im",
 		Template:      `indexmap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
 		Samples: `s1 = sequence('C D E F G A B')
-i1 = indexmap('6 5 4 3 2 1',s1) // => B A G F E D C`,
+i1 = indexmap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		IsComposer: true,
 		Func: func(indices string, m interface{}) interface{} {
 			s, ok := getSequenceable(m)

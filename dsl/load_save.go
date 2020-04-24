@@ -46,7 +46,7 @@ func LoadMemoryFromDisk(storage VariableStorage, args []string) notify.Message {
 		return notify.Errorf("syntax incompatible source detected, got %q want %q", snap.Syntax, Syntax)
 	}
 
-	eval := NewEvaluator(storage)
+	eval := NewEvaluator(storage, melrose.NoLooper)
 	toProcess := snap.Variables
 	pass := 0
 	for {

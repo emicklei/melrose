@@ -14,16 +14,16 @@ func cmdFunctions() map[string]Command {
 	cmds := map[string]Command{}
 	cmds[":h"] = Command{Description: "show help, optional on a command or function", Func: showHelp}
 	cmds[":s"] = Command{Description: "save memory to disk, optional use given filename", Func: func(args []string) notify.Message {
-		return dsl.SaveMemoryToDisk(varStore, args)
+		return dsl.SaveMemoryToDisk(globalStore, args)
 	}}
 	cmds[":l"] = Command{Description: "load memory from disk, optional use given filename", Func: func(args []string) notify.Message {
-		return dsl.LoadMemoryFromDisk(varStore, args)
+		return dsl.LoadMemoryFromDisk(globalStore, args)
 	}}
 	cmds[":v"] = Command{Description: "show variables, optional filter on given prefix", Func: func(args []string) notify.Message {
-		return dsl.ListVariables(varStore, args)
+		return dsl.ListVariables(globalStore, args)
 	}}
 	cmds[":k"] = Command{Description: "stop all running Loops", Func: func(args []string) notify.Message {
-		dsl.StopAllLoops(varStore)
+		dsl.StopAllLoops(globalStore)
 		return nil
 	}}
 	cmds[":m"] = Command{Description: "MIDI settings", Func: handleMIDISetting}

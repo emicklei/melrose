@@ -31,3 +31,18 @@ type AudioDevice interface {
 
 	Close()
 }
+
+type LoopController interface {
+	Start()
+	Stop()
+	BPM(bpm float64)
+	Begin(l *Loop)
+	End(l *Loop)
+}
+
+type MapFunc func(seq Sequenceable) Sequenceable
+
+// TODO experiment
+type Mappeable interface {
+	Map(m MapFunc) Mappeable
+}

@@ -1,6 +1,7 @@
 package dsl
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -10,19 +11,22 @@ import (
 )
 
 type Evaluator struct {
-	store VariableStorage
-	funcs map[string]Function
+	store       VariableStorage
+	funcs       map[string]Function
+	loopControl melrose.LoopController
 }
 
-func NewEvaluator(store VariableStorage) *Evaluator {
+func NewEvaluator(store VariableStorage, loopControl melrose.LoopController) *Evaluator {
 	return &Evaluator{
-		store: store,
-		funcs: EvalFunctions(store),
+		store:       store,
+		funcs:       EvalFunctions(store, loopControl),
+		loopControl: loopControl,
 	}
 }
 
 func (e *Evaluator) EvaluateProgram(source string) error {
-	return nil
+	// TODO
+	return errors.New("not implemented")
 }
 
 func (e *Evaluator) EvaluateStatement(entry string) (interface{}, error) {
@@ -63,18 +67,19 @@ func (e *Evaluator) EvaluateStatement(entry string) (interface{}, error) {
 				if storedValue, present := e.store.Get(variable); present {
 					if otherLoop, replaceme := storedValue.(*melrose.Loop); replaceme {
 						otherLoop.Target = theLoop.Target
-						if !otherLoop.IsRunning() {
-							otherLoop.Start(melrose.CurrentDevice())
-						}
+						e.loopControl.Begin(otherLoop)
+						// if !otherLoop.IsRunning() {
+						// 	otherLoop.Start(melrose.CurrentDevice())
+						// }
 					} else {
 						// existing variable but not a Loop
 						e.store.Put(variable, theLoop)
-						theLoop.Start(melrose.CurrentDevice())
 					}
 				} else {
 					// new variable for theLoop
 					e.store.Put(variable, theLoop)
-					theLoop.Start(melrose.CurrentDevice())
+					e.loopControl.Begin(theLoop)
+					//theLoop.Start(melrose.CurrentDevice())
 				}
 			} else {
 				// not a Loop

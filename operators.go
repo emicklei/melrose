@@ -56,6 +56,15 @@ func (j Join) S() Sequence {
 	return head
 }
 
+// Map returns a new Join in which each list entry is mapped
+func (j Join) Map(m MapFunc) Join {
+	newList := []Sequenceable{}
+	for _, each := range j.List {
+		newList = append(newList, m(each))
+	}
+	return Join{List: newList}
+}
+
 type Repeat struct {
 	Target Sequenceable
 	Times  int
@@ -120,6 +129,10 @@ func (a Serial) Storex() string {
 		return fmt.Sprintf("serial(%s)", s.Storex())
 	}
 	return ""
+}
+
+func Serialise(seq Sequenceable) Sequenceable {
+	return Serial{Target: seq}
 }
 
 type Undynamic struct {

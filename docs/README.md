@@ -52,6 +52,7 @@ Musical objects can be composed using:
 | \-\-\- |Pianissimo
 | \-\-	|Piano
 | \-	  |MezzoPiano
+| 0   |Regular
 | +	  |MezzoForte
 | ++	|Forte
 | +++ |Fortissimo

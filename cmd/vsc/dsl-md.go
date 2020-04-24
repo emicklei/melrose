@@ -9,6 +9,7 @@ import (
 	"text/template"
 	"unicode"
 
+	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 )
 
@@ -64,7 +65,7 @@ type GroupedFunctions struct {
 func dslmarkdown() {
 	varstore := dsl.NewVariableStore()
 	gf := GroupedFunctions{}
-	for k, each := range dsl.EvalFunctions(varstore) {
+	for k, each := range dsl.EvalFunctions(varstore, melrose.NoLooper) {
 		df := DocumentedFunction{
 			Title:            k,
 			ShortDescription: each.Title,

@@ -6,6 +6,7 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 )
 
@@ -28,12 +29,12 @@ func completeMe(line string, pos int) (head string, c []string, tail string) {
 		return line[0:pos], c, line[pos:]
 	}
 	// vars first
-	for k, _ := range varStore.Variables() {
+	for k, _ := range globalStore.Variables() {
 		if strings.HasPrefix(k, prefix) {
 			c = append(c, k[len(prefix):])
 		}
 	}
-	for k, f := range dsl.EvalFunctions(varStore) {
+	for k, f := range dsl.EvalFunctions(globalStore, melrose.NoLooper) {
 		// TODO start from closest (
 		if strings.HasPrefix(k, prefix) {
 			stripped := stripParameters(f.Template)
