@@ -2,9 +2,11 @@
 title: Melrose and DAW
 ---
 
-[How to install](install.html)
+[Home](index.html)
 [Usage](cli.html)
 [Language](dsl.html)
+[DAW](daw.html)
+[Install](install.html)
 
 # Digital Audio Workstation (DAW)
 

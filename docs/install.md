@@ -2,9 +2,11 @@
 title: Melrose installation guide
 ---
 
-[How to install](install.html)
+[Home](index.html)
 [Usage](cli.html)
 [Language](dsl.html)
+[DAW](daw.html)
+[Install](install.html)
 
 # Install
 

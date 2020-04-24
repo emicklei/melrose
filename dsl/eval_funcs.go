@@ -173,8 +173,9 @@ pitch(p,note('C'))`,
 		Prefix:      "seq",
 		Alias:       "S",
 		Template:    `sequence('${1:space-separated-notes}')`,
-		Samples:     `sequence('C D E')`,
-		IsCore:      true,
+		Samples: `sequence('C D E')
+sequence('[C D E]')`,
+		IsCore: true,
 		Func: func(s string) interface{} {
 			sq, err := melrose.ParseSequence(s)
 			if err != nil {
@@ -208,7 +209,7 @@ note('2E#.--')`,
 		Description: "",
 		Template:    `scale('${1:letter}')`,
 		IsCore:      true,
-		Samples:     `scale('C#/m')`,
+		Samples:     `scale('E/m') // => E F G A B C5 D5`,
 		Func: func(s string) interface{} {
 			sc, err := melrose.ParseScale(s)
 			if err != nil {
@@ -376,6 +377,9 @@ stop(l1)`,
 		ControlsAudio: true,
 		Prefix:        "sto",
 		Template:      `stop(${1:loop-or-empty})`,
+		Samples: `l1 = loop(sequence('C E G))
+run(l1)
+stop(l1)`,
 		Func: func(vars ...variable) interface{} {
 			if len(vars) == 0 {
 				StopAllLoops(storage)
@@ -417,9 +421,8 @@ stop(l1)`,
 		Prefix:        "int",
 		Alias:         "I",
 		Template:      `interval(${1:from},${2:to},${3:by})`,
-		Samples: `i1 = interval(-4,4,1)
-l1 = loop(pitch(i1,sequence('C D E F')))
-run(l1)`,
+		Samples: `i1 = interval(-2,4,1)
+l1 = loop(pitch(i1,sequence('C D E F')))`,
 		IsComposer: true,
 		Func: func(from, to, by interface{}) *melrose.Interval {
 			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by), melrose.RepeatFromTo)
@@ -431,7 +434,9 @@ run(l1)`,
 		Prefix:        "ind",
 		Alias:         "Im",
 		Template:      `indexmap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
-		IsComposer:    true,
+		Samples: `s1 = sequence('C D E F G A B')
+i1 = indexmap('6 5 4 3 2 1',s1) // => B A G F E D C`,
+		IsComposer: true,
 		Func: func(indices string, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {

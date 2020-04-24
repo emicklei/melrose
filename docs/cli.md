@@ -2,13 +2,15 @@
 title: Melrose Command Line Interface (CLI)
 ---
 
-[How to install](install.html)
+[Home](index.html)
 [Usage](cli.html)
 [Language](dsl.html)
+[DAW](daw.html)
+[Install](install.html)
 
-# Melrose
+# Melrose program
 
-The command-line tool `melrose` is a Read–Eval–Print Loop (REPL) that produces or consumes MIDI. 
+The program `melrose` is a Read–Eval–Print Loop (REPL) that produces or consumes MIDI. 
 By entering statements using the [language](dsl.html), `melrose` will send out MIDI messages to any connected [DAW](daw.html).
 
 Commands to control the program itself are prefix with a colon `:`.

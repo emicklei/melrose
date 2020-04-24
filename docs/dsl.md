@@ -2,9 +2,11 @@
 title: Melrose Language
 ---
 
-[How to install](install.html)
+[Home](index.html)
 [Usage](cli.html)
 [Language](dsl.html)
+[DAW](daw.html)
+[Install](install.html)
 
 ## Creation functions
 
@@ -27,12 +29,14 @@ Create a Note from the note notation.
 ### scale<a name="scale"></a>
 .
 
-	scale('C#/m')
+	scale('E/m') // => E F G A B C5 D5
 
 ### sequence<a name="sequence"></a>
 Create a Sequence from (space separated) notes.
 
 	sequence('C D E')
+
+	sequence('[C D E]')
 
 
 ## Composition functions
@@ -45,16 +49,16 @@ Flatten all operations on a musical object to a new sequence.
 ### indexmap<a name="indexmap"></a>
 Create a Mapper of Notes by index (1-based).
 
-	
+	s1 = sequence('C D E F G A B')
+
+	i1 = indexmap('6 5 4 3 2 1',s1) // => B A G F E D C
 
 ### interval<a name="interval"></a>
 Create an integer repeating interval (from,to,by).
 
-	i1 = interval(-4,4,1)
+	i1 = interval(-2,4,1)
 
 	l1 = loop(pitch(i1,sequence('C D E F')))
-
-	run(l1)
 
 ### join<a name="join"></a>
 Join two or more musical objects.
@@ -145,7 +149,11 @@ Start loop(s). Ignore if it was running.
 ### stop<a name="stop"></a>
 Stop running loop(s). Ignore if it was stopped.
 
-	
+	l1 = loop(sequence('C E G))
+
+	run(l1)
+
+	stop(l1)
 
 ### velocity<a name="velocity"></a>
 Set the base velocity [1..127]; default is 70.

@@ -17,9 +17,11 @@ var tmpl = template.Must(template.New("dsl").Parse(
 title: Melrose Language
 ---
 
-[How to install](install.html)
+[Home](index.html)
 [Usage](cli.html)
 [Language](dsl.html)
+[DAW](daw.html)
+[Install](install.html)
 
 ## Creation functions
 {{range .Core}}
