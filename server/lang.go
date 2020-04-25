@@ -44,7 +44,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 	defer r.Body.Close()
-	returnValue, err := l.evaluator.EvaluateStatement(string(data))
+	returnValue, err := l.evaluator.EvaluateProgram(string(data))
 	var response interface{}
 	if err != nil {
 		// evaluation failed.

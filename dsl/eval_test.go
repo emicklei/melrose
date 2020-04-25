@@ -90,3 +90,90 @@ func Test_isAssignment(t *testing.T) {
 		})
 	}
 }
+
+func TestEvaluateProgram_SingleLine(t *testing.T) {
+	v := NewVariableStore()
+	e := NewEvaluator(v, melrose.NoLooper)
+	if _, err := e.EvaluateProgram(`a = 1`); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestEvaluateProgram_CommentLine(t *testing.T) {
+	v := NewVariableStore()
+	e := NewEvaluator(v, melrose.NoLooper)
+	if _, err := e.EvaluateProgram(`// a = 1`); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestEvaluateProgram_FirstTab(t *testing.T) {
+	v := NewVariableStore()
+	e := NewEvaluator(v, melrose.NoLooper)
+	if _, err := e.EvaluateProgram(`	a = 1`); err == nil {
+		t.Error(err)
+	}
+}
+
+func TestEvaluateProgram_TwoLines(t *testing.T) {
+	v := NewVariableStore()
+	e := NewEvaluator(v, melrose.NoLooper)
+	r, err := e.EvaluateProgram(
+		`a = 1
+b = 2`)
+	if err != nil {
+		t.Error(err)
+	}
+	if got, want := r, 2; got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+}
+
+func TestEvaluateProgram_BrokenSequence(t *testing.T) {
+	v := NewVariableStore()
+	e := NewEvaluator(v, melrose.NoLooper)
+	r, err := e.EvaluateProgram(
+		`a = sequence(
+	'A')`)
+	if err != nil {
+		t.Error(err)
+	}
+	if got, want := r, 1; got.(melrose.Sequence).Length() != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+}
+func TestEvaluateProgram_AllBrokenSequence(t *testing.T) {
+	v := NewVariableStore()
+	e := NewEvaluator(v, melrose.NoLooper)
+	r, err := e.EvaluateProgram(
+		`a = sequence
+	(
+	'
+	A
+	'
+	)`)
+	if err != nil {
+		t.Error(err)
+	}
+	if r == nil {
+		t.Fatal()
+	}
+	if got, want := r, 1; got.(melrose.Sequence).Length() != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+}
+
+func TestEvaluateProgram_TwoTabs(t *testing.T) {
+	v := NewVariableStore()
+	e := NewEvaluator(v, melrose.NoLooper)
+	r, err := e.EvaluateProgram(
+		`a
+	=
+		1`)
+	if err != nil {
+		t.Error(err)
+	}
+	if got, want := r, 1; got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+}

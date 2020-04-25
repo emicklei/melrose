@@ -172,6 +172,7 @@ func (t *Timeline) Play(s melrose.Sequenceable) {
 	for _, eachGroup := range actualSequence.Notes {
 		var actualDuration time.Duration
 		for _, eachNote := range eachGroup {
+			// all have the same duration so combine the event
 			actualDuration = time.Duration(float32(wholeNoteDuration) * eachNote.DurationFactor())
 			if eachNote.IsRest() {
 				continue

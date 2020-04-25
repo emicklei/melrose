@@ -12,49 +12,13 @@ title: Melrose Command Line Interface (CLI)
 
 The program `melrose` is a Read–Eval–Print Loop (REPL) that produces or consumes MIDI. 
 By entering statements using the [language](dsl.html), `melrose` will send out MIDI messages to any connected [DAW](daw.html).
+Although it is possible to program directly using the command line interface of `melrose`, it is much more convenient to use the Visual Studio Code editor with the [Melrose Plugin](vsc.html).
 
+### control
 Commands to control the program itself are prefix with a colon `:`.
 With `:h` you get list of known functions and commands.
 
-## help
-
-    𝄞 :h
-
-            chord --- create a Chord
-          flatten --- flatten all operations on a musical object to a new sequence
-         indexmap --- create a Mapper of Notes by index (1-based)
-         interval --- create an integer repeating interval (from,to,by)
-             join --- join two or more musical objects
-             note --- Note, e.g. C 2G#5. =
-         parallel --- create a new sequence in which all notes of a musical object will be played in parallel
-            pitch --- change the pitch with a delta of semitones
-           repeat --- repeat the musical object a number of times
-          reverse --- reverse the (groups of) notes in a sequence
-         sequence --- create a Sequence from a string of notes
-           serial --- serialise any parallelisation of notes in a musical object
-        undynamic --- undynamic all the notes in a musical object
-
-             bpm --- set the Beats Per Minute [1..300], default is 120
-         channel --- select a MIDI channel, must be in [0..16]
-            echo --- Echo the notes being played (default is true)
-              go --- play all musical objects in parallel
-            loop --- create a new loop
-            play --- play musical objects such as Note,Chord,Sequence,...
-          record --- creates a recorded sequence of notes from device ID and stop after T seconds of inactivity
-             run --- start loop(s). Ignore if it was running.
-            stop --- stop running loop(s). Ignore if it was stopped.
-        velocity --- set the base velocity [1..127], default is 70
-
-        :h --- show help, optional on a command or function
-        :k --- stop all running Loops
-        :l --- load memory from disk, optional use given filename
-        :m --- MIDI settings
-        :q --- quit
-        :s --- save memory to disk, optional use given filename
-        :v --- show variables, optional filter on given prefix
-
-
-## line editing
+### line editing
 
 The following line editing commands are supported on platforms and terminals
 that Melrose supports:
@@ -84,8 +48,42 @@ Ctrl-N, Down | Next match from history
 Ctrl-R       | Reverse Search history (Ctrl-S forward, Ctrl-G cancel)
 Ctrl-Y       | Paste from Yank buffer (Alt-Y to paste next yank instead)
 
+
 ## API server
 
-Melrose starts a HTTP server on port 8118 and evaluates statements on `POST /v1/statements`.
+Melrose starts a HTTP server on port 8118 and evaluates programs on `POST /v1/statements` providing the source as the payload (HTTP Body).
+This server is used by the [Melrose Plugin for Visual Studio Code](https://github.com/emicklei/melrose-for-vscode).
+
+### HTTP response
+
+#### 200 OK
+
+If the request was successful processed then the response looks like:
+
+  {
+    "type": "melrose.Sequence",
+    "object: { ... }
+  }
+
+#### 500 Internal Server Error
+
+If the request could not be processed then the response looks like:
+
+  {
+    "type": "errors.Error",
+    "message": "unknown function",
+    "line": 1,
+    "column": 1
+  }
+
+#### 400 Bad Request
+
+If the request is malformed then the response will have the error message.
+
+### HTTP port
+
 The port can be changed to e.g. 8000 with the program option `-http :8000`.
-This server is used by the `Melrose Plugin for Visual Studio Code`.
+
+### tracing
+
+If the HTTP URL has the query parameter `trace=true` then `melrose` will produce extra logging.

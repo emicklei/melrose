@@ -55,6 +55,6 @@ After installing both `portmidi` and `melrose`, you can start the tool in a Term
 	
 If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH`.
 
-## Melrose plugin for Visual Studio Code
+## Melrose plugin for Visual Studio Code<a name="plugin"></a>
 
 Currently, the `melrose` plugin is not yet published so you need to [download the plugin](https://public.philemonworks.com/melrose/melrose-for-vscode-1.0.0.vsix) archive and put this in the `plugins` folder on your installed `Visual Studio Code` editor.

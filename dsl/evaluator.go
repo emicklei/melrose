@@ -24,21 +24,61 @@ func NewEvaluator(store VariableStorage, loopControl melrose.LoopController) *Ev
 	}
 }
 
-func (e *Evaluator) EvaluateProgram(source string) error {
-	// TODO
-	return errors.New("not implemented")
+const fourSpaces = "    "
+
+// Statements are separated by newlines.
+// If a line is prefix by one or more TABs then that line is appended to the previous.
+// If a line is prefix by 4 SPACES then that line is appended to the previous.
+// Return the result of the last expression or statement.
+func (e *Evaluator) EvaluateProgram(source string) (interface{}, error) {
+	lines := []string{}
+	splitted := strings.Split(source, "\n")
+	nrOfLastExpression := -1
+	for lineNr, each := range splitted {
+		if len(each) == 0 { // skip empty
+			continue
+		}
+		if strings.HasPrefix(each, "//") { // skip comment
+			continue
+		}
+		if strings.HasPrefix(each, "\t") || strings.HasPrefix(each, fourSpaces) { // append to previous
+			if len(lines) == 0 {
+				return nil, errors.New("syntax error, first line cannot start with TAB")
+			}
+			if nrOfLastExpression+1 != lineNr {
+				return nil, fmt.Errorf("syntax error, line with TAB [%d] must be part of expression", lineNr+1)
+			}
+			lines[len(lines)-1] = lines[len(lines)-1] + each // with TAB
+			nrOfLastExpression = lineNr
+			continue
+		}
+		lines = append(lines, each)
+		nrOfLastExpression = lineNr
+	}
+	var lastResult interface{}
+	for _, each := range lines {
+		result, err := e.EvaluateStatement(each)
+		if err != nil {
+			return nil, err
+		}
+		lastResult = result
+	}
+	return lastResult, nil
 }
 
 func (e *Evaluator) EvaluateStatement(entry string) (interface{}, error) {
 	// flatten multiline ; expr does not support multiline strings
 	entry = strings.Replace(entry, "\n", " ", -1)
+
+	// replace all TABs
 	entry = strings.Replace(entry, "\t", " ", -1)
+
+	// remove trailing comment
 	if slashes := strings.Index(entry, "//"); slashes != -1 {
 		entry = entry[0:slashes]
 	}
 
 	if len(entry) == 0 {
-		fmt.Println()
 		return nil, nil
 	}
 	// check comment line
