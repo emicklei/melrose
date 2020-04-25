@@ -21,3 +21,14 @@ func TestDurations(t *testing.T) {
 		t.Log("-----")
 	}
 }
+
+func TestEventNoteOff(t *testing.T) {
+	on := midiEvent{onoff: noteOn}
+	off := on.asNoteoff()
+	if got, want := on.onoff, noteOn; got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+	if got, want := off.onoff, noteOff; got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+}

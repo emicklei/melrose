@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
 	"github.com/rakyll/portmidi"
 )
@@ -23,6 +24,8 @@ type Midi struct {
 	defaultOutputChannel  int
 	currentOutputDeviceID int
 	currentInputDeviceID  int
+
+	timeline *melrose.Timeline
 }
 
 const (
@@ -139,6 +142,11 @@ func Open() (*Midi, error) {
 	// for output
 	m.defaultOutputChannel = DefaultChannel
 	m.changeOutputDeviceID(int(portmidi.DefaultOutputDeviceID()))
+
+	// start timeline
+	m.timeline = melrose.NewTimeline()
+	go m.timeline.Run()
+
 	return m, nil
 }
 
@@ -168,6 +176,9 @@ func (m *Midi) changeOutputDeviceID(id int) notify.Message {
 
 // Close is part of melrose.AudioDevice
 func (m *Midi) Close() {
+	if m.timeline != nil {
+		m.timeline.Reset()
+	}
 	if m.enabled {
 		m.stream.Abort()
 		m.stream.Close()
