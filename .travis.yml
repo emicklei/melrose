@@ -3,6 +3,8 @@ go:
  - 1.x
 before_install:
 - sudo apt-get update
+- sudo apt-cache policy libportmidi0
+- sudo apt-cache policy libportmidi-dev
 - sudo apt-get install libportmidi0=1:217-6
 - sudo apt-get install libportmidi-dev
 script:
