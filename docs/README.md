@@ -8,24 +8,29 @@
 
 The basic musical objects in Melrose are:
 
-- [Note](dsl.html#note)
-- [Sequence](dsl.html#sequence)
-- [Chord](dsl.html#chord)
-- [Scale](dsl.html#scale)
+- [note](dsl.html#note)
+- [sequence](dsl.html#sequence)
+- [chord](dsl.html#chord)
+- [scale](dsl.html#scale)
 
 Musical objects can be composed using:
 
-- [Repeat](dsl.html#repeat)
-- [Pitch](dsl.html#pitch)
-- [Reverse](dsl.html#reverse)
-- [Rotate](dsl.html#rotate)
-- [Join](dsl.html#join)
-- [Parallel](dsl.html#parallel)
-- [Serial](dsl.html#serial)
-- [Undynamic](dsl.html#undynamci)
-- [IndexMapper](dsl.html#indexmap)
-- [Loop](dsl.html#loop)
-- [Interval](dsl.html#interval)
+- [repeat](dsl.html#repeat)
+- [pitch](dsl.html#pitch)
+- [reverse](dsl.html#reverse)
+- [rotate](dsl.html#rotate)
+- [join](dsl.html#join)
+- [parallel](dsl.html#parallel)
+- [serial](dsl.html#serial)
+- [undynamic](dsl.html#undynamci)
+- [indexMapper](dsl.html#indexmap)
+- [interval](dsl.html#interval)
+
+Musical objects can be played using:
+
+- play
+- [loop](dsl.html#loop)
+- go
 
 ## Notations
 
@@ -77,55 +82,3 @@ Musical objects can be composed using:
 |-------------|---
 | C5          | C major scale, Octave 5
 | E/m         | E natural minor scale, Octave 4
-
-## Melrose Language
-
-### variables
-
-Variable names must start with a non-digit character and can zero or more characters in `a-z A-Z _ 0-9`.
-An assigment `=` is used to create a Variable.
-To delete a variable, assign it to the special value `nil`.
-
-### comment
-
-Use `//` to add comment.
-
-### creation functions
-
-Functions to create musical objects. 
-
-            chord --- create a Chord
-             note --- Note, e.g. C 2G#5. =
-         sequence --- create a Sequence from a string of notes
-
-### composer functions
-
-Functions to augment musical objects. 
-Objects cannot be changed after creation.
-Each function returns a new object or an object wrapped in a function.
-
-          flatten --- flatten all operations on a musical object to a new sequence
-         indexmap --- create a Mapper of Notes by index (1-based)
-         interval --- create an integer repeating interval (from,to,by)
-             join --- join two or more musical objects
-         parallel --- create a new sequence in which all notes of a musical object will be played in parallel
-            pitch --- change the pitch with a delta of semitones
-           repeat --- repeat the musical object a number of times
-          reverse --- reverse the (groups of) notes in a sequence
-           serial --- serialise any parallelisation of notes in a musical object
-        undynamic --- undynamic all the notes in a musical object
-
-### audio functions
-
-These functions control the audio device (playing, changing settings).
-
-             bpm --- set the Beats Per Minute [1..300], default is 120
-         channel --- select a MIDI channel, must be in [0..16]
-            echo --- Echo the notes being played (default is true)
-              go --- play all musical objects in parallel
-            loop --- create a new loop
-            play --- play musical objects such as Note,Chord,Sequence,...
-          record --- creates a recorded sequence of notes from device ID and stop after T seconds of inactivity
-             run --- start loop(s). Ignore if it was running.
-            stop --- stop running loop(s). Ignore if it was stopped.
-        velocity --- set the base velocity [1..127], default is 70
