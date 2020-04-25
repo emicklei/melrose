@@ -29,7 +29,7 @@ func NewTimeline(out *portmidi.Stream) *Timeline {
 }
 
 type TimelineEvent interface {
-	Handle(tim *Timeline)
+	Handle(tim *Timeline, when time.Time)
 }
 
 type scheduledTimelineEvent struct {
@@ -45,6 +45,20 @@ type noteEvent struct {
 	channel  int
 	velocity int64
 	next     *noteEvent
+}
+
+type midiEvent struct {
+	which    []int64
+	onoff    int
+	channel  int
+	velocity int64
+	out      *portmidi.Stream
+}
+
+func (m midiEvent) Handle(tim *Timeline, when time.Time) {
+	for _, each := range m.which {
+		m.out.WriteShort(int64(m.onoff|(m.channel-1)), each, m.velocity)
+	}
 }
 
 func (e noteEvent) perform(out *portmidi.Stream) {
