@@ -2,8 +2,7 @@ language: go
 go: 
  - 1.x
 before_install:
-- apt-get install libportmidi-dev
+- sudo apt-get update
+- sudo apt-get install libportmidi-dev
 script:
-- go test -v .
-- go test -v ./dsl
-- go test -v ./cmd/melrose
+- go test -cover ./...
