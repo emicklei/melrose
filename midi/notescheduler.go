@@ -28,6 +28,16 @@ func NewTimeline(out *portmidi.Stream) *Timeline {
 	}
 }
 
+type TimelineEvent interface {
+	Handle(tim *Timeline)
+}
+
+type scheduledTimelineEvent struct {
+	event TimelineEvent
+	when  time.Time
+	next  *scheduledTimelineEvent
+}
+
 type noteEvent struct {
 	when     time.Time
 	which    []int64
