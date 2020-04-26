@@ -83,10 +83,7 @@ func LoadMemoryFromDisk(storage VariableStorage, args []string) notify.Message {
 		if err != nil {
 			return notify.Errorf("invalid value for bpm (beat-per-minute):%v", v)
 		} else {
-			// TODO do not like this dependency on a device
-			if melrose.CurrentDevice() != nil {
-				melrose.CurrentDevice().SetBeatsPerMinute(f)
-			}
+			melrose.Context().LoopControl.SetBPM(f)
 		}
 	}
 	return notify.Infof("loaded %d variables. use \":v\" to list them", len(snap.Variables))

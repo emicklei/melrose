@@ -1,7 +1,7 @@
 package m
 
 import (
-	"sync"
+	"log"
 
 	"github.com/emicklei/melrose"
 )
@@ -35,15 +35,7 @@ func Join(s ...melrose.Sequenceable) melrose.Join {
 }
 
 func Go(a melrose.AudioDevice, s ...melrose.Sequenceable) {
-	wg := new(sync.WaitGroup)
-	for _, each := range s {
-		wg.Add(1)
-		go func(p melrose.Sequenceable) {
-			a.Play(p)
-			wg.Done()
-		}(each)
-	}
-	wg.Wait()
+	log.Fatal("not implemented")
 }
 
 // IndexMap creates a IndexMapper from indices.
@@ -68,5 +60,5 @@ func Channel(nr int, s melrose.Sequenceable) melrose.ChannelSelector {
 
 // Loop returns a new loop for playing a sequence. It is not started.
 func Loop(s melrose.Sequenceable) *melrose.Loop {
-	return &melrose.Loop{Target: s}
+	return melrose.NewLoop(s)
 }

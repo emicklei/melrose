@@ -2,6 +2,7 @@ package melrose
 
 import (
 	"fmt"
+	"log"
 	"sync"
 	"time"
 )
@@ -12,12 +13,14 @@ type Timeline struct {
 	tail       *scheduledTimelineEvent // latest
 	protection sync.RWMutex
 	resume     chan bool
+	verbose    bool
 }
 
 func NewTimeline() *Timeline {
 	return &Timeline{
 		protection: sync.RWMutex{},
 		resume:     make(chan bool),
+		verbose:    false,
 	}
 }
 
@@ -78,7 +81,16 @@ func (s *Timeline) Reset() {
 
 func (t *Timeline) Schedule(event TimelineEvent, when time.Time) error {
 	now := time.Now()
-	if when.Before(now) {
+	if t.verbose {
+		log.Println(event, when.Sub(now))
+	}
+	diff := when.Sub(now)
+	// if between -wait..wait then handle now
+	if -wait <= diff && diff <= wait {
+		event.Handle(t, now)
+		return nil
+	}
+	if diff < -wait {
 		return fmt.Errorf("cannot schedule in the past:%v", now.Sub(when))
 	}
 	t.schedule(&scheduledTimelineEvent{
@@ -101,21 +113,27 @@ func (s *Timeline) schedule(event *scheduledTimelineEvent) {
 	}
 	defer s.protection.Unlock()
 	if s.head.when.After(event.when) {
-		// call is before head, new head
+		// event is before head, new head
 		event.next = s.head
 		s.head = event
 		return
 	}
 	if event.when.After(s.tail.when) {
-		// call is after tail, new tail
+		// event is after tail, new tail
 		s.tail.next = event
 		s.tail = event
 		return
 	}
 	if s.head.next == nil {
-		// call on the same time as head, new head
-		event.next = s.head
-		s.head = event
+		// event on the same time as head, put it after! head
+		s.head.next = event
+		s.tail = event
+		return
+	}
+	if s.tail.when == event.when {
+		// event on the same time as head, put it after! tail
+		s.tail.next = event
+		s.tail = event
 		return
 	}
 	// somewhere between head and tail
@@ -125,7 +143,7 @@ func (s *Timeline) schedule(event *scheduledTimelineEvent) {
 		previous = here
 		here = here.next
 	}
-	// here is after call, it must be scheduled before it
+	// here is after event, it must be scheduled before it
 	previous.next = event
 	event.next = here
 }

@@ -137,7 +137,22 @@ pitch(p,note('C'))`,
 		Prefix:        "bpm",
 		Template:      `bpm(${1:beats-per-minute})`,
 		Func: func(f float64) interface{} {
-			melrose.CurrentDevice().SetBeatsPerMinute(f)
+			melrose.Context().LoopControl.SetBPM(f)
+			return nil
+		}}
+
+	eval["biab"] = Function{
+		Title:         "Beats in a Bar",
+		Description:   "set the Beats in a Bar [1..6]; default is 4",
+		ControlsAudio: true,
+		Prefix:        "biab",
+		Template:      `biab(${1:beats-in-a-bar})`,
+		Func: func(i int) interface{} {
+			if i < 1 || i > 6 {
+				notify.Print(notify.Warningf("invalid beats-in-a-bar [1..6], %d = ", i))
+				return nil
+			}
+			melrose.Context().LoopControl.SetBIAB(i)
 			return nil
 		}}
 
@@ -150,7 +165,7 @@ pitch(p,note('C'))`,
 		Samples:       `velocity(90)`,
 		Func: func(i int) interface{} {
 			// TODO check range
-			melrose.CurrentDevice().SetBaseVelocity(i)
+			melrose.Context().AudioDevice.SetBaseVelocity(i)
 			return nil
 		}}
 
@@ -162,7 +177,7 @@ pitch(p,note('C'))`,
 		Template:      `echo(${0:true|false})`,
 		Samples:       `echo(false)`,
 		Func: func(on bool) interface{} {
-			melrose.CurrentDevice().SetEchoNotes(on)
+			melrose.Context().AudioDevice.SetEchoNotes(on)
 			return nil
 		}}
 
@@ -228,7 +243,7 @@ note('2E#.--')`,
 		Func: func(playables ...interface{}) interface{} {
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
-					melrose.CurrentDevice().Play(s)
+					melrose.Context().AudioDevice.Play(s, melrose.Context().LoopControl.BPM())
 				} else {
 					notify.Print(notify.Warningf("cannot play (%T) %v", p, p))
 				}
@@ -246,7 +261,8 @@ note('2E#.--')`,
 		Func: func(playables ...interface{}) interface{} {
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
-					go melrose.CurrentDevice().Play(s)
+					// TODO
+					log.Println("go not implemented:", s)
 				}
 			}
 			return nil
@@ -276,7 +292,7 @@ note('2E#.--')`,
 		Template:      `record(${1:input-device-id},${1:seconds-inactivity})`,
 		Samples:       `record(1,5) // record notes played on device ID=1 and stop recording after 5 seconds`,
 		Func: func(deviceID int, secondsInactivity int) interface{} {
-			seq, err := melrose.CurrentDevice().Record(deviceID, time.Duration(secondsInactivity)*time.Second)
+			seq, err := melrose.Context().AudioDevice.Record(deviceID, time.Duration(secondsInactivity)*time.Second)
 			if err != nil {
 				notify.Print(notify.Error(err))
 				return nil
@@ -346,7 +362,7 @@ note('2E#.--')`,
 				notify.Print(notify.Warningf("cannot loop (%T) %v", value, value))
 				return nil
 			} else {
-				return &melrose.Loop{Target: s}
+				return melrose.NewLoop(s)
 			}
 		}}
 	eval["begin"] = Function{

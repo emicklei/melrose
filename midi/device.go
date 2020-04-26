@@ -18,7 +18,6 @@ type Midi struct {
 	mutex        *sync.Mutex
 	deviceID     int
 	echo         bool
-	bpm          float64
 	baseVelocity int
 
 	defaultOutputChannel  int
@@ -35,17 +34,10 @@ const (
 
 var (
 	DefaultVelocity = 70
-	DefaultBPM      = 120.0
 	DefaultChannel  = 1
 )
 
-// SetBeatsPerMinute (BPM) ; beats each the length of a quarter note per minute.
-func (m *Midi) SetBeatsPerMinute(bpm float64) {
-	if bpm <= 0 {
-		return
-	}
-	m.bpm = bpm
-}
+func (m *Midi) Timeline() *melrose.Timeline { return m.timeline }
 
 // SetBaseVelocity is part of melrose.AudioDevice
 func (m *Midi) SetBaseVelocity(velocity int) {
@@ -99,7 +91,6 @@ func (m *Midi) printInfo() {
 	fmt.Println(":m input  <device-id> --- change the current MIDI input device id")
 	fmt.Println(":m output <device-id> --- change the current MIDI output device id")
 	fmt.Println()
-	fmt.Println("MIDI: Beats per minute (bpm):", m.bpm)
 	fmt.Printf("MIDI: Base velocity :%d\n", m.baseVelocity)
 	fmt.Printf("MIDI: Echo notes :%v\n", m.echo)
 	fmt.Println("MIDI: Default output channel:", m.defaultOutputChannel)
@@ -114,7 +105,7 @@ func (m *Midi) printInfo() {
 
 	for i := 0; i < portmidi.CountDevices(); i++ {
 		midiDeviceInfo = portmidi.Info(portmidi.DeviceID(i)) // returns info about a MIDI device
-		fmt.Printf("MIDI: %v: ", i)
+		fmt.Printf("MIDI: Device id %d: ", i)
 		usage := "output"
 		if midiDeviceInfo.IsInputAvailable {
 			usage = "input"
@@ -136,7 +127,6 @@ func Open() (*Midi, error) {
 		return nil, errors.New("no default output MIDI device available")
 	}
 	m.enabled = true
-	m.bpm = DefaultBPM
 	m.baseVelocity = DefaultVelocity
 	m.echo = true
 	// for output

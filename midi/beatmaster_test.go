@@ -16,11 +16,10 @@ func TestBeatmaster(t *testing.T) {
 	}
 	dev, _ := Open()
 	defer dev.Close()
-	melrose.SetCurrentDevice(dev)
-	dev.echo = false
-	dev.bpm = 120
+	melrose.Context().SetCurrentDevice(dev)
+	dev.echo = true
 
-	b := melrose.NewBeatmaster(dev.bpm)
+	b := melrose.NewBeatmaster(120.0)
 	b.Verbose(true)
 	b.Start()
 	time.Sleep(1 * time.Second)
@@ -29,16 +28,16 @@ func TestBeatmaster(t *testing.T) {
 	l1 := m.Loop(s1)
 	b.Begin(l1)
 
-	time.Sleep(3 * time.Second)
+	// time.Sleep(3 * time.Second)
 
-	s2 := m.Sequence("8F 8A 8C5")
-	l2 := m.Loop(s2)
-	b.Begin(l2)
+	// s2 := m.Sequence("8F 8A 8C5")
+	// l2 := m.Loop(s2)
+	// b.Begin(l2)
 
 	time.Sleep(10 * time.Second)
-	b.End(l1)
-	b.End(l2)
+	// b.End(l1)
+	// b.End(l2)
 
-	time.Sleep(1 * time.Second)
+	// time.Sleep(1 * time.Second)
 	b.Stop()
 }

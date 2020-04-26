@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/emicklei/melrose"
@@ -22,10 +23,11 @@ func cmdFunctions() map[string]Command {
 	cmds[":v"] = Command{Description: "show variables, optional filter on given prefix", Func: func(args []string) notify.Message {
 		return dsl.ListVariables(globalStore, args)
 	}}
-	cmds[":k"] = Command{Description: "stop all running Loops", Func: func(args []string) notify.Message {
+	cmds[":k"] = Command{Description: "end all running Loops", Func: func(args []string) notify.Message {
 		dsl.StopAllLoops(globalStore)
 		return nil
 	}}
+	cmds[":b"] = Command{Description: "Beat settings", Func: handleBeatSetting}
 	cmds[":m"] = Command{Description: "MIDI settings", Func: handleMIDISetting}
 	cmds[":q"] = Command{Description: "quit"} // no Func because it is handled in the main loop
 	return cmds
@@ -49,5 +51,12 @@ func lookupCommand(cmd string) (Command, bool) {
 }
 
 func handleMIDISetting(args []string) notify.Message {
-	return melrose.CurrentDevice().Command(args)
+	return melrose.Context().AudioDevice.Command(args)
+}
+
+func handleBeatSetting(args []string) notify.Message {
+	l := melrose.Context().LoopControl
+	fmt.Printf("Beats per minute (BPM):%f", l.BPM())
+	fmt.Printf("Beats in a bar   (BIAB):%d", l.BIAB())
+	return nil
 }

@@ -106,11 +106,8 @@ func (e *Evaluator) EvaluateStatement(entry string) (interface{}, error) {
 			if theLoop, ok := r.(*melrose.Loop); ok {
 				if storedValue, present := e.store.Get(variable); present {
 					if otherLoop, replaceme := storedValue.(*melrose.Loop); replaceme {
-						otherLoop.Target = theLoop.Target
+						otherLoop.SetTarget(theLoop.Target)
 						e.loopControl.Begin(otherLoop)
-						// if !otherLoop.IsRunning() {
-						// 	otherLoop.Start(melrose.CurrentDevice())
-						// }
 					} else {
 						// existing variable but not a Loop
 						e.store.Put(variable, theLoop)
@@ -119,7 +116,6 @@ func (e *Evaluator) EvaluateStatement(entry string) (interface{}, error) {
 					// new variable for theLoop
 					e.store.Put(variable, theLoop)
 					e.loopControl.Begin(theLoop)
-					//theLoop.Start(melrose.CurrentDevice())
 				}
 			} else {
 				// not a Loop
@@ -132,7 +128,7 @@ func (e *Evaluator) EvaluateStatement(entry string) (interface{}, error) {
 	r, err := e.EvaluateExpression(entry)
 	// special case for Loop
 	if theLoop, ok := r.(*melrose.Loop); ok {
-		return nil, fmt.Errorf("cannot run an unidentified Loop, use myLoop = %s", theLoop.Storex())
+		return nil, fmt.Errorf("cannot begin an unidentified Loop, use myLoop = %s", theLoop.Storex())
 	}
 	if err != nil {
 		return nil, err

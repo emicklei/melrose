@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Beatmaster is a LoopController
 type Beatmaster struct {
 	beating        bool
 	ticker         *time.Ticker
@@ -13,22 +14,25 @@ type Beatmaster struct {
 	loopStartQueue chan *Loop
 	loopStopQueue  chan *Loop
 	bpmChanges     chan float64
-	beats          int64 // monotonic increasing number, starting at 0
-	bar            int64 // bar = number of beats on which a new bar starts
-	verbose        bool  // if true log beats and bars
+	biabChanges    chan int64
+	beats          int64   // monotonic increasing number, starting at 0
+	biab           int64   // current number of beats in a bar
+	bpm            float64 // current beats per minute
+	verbose        bool    // if true log beats and bars
 }
 
 func NewBeatmaster(bpm float64) *Beatmaster {
-	td := tickerDuration(4, bpm)
 	return &Beatmaster{
 		beating:        false,
-		ticker:         time.NewTicker(td),
+		ticker:         time.NewTicker(tickerDuration(bpm)),
 		done:           make(chan bool),
 		loopStartQueue: make(chan *Loop),
 		loopStopQueue:  make(chan *Loop),
 		bpmChanges:     make(chan float64),
+		biabChanges:    make(chan int64),
 		beats:          0,
-		bar:            4,
+		biab:           4,
+		bpm:            bpm,
 		verbose:        false}
 }
 
@@ -39,6 +43,14 @@ func NewBeatmaster(bpm float64) *Beatmaster {
 // x = a loop was stopped
 func (b *Beatmaster) Verbose(v bool) {
 	b.verbose = v
+}
+
+func (b *Beatmaster) BPM() float64 {
+	return b.bpm
+}
+
+func (b *Beatmaster) BIAB() int {
+	return int(b.biab)
 }
 
 // Begin will schedule the start of a Loop at the next bar, unless the master is not started.
@@ -67,8 +79,8 @@ func (b *Beatmaster) End(l *Loop) {
 	}()
 }
 
-// BPM will change the beats per minute at the next bar, unless the master is not started.
-func (b *Beatmaster) BPM(bpm float64) {
+// SetBPM will change the beats per minute at the next bar, unless the master is not started.
+func (b *Beatmaster) SetBPM(bpm float64) {
 	if !b.beating {
 		return
 	}
@@ -77,6 +89,19 @@ func (b *Beatmaster) BPM(bpm float64) {
 	}
 	go func() {
 		b.bpmChanges <- bpm
+	}()
+}
+
+// SetBIAB will change the beats per bar, unless the master is not started.
+func (b *Beatmaster) SetBIAB(biab int) {
+	if !b.beating {
+		return
+	}
+	if biab < 1 || biab > 6 { // TODO what is the max?
+		return
+	}
+	go func() {
+		b.biabChanges <- int64(biab)
 	}()
 }
 
@@ -95,7 +120,7 @@ func (b *Beatmaster) Start() {
 			case <-b.done:
 				return
 			case <-b.ticker.C:
-				if b.beats%b.bar == 0 {
+				if b.beats%b.biab == 0 {
 					if b.verbose {
 						fmt.Print("!")
 					}
@@ -103,10 +128,20 @@ func (b *Beatmaster) Start() {
 					// abort ?
 					case <-b.done:
 						return
-					// do we need to change BPM ?
+					// only change BIAB on a bar
+					case biab := <-b.biabChanges:
+						if b.verbose {
+							fmt.Println("biab:", biab)
+						}
+						b.biab = biab
+					// only change BPM on a bar
 					case bpm := <-b.bpmChanges:
+						if b.verbose {
+							fmt.Println("bpm:", bpm)
+						}
+						b.bpm = bpm
 						b.ticker.Stop()
-						b.ticker = time.NewTicker(tickerDuration(b.bar, bpm))
+						b.ticker = time.NewTicker(tickerDuration(bpm))
 					default:
 					}
 					// start all pending loops in start Q
@@ -120,7 +155,7 @@ func (b *Beatmaster) Start() {
 							if b.verbose {
 								fmt.Print("*")
 							}
-							l.Start(CurrentDevice())
+							l.Start(Context().AudioDevice)
 						case l := <-b.loopStopQueue:
 							if b.verbose {
 								fmt.Print("x")
@@ -142,7 +177,7 @@ func (b *Beatmaster) Start() {
 	}()
 }
 
-func tickerDuration(bar int64, bpm float64) time.Duration {
+func tickerDuration(bpm float64) time.Duration {
 	return time.Duration(int(math.Round(float64(60*1000)/bpm))) * time.Millisecond
 }
 
@@ -159,26 +194,15 @@ func (b *Beatmaster) Stop() {
 	}
 }
 
-var NoLooper = silentLooper{}
+var NoLooper = zeroBeat{}
 
-type silentLooper struct{}
+type zeroBeat struct{}
 
-func (s silentLooper) Begin(l *Loop)   {}
-func (s silentLooper) End(l *Loop)     {}
-func (s silentLooper) Start()          {}
-func (s silentLooper) Stop()           {}
-func (s silentLooper) BPM(bpm float64) {}
-
-type UnscheduledLooper struct{}
-
-func (u UnscheduledLooper) Begin(l *Loop) {
-	l.Start(CurrentDevice())
-}
-
-func (u UnscheduledLooper) End(l *Loop) {
-	l.Stop()
-}
-
-func (u UnscheduledLooper) Start()      {}
-func (u UnscheduledLooper) Stop()       {}
-func (u UnscheduledLooper) BPM(float64) {}
+func (s zeroBeat) Begin(l *Loop)      {}
+func (s zeroBeat) End(l *Loop)        {}
+func (s zeroBeat) Start()             {}
+func (s zeroBeat) Stop()              {}
+func (s zeroBeat) SetBPM(bpm float64) {}
+func (s zeroBeat) BPM() float64       { return 120.0 }
+func (s zeroBeat) SetBIAB(biab int)   {}
+func (s zeroBeat) BIAB() int          { return 4 }

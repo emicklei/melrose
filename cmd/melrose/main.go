@@ -33,15 +33,14 @@ func main() {
 	// set audio
 	currentDevice := setupAudio("midi")
 	defer currentDevice.Close()
-	melrose.SetCurrentDevice(currentDevice)
+	melrose.Context().SetCurrentDevice(currentDevice)
 
 	// process file if given
 	if len(*inputFile) > 0 {
 		processInputFile(globalStore, *inputFile)
 	}
 
-	//loopControl := melrose.NewBeatmaster(120.0) // TODO
-	loopControl := melrose.UnscheduledLooper{}
+	loopControl := melrose.Context().LoopControl
 
 	if len(*httpPort) > 0 {
 		// start DSL server
@@ -55,7 +54,7 @@ func main() {
 	// TODO liner catches control+c
 	//setupCloseHandler(line)
 	setup(line)
-	loop(line, globalStore, loopControl)
+	repl(line, globalStore, loopControl)
 }
 
 func welcome() {
@@ -85,7 +84,7 @@ func setup(line *liner.State) {
 	}
 }
 
-func loop(line *liner.State, store dsl.VariableStorage, control melrose.LoopController) {
+func repl(line *liner.State, store dsl.VariableStorage, control melrose.LoopController) {
 	eval := dsl.NewEvaluator(store, control)
 	control.Start()
 	for {

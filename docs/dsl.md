@@ -119,6 +119,11 @@ Begin loop(s). Ignore if it was running.
 
 	begin(l1)
 
+### biab<a name="biab"></a>
+Set the Beats in a Bar [1..6]; default is 4.
+
+	
+
 ### bpm<a name="bpm"></a>
 Set the Beats Per Minute [1..300]; default is 120.
 

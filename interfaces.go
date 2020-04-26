@@ -22,10 +22,14 @@ type AudioDevice interface {
 	// Per device specific commands
 	Command(args []string) notify.Message
 
-	Play(seq Sequenceable)
+	// Play schedules all the notes on the timeline using a BPM (beats-per-minute).
+	// Returns the end time of the last played Note.
+	Play(seq Sequenceable, bpm float64) time.Time
+
 	Record(deviceID int, stopAfterInactivity time.Duration) (Sequence, error)
 
-	SetBeatsPerMinute(bpm float64)
+	Timeline() *Timeline
+
 	SetBaseVelocity(velocity int)
 	SetEchoNotes(echo bool)
 
@@ -35,7 +39,13 @@ type AudioDevice interface {
 type LoopController interface {
 	Start()
 	Stop()
-	BPM(bpm float64)
+
+	SetBPM(bpm float64)
+	BPM() float64
+
+	SetBIAB(biab int)
+	BIAB() int
+
 	Begin(l *Loop)
 	End(l *Loop)
 }

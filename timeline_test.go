@@ -15,7 +15,9 @@ func TestScheduleAddInThePast(t *testing.T) {
 	}
 }
 
-type testEvent struct{}
+type testEvent struct {
+	id int
+}
 
 func (e testEvent) Handle(t *Timeline, w time.Time) {}
 
@@ -28,25 +30,28 @@ func TestScheduleAdd(t *testing.T) {
 	}()
 	now := time.Now()
 
-	e1 := new(testEvent)
-	e2 := new(testEvent)
-	e3 := new(testEvent)
-	e4 := new(testEvent)
+	e1 := testEvent{id: 1}
+	e2 := testEvent{id: 2}
+	e3 := testEvent{id: 3}
+	e4 := testEvent{id: 4}
+	// e1 -> e2 -> e4 -> e3
 	tim.Schedule(e1, now.Add(1*time.Second))
-	tim.Schedule(e2, now.Add(1*time.Second))
-	tim.Schedule(e3, now.Add(5*time.Second))
-	tim.Schedule(e4, now.Add(3*time.Second))
-
-	if got, want := tim.head.event, e2; got != want {
+	if got, want := tim.head.event, e1; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
+	tim.Schedule(e2, now.Add(1*time.Second))
+	if got, want := tim.head.next.event, e2; got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+	tim.Schedule(e3, now.Add(5*time.Second))
 	if got, want := tim.tail.event, e3; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
-	if got, want := tim.head.next.event, e1; got != want {
+	tim.Schedule(e4, now.Add(3*time.Second))
+	if got, want := tim.head.next.next.event, e4; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
-	if got, want := tim.head.next.next.event, e4; got != want {
+	if got, want := tim.tail.event, e3; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 	if got, want := tim.head.next.next.next.event, e3; got != want {
