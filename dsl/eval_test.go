@@ -177,3 +177,17 @@ func TestEvaluateProgram_TwoTabs(t *testing.T) {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
+
+func TestEvaluateProgram_TrailingWhitespace(t *testing.T) {
+	v := NewVariableStore()
+	e := NewEvaluator(v, melrose.NoLooper)
+	r, err := e.EvaluateProgram(
+		`a=1
+ `)
+	if err != nil {
+		t.Error(err)
+	}
+	if got, want := r, 1; got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+}

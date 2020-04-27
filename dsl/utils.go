@@ -9,8 +9,10 @@ func StopAllLoops(storage VariableStorage) {
 	// stop any running loops
 	for k, v := range storage.Variables() {
 		if l, ok := v.(*melrose.Loop); ok {
-			notify.Print(notify.Infof("stopping loop [%s]", k))
-			l.Stop()
+			if l.IsRunning() {
+				notify.Print(notify.Infof("stopping loop [%s]", k))
+				l.Stop()
+			}
 		}
 	}
 }

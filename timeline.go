@@ -112,16 +112,16 @@ func (s *Timeline) schedule(event *scheduledTimelineEvent) {
 		return
 	}
 	defer s.protection.Unlock()
-	if s.head.when.After(event.when) {
-		// event is before head, new head
-		event.next = s.head
-		s.head = event
-		return
-	}
 	if event.when.After(s.tail.when) {
 		// event is after tail, new tail
 		s.tail.next = event
 		s.tail = event
+		return
+	}
+	if s.head.when.After(event.when) {
+		// event is before head, new head
+		event.next = s.head
+		s.head = event
 		return
 	}
 	if s.head.next == nil {

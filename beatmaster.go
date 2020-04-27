@@ -124,6 +124,7 @@ func (b *Beatmaster) Start() {
 					if b.verbose {
 						fmt.Print("!")
 					}
+
 					select {
 					// abort ?
 					case <-b.done:
@@ -134,6 +135,13 @@ func (b *Beatmaster) Start() {
 							fmt.Println("biab:", biab)
 						}
 						b.biab = biab
+					default:
+					}
+
+					select {
+					// abort ?
+					case <-b.done:
+						return
 					// only change BPM on a bar
 					case bpm := <-b.bpmChanges:
 						if b.verbose {
@@ -144,6 +152,7 @@ func (b *Beatmaster) Start() {
 						b.ticker = time.NewTicker(tickerDuration(bpm))
 					default:
 					}
+
 					// start all pending loops in start Q
 					// stop all pending loops in stop Q
 					for {

@@ -112,7 +112,7 @@ func (n Note) Equals(other Note) bool {
 
 func (n Note) DurationFactor() float32 {
 	if n.Dotted {
-		return n.duration + 0.5
+		return n.duration * 1.5
 	}
 	return n.duration
 }

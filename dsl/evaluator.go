@@ -35,12 +35,6 @@ func (e *Evaluator) EvaluateProgram(source string) (interface{}, error) {
 	splitted := strings.Split(source, "\n")
 	nrOfLastExpression := -1
 	for lineNr, each := range splitted {
-		if len(each) == 0 { // skip empty
-			continue
-		}
-		if strings.HasPrefix(each, "//") { // skip comment
-			continue
-		}
 		if strings.HasPrefix(each, "\t") || strings.HasPrefix(each, fourSpaces) { // append to previous
 			if len(lines) == 0 {
 				return nil, errors.New("syntax error, first line cannot start with TAB")
@@ -57,11 +51,13 @@ func (e *Evaluator) EvaluateProgram(source string) (interface{}, error) {
 	}
 	var lastResult interface{}
 	for _, each := range lines {
-		result, err := e.EvaluateStatement(each)
+		result, err := e.evaluateCleanStatement(each)
 		if err != nil {
 			return nil, err
 		}
-		lastResult = result
+		if result != nil {
+			lastResult = result
+		}
 	}
 	return lastResult, nil
 }
@@ -70,19 +66,25 @@ func (e *Evaluator) EvaluateStatement(entry string) (interface{}, error) {
 	// flatten multiline ; expr does not support multiline strings
 	entry = strings.Replace(entry, "\n", " ", -1)
 
+	return e.evaluateCleanStatement(entry)
+}
+
+func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 	// replace all TABs
 	entry = strings.Replace(entry, "\t", " ", -1)
 
-	// remove trailing comment
+	// whitespaces
+	entry = strings.TrimSpace(entry)
+
+	// check comment line
+	if strings.HasPrefix(entry, "//") {
+		return nil, nil
+	}
+	// remove trailing inline comment
 	if slashes := strings.Index(entry, "//"); slashes != -1 {
 		entry = entry[0:slashes]
 	}
-
 	if len(entry) == 0 {
-		return nil, nil
-	}
-	// check comment line
-	if strings.HasPrefix(entry, "//") {
 		return nil, nil
 	}
 	if value, ok := e.store.Get(entry); ok {

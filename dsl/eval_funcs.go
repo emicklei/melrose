@@ -355,7 +355,7 @@ note('2E#.--')`,
 		ControlsAudio: true,
 		Prefix:        "loo",
 		Alias:         "L",
-		Template:      `loop(${1:sequenceable}) // stop(${2:variablename})`,
+		Template:      `${1:name} = loop(${2:object}) // end(${1:name})`,
 		Samples:       `l1 = loop(sequence('C D E F G A B'))`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
