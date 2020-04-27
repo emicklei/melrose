@@ -24,7 +24,7 @@ type AudioDevice interface {
 
 	// Play schedules all the notes on the timeline using a BPM (beats-per-minute).
 	// Returns the end time of the last played Note.
-	Play(seq Sequenceable, bpm float64) time.Time
+	Play(seq Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time)
 
 	Record(deviceID int, stopAfterInactivity time.Duration) (Sequence, error)
 

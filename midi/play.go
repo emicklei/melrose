@@ -8,10 +8,10 @@ import (
 )
 
 // Play is part of melrose.AudioDevice
-// It schedules all the notes on the timeline.
+// It schedules all the notes on the timeline beginning at a give time (now or in the future).
 // Returns the end time of the last played Note.
-func (m *Midi) Play(seq melrose.Sequenceable, bpm float64) time.Time {
-	moment := time.Now()
+func (m *Midi) Play(seq melrose.Sequenceable, bpm float64, beginAt time.Time) time.Time {
+	moment := beginAt
 	if !m.enabled {
 		return moment
 	}

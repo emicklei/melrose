@@ -1,7 +1,7 @@
 package m
 
 import (
-	"log"
+	"time"
 
 	"github.com/emicklei/melrose"
 )
@@ -34,8 +34,18 @@ func Join(s ...melrose.Sequenceable) melrose.Join {
 	return melrose.Join{List: s}
 }
 
+func Play(a melrose.AudioDevice, s ...melrose.Sequenceable) {
+	moment := time.Now()
+	for _, each := range s {
+		moment = a.Play(each, melrose.Context().LoopControl.BPM(), moment)
+	}
+}
+
 func Go(a melrose.AudioDevice, s ...melrose.Sequenceable) {
-	log.Fatal("not implemented")
+	moment := time.Now()
+	for _, each := range s {
+		a.Play(each, melrose.Context().LoopControl.BPM(), moment)
+	}
 }
 
 // IndexMap creates a IndexMapper from indices.

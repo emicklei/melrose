@@ -1,13 +1,11 @@
 package melrose
 
 type PlayContext struct {
-	Timeline    *Timeline
 	LoopControl LoopController
 	AudioDevice AudioDevice
 }
 
 var globalPlayContext = &PlayContext{
-	Timeline:    NewTimeline(),
 	LoopControl: NewBeatmaster(120.0),
 	AudioDevice: nil, // set later
 }

@@ -35,7 +35,7 @@ Create a Note from the note notation.
 	note('2E#.--')
 
 ### scale<a name="scale"></a>
-.
+Create a Scale using a starting Note and type indicator (Major,minor).
 
 	scale('E/m') // => E F G A B C5 D5
 

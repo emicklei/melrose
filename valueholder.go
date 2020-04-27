@@ -38,7 +38,7 @@ func (h ValueHolder) Value() interface{} {
 	return h.Any
 }
 
-func (h *ValueHolder) ChangeTo(newAny interface{}) {
+func (h *ValueHolder) SetValue(newAny interface{}) {
 	h.Any = newAny
 }
 

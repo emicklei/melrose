@@ -36,33 +36,6 @@ func (n Note) Storex() string {
 	return fmt.Sprintf("note('%s')", n.String())
 }
 
-// Constructors
-
-func C(modifiers ...int) Note {
-	return MustParseNote("C").Modified(modifiers...)
-}
-func D(modifiers ...int) Note {
-	return MustParseNote("D").Modified(modifiers...)
-}
-func E(modifiers ...int) Note {
-	return MustParseNote("E").Modified(modifiers...)
-}
-func F(modifiers ...int) Note {
-	return MustParseNote("F").Modified(modifiers...)
-}
-func G(modifiers ...int) Note {
-	return MustParseNote("G").Modified(modifiers...)
-}
-func A(modifiers ...int) Note {
-	return MustParseNote("A").Modified(modifiers...)
-}
-func B(modifiers ...int) Note {
-	return MustParseNote("B").Modified(modifiers...)
-}
-func Rest(modifiers ...int) Note {
-	return MustParseNote("=").Modified(modifiers...)
-}
-
 var rest = Note{Name: "="}
 
 func NewNote(name string, octave int, duration float32, accidental int, dot bool, velocityFactor float32) (Note, error) {
@@ -92,23 +65,7 @@ func NewNote(name string, octave int, duration float32, accidental int, dot bool
 	return Note{Name: name, Octave: octave, duration: duration, Accidental: accidental, Dotted: dot, velocityFactor: velocityFactor}, nil
 }
 
-// Accessors
-
-func (n Note) IsFlat() bool  { return n.Accidental == -1 }
-func (n Note) IsSharp() bool { return n.Accidental == 1 }
-func (n Note) IsRest() bool  { return "=" == n.Name }
-
-func (n Note) Equals(other Note) bool {
-	// quick check first
-	if n.Octave != other.Octave {
-		return false
-	}
-	// pitch independent check
-	if n.DurationFactor() != other.DurationFactor() {
-		return false
-	}
-	return n.MIDI() == other.MIDI()
-}
+func (n Note) IsRest() bool { return "=" == n.Name }
 
 func (n Note) DurationFactor() float32 {
 	if n.Dotted {
@@ -126,75 +83,6 @@ func (n Note) VelocityFactor() float32 {
 
 func (n Note) S() Sequence {
 	return BuildSequence([]Note{n})
-}
-
-// Modified applies modifiers on the Note and returns the new result
-func (n Note) Modified(modifiers ...int) Note {
-	modified := n
-	for _, each := range modifiers {
-		switch each {
-		case Sharp:
-			modified = modified.Sharp()
-		case Flat:
-			modified = modified.Flat()
-		case Eight:
-			modified = modified.Eight()
-		case Half:
-			modified = modified.Half()
-		case Quarter:
-			modified = modified.Quarter()
-		case Whole:
-			modified = modified.Whole()
-		case Dot:
-			modified = modified.Dot()
-		case MezzoForte:
-			modified = modified.ModifiedVelocity(F_MezzoForte)
-		}
-	}
-	return modified
-}
-
-// Pitch
-
-func (n Note) Sharp() Note {
-	nn, _ := NewNote(n.Name, n.Octave, n.duration, 1, n.Dotted, n.velocityFactor)
-	return nn
-}
-func (n Note) Flat() Note {
-	nn, _ := NewNote(n.Name, n.Octave, n.duration, -1, n.Dotted, n.velocityFactor)
-	return nn
-}
-
-// Duration
-
-func (n Note) Eight() Note {
-	nn, _ := NewNote(n.Name, n.Octave, 0.125, n.Accidental, n.Dotted, n.velocityFactor)
-	return nn
-}
-
-func (n Note) Quarter() Note {
-	nn, _ := NewNote(n.Name, n.Octave, 0.25, n.Accidental, n.Dotted, n.velocityFactor)
-	return nn
-}
-
-func (n Note) Half() Note {
-	nn, _ := NewNote(n.Name, n.Octave, 0.5, n.Accidental, n.Dotted, n.velocityFactor)
-	return nn
-}
-
-func (n Note) Whole() Note {
-	nn, _ := NewNote(n.Name, n.Octave, 1, n.Accidental, false, n.velocityFactor)
-	return nn
-}
-
-func (n Note) Dot() Note {
-	nn, _ := NewNote(n.Name, n.Octave, n.duration, n.Accidental, true, n.velocityFactor)
-	return nn
-}
-
-func (n Note) ModifiedDuration(by float32) Note {
-	nn, _ := NewNote(n.Name, n.Octave, n.duration+by, n.Accidental, n.Dotted, n.velocityFactor)
-	return nn
 }
 
 func (n Note) ModifiedVelocity(velo float32) Note {

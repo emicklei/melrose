@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	version   = "v0.1"
+	version   = "v0.16"
 	verbose   = flag.Bool("v", false, "verbose logging")
 	inputFile = flag.String("i", "", "read expressions from a file")
 	httpPort  = flag.String("http", ":8118", "address on which to listen for HTTP requests")

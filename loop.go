@@ -39,12 +39,12 @@ func (l *Loop) Start(d AudioDevice) *Loop {
 		return l
 	}
 	l.isRunning = true
-	l.reschedule(d)
+	l.reschedule(d, time.Now())
 	return l
 }
 
-func (l *Loop) reschedule(d AudioDevice) {
-	endOfLastNote := d.Play(l.Target, Context().LoopControl.BPM())
+func (l *Loop) reschedule(d AudioDevice, when time.Time) {
+	endOfLastNote := d.Play(l.Target, Context().LoopControl.BPM(), when)
 	// schedule the loop itself so it can play again when Handle is called
 	d.Timeline().Schedule(l, endOfLastNote)
 }
@@ -57,7 +57,7 @@ func (l *Loop) Handle(tim *Timeline, when time.Time) {
 		return
 	}
 	l.mutex.RUnlock()
-	l.reschedule(Context().AudioDevice)
+	l.reschedule(Context().AudioDevice, when)
 }
 
 func (l *Loop) Stop() *Loop {

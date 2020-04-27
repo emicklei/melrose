@@ -219,8 +219,8 @@ note('2E#.--')`,
 
 	eval["scale"] = Function{
 		Title:       "Scale creator",
+		Description: "create a Scale using a starting Note and type indicator (Major,minor)",
 		Prefix:      "sc",
-		Description: "",
 		Template:    `scale('${1:letter}')`,
 		IsCore:      true,
 		Samples:     `scale('E/m') // => E F G A B C5 D5`,
@@ -241,9 +241,10 @@ note('2E#.--')`,
 		Template:      `play(${1:sequenceable})`,
 		Samples:       `play(s1,s2,s3) // play s3 after s2 after s1`,
 		Func: func(playables ...interface{}) interface{} {
+			moment := time.Now()
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
-					melrose.Context().AudioDevice.Play(s, melrose.Context().LoopControl.BPM())
+					moment = melrose.Context().AudioDevice.Play(s, melrose.Context().LoopControl.BPM(), moment)
 				} else {
 					notify.Print(notify.Warningf("cannot play (%T) %v", p, p))
 				}
@@ -259,10 +260,12 @@ note('2E#.--')`,
 		Template:      `go(${1:sequenceable})`,
 		Samples:       `go(s1,s1,s3) // play s1 and s2 and s3 simultaneously`,
 		Func: func(playables ...interface{}) interface{} {
+			moment := time.Now()
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); ok {
-					// TODO
-					log.Println("go not implemented:", s)
+					melrose.Context().AudioDevice.Play(s, melrose.Context().LoopControl.BPM(), moment)
+				} else {
+					notify.Print(notify.Warningf("cannot go (%T) %v", p, p))
 				}
 			}
 			return nil
