@@ -1,7 +1,6 @@
 package melrose
 
 import (
-	"log"
 	"testing"
 	"time"
 )
@@ -23,11 +22,6 @@ func (e testEvent) Handle(t *Timeline, w time.Time) {}
 
 func TestScheduleAdd(t *testing.T) {
 	tim := NewTimeline()
-	go func() {
-		for {
-			log.Println(<-tim.resume)
-		}
-	}()
 	now := time.Now()
 
 	e1 := testEvent{id: 1}

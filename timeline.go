@@ -7,23 +7,26 @@ import (
 	"time"
 )
 
+// Timeline is a chain of events that are place in the future (playing) or past (recording).
 // TODO use sync.Pool for noteEvents
 type Timeline struct {
 	head       *scheduledTimelineEvent // earliest
 	tail       *scheduledTimelineEvent // latest
 	protection sync.RWMutex
+	isPlaying  bool
 	resume     chan bool
 	verbose    bool
 }
 
+// NewTimeline creates a new Timeline.
 func NewTimeline() *Timeline {
 	return &Timeline{
 		protection: sync.RWMutex{},
-		resume:     make(chan bool),
 		verbose:    false,
 	}
 }
 
+// TimelineEvent describe an event that can be scheduled on a Timeline.
 type TimelineEvent interface {
 	Handle(tim *Timeline, when time.Time)
 }
@@ -38,7 +41,23 @@ var (
 	wait = 50 * time.Millisecond // 1/16 note @ bpm 300
 )
 
-func (t *Timeline) Run() {
+// Len returns the current number of scheduled events.
+func (t *Timeline) Len() int64 {
+	t.protection.RLock()
+	defer t.protection.RUnlock()
+	var count int64
+	here := t.head
+	for here != nil {
+		here = here.next
+		count++
+	}
+	return count
+}
+
+// Play runs a loop to handle all the events in time. This is blocking.
+func (t *Timeline) Play() {
+	t.resume = make(chan bool)
+	t.isPlaying = true
 	for {
 		t.protection.RLock()
 		here := t.head
@@ -72,23 +91,26 @@ func (t *Timeline) Run() {
 }
 
 // Reset forgets about all scheduled calls.
-func (s *Timeline) Reset() {
-	s.protection.Lock()
-	defer s.protection.Unlock()
-	s.head = nil
-	s.tail = nil
+func (t *Timeline) Reset() {
+	t.protection.Lock()
+	defer t.protection.Unlock()
+	t.head = nil
+	t.tail = nil
 }
 
+// Schedule adds an event for a given time
 func (t *Timeline) Schedule(event TimelineEvent, when time.Time) error {
 	now := time.Now()
 	if t.verbose {
 		log.Println(event, when.Sub(now))
 	}
 	diff := when.Sub(now)
-	// if between -wait..wait then handle now
-	if -wait <= diff && diff <= wait {
-		event.Handle(t, now)
-		return nil
+	if t.isPlaying {
+		// if between -wait..wait then handle now
+		if -wait <= diff && diff <= wait {
+			event.Handle(t, now)
+			return nil
+		}
 	}
 	if diff < -wait {
 		return fmt.Errorf("cannot schedule in the past:%v", now.Sub(when))
@@ -100,45 +122,48 @@ func (t *Timeline) Schedule(event TimelineEvent, when time.Time) error {
 	return nil
 }
 
+// schedule adds an event on the chain.
 // pre: event.when >= now
-func (s *Timeline) schedule(event *scheduledTimelineEvent) {
-	s.protection.Lock()
-	if s.head == nil {
-		s.head = event
-		s.tail = event
-		// before resume otherwise handle loop will deadlock
-		s.protection.Unlock()
-		s.resume <- true
+func (t *Timeline) schedule(event *scheduledTimelineEvent) {
+	t.protection.Lock()
+	if t.head == nil {
+		t.head = event
+		t.tail = event
+		// before resume otherwise run loop will deadlock
+		t.protection.Unlock()
+		if t.isPlaying {
+			t.resume <- true
+		}
 		return
 	}
-	defer s.protection.Unlock()
-	if event.when.After(s.tail.when) {
+	defer t.protection.Unlock()
+	if event.when.After(t.tail.when) {
 		// event is after tail, new tail
-		s.tail.next = event
-		s.tail = event
+		t.tail.next = event
+		t.tail = event
 		return
 	}
-	if s.head.when.After(event.when) {
+	if t.head.when.After(event.when) {
 		// event is before head, new head
-		event.next = s.head
-		s.head = event
+		event.next = t.head
+		t.head = event
 		return
 	}
-	if s.head.next == nil {
+	if t.head.next == nil {
 		// event on the same time as head, put it after! head
-		s.head.next = event
-		s.tail = event
+		t.head.next = event
+		t.tail = event
 		return
 	}
-	if s.tail.when == event.when {
+	if t.tail.when == event.when {
 		// event on the same time as head, put it after! tail
-		s.tail.next = event
-		s.tail = event
+		t.tail.next = event
+		t.tail = event
 		return
 	}
 	// somewhere between head and tail
-	previous := s.head
-	here := s.head.next
+	previous := t.head
+	here := t.head.next
 	for event.when.After(here.when) {
 		previous = here
 		here = here.next
@@ -146,4 +171,15 @@ func (s *Timeline) schedule(event *scheduledTimelineEvent) {
 	// here is after event, it must be scheduled before it
 	previous.next = event
 	event.next = here
+}
+
+// eventsDo visits all scheduled events and call the block for each.
+func (t *Timeline) eventsDo(block func(event TimelineEvent, when time.Time)) {
+	t.protection.Lock()
+	defer t.protection.Unlock()
+	here := t.head
+	for here != nil {
+		block(here.event, here.when)
+		here = here.next
+	}
 }

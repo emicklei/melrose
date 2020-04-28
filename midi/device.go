@@ -135,7 +135,7 @@ func Open() (*Midi, error) {
 
 	// start timeline
 	m.timeline = melrose.NewTimeline()
-	go m.timeline.Run()
+	go m.timeline.Play()
 
 	return m, nil
 }
