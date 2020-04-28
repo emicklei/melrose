@@ -28,8 +28,8 @@ type Midi struct {
 }
 
 const (
-	noteOn  int = 0x90
-	noteOff int = 0x80
+	noteOn  int64 = 0x90
+	noteOff int64 = 0x80
 )
 
 var (

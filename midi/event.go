@@ -11,7 +11,7 @@ import (
 type midiEvent struct {
 	echoString string
 	which      []int64
-	onoff      int
+	onoff      int64
 	channel    int
 	velocity   int64
 	out        *portmidi.Stream
@@ -30,7 +30,7 @@ func (m midiEvent) Handle(tim *melrose.Timeline, when time.Time) {
 		print(m.echoString)
 	}
 	for _, each := range m.which {
-		m.out.WriteShort(int64(m.onoff|(m.channel-1)), each, m.velocity)
+		m.out.WriteShort(m.onoff|int64(m.channel-1), each, m.velocity)
 	}
 }
 

@@ -1,6 +1,9 @@
 package melrose
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type NoteChange struct {
 	isOn     bool
@@ -62,7 +65,7 @@ func (r *Recorder) BuildSequence() Sequence {
 				// note was never on ?
 			} else {
 				duration := when.Sub(active.when)
-				print(duration)
+				fmt.Printf("%v\n", duration)
 				note := MIDItoNote(int(change.note), 1.0)
 				notes = append(notes, note)
 				delete(activeNotes, change.note)
