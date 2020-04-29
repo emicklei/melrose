@@ -26,7 +26,7 @@ type AudioDevice interface {
 	// Returns the end time of the last played Note.
 	Play(seq Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time)
 
-	Record(deviceID int, stopAfterInactivity time.Duration) (Sequence, error)
+	Record(deviceID int, stopAfterInactivity time.Duration) (*Recording, error)
 
 	Timeline() *Timeline
 

@@ -42,12 +42,12 @@ Proceed with [install melrose](install.md#install-melrose)
 
 Proceed with [install melrose](install.md#install-melrose)
 
-## Melrose<a name="install-melrose"></a> 
+## Install Melrose<a name="install-melrose"></a> 
 
 Currently, `melrose` can only be installed from source.
 You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
 
-	go install github.com/emicklei/cmd/melrose
+	go install github.com/emicklei/melrose/cmd/melrose
 	
 After installing both `portmidi` and `melrose`, you can start the tool in a Terminal using:
 

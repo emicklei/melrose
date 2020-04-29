@@ -6,7 +6,7 @@ import (
 )
 
 func TestRecorderAdd(t *testing.T) {
-	r := NewRecorder()
+	r := NewRecording()
 	now := time.Now()
 	cOn := NewNoteChange(true, 60, 70)
 	r.Add(cOn, now)
@@ -15,6 +15,6 @@ func TestRecorderAdd(t *testing.T) {
 	if got, want := r.timeline.Len(), int64(2); got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
-	s := r.BuildSequence()
+	s := r.S()
 	t.Log(s)
 }

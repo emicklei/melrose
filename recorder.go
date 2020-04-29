@@ -23,20 +23,20 @@ func (n NoteChange) Handle(tim *Timeline, when time.Time) {
 	// NOP
 }
 
-type Recorder struct {
+type Recording struct {
 	timeline     *Timeline
 	baseVelocity float32
 }
 
-func NewRecorder() *Recorder {
+func NewRecording() *Recording {
 	tim := NewTimeline()
-	return &Recorder{
+	return &Recording{
 		timeline:     tim,
 		baseVelocity: 70.0,
 	}
 }
 
-func (r *Recorder) Add(e NoteChange, when time.Time) {
+func (r *Recording) Add(e NoteChange, when time.Time) {
 	r.timeline.Schedule(e, when)
 }
 
@@ -45,7 +45,14 @@ type noteChangeEvent struct {
 	when   time.Time
 }
 
-func (r *Recorder) BuildSequence() Sequence {
+func (r *Recording) String() string {
+	return fmt.Sprintf("recording, #notes:%d", r.timeline.Len())
+}
+
+// Sequence is an alias for S()
+func (r *Recording) Sequence() Sequence { return r.S() }
+
+func (r *Recording) S() Sequence {
 	activeNotes := map[int64]noteChangeEvent{}
 	notes := []Note{}
 	r.timeline.eventsDo(func(event TimelineEvent, when time.Time) {
@@ -60,12 +67,11 @@ func (r *Recorder) BuildSequence() Sequence {
 			}
 		} else {
 			// note off
-			active, ok := activeNotes[change.note]
+			_, ok := activeNotes[change.note]
 			if !ok {
 				// note was never on ?
 			} else {
-				duration := when.Sub(active.when)
-				fmt.Printf("%v\n", duration)
+				//duration := when.Sub(active.when)
 				note := MIDItoNote(int(change.note), 1.0)
 				notes = append(notes, note)
 				delete(activeNotes, change.note)

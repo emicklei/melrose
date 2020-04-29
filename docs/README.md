@@ -82,3 +82,5 @@ Musical objects can be played using:
 |-------------|---
 | C5          | C major scale, Octave 5
 | E/m         | E natural minor scale, Octave 4
+| G/M7        | G major 7 scale, Octave 4
+| A/7         | A Dominant seventh chord

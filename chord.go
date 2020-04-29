@@ -44,10 +44,9 @@ func (c Chord) Storex() string {
 			io.WriteString(&b, "M")
 		case Diminished:
 			emitSeparator()
-			io.WriteString(&b, "d")
+			io.WriteString(&b, "o")
 		case Dominant:
 			emitSeparator()
-			io.WriteString(&b, "D")
 		case Augmented:
 			emitSeparator()
 			io.WriteString(&b, "A")
@@ -78,27 +77,6 @@ func (c Chord) Storex() string {
 	}
 	fmt.Fprintf(&b, "')")
 	return b.String()
-}
-
-func (c Chord) Modified(modifiers ...int) Chord {
-	modified := c
-	for _, each := range modifiers {
-		switch each {
-		case Major:
-			modified.quality = Major
-		case Minor:
-			modified.quality = Minor
-		case Diminished:
-			modified.quality = Diminished
-		case Ground:
-			modified.inversion = Ground
-		case Inversion1:
-			modified.inversion = Inversion1
-		case Inversion2:
-			modified.inversion = Inversion2
-		}
-	}
-	return modified
 }
 
 // S converts a Chord into a Sequence
@@ -136,7 +114,7 @@ func (c Chord) S() Sequence {
 	return Sequence{[][]Note{notes}}
 }
 
-var chordRegexp = regexp.MustCompile("([MmdDA]?)([67]?)")
+var chordRegexp = regexp.MustCompile("([MmoA]?)([67]?)")
 
 //  C/D7/2 = C dominant 7, 2nd inversion
 func ParseChord(s string) (Chord, error) {
@@ -154,7 +132,7 @@ func ParseChord(s string) (Chord, error) {
 		return z, nil
 	}
 	// parts > 1
-	chord := Chord{start: start, quality: Major}
+	chord := Chord{start: start}
 	chord.inversion = readInversion(parts[1])
 
 	matches := chordRegexp.FindStringSubmatch(parts[1])
@@ -166,17 +144,20 @@ func ParseChord(s string) (Chord, error) {
 		chord.quality = Major
 	case "m":
 		chord.quality = Minor
-	case "D":
-		chord.quality = Dominant
-	case "d":
+	case "o":
 		chord.quality = Diminished
 	case "A":
 		chord.quality = Augmented
+	default:
+		chord.quality = Major
 	}
 	switch matches[2] {
 	case "6":
 		chord.interval = Sixth
 	case "7":
+		if len(matches[1]) == 0 {
+			chord.quality = Dominant
+		}
 		chord.interval = Seventh
 	default:
 		chord.interval = Triad

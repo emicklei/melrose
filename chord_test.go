@@ -27,7 +27,7 @@ func TestParseChord(t *testing.T) {
 		},
 		{
 			"C diminished 7th",
-			args{"C/d7"},
+			args{"C/o7"},
 			Chord{start: N("C"), quality: Diminished, interval: Seventh, inversion: Ground},
 			"('[C E♭ G♭ A]')",
 			false,
@@ -49,9 +49,17 @@ func TestParseChord(t *testing.T) {
 		},
 		{
 			"C major 7",
-			args{"C/7"},
+			args{"C/M7"},
 			Chord{start: N("C"), quality: Major, interval: Seventh, inversion: Ground},
 			"('[C E G B]')",
+			false,
+		},
+		{
+			"C 7",
+			args{"C/7"},
+			Chord{start: N("C"), quality: Dominant, interval: Seventh, inversion: Ground},
+			// TODO
+			"('C')",
 			false,
 		},
 		{
@@ -73,16 +81,16 @@ func TestParseChord(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := ParseChord(tt.args.s)
+			s := strings.Replace(got.S().Storex(), "sequence", "", -1)
+			if s != tt.seq {
+				t.Errorf("ParseChord(%q) = %s, want %s", tt.args.s, s, tt.seq)
+			}
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseChord(%q) error = %v, wantErr %v", tt.args.s, err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("ParseChord(%q) = %#v, want %#v", tt.args.s, got, tt.want)
-			}
-			s := strings.Replace(got.S().Storex(), "sequence", "", -1)
-			if s != tt.seq {
-				t.Errorf("ParseChord(%q) = %s, want %s", tt.args.s, s, tt.seq)
 			}
 		})
 	}

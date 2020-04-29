@@ -293,7 +293,8 @@ note('2E#.--')`,
 		ControlsAudio: true,
 		Prefix:        "rec",
 		Template:      `record(${1:input-device-id},${1:seconds-inactivity})`,
-		Samples:       `record(1,5) // record notes played on device ID=1 and stop recording after 5 seconds`,
+		Samples: `r = record(1,5) // record notes played on device ID=1 and stop recording after 5 seconds
+s = r.Sequence()`,
 		Func: func(deviceID int, secondsInactivity int) interface{} {
 			seq, err := melrose.Context().AudioDevice.Record(deviceID, time.Duration(secondsInactivity)*time.Second)
 			if err != nil {
@@ -358,8 +359,9 @@ note('2E#.--')`,
 		ControlsAudio: true,
 		Prefix:        "loo",
 		Alias:         "L",
-		Template:      `${1:name} = loop(${2:object}) // end(${1:name})`,
-		Samples:       `l1 = loop(sequence('C D E F G A B'))`,
+		Template:      `lp_${1:object} = loop(${1:object}) // end(lp_${1:object})`,
+		Samples: `cb = sequence('C D E F G A B')
+lp_cb = loop(cb)`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				notify.Print(notify.Warningf("cannot loop (%T) %v", value, value))
