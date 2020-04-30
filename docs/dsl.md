@@ -73,6 +73,11 @@ Join two or more musical objects.
 
 	
 
+### octave<a name="octave"></a>
+Changes the pitch of notes by steps of 12 semitones.
+
+	octave(1,sequence('C D')) // => C5 D5
+
 ### parallel<a name="parallel"></a>
 Create a new sequence in which all notes of a musical object are synched in time.
 
@@ -98,9 +103,11 @@ Reverse the (groups of) notes in a sequence.
 	reverse(chord('A'))
 
 ### serial<a name="serial"></a>
-Serialise any parallelisation of notes in a musical object.
+Serialise any parallelisation of notes in one or more musical objects.
 
 	serial(chord('E')) // => E G B
+
+	serial(sequence('[C D]'),note('E')) // => C D E
 
 ### undynamic<a name="undynamic"></a>
 Undynamic all the notes in a musical object.
@@ -154,7 +161,9 @@ Play all musical objects in parallel.
 ### loop<a name="loop"></a>
 Create a new loop.
 
-	l1 = loop(sequence('C D E F G A B'))
+	cb = sequence('C D E F G A B')
+
+	lp_cb = loop(cb)
 
 ### play<a name="play"></a>
 Play musical objects such as Note,Chord,Sequence,...
@@ -164,7 +173,9 @@ Play musical objects such as Note,Chord,Sequence,...
 ### record<a name="record"></a>
 Creates a recorded sequence of notes from a MIDI device.
 
-	record(1,5) // record notes played on device ID=1 and stop recording after 5 seconds
+	r = record(1,5) // record notes played on device ID=1 and stop recording after 5 seconds
+
+	s = r.Sequence()
 
 ### velocity<a name="velocity"></a>
 Set the base velocity [1..127]; default is 70.
