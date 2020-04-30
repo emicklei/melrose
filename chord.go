@@ -97,6 +97,8 @@ func (c Chord) S() Sequence {
 			semitones = []int{3, 7, 10}
 		} else if Major == c.quality {
 			semitones = []int{4, 7, 11}
+		} else if Dominant == c.quality {
+			semitones = []int{4, 7, 10}
 		}
 	}
 	for _, each := range semitones {
