@@ -1,6 +1,7 @@
 package midi
 
 import (
+	"fmt"
 	"math"
 	"time"
 
@@ -22,35 +23,75 @@ func (m *Midi) Play(seq melrose.Sequenceable, bpm float64, beginAt time.Time) ti
 	actualSequence := seq.S()
 	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/bpm))) * time.Millisecond // 4 = signature
 	for _, eachGroup := range actualSequence.Notes {
-		var actualDuration time.Duration
-		for _, eachNote := range eachGroup {
-			// TODO all have the same duration so combine the event
-			actualDuration = time.Duration(float32(wholeNoteDuration) * eachNote.DurationFactor())
-			if eachNote.IsRest() {
-				continue
-			}
-			velocity := int(float32(m.baseVelocity) * eachNote.VelocityFactor())
-			if velocity > 127 {
-				velocity = 127
-			}
-			if velocity < 1 {
-				velocity = DefaultVelocity
-			}
-			event := midiEvent{
-				which:    []int64{int64(eachNote.MIDI())},
-				onoff:    noteOn,
-				channel:  channel,
-				velocity: int64(velocity),
-				out:      m.stream,
-			}
-			if m.echo {
-				// only for ON
-				event.echoString = eachNote.String()
-			}
-			m.timeline.Schedule(event, moment)
-			m.timeline.Schedule(event.asNoteoff(), moment.Add(actualDuration))
+		if len(eachGroup) == 0 {
+			continue
 		}
+		var actualDuration time.Duration
+		var event midiEvent
+		if canCombineMidiEvents(eachGroup) {
+			// combined
+			actualDuration = time.Duration(float32(wholeNoteDuration) * eachGroup[0].DurationFactor())
+			event = m.combinedMidiEvent(channel, eachGroup)
+			if m.echo {
+				event.echoString = fmt.Sprintf("%v", eachGroup)
+			}
+		} else {
+			// one-by-one
+			for i, eachNote := range eachGroup {
+				actualDuration = time.Duration(float32(wholeNoteDuration) * eachNote.DurationFactor())
+				if eachNote.IsRest() {
+					continue
+				}
+				event = m.combinedMidiEvent(channel, eachGroup[i:i+1])
+				if m.echo {
+					event.echoString = eachNote.String()
+				}
+			}
+		}
+		m.timeline.Schedule(event, moment)
 		moment = moment.Add(actualDuration)
+		// note off is not echoed
+		m.timeline.Schedule(event.asNoteoff(), moment)
 	}
 	return moment
+}
+
+// Pre: notes not empty
+func (m *Midi) combinedMidiEvent(channel int, notes []melrose.Note) midiEvent {
+	v := notes[0].VelocityFactor()
+	velocity := int(float32(m.baseVelocity) * v)
+	if velocity > 127 {
+		velocity = 127
+	}
+	if velocity < 1 {
+		velocity = DefaultVelocity
+	}
+	nrs := []int64{}
+	for _, each := range notes {
+		nrs = append(nrs, int64(each.MIDI()))
+	}
+	return midiEvent{
+		which:    nrs,
+		onoff:    noteOn,
+		channel:  channel,
+		velocity: int64(velocity),
+		out:      m.stream,
+	}
+}
+
+func canCombineMidiEvents(notes []melrose.Note) bool {
+	if len(notes) < 2 {
+		return false
+	}
+	d := notes[0].DurationFactor()
+	v := notes[0].VelocityFactor()
+	for _, each := range notes[1:] {
+		if each.DurationFactor() != d {
+			return false
+		}
+		if each.VelocityFactor() != v {
+			return false
+		}
+	}
+	return true
 }

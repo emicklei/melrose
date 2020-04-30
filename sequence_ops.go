@@ -1,9 +1,5 @@
 package melrose
 
-func (s Sequence) Join(seqs ...Sequenceable) Join {
-	return Join{List: append([]Sequenceable{s}, seqs...)}
-}
-
 func (s Sequence) Pitched(semitones int) Sequence {
 	if len(s.Notes) == 0 {
 		return s

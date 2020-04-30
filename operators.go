@@ -8,6 +8,8 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
+// TODO  move all operators into package "op"
+
 type Pitch struct {
 	Target    Sequenceable
 	Semitones Valueable
@@ -22,47 +24,6 @@ func (p Pitch) Storex() string {
 		return fmt.Sprintf("pitch(%v,%s)", p.Semitones, s.Storex())
 	}
 	return ""
-}
-
-type Join struct {
-	List []Sequenceable
-}
-
-func (j Join) Storex() string {
-	var b bytes.Buffer
-	fmt.Fprintf(&b, "join(")
-	for i, each := range j.List {
-		s, ok := each.(Storable)
-		if !ok {
-			return ""
-		}
-		fmt.Fprintf(&b, "%s", s.Storex())
-		if i < len(j.List)-1 {
-			io.WriteString(&b, ",")
-		}
-	}
-	fmt.Fprintf(&b, ")")
-	return b.String()
-}
-
-func (j Join) S() Sequence {
-	if len(j.List) == 0 {
-		return Sequence{}
-	}
-	head := j.List[0].S()
-	for i := 1; i < len(j.List); i++ {
-		head = head.SequenceJoin(j.List[i].S())
-	}
-	return head
-}
-
-// Map returns a new Join in which each list entry is mapped
-func (j Join) Map(m MapFunc) Join {
-	newList := []Sequenceable{}
-	for _, each := range j.List {
-		newList = append(newList, m(each))
-	}
-	return Join{List: newList}
 }
 
 type Repeat struct {
@@ -113,26 +74,34 @@ func (r Rotate) Storex() string {
 }
 
 type Serial struct {
-	Target Sequenceable
+	Target []Sequenceable
 }
 
 func (a Serial) S() Sequence {
 	n := []Note{}
-	a.Target.S().NotesDo(func(each Note) {
-		n = append(n, each)
-	})
+	for _, each := range a.Target {
+		each.S().NotesDo(func(each Note) {
+			n = append(n, each)
+		})
+	}
 	return BuildSequence(n)
 }
 
 func (a Serial) Storex() string {
-	if s, ok := a.Target.(Storable); ok {
-		return fmt.Sprintf("serial(%s)", s.Storex())
+	var b bytes.Buffer
+	fmt.Fprintf(&b, "serial(")
+	for i, each := range a.Target {
+		s, ok := each.(Storable)
+		if !ok {
+			return ""
+		}
+		fmt.Fprintf(&b, "%s", s.Storex())
+		if i < len(a.Target)-1 {
+			io.WriteString(&b, ",")
+		}
 	}
-	return ""
-}
-
-func Serialise(seq Sequenceable) Sequenceable {
-	return Serial{Target: seq}
+	fmt.Fprintf(&b, ")")
+	return b.String()
 }
 
 type Undynamic struct {

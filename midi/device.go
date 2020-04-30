@@ -91,8 +91,8 @@ func (m *Midi) printInfo() {
 	fmt.Println(":m input  <device-id> --- change the current MIDI input device id")
 	fmt.Println(":m output <device-id> --- change the current MIDI output device id")
 	fmt.Println()
-	fmt.Printf("MIDI: Base velocity :%d\n", m.baseVelocity)
-	fmt.Printf("MIDI: Echo notes :%v\n", m.echo)
+	fmt.Printf("MIDI: Base velocity: %d\n", m.baseVelocity)
+	fmt.Printf("MIDI: Echo notes: %v\n", m.echo)
 	fmt.Println("MIDI: Default output channel:", m.defaultOutputChannel)
 	var midiDeviceInfo *portmidi.DeviceInfo
 	defaultOut := portmidi.DefaultOutputDeviceID()

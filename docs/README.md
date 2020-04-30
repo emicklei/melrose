@@ -28,9 +28,9 @@ Musical objects can be composed using:
 
 Musical objects can be played using:
 
-- play
+- [play](dsl.html#play)
 - [loop](dsl.html#loop)
-- go
+- [go](dsl.html#go)
 
 ## Notations
 
@@ -75,6 +75,9 @@ Musical objects can be played using:
 | Notation    | Description
 |-------------|---
 | C#5/m/2     | C sharp triad, Octave 5, Minor, 2nd inversion
+| A/7         | A Dominant seventh chord
+| E/M7        | E Major seventh chord
+| G/m7        | G minor seventh chord
 
 ### Scale<a name="scale-not"></a>
 
@@ -83,4 +86,3 @@ Musical objects can be played using:
 | C5          | C major scale, Octave 5
 | E/m         | E natural minor scale, Octave 4
 | G/M7        | G major 7 scale, Octave 4
-| A/7         | A Dominant seventh chord

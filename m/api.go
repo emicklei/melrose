@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/op"
 )
 
 func Sequence(notation string) melrose.Sequence {
@@ -30,8 +31,8 @@ func Note(s string) melrose.Note { return melrose.MustParseNote(s) }
 
 func Scale(s string) melrose.Scale { return melrose.MustParseScale(s) }
 
-func Join(s ...melrose.Sequenceable) melrose.Join {
-	return melrose.Join{List: s}
+func Join(s ...melrose.Sequenceable) op.Join {
+	return op.Join{Target: s}
 }
 
 func Play(a melrose.AudioDevice, s ...melrose.Sequenceable) {
@@ -60,7 +61,7 @@ func Chord(s string) melrose.Chord {
 }
 
 // Serial returns a new object that serialises all the notes of the argument.
-func Serial(s melrose.Sequenceable) melrose.Serial {
+func Serial(s ...melrose.Sequenceable) melrose.Serial {
 	return melrose.Serial{Target: s}
 }
 

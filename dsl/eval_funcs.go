@@ -8,6 +8,7 @@ import (
 
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
+	"github.com/emicklei/melrose/op"
 )
 
 // Syntax tells what language version this package is supporting.
@@ -55,6 +56,18 @@ chord('G/M/2')`,
 				return nil
 			}
 			return c
+		}}
+
+	eval["widechord"] = Function{
+		Title:       "Chord widener",
+		Description: "make a Chord wider",
+		Prefix:      "wid",
+		Template:    `widechord('${1:chord}')`,
+		IsCore:      false,
+		Func: func(chord interface{}) op.WideChord {
+			// chord is a melrose.Chord
+			// or a variable with a chord
+			return op.WideChord{Target: getValueable(chord)}
 		}}
 
 	eval["pitch"] = Function{
@@ -117,7 +130,7 @@ pitch(p,note('C'))`,
 		Alias:       "J",
 		Template:    `join(${1:first},${2:second})`,
 		IsComposer:  true,
-		Func: func(playables ...interface{}) interface{} { // Note: return type cannot be EvaluationResult
+		Func: func(playables ...interface{}) interface{} {
 			joined := []melrose.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -127,7 +140,7 @@ pitch(p,note('C'))`,
 					joined = append(joined, s)
 				}
 			}
-			return melrose.Join{List: joined}
+			return op.Join{Target: joined}
 		}}
 
 	eval["bpm"] = Function{
@@ -249,6 +262,9 @@ note('2E#.--')`,
 					notify.Print(notify.Warningf("cannot play (%T) %v", p, p))
 				}
 			}
+			// wait until the play is completed before allowing a new one to.
+			// add a bit of time to allow the previous play to finish all its notes.
+			// time.Sleep(moment.Sub(time.Now()) + (50 * time.Millisecond))
 			return nil
 		}}
 
@@ -273,18 +289,43 @@ note('2E#.--')`,
 
 	eval["serial"] = Function{
 		Title:       "Serial modifier",
-		Description: "serialise any parallelisation of notes in a musical object",
+		Description: "serialise any parallelisation of notes in one or more musical objects",
 		Prefix:      "ser",
 		Template:    `serial(${1:sequenceable})`,
 		IsComposer:  true,
-		Samples:     `serial(chord('E')) // => E G B`,
-		Func: func(value interface{}) interface{} {
-			if s, ok := getSequenceable(value); !ok {
-				notify.Print(notify.Warningf("cannot serial (%T) %v", value, value))
-				return nil
-			} else {
-				return melrose.Serial{Target: s}
+		Samples: `serial(chord('E')) // => E G B
+serial(sequence('[C D]'),note('E')) // => C D E`,
+		Func: func(playables ...interface{}) interface{} {
+			joined := []melrose.Sequenceable{}
+			for _, p := range playables {
+				if s, ok := getSequenceable(p); !ok {
+					notify.Print(notify.Warningf("cannot serial (%T) %v", p, p))
+					return nil
+				} else {
+					joined = append(joined, s)
+				}
 			}
+			return melrose.Serial{Target: joined}
+		}}
+
+	eval["octave"] = Function{
+		Title:       "Octave modifier",
+		Description: "changes the pitch of notes by steps of 12 semitones",
+		Prefix:      "oct",
+		Template:    `octave(${1:offet},${2:sequenceable})`,
+		IsComposer:  true,
+		Samples:     `octave(1,sequence('C D')) // => C5 D5`,
+		Func: func(scalarOrVar interface{}, playables ...interface{}) interface{} {
+			joined := []melrose.Sequenceable{}
+			for _, p := range playables {
+				if s, ok := getSequenceable(p); !ok {
+					notify.Print(notify.Warningf("cannot octave (%T) %v", p, p))
+					return nil
+				} else {
+					joined = append(joined, s)
+				}
+			}
+			return op.Octave{Target: joined, Offset: melrose.ToValueable(scalarOrVar)}
 		}}
 
 	eval["record"] = Function{

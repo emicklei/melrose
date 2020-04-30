@@ -81,6 +81,10 @@ func (c Chord) Storex() string {
 
 // S converts a Chord into a Sequence
 func (c Chord) S() Sequence {
+	return Sequence{[][]Note{c.Notes()}}
+}
+
+func (c Chord) Notes() []Note {
 	notes := []Note{c.start}
 	var semitones []int
 	if c.interval == Triad {
@@ -113,7 +117,7 @@ func (c Chord) S() Sequence {
 		notes = append(notes, notes[0].Octaved(1))[1:]
 		notes = append(notes, notes[0].Octaved(1))[1:]
 	}
-	return Sequence{[][]Note{notes}}
+	return notes
 }
 
 var chordRegexp = regexp.MustCompile("([MmoA]?)([67]?)")
