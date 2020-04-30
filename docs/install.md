@@ -36,12 +36,6 @@ On Ubuntu / Debian
 	
 Proceed with [install melrose](install.md#install-melrose)
 
-## Windows
-
-[Download](https://sourceforge.net/projects/portmedia/files/portmidi/217/) and install the pre-compiled portmidi DLL.
-
-Proceed with [install melrose](install.md#install-melrose)
-
 ## Install Melrose<a name="install-melrose"></a> 
 
 Currently, `melrose` can only be installed from source.
