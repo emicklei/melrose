@@ -84,6 +84,7 @@ func (c Chord) S() Sequence {
 	return Sequence{[][]Note{c.Notes()}}
 }
 
+// Notes returns the Note values for this chord.
 func (c Chord) Notes() []Note {
 	notes := []Note{c.start}
 	var semitones []int
@@ -110,12 +111,14 @@ func (c Chord) Notes() []Note {
 		notes = append(notes, next)
 	}
 	// apply inversion
-	if c.inversion == Inversion1 {
-		notes = append(notes, notes[0].Octaved(1))[1:]
-	}
-	if c.inversion == Inversion2 {
-		notes = append(notes, notes[0].Octaved(1))[1:]
-		notes = append(notes, notes[0].Octaved(1))[1:]
+	if c.interval == Triad {
+		if c.inversion == Inversion1 {
+			notes = append(notes, notes[0].Octaved(1))[1:]
+		}
+		if c.inversion == Inversion2 {
+			notes = append(notes, notes[0].Octaved(1))[1:]
+			notes = append(notes, notes[0].Octaved(1))[1:]
+		}
 	}
 	return notes
 }

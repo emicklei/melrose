@@ -23,7 +23,7 @@ Musical objects can be composed using:
 - [parallel](dsl.html#parallel)
 - [serial](dsl.html#serial)
 - [undynamic](dsl.html#undynamci)
-- [indexMapper](dsl.html#indexmap)
+- [sequenceMapper](dsl.html#sequencemap)
 - [interval](dsl.html#interval)
 
 Musical objects can be played using:

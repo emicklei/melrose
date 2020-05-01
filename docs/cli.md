@@ -87,3 +87,15 @@ The port can be changed to e.g. 8000 with the program option `-http :8000`.
 ### tracing
 
 If the HTTP URL has the query parameter `trace=true` then `melrose` will produce extra logging.
+
+### play
+
+If the HTTP URL has the query parameter `action=play` then `melrose` will try to play the result of the selected expression(s).
+
+### begin
+
+If the HTTP URL has the query parameter `action=begin` then `melrose` will try to `begin` the loop of the selected expression.
+
+### end
+
+If the HTTP URL has the query parameter `action=end` then `melrose` will try to `end` the loop of the selected expression.

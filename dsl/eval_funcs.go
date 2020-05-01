@@ -40,6 +40,33 @@ type Function struct {
 
 func EvalFunctions(storage VariableStorage, control melrose.LoopController) map[string]Function {
 	eval := map[string]Function{}
+
+	eval["joinmap"] = Function{
+		Title:    "Join mapper",
+		Prefix:   "joinm",
+		Template: `joinmain('${1:indices}',${2:join})`,
+		Func: func(indices string, join interface{}) interface{} { // allow multiple seq?
+			v := getValueable(join)
+			vNow := v.Value()
+			if _, ok := vNow.(op.Join); !ok {
+				notify.Print(notify.Warningf("cannot joinmap (%T) %v", join, join))
+				return nil
+			}
+			return op.NewJoinMapper(v, indices)
+		}}
+
+	/**
+	eval["delay"] = Function{
+		Title:    "Delay playing a musical object",
+		Prefix:   "del",
+		Template: `delay('${1:bar},${2:beat},${3:object}')`,
+		Samples:  `delay(0,0,sequence('C D E')) // => immediate play C D E`,
+		Func: func(bar, beat int, seq interface{}) interface{} {
+
+			return nil
+		}}
+	**/
+
 	eval["chord"] = Function{
 		Title:       "Chord creator",
 		Description: "create a Chord",
@@ -396,20 +423,27 @@ s = r.Sequence()`,
 	// BEGIN Loop and control
 	eval["loop"] = Function{
 		Title:         "Loop creator ; must be assigned to a variable",
-		Description:   "create a new loop",
+		Description:   "create a new loop from one or more objects",
 		ControlsAudio: true,
 		Prefix:        "loo",
 		Alias:         "L",
-		Template:      `lp_${1:object} = loop(${1:object}) // end(lp_${1:object})`,
+		Template:      `lp_${1:object} = loop(${1:object})`,
 		Samples: `cb = sequence('C D E F G A B')
-lp_cb = loop(cb)`,
-		Func: func(value interface{}) interface{} {
-			if s, ok := getSequenceable(value); !ok {
-				notify.Print(notify.Warningf("cannot loop (%T) %v", value, value))
-				return nil
-			} else {
-				return melrose.NewLoop(s)
+lp_cb = loop(cb,reverse(cb))`,
+		Func: func(playables ...interface{}) interface{} {
+			joined := []melrose.Sequenceable{}
+			for _, p := range playables {
+				if s, ok := getSequenceable(p); !ok {
+					notify.Print(notify.Warningf("cannot loop (%T) %v", p, p))
+					return nil
+				} else {
+					joined = append(joined, s)
+				}
 			}
+			if len(joined) == 1 {
+				return melrose.NewLoop(joined[0])
+			}
+			return melrose.NewLoop(op.Join{Target: joined})
 		}}
 	eval["begin"] = Function{
 		Title:         "Loop runner",
@@ -485,23 +519,23 @@ l1 = loop(pitch(i1,sequence('C D E F')))`,
 		Func: func(from, to, by interface{}) *melrose.Interval {
 			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by), melrose.RepeatFromTo)
 		}}
-	eval["indexmap"] = Function{
-		Title:         "Integer Index Map modifier",
-		Description:   "create a Mapper of Notes by index (1-based)",
+	eval["sequencemap"] = Function{
+		Title:         "Integer Sequence Map modifier",
+		Description:   "create a Mapper of sequence notes by index (1-based)",
 		ControlsAudio: false,
 		Prefix:        "ind",
 		Alias:         "Im",
-		Template:      `indexmap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
+		Template:      `sequencemap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
 		Samples: `s1 = sequence('C D E F G A B')
-i1 = indexmap('6 5 4 3 2 1',s1) // => B A G F E D`,
+i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		IsComposer: true,
 		Func: func(indices string, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
-				notify.Print(notify.Warningf("cannot create index mapper on (%T) %v", m, m))
+				notify.Print(notify.Warningf("cannot create sequence mapper on (%T) %v", m, m))
 				return nil
 			}
-			return melrose.NewIndexMapper(s, indices)
+			return melrose.NewSequenceMapper(s, indices)
 		}}
 	return eval
 }

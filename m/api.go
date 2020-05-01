@@ -51,8 +51,8 @@ func Go(a melrose.AudioDevice, s ...melrose.Sequenceable) {
 
 // IndexMap creates a IndexMapper from indices.
 // Example of indices: "1 (2 3 4) 5 (6 7)". One-based indexes.
-func IndexMap(indices string, s melrose.Sequenceable) melrose.IndexMapper {
-	return melrose.NewIndexMapper(s, indices)
+func IndexMap(indices string, s melrose.Sequenceable) melrose.SequenceMapper {
+	return melrose.NewSequenceMapper(s, indices)
 }
 
 // Chord creates a new Chord by parsing the input. See Chord for the syntax.

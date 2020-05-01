@@ -80,7 +80,7 @@ func TestParseChord(t *testing.T) {
 			args{"C/M6/2"},
 			Chord{start: N("C"), quality: Major, interval: Sixth, inversion: Inversion2},
 			// TODO
-			"('C6')",
+			"('C')",
 			false,
 		},
 		{
@@ -88,6 +88,13 @@ func TestParseChord(t *testing.T) {
 			args{"C#/1"},
 			Chord{start: N("C#"), quality: Major, interval: Triad, inversion: Inversion1},
 			"('[F A♭ C♯5]')",
+			false,
+		},
+		{
+			"E minor 2nd inversion",
+			args{"E/m/2"},
+			Chord{start: N("E"), quality: Minor, interval: Triad, inversion: Inversion2},
+			"('[B E5 G5]')",
 			false,
 		},
 	}

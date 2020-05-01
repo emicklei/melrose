@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
@@ -53,6 +54,33 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		response = errorFrom(err)
 	} else {
 		// evaluation was ok.
+
+		// check if play was requested and is playable
+		if r.FormValue("action") == "play" {
+			if s, ok := returnValue.(melrose.Sequenceable); ok {
+				melrose.Context().AudioDevice.Play(
+					s,
+					melrose.Context().LoopControl.BPM(),
+					time.Now())
+			}
+			// ignore if not playable
+		}
+		if r.FormValue("action") == "begin" {
+			if lp, ok := returnValue.(*melrose.Loop); ok {
+				v := l.store.NameFor(lp)
+				notify.Print(notify.Infof("beginning loop: %v", v))
+				lp.Start(melrose.Context().AudioDevice)
+			}
+			// ignore if not Loop
+		}
+		if r.FormValue("action") == "end" {
+			if lp, ok := returnValue.(*melrose.Loop); ok {
+				v := l.store.NameFor(lp)
+				notify.Print(notify.Infof("stopping loop: %v", v))
+				lp.Stop()
+			}
+			// ignore if not Loop
+		}
 		response = resultFrom(returnValue)
 	}
 	w.Header().Set("content-type", "application/json")

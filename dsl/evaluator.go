@@ -103,13 +103,13 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 			// if the value is a Loop
 			// then if the variable refers to an existing loop
 			// 		then change to Target of that loop
-			//		else store the loop and run it
+			//		else store the loop
 			// else store the result
 			if theLoop, ok := r.(*melrose.Loop); ok {
 				if storedValue, present := e.store.Get(variable); present {
 					if otherLoop, replaceme := storedValue.(*melrose.Loop); replaceme {
 						otherLoop.SetTarget(theLoop.Target)
-						e.loopControl.Begin(otherLoop)
+						r = otherLoop
 					} else {
 						// existing variable but not a Loop
 						e.store.Put(variable, theLoop)
@@ -117,7 +117,6 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 				} else {
 					// new variable for theLoop
 					e.store.Put(variable, theLoop)
-					e.loopControl.Begin(theLoop)
 				}
 			} else {
 				// not a Loop
@@ -130,7 +129,7 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 	r, err := e.EvaluateExpression(entry)
 	// special case for Loop
 	if theLoop, ok := r.(*melrose.Loop); ok {
-		return nil, fmt.Errorf("cannot begin an unidentified Loop, use myLoop = %s", theLoop.Storex())
+		return nil, fmt.Errorf("cannot have an unnamed Loop, use e.g. myLoop = %s", theLoop.Storex())
 	}
 	if err != nil {
 		return nil, err
