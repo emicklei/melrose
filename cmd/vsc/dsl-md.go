@@ -26,13 +26,13 @@ title: Melrose Language
 
 ### variables
 
-Variable names must start with a non-digit character and can zero or more characters in [a-z A-Z _ 0-9].
-An assigment "=" is used to create a Variable.
+Variable names must start with a non-digit character and can have zero or more characters in [a-z A-Z _ 0-9].
+An assigment "=" is used to create a variable.
 To delete a variable, assign it to the special value "nil".
 
 ### comment
 
-Use "//" to add comment.
+Use "//" to add comment, either on a new line or and the end of a statement.
 
 ## Creation functions
 {{range .Core}}

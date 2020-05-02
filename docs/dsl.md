@@ -10,13 +10,13 @@ title: Melrose Language
 
 ### variables
 
-Variable names must start with a non-digit character and can zero or more characters in [a-z A-Z _ 0-9].
-An assigment "=" is used to create a Variable.
+Variable names must start with a non-digit character and can have zero or more characters in [a-z A-Z _ 0-9].
+An assigment "=" is used to create a variable.
 To delete a variable, assign it to the special value "nil".
 
 ### comment
 
-Use "//" to add comment.
+Use "//" to add comment, either on a new line or and the end of a statement.
 
 ## Creation functions
 
@@ -44,7 +44,7 @@ Create a Sequence from (space separated) notes.
 
 	sequence('C D E')
 
-	sequence('[C D E]')
+	sequence('(C D E)')
 
 
 ## Composition functions
@@ -52,7 +52,7 @@ Create a Sequence from (space separated) notes.
 ### flatten<a name="flatten"></a>
 Flatten all operations on a musical object to a new sequence.
 
-	flatten(sequence('[C E G] B')) // => C E G B
+	flatten(sequence('(C E G) B')) // => C E G B
 
 ### interval<a name="interval"></a>
 Create an integer repeating interval (from,to,by).
@@ -74,7 +74,7 @@ Changes the pitch of notes by steps of 12 semitones.
 ### parallel<a name="parallel"></a>
 Create a new sequence in which all notes of a musical object are synched in time.
 
-	parallel(sequence('C D E')) // => [C D E]
+	parallel(sequence('C D E')) // => (C D E)
 
 ### pitch<a name="pitch"></a>
 Change the pitch with a delta of semitones.
@@ -107,7 +107,7 @@ Serialise any parallelisation of notes in one or more musical objects.
 
 	serial(chord('E')) // => E G B
 
-	serial(sequence('[C D]'),note('E')) // => C D E
+	serial(sequence('(C D)'),note('E')) // => C D E
 
 ### undynamic<a name="undynamic"></a>
 Undynamic all the notes in a musical object.

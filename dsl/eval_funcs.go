@@ -41,14 +41,14 @@ type Function struct {
 func EvalFunctions(storage VariableStorage, control melrose.LoopController) map[string]Function {
 	eval := map[string]Function{}
 
-	eval["filter"] = Function{
-		Title:    "Filter an object by calling the functions of a Pipeline",
-		Prefix:   "filter",
-		Template: `filter(${1:pipeline},${2:object})`,
+	eval["apply"] = Function{
+		Title:    "Apply a Pipeline to an object",
+		Prefix:   "apply",
+		Template: `apply(${1:pipeline},${2:object})`,
 		Func: func(pipeline interface{}, object interface{}) interface{} {
 			s, ok := getSequenceable(object)
 			if !ok {
-				notify.Print(notify.Warningf("cannot filter (%T) %v", object, object))
+				notify.Print(notify.Warningf("cannot apply (%T) %v", object, object))
 				return nil
 			}
 			v, ok := pipeline.(melrose.Valueable)
@@ -63,7 +63,7 @@ func EvalFunctions(storage VariableStorage, control melrose.LoopController) map[
 			}
 			r, err := p.Execute(s)
 			if err != nil {
-				notify.Print(notify.Errorf("cannot filter %v:%v", p, err))
+				notify.Print(notify.Errorf("cannot apply %v:%v", p, err))
 				return nil
 			}
 			return r
@@ -268,7 +268,7 @@ pitch(p,note('C'))`,
 		Alias:       "S",
 		Template:    `sequence('${1:space-separated-notes}')`,
 		Samples: `sequence('C D E')
-sequence('[C D E]')`,
+sequence('(C D E)')`,
 		IsCore: true,
 		Func: func(s string) interface{} {
 			sq, err := melrose.ParseSequence(s)
@@ -361,7 +361,7 @@ note('2E#.--')`,
 		Template:    `serial(${1:sequenceable})`,
 		IsComposer:  true,
 		Samples: `serial(chord('E')) // => E G B
-serial(sequence('[C D]'),note('E')) // => C D E`,
+serial(sequence('(C D)'),note('E')) // => C D E`,
 		Func: func(playables ...interface{}) interface{} {
 			joined := []melrose.Sequenceable{}
 			for _, p := range playables {
@@ -433,7 +433,7 @@ s = r.Sequence()`,
 		Prefix:      "flat",
 		Alias:       "F",
 		Template:    `flatten(${1:sequenceable})`,
-		Samples:     `flatten(sequence('[C E G] B')) // => C E G B`,
+		Samples:     `flatten(sequence('(C E G) B')) // => C E G B`,
 		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
@@ -450,7 +450,7 @@ s = r.Sequence()`,
 		Prefix:      "par",
 		Alias:       "Pa",
 		Template:    `parallel(${1:sequenceable})`,
-		Samples:     `parallel(sequence('C D E')) // => [C D E]`,
+		Samples:     `parallel(sequence('C D E')) // => (C D E)`,
 		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
