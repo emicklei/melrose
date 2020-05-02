@@ -54,13 +54,6 @@ Flatten all operations on a musical object to a new sequence.
 
 	flatten(sequence('[C E G] B')) // => C E G B
 
-### indexmap<a name="indexmap"></a>
-Create a Mapper of Notes by index (1-based).
-
-	s1 = sequence('C D E F G A B')
-
-	i1 = indexmap('6 5 4 3 2 1',s1) // => B A G F E D
-
 ### interval<a name="interval"></a>
 Create an integer repeating interval (from,to,by).
 
@@ -101,6 +94,13 @@ Repeat the musical object a number of times.
 Reverse the (groups of) notes in a sequence.
 
 	reverse(chord('A'))
+
+### sequencemap<a name="sequencemap"></a>
+Create a Mapper of sequence notes by index (1-based).
+
+	s1 = sequence('C D E F G A B')
+
+	i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D
 
 ### serial<a name="serial"></a>
 Serialise any parallelisation of notes in one or more musical objects.
@@ -159,11 +159,11 @@ Play all musical objects in parallel.
 	go(s1,s1,s3) // play s1 and s2 and s3 simultaneously
 
 ### loop<a name="loop"></a>
-Create a new loop.
+Create a new loop from one or more objects.
 
 	cb = sequence('C D E F G A B')
 
-	lp_cb = loop(cb)
+	lp_cb = loop(cb,reverse(cb))
 
 ### play<a name="play"></a>
 Play musical objects such as Note,Chord,Sequence,...

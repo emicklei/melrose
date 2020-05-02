@@ -67,8 +67,8 @@ Musical objects can be played using:
 | Notation    | Description
 |-------------|---
 | C D E F       | 4 quarter tones
-| [C E] [d5 f5] | 2 doublets
-| [1C 1E 1G]    | C Chord
+| (C E) (d5 f5) | 2 doublets
+| (1C 1E 1G)    | C Chord
 
 ### Chord<a name="chord-not"></a>
 

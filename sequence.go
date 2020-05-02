@@ -73,20 +73,25 @@ func MustParseSequence(input string) Sequence {
 	}
 }
 
+const (
+	groupOpen  = "("
+	groupClose = ")"
+)
+
 // ParseSequence creates a Sequence by reading the format "Note* [Note Note*]* Note*"
 func ParseSequence(input string) (Sequence, error) {
 	m := Sequence{}
 	// hack to keep scanning simple, TODO
-	splitable := strings.Replace(input, "[", " [ ", -1)
-	splitable = strings.Replace(splitable, "]", " ] ", -1)
+	splitable := strings.Replace(input, groupOpen, " "+groupOpen+" ", -1)
+	splitable = strings.Replace(splitable, groupClose, " "+groupClose+" ", -1)
 	parts := strings.Fields(splitable)
 	ingroup := false
 	var group []Note
 	for _, each := range parts {
-		if "[" == each {
+		if groupOpen == each {
 			ingroup = true
 			group = []Note{}
-		} else if "]" == each {
+		} else if groupClose == each {
 			ingroup = false
 			m.Notes = append(m.Notes, group)
 		} else {
@@ -135,7 +140,7 @@ func (s Sequence) writeNotesOn(
 			buf.WriteString(" ")
 		}
 		if len(each) > 1 {
-			buf.WriteString("[")
+			buf.WriteString(groupOpen)
 		}
 		for j, other := range each {
 			if j > 0 {
@@ -144,7 +149,7 @@ func (s Sequence) writeNotesOn(
 			printer(other, buf, sharpOrFlatKey)
 		}
 		if len(each) > 1 {
-			buf.WriteString("]")
+			buf.WriteString(groupClose)
 		}
 	}
 }

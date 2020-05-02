@@ -1,4 +1,7 @@
-run: test build
+run: test build snippets grammar dslmd
+	melrose
+
+fast: build
 	melrose
 
 test:

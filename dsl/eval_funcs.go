@@ -85,16 +85,20 @@ chord('G/M/2')`,
 			return c
 		}}
 
-	eval["widechord"] = Function{
-		Title:       "Chord widener",
-		Description: "make a Chord wider",
-		Prefix:      "wid",
-		Template:    `widechord('${1:chord}')`,
+	eval["octavemap"] = Function{
+		Title:       "Octave Mapper modifier",
+		Description: "create a sequence with notes for which order and the octaves are changed",
+		Prefix:      "octavem",
+		Template:    `octavemap('${1:int2int}',${2:object})`,
 		IsCore:      false,
-		Func: func(chord interface{}) op.WideChord {
-			// chord is a melrose.Chord
-			// or a variable with a chord
-			return op.WideChord{Target: getValueable(chord)}
+		Samples:     `octavemap('1:-1,2:0,3:1',chord('C')) // => (C3 E G5)`,
+		Func: func(indices string, m interface{}) interface{} {
+			s, ok := getSequenceable(m)
+			if !ok {
+				notify.Print(notify.Warningf("cannot octavemap (%T) %v", m, m))
+				return nil
+			}
+			return op.NewOctaveMapper(s, indices)
 		}}
 
 	eval["pitch"] = Function{
