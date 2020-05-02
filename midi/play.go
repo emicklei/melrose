@@ -1,7 +1,6 @@
 package midi
 
 import (
-	"fmt"
 	"math"
 	"time"
 
@@ -33,7 +32,7 @@ func (m *Midi) Play(seq melrose.Sequenceable, bpm float64, beginAt time.Time) ti
 			actualDuration = time.Duration(float32(wholeNoteDuration) * eachGroup[0].DurationFactor())
 			event = m.combinedMidiEvent(channel, eachGroup)
 			if m.echo {
-				event.echoString = fmt.Sprintf("%v", eachGroup)
+				event.echoString = melrose.StringFromNoteGroup(eachGroup)
 			}
 		} else {
 			// one-by-one

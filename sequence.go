@@ -153,3 +153,16 @@ func (s Sequence) writeNotesOn(
 		}
 	}
 }
+
+func StringFromNoteGroup(notes []Note) string {
+	var buf bytes.Buffer
+	buf.WriteString(groupOpen)
+	for i, each := range notes {
+		if i > 0 {
+			buf.WriteString(" ")
+		}
+		each.printOn(&buf, PrintAsSpecified)
+	}
+	buf.WriteString(groupClose)
+	return buf.String()
+}

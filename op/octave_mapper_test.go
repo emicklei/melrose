@@ -19,4 +19,7 @@ func TestOctaveMapper_parseIndices(t *testing.T) {
 	if got, want := m[0].from, 1; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
+	if got, want := len(m), 7; got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
 }

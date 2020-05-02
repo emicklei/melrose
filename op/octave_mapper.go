@@ -34,7 +34,7 @@ func (o OctaveMapper) Notes() [][]melrose.Note {
 	source := o.Target.S().Notes
 	target := [][]melrose.Note{}
 	for _, entry := range o.IndexOffsets {
-		if entry.from <= 0 || entry.from >= len(source) {
+		if entry.from <= 0 || entry.from > len(source) {
 			// invalid offset, skip
 			continue
 		}

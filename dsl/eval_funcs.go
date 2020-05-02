@@ -41,15 +41,14 @@ type Function struct {
 func EvalFunctions(storage VariableStorage, control melrose.LoopController) map[string]Function {
 	eval := map[string]Function{}
 
-	// TODO rename to exe?
-	eval["call"] = Function{
-		Title:    "Run a pipeline with an object",
-		Prefix:   "call",
-		Template: `call(${1:pipeline},${2:object})`,
+	eval["filter"] = Function{
+		Title:    "Filter an object by calling the functions of a Pipeline",
+		Prefix:   "filter",
+		Template: `filter(${1:pipeline},${2:object})`,
 		Func: func(pipeline interface{}, object interface{}) interface{} {
 			s, ok := getSequenceable(object)
 			if !ok {
-				notify.Print(notify.Warningf("cannot call (%T) %v", object, object))
+				notify.Print(notify.Warningf("cannot filter (%T) %v", object, object))
 				return nil
 			}
 			v, ok := pipeline.(melrose.Valueable)
@@ -57,20 +56,25 @@ func EvalFunctions(storage VariableStorage, control melrose.LoopController) map[
 				notify.Print(notify.Warningf("expected variable (%T) %v", pipeline, pipeline))
 				return nil
 			}
-			p, ok := v.Value().(op.Apply)
+			p, ok := v.Value().(op.Pipeline)
 			if !ok {
 				notify.Print(notify.Warningf("expected pipeline (%T) %v", pipeline, pipeline))
 				return nil
 			}
-			return p.Call(s)
+			r, err := p.Execute(s)
+			if err != nil {
+				notify.Print(notify.Errorf("cannot filter %v:%v", p, err))
+				return nil
+			}
+			return r
 		}}
 
 	eval["pipeline"] = Function{
 		Title:    "Pipeline of functions",
 		Prefix:   "pip",
 		Template: `pipeline(${1:func1},${2:func2})`,
-		Func: func(arguments ...interface{}) op.Apply {
-			return op.Apply{Target: arguments}
+		Func: func(arguments ...interface{}) op.Pipeline {
+			return op.Pipeline{Target: arguments}
 		}}
 
 	eval["joinmap"] = Function{
