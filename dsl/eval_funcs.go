@@ -41,6 +41,38 @@ type Function struct {
 func EvalFunctions(storage VariableStorage, control melrose.LoopController) map[string]Function {
 	eval := map[string]Function{}
 
+	// TODO rename to exe?
+	eval["call"] = Function{
+		Title:    "Run a pipeline with an object",
+		Prefix:   "call",
+		Template: `call(${1:pipeline},${2:object})`,
+		Func: func(pipeline interface{}, object interface{}) interface{} {
+			s, ok := getSequenceable(object)
+			if !ok {
+				notify.Print(notify.Warningf("cannot call (%T) %v", object, object))
+				return nil
+			}
+			v, ok := pipeline.(melrose.Valueable)
+			if !ok {
+				notify.Print(notify.Warningf("expected variable (%T) %v", pipeline, pipeline))
+				return nil
+			}
+			p, ok := v.Value().(op.Apply)
+			if !ok {
+				notify.Print(notify.Warningf("expected pipeline (%T) %v", pipeline, pipeline))
+				return nil
+			}
+			return p.Call(s)
+		}}
+
+	eval["pipeline"] = Function{
+		Title:    "Pipeline of functions",
+		Prefix:   "pip",
+		Template: `pipeline(${1:func1},${2:func2})`,
+		Func: func(arguments ...interface{}) op.Apply {
+			return op.Apply{Target: arguments}
+		}}
+
 	eval["joinmap"] = Function{
 		Title:    "Join mapper",
 		Prefix:   "joinm",
