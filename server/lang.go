@@ -63,7 +63,11 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 					melrose.Context().LoopControl.BPM(),
 					time.Now())
 			}
-			// ignore if not playable
+			if lp, ok := returnValue.(*melrose.Loop); ok {
+				v := l.store.NameFor(lp)
+				notify.Print(notify.Infof("beginning loop: %v", v))
+				lp.Start(melrose.Context().AudioDevice)
+			}
 		}
 		if r.FormValue("action") == "begin" {
 			if lp, ok := returnValue.(*melrose.Loop); ok {
@@ -80,6 +84,11 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 				lp.Stop()
 			}
 			// ignore if not Loop
+		}
+		if r.FormValue("action") == "kill" {
+			// kill the play and any loop
+			melrose.Context().LoopControl.Reset()
+			melrose.Context().AudioDevice.Reset()
 		}
 		response = resultFrom(returnValue)
 	}

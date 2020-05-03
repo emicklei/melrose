@@ -24,7 +24,6 @@ type Beatmaster struct {
 func NewBeatmaster(bpm float64) *Beatmaster {
 	return &Beatmaster{
 		beating:        false,
-		ticker:         time.NewTicker(tickerDuration(bpm)),
 		done:           make(chan bool),
 		loopStartQueue: make(chan *Loop),
 		loopStopQueue:  make(chan *Loop),
@@ -34,6 +33,24 @@ func NewBeatmaster(bpm float64) *Beatmaster {
 		biab:           4,
 		bpm:            bpm,
 		verbose:        false}
+}
+
+func (b *Beatmaster) Reset() {
+	b.Stop()
+	// flush
+	go func() {
+		for {
+			select {
+			case <-b.loopStartQueue:
+			case <-b.loopStopQueue:
+			case <-b.bpmChanges:
+			case <-b.biabChanges:
+			default:
+				break
+			}
+		}
+	}()
+	b.Start()
 }
 
 // Verbose will produce cryptic logging of the behavior
@@ -109,6 +126,8 @@ func (b *Beatmaster) Start() {
 	if b.beating {
 		return
 	}
+	b.beats = 0
+	b.ticker = time.NewTicker(tickerDuration(b.bpm))
 	b.beating = true
 	if b.verbose {
 		fmt.Println("beatmaster started")
@@ -211,6 +230,7 @@ func (s zeroBeat) Begin(l *Loop)      {}
 func (s zeroBeat) End(l *Loop)        {}
 func (s zeroBeat) Start()             {}
 func (s zeroBeat) Stop()              {}
+func (s zeroBeat) Reset()             {}
 func (s zeroBeat) SetBPM(bpm float64) {}
 func (s zeroBeat) BPM() float64       { return 120.0 }
 func (s zeroBeat) SetBIAB(biab int)   {}

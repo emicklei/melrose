@@ -41,14 +41,29 @@ type Function struct {
 func EvalFunctions(storage VariableStorage, control melrose.LoopController) map[string]Function {
 	eval := map[string]Function{}
 
-	eval["apply"] = Function{
-		Title:    "Apply a Pipeline to an object",
-		Prefix:   "apply",
-		Template: `apply(${1:pipeline},${2:object})`,
+	eval["progression"] = Function{
+		Title:    "create a Chord progression",
+		Prefix:   "pro",
+		Template: `progression('${1:chords}')`,
+		Samples: `progression('E F') // => (E A♭ B) (F A C5)
+progression('(C D)') // => (C E G D G♭ A)`,
+		Func: func(chords string) interface{} {
+			p, err := melrose.ParseProgression(chords)
+			if err != nil {
+				notify.Print(notify.Errorf("%v", err))
+				return nil
+			}
+			return p
+		}}
+
+	eval["feed"] = Function{
+		Title:    "Feed the Pipeline with an object",
+		Prefix:   "feed",
+		Template: `feed(${1:pipeline},${2:object})`,
 		Func: func(pipeline interface{}, object interface{}) interface{} {
 			s, ok := getSequenceable(object)
 			if !ok {
-				notify.Print(notify.Warningf("cannot apply (%T) %v", object, object))
+				notify.Print(notify.Warningf("cannot feed (%T) %v", object, object))
 				return nil
 			}
 			v, ok := pipeline.(melrose.Valueable)
@@ -63,7 +78,7 @@ func EvalFunctions(storage VariableStorage, control melrose.LoopController) map[
 			}
 			r, err := p.Execute(s)
 			if err != nil {
-				notify.Print(notify.Errorf("cannot apply %v:%v", p, err))
+				notify.Print(notify.Errorf("cannot feed %v:%v", p, err))
 				return nil
 			}
 			return r

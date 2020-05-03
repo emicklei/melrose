@@ -13,6 +13,7 @@
 
 ## todos
 
-- capture timing of recorded notes
-- sync loop with the beat
-- remove JS
+- capture timing of recorded notes 
+
+## docs
+- https://www.edb.gov.hk/attachment/tc/curriculum-development/kla/arts-edu/nss/gm_drumlist_8050.pdf

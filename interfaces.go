@@ -33,12 +33,14 @@ type AudioDevice interface {
 	SetBaseVelocity(velocity int)
 	SetEchoNotes(echo bool)
 
+	Reset()
 	Close()
 }
 
 type LoopController interface {
 	Start()
 	Stop()
+	Reset()
 
 	SetBPM(bpm float64)
 	BPM() float64

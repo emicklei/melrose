@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"sync"
 
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
@@ -15,7 +14,6 @@ import (
 type Midi struct {
 	enabled      bool
 	stream       *portmidi.Stream
-	mutex        *sync.Mutex
 	deviceID     int
 	echo         bool
 	baseVelocity int
@@ -27,15 +25,36 @@ type Midi struct {
 	timeline *melrose.Timeline
 }
 
+type MIDIWriter interface {
+	WriteShort(int64, int64, int64) error
+	Close() error
+	Abort() error
+}
+
+// https://www.midi.org/specifications-old/item/table-1-summary-of-midi-message
 const (
-	noteOn  int64 = 0x90
-	noteOff int64 = 0x80
+	noteOn        int64 = 0x90 // 10010000 , 144
+	noteOff       int64 = 0x80 // 10000000 , 128
+	controlChange int64 = 176  // 10110000 , 176
+	noteAllOff    int64 = 123  // 01111011 , 123
 )
 
 var (
+	// http://www.music-software-development.com/midi-tutorial.html
 	DefaultVelocity = 70
 	DefaultChannel  = 1
 )
+
+func (m *Midi) Reset() {
+	m.timeline.Reset()
+	if m.stream != nil {
+		for c := 1; c <= 16; c++ {
+			if err := m.stream.WriteShort(controlChange|int64(c-1), noteAllOff, 0); err != nil {
+				fmt.Println("portmidi write error:", err)
+			}
+		}
+	}
+}
 
 func (m *Midi) Timeline() *melrose.Timeline { return m.timeline }
 
@@ -119,7 +138,6 @@ func (m *Midi) printInfo() {
 
 func Open() (*Midi, error) {
 	m := new(Midi)
-	m.mutex = new(sync.Mutex)
 	m.enabled = false
 	portmidi.Initialize()
 	deviceID := portmidi.DefaultOutputDeviceID()

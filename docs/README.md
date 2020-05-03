@@ -12,6 +12,7 @@ The basic musical objects in Melrose are:
 - [sequence](dsl.html#sequence)
 - [chord](dsl.html#chord)
 - [scale](dsl.html#scale)
+- [progression](dsl.html#progression)
 
 Musical objects can be composed using:
 
@@ -25,6 +26,10 @@ Musical objects can be composed using:
 - [undynamic](dsl.html#undynamci)
 - [sequencemap](dsl.html#sequencemap)
 - [interval](dsl.html#interval)
+- [pipeline](dsl.html#pipeline)
+- [feed](dsl.html#feed)
+- [octavemap](dsl.html#octavemap)
+- [dynamicmap](dsl.html#dynamicmap)
 - many others...
 
 Musical objects can be played using:
