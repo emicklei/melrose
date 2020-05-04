@@ -84,6 +84,7 @@ Musical objects can be played using:
 | A/7         | A Dominant seventh chord
 | E/M7        | E Major seventh chord
 | G/m7        | G minor seventh chord
+| 1=          | No chord, a whole rest note
 
 ### Scale<a name="scale-not"></a>
 
@@ -99,3 +100,4 @@ Musical objects can be played using:
 |-------------|---
 | C/m D/m     | C minor followed by a D minor 
 | (C3 C5)     | C major, Octave 3 together with a C major, Octave 5
+| E =         | E major followed by a quarter rest note

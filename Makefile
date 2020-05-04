@@ -1,13 +1,18 @@
-run: test build snippets grammar dslmd
+run: test install snippets grammar
 	melrose
 
-fast: build
+fast: install
 	melrose
 
 test:
 	go test -cover ./...
 
 build:
+	export LATEST_TAG=`git describe --abbrev=0`
+	cd cmd/melrose && go build -ldflags "-s -w -X main.version=${LATEST_TAG}" -o ../../target/melrose
+
+	
+install:
 	go install github.com/emicklei/melrose/cmd/melrose
 
 snippets:
@@ -24,11 +29,12 @@ dslmd:
 vsc: snippets grammar
 	cd ../melrose-for-vscode && vsce package
 
-package: build vsc
+clean:
 	rm -rf target
 	mkdir target
+
+package: clean build snippets grammar vsc
 	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target
-	cp ${GOPATH}/bin/melrose target
 	cp run.sh target
 	cp ../melrose-for-vscode/*vsix target
-	
+	cd target && zip -mr melrose-${LATEST_TAG}.zip .

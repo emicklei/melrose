@@ -23,6 +23,9 @@ func zeroChord() Chord {
 }
 
 func (c Chord) String() string {
+	if c.start.IsRest() {
+		return c.start.String()
+	}
 	var b bytes.Buffer
 	fmt.Fprint(&b, c.start.String())
 	endsWithColon := false
@@ -90,6 +93,9 @@ func (c Chord) S() Sequence {
 // Notes returns the Note values for this chord.
 func (c Chord) Notes() []Note {
 	notes := []Note{c.start}
+	if c.start.IsRest() {
+		return notes
+	}
 	var semitones []int
 	if c.interval == Triad {
 		if Major == c.quality {

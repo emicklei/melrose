@@ -84,7 +84,7 @@ func (o OctaveMapper) Storex() string {
 		}
 		fmt.Fprintf(&b, "%d:%d", each.from, each.to)
 	}
-	fmt.Fprintf(&b, s.Storex())
+	fmt.Fprintf(&b, "',%s", s.Storex())
 	fmt.Fprintf(&b, ")")
 	return b.String()
 }
