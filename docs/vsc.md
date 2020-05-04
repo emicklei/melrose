@@ -44,7 +44,7 @@ You can also evaluate the function `end(...)`.
 
 ### comment
 
-Lines that start with `//` are not evaluated ; these commment lines.
+Lines that start with `//` are not evaluated ; these are commment lines.
 
 	// this is comment
 

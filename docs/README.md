@@ -60,13 +60,13 @@ Musical objects can be played using:
 
 | Notation    | Description
 |-------------|---
-| \-\-\- |Pianissimo
-| \-\-	|Piano
-| \-	  |MezzoPiano
-| 0   |Regular
-| +	  |MezzoForte
-| ++	|Forte
-| +++ |Fortissimo
+| \-\-\-      |Pianissimo (pp)
+| \-\-	      |Piano (p)
+| \-	      |MezzoPiano (mp)
+| 0           |Normal
+| +	          |MezzoForte (mf)
+| ++	      |Forte (f)
+| +++         |Fortissimo (ff)
 
 ### Sequence<a name="sequence-not"></a>
 
@@ -92,3 +92,10 @@ Musical objects can be played using:
 | C5          | C major scale, Octave 5
 | E/m         | E natural minor scale, Octave 4
 | G/M7        | G major 7 scale, Octave 4
+
+### Progression<a name="progression-not"></a>
+
+| Notation    | Description
+|-------------|---
+| C/m D/m     | C minor followed by a D minor 
+| (C3 C5)     | C major, Octave 3 together with a C major, Octave 5

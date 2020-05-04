@@ -22,10 +22,9 @@ func zeroChord() Chord {
 	return Chord{start: N("C"), inversion: Ground, quality: Major, interval: Triad}
 }
 
-// Storex implements Storable
-func (c Chord) Storex() string {
+func (c Chord) String() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "chord('%s", c.start.String())
+	fmt.Fprint(&b, c.start.String())
 	endsWithColon := false
 	emitSeparator := func() {
 		if !endsWithColon {
@@ -75,8 +74,12 @@ func (c Chord) Storex() string {
 			io.WriteString(&b, "3")
 		}
 	}
-	fmt.Fprintf(&b, "')")
 	return b.String()
+}
+
+// Storex implements Storable
+func (c Chord) Storex() string {
+	return fmt.Sprintf("chord('%s')", c.String())
 }
 
 // S converts a Chord into a Sequence

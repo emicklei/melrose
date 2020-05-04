@@ -41,13 +41,14 @@ const (
 
 var (
 	// http://www.music-software-development.com/midi-tutorial.html
-	DefaultVelocity = 70
+	DefaultVelocity = 72
 	DefaultChannel  = 1
 )
 
 func (m *Midi) Reset() {
 	m.timeline.Reset()
 	if m.stream != nil {
+		// send note off all to all channels for current device
 		for c := 1; c <= 16; c++ {
 			if err := m.stream.WriteShort(controlChange|int64(c-1), noteAllOff, 0); err != nil {
 				fmt.Println("portmidi write error:", err)

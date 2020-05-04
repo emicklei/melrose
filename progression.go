@@ -1,6 +1,8 @@
 package melrose
 
 import (
+	"bytes"
+	"fmt"
 	"strings"
 )
 
@@ -61,4 +63,28 @@ func (p Progression) S() Sequence {
 		}
 	}
 	return Sequence{Notes: notes}
+}
+
+func (p Progression) Storex() string {
+	var b bytes.Buffer
+	fmt.Fprint(&b, "progression('")
+	for i, each := range p.Chords {
+		if i > 0 {
+			fmt.Fprint(&b, " ")
+		}
+		if len(each) == 1 {
+			fmt.Fprintf(&b, "%s", each[0].String())
+		} else {
+			fmt.Fprint(&b, "(")
+			for j, other := range each {
+				if j > 0 {
+					fmt.Fprint(&b, " ")
+				}
+				fmt.Fprintf(&b, "%s", other.String())
+			}
+			fmt.Fprint(&b, ")")
+		}
+	}
+	fmt.Fprint(&b, "')")
+	return b.String()
 }

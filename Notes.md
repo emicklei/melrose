@@ -14,6 +14,7 @@
 ## todos
 
 - capture timing of recorded notes 
+- make velocity fixed io. velocityfactor (https://en.wikipedia.org/wiki/Dynamics_(music))
 
 ## docs
 - https://www.edb.gov.hk/attachment/tc/curriculum-development/kla/arts-edu/nss/gm_drumlist_8050.pdf

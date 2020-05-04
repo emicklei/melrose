@@ -27,6 +27,13 @@ func TestParseProgression_ParallelChords(t *testing.T) {
 	}
 }
 
+func TestParseProgression_Storex(t *testing.T) {
+	par := MustParseProgression("A (E F)")
+	if got, want := par.Storex(), "progression('A (E F)')"; got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+}
+
 func check(t *testing.T, err error) {
 	t.Helper()
 	if err != nil {

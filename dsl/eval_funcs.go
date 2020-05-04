@@ -56,14 +56,14 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			return p
 		}}
 
-	eval["feed"] = Function{
-		Title:    "Feed the Pipeline with an object",
-		Prefix:   "feed",
-		Template: `feed(${1:pipeline},${2:object})`,
+	eval["call"] = Function{
+		Title:    "Call all the functions of a Pipeline with an object",
+		Prefix:   "call",
+		Template: `call(${1:pipeline},${2:object})`,
 		Func: func(pipeline interface{}, object interface{}) interface{} {
 			s, ok := getSequenceable(object)
 			if !ok {
-				notify.Print(notify.Warningf("cannot feed (%T) %v", object, object))
+				notify.Print(notify.Warningf("cannot call (%T) %v", object, object))
 				return nil
 			}
 			v, ok := pipeline.(melrose.Valueable)
@@ -78,7 +78,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			}
 			r, err := p.Execute(s)
 			if err != nil {
-				notify.Print(notify.Errorf("cannot feed %v:%v", p, err))
+				notify.Print(notify.Errorf("cannot call %v:%v", p, err))
 				return nil
 			}
 			return r
