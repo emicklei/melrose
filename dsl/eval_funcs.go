@@ -48,8 +48,9 @@ The first parameter controls the length (duration) of the note.
 If the parameter is greater than 0 then the note duration is set to a fixed value, e.g. 4=quarter,1=whole.
 If the parameter is less than 1 then the note duration is scaled with a value, e.g. 0.5 will make a quarter ¼ into an eight ⅛.
 `,
-		Prefix:   "dur",
-		Template: `duration(${1:object},${2:object})`,
+		Prefix:     "dur",
+		IsComposer: true,
+		Template:   `duration(${1:object},${2:object})`,
 		Samples: `duration(8,'E F') // => ⅛E ⅛F , absolute change
 duration(0.5,'8C 8G') // => C G , factor change`,
 		Func: func(param float64, playables ...interface{}) interface{} {
@@ -86,9 +87,10 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 
 	eval["call"] = Function{
-		Title:    "Call all the functions of a Pipeline with an object",
-		Prefix:   "call",
-		Template: `call(${1:pipeline},${2:object})`,
+		Title:      "Call all the functions of a Pipeline with an object",
+		Prefix:     "call",
+		IsComposer: true,
+		Template:   `call(${1:pipeline},${2:object})`,
 		Func: func(pipeline interface{}, object interface{}) interface{} {
 			s, ok := getSequenceable(object)
 			if !ok {
@@ -114,17 +116,19 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 
 	eval["pipeline"] = Function{
-		Title:    "Pipeline of functions",
-		Prefix:   "pip",
-		Template: `pipeline(${1:func1},${2:func2})`,
+		Title:      "Pipeline of functions",
+		Prefix:     "pip",
+		IsComposer: true,
+		Template:   `pipeline(${1:func1},${2:func2})`,
 		Func: func(arguments ...interface{}) op.Pipeline {
 			return op.Pipeline{Target: arguments}
 		}}
 
 	eval["joinmap"] = Function{
-		Title:    "Join mapper",
-		Prefix:   "joinm",
-		Template: `joinmain('${1:indices}',${2:join})`,
+		Title:      "Join mapper",
+		Prefix:     "joinm",
+		IsComposer: true,
+		Template:   `joinmain('${1:indices}',${2:join})`,
 		Func: func(indices string, join interface{}) interface{} { // allow multiple seq?
 			v := getValueable(join)
 			vNow := v.Value()
@@ -170,7 +174,7 @@ chord('G/M/2')`,
 		Description: "create a sequence with notes for which order and the octaves are changed",
 		Prefix:      "octavem",
 		Template:    `octavemap('${1:int2int}',${2:object})`,
-		IsCore:      false,
+		IsComposer:  true,
 		Samples:     `octavemap('1:-1,2:0,3:1',chord('C')) // => (C3 E G5)`,
 		Func: func(indices string, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
@@ -586,12 +590,11 @@ end(l1)`,
 			return melrose.ChannelSelector{Target: s, Number: getValueable(midiChannel)}
 		}}
 	eval["interval"] = Function{
-		Title:         "Integer Interval creator. Repeats on default",
-		Description:   "create an integer repeating interval (from,to,by)",
-		ControlsAudio: false,
-		Prefix:        "int",
-		Alias:         "I",
-		Template:      `interval(${1:from},${2:to},${3:by})`,
+		Title:       "Integer Interval creator. Repeats on default",
+		Description: "create an integer repeating interval (from,to,by)",
+		Prefix:      "int",
+		Alias:       "I",
+		Template:    `interval(${1:from},${2:to},${3:by})`,
 		Samples: `i1 = interval(-2,4,1)
 l1 = loop(pitch(i1,sequence('C D E F')))`,
 		IsComposer: true,
@@ -599,12 +602,11 @@ l1 = loop(pitch(i1,sequence('C D E F')))`,
 			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by), melrose.RepeatFromTo)
 		}}
 	eval["sequencemap"] = Function{
-		Title:         "Integer Sequence Map modifier",
-		Description:   "create a Mapper of sequence notes by index (1-based)",
-		ControlsAudio: false,
-		Prefix:        "ind",
-		Alias:         "Im",
-		Template:      `sequencemap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
+		Title:       "Integer Sequence Map modifier",
+		Description: "create a Mapper of sequence notes by index (1-based)",
+		Prefix:      "ind",
+		Alias:       "Im",
+		Template:    `sequencemap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
 		Samples: `s1 = sequence('C D E F G A B')
 i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		IsComposer: true,

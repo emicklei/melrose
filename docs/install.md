@@ -51,4 +51,4 @@ If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH
 
 ## Melrose plugin for Visual Studio Code<a name="plugin"></a>
 
-Currently, the `melrose` plugin is not yet published so you need to [download the plugin](https://public.philemonworks.com/melrose/melrose-for-vscode-1.0.0.vsix) archive. You install the plugin form the Extensions overview in Visual Studio Code.
+Currently, the `melrose` plugin is not yet published so you need to [download the plugin](https://public.philemonworks.com/melrose/melrose-for-vscode-1.0.0.vsix) archive. You install the plugin from the Extensions overview in Visual Studio Code.
