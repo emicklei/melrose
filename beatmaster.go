@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math"
 	"time"
+
+	"github.com/emicklei/melrose/notify"
 )
 
 // Beatmaster is a LoopController
@@ -13,8 +15,6 @@ type Beatmaster struct {
 	done           chan bool
 	loopStartQueue chan *Loop
 	loopStopQueue  chan *Loop
-	bpmChanges     chan float64
-	biabChanges    chan int64
 	beats          int64   // monotonic increasing number, starting at 0
 	biab           int64   // current number of beats in a bar
 	bpm            float64 // current beats per minute
@@ -27,8 +27,6 @@ func NewBeatmaster(bpm float64) *Beatmaster {
 		done:           make(chan bool),
 		loopStartQueue: make(chan *Loop),
 		loopStopQueue:  make(chan *Loop),
-		bpmChanges:     make(chan float64),
-		biabChanges:    make(chan int64),
 		beats:          0,
 		biab:           4,
 		bpm:            bpm,
@@ -43,8 +41,6 @@ func (b *Beatmaster) Reset() {
 			select {
 			case <-b.loopStartQueue:
 			case <-b.loopStopQueue:
-			case <-b.bpmChanges:
-			case <-b.biabChanges:
 			default:
 				break
 			}
@@ -101,12 +97,15 @@ func (b *Beatmaster) SetBPM(bpm float64) {
 	if !b.beating {
 		return
 	}
-	if bpm < 1.0 || bpm > 300.0 { // TODO what is the max?
-		return
+	if bpm < 1.0 {
+		notify.Print(notify.Warningf("bpm [%.1f] must be in [1..300], setting to [%d]", bpm, 1))
+		bpm = 1.0
 	}
-	go func() {
-		b.bpmChanges <- bpm
-	}()
+	if bpm > 300 {
+		notify.Print(notify.Warningf("bpm [%.1f] must be in [1..300], setting to [%d]", bpm, 300))
+		bpm = 300.0
+	}
+	b.bpm = bpm
 }
 
 // SetBIAB will change the beats per bar, unless the master is not started.
@@ -114,12 +113,15 @@ func (b *Beatmaster) SetBIAB(biab int) {
 	if !b.beating {
 		return
 	}
-	if biab < 1 || biab > 6 { // TODO what is the max?
-		return
+	if biab < 1 {
+		notify.Print(notify.Warningf("biab [%d] must be in [1..6], setting to [%d]", biab, 1))
+		biab = 1
 	}
-	go func() {
-		b.biabChanges <- int64(biab)
-	}()
+	if biab > 6 {
+		notify.Print(notify.Warningf("biab [%d] must be in [1..6], setting to [%d]", biab, 6))
+		biab = 6
+	}
+	b.biab = int64(biab)
 }
 
 func (b *Beatmaster) Start() {
@@ -143,35 +145,6 @@ func (b *Beatmaster) Start() {
 					if b.verbose {
 						fmt.Print("!")
 					}
-
-					select {
-					// abort ?
-					case <-b.done:
-						return
-					// only change BIAB on a bar
-					case biab := <-b.biabChanges:
-						if b.verbose {
-							fmt.Println("biab:", biab)
-						}
-						b.biab = biab
-					default:
-					}
-
-					select {
-					// abort ?
-					case <-b.done:
-						return
-					// only change BPM on a bar
-					case bpm := <-b.bpmChanges:
-						if b.verbose {
-							fmt.Println("bpm:", bpm)
-						}
-						b.bpm = bpm
-						b.ticker.Stop()
-						b.ticker = time.NewTicker(tickerDuration(bpm))
-					default:
-					}
-
 					// start all pending loops in start Q
 					// stop all pending loops in stop Q
 					for {

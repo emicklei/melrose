@@ -41,6 +41,34 @@ type Function struct {
 func EvalFunctions(storage VariableStorage, control melrose.LoopController) map[string]Function {
 	eval := map[string]Function{}
 
+	eval["duration"] = Function{
+		Title: "Note duration modifier",
+		Description: `Creates a new modified musical object for which the duration of all notes are changed.
+The first parameter controls the length (duration) of the note.
+If the parameter is greater than 0 then the note duration is set to a fixed value, e.g. 4=quarter,1=whole.
+If the parameter is less than 1 then the note duration is scaled with a value, e.g. 0.5 will make a quarter ¼ into an eight ⅛.
+`,
+		Prefix:   "dur",
+		Template: `duration(${1:object},${2:object})`,
+		Samples: `duration(8,'E F') // => ⅛E ⅛F , absolute change
+duration(0.5,'8C 8G') // => C G , factor change`,
+		Func: func(param float64, playables ...interface{}) interface{} {
+			if err := op.CheckDuration(param); err != nil {
+				notify.Print(notify.Error(err))
+				return nil
+			}
+			joined := []melrose.Sequenceable{}
+			for _, p := range playables {
+				if s, ok := getSequenceable(p); !ok {
+					notify.Print(notify.Warningf("cannot duration (%T) %v", p, p))
+					return nil
+				} else {
+					joined = append(joined, s)
+				}
+			}
+			return op.NewDuration(param, joined)
+		}}
+
 	eval["progression"] = Function{
 		Title:    "create a Chord progression",
 		Prefix:   "pro",

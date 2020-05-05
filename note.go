@@ -85,8 +85,37 @@ func (n Note) S() Sequence {
 	return BuildSequence([]Note{n})
 }
 
+// TODO rename
 func (n Note) ModifiedVelocity(velo float32) Note {
 	nn, _ := NewNote(n.Name, n.Octave, n.duration, n.Accidental, n.Dotted, velo)
+	return nn
+}
+
+func (n Note) WithDuration(dur float64) Note {
+	var duration float32
+	switch dur {
+	case 16:
+		duration = 0.0625
+	case 8:
+		duration = 0.125
+	case 4:
+		duration = 0.25
+	case 2:
+		duration = 0.5
+	case 1:
+		duration = 1
+	case 0.5:
+		duration = n.duration / 2.0
+	case 0.25:
+		duration = n.duration / 4.0
+	case 0.125:
+		duration = n.duration / 8.0
+	case 0.0625:
+		duration = n.duration / 16.0
+	default:
+		duration = 0.25 // quarter
+	}
+	nn, _ := NewNote(n.Name, n.Octave, duration, n.Accidental, n.Dotted, n.velocityFactor)
 	return nn
 }
 
