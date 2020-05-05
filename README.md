@@ -5,8 +5,6 @@
 [![GoDoc](https://godoc.org/github.com/emicklei/melrose?status.svg)](https://pkg.go.dev/github.com/emicklei/melrose?tab=doc)
 
 
-##
-
 ## Usage
 
 This software can be used both as a library (Go package) or as part of the command line tool called `melrose` for live music coding.
@@ -21,9 +19,11 @@ See [documentation](https://emicklei.github.io/melrose/) how to install and use 
 
     import (
       "log"
+      "time"
 
-      "github.com/emicklei/melrose/m"
+      m "github.com/emicklei/melrose"
       "github.com/emicklei/melrose/midi"
+      "github.com/emicklei/melrose/op"
     )
 
     func main() {
@@ -31,20 +31,19 @@ See [documentation](https://emicklei.github.io/melrose/) how to install and use 
       if err != nil {
         log.Fatal(err)
       }
-      audio.SetBeatsPerMinute(200)
       defer audio.Close()
 
-      f1 := m.Sequence("C D E C")
-      f2 := m.Sequence("E F ½G")
-      f3 := m.Sequence("8G 8A 8G 8F E C")
-      f4 := m.Sequence("2C 2G3 2C 1=")
-      r8 := m.Repeat(8, m.Note("="))
+      f1 := m.MustParseSequence("C D E C")
+      f2 := m.MustParseSequence("E F 2G")
+      f3 := m.MustParseSequence("8G 8A 8G 8F E C")
+      f4 := m.MustParseSequence("2C 2G3 2C 1=")
+      r8 := op.Repeat{Times: m.On(8), Target: []m.Sequenceable{m.Note("=")}}
 
-      v1 := m.Join(f1, f1, f2, f2, f3, f3, f4)
-      v2 := m.Join(r8, v1)
-      v3 := m.Join(r8, v2)
+      v1 := op.Join{Target: []m.Sequenceable{f1, f1, f2, f2, f3, f3, f4}}
+      v2 := op.Join{Target: []m.Sequenceable{r8, v1}}
+      v3 := op.Join{Target: []m.Sequenceable{r8, v2}}
 
-      m.Go(audio, v1, v2, v3)
+      audio.Play(op.Join{Target: []m.Sequenceable{v1, v2, v3}}, 200, time.Now())
     }
 
 

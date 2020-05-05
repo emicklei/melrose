@@ -11,27 +11,27 @@ var parsetests = []struct {
 	dura     float32
 	acc      int
 	dot      bool
-	vel      float32
+	vel      int
 }{
-	{"C", "C", 4, 0.25, 0, false, 1.0},
-	{"C3", "C", 3, 0.25, 0, false, 1.0},
-	{"C3", "C", 3, 0.25, 0, false, 1.0},
-	{"4C3", "C", 3, 0.25, 0, false, 1.0},
-	{"C#3", "C", 3, 0.25, 1, false, 1.0},
-	{"4C#.3", "C", 3, 0.25, 1, true, 1.0},
-	{"16C", "C", 4, 0.0625, 0, false, 1.0},
-	{"4C#", "C", 4, 0.25, 1, false, 1.0},
-	{"C#", "C", 4, 0.25, 1, false, 1.0},
-	{"B_", "B", 4, 0.25, -1, false, 1.0}, //8
-	{"F#.9", "F", 9, 0.25, 1, true, 1.0},
-	{"1C", "C", 4, 1, 0, false, 1.0},
-	{"=", "=", 4, 0.25, 0, false, 1.0},
-	{"D++", "D", 4, 0.25, 0, false, F_Forte},
-	{"D+", "D", 4, 0.25, 0, false, F_MezzoForte},
-	{"D+++", "D", 4, 0.25, 0, false, F_Fortissimo},
-	{"E-", "E", 4, 0.25, 0, false, F_MezzoPiano},
-	{"E--", "E", 4, 0.25, 0, false, F_Piano},
-	{"E---", "E", 4, 0.25, 0, false, F_Pianissimo},
+	{"C", "C", 4, 0.25, 0, false, Normal},
+	{"C3", "C", 3, 0.25, 0, false, Normal},
+	{"C3", "C", 3, 0.25, 0, false, Normal},
+	{"4C3", "C", 3, 0.25, 0, false, Normal},
+	{"C#3", "C", 3, 0.25, 1, false, Normal},
+	{"4C#.3", "C", 3, 0.25, 1, true, Normal},
+	{"16C", "C", 4, 0.0625, 0, false, Normal},
+	{"4C#", "C", 4, 0.25, 1, false, Normal},
+	{"C#", "C", 4, 0.25, 1, false, Normal},
+	{"B_", "B", 4, 0.25, -1, false, Normal}, //8
+	{"F#.9", "F", 9, 0.25, 1, true, Normal},
+	{"1C", "C", 4, 1, 0, false, Normal},
+	{"=", "=", 4, 0.25, 0, false, Normal},
+	{"D++", "D", 4, 0.25, 0, false, Forte},
+	{"D+", "D", 4, 0.25, 0, false, MezzoForte},
+	{"D+++", "D", 4, 0.25, 0, false, Fortissimo},
+	{"E-", "E", 4, 0.25, 0, false, MezzoPiano},
+	{"E--", "E", 4, 0.25, 0, false, Piano},
+	{"E---", "E", 4, 0.25, 0, false, Pianissimo},
 }
 
 func TestParseNote(t *testing.T) {
@@ -55,8 +55,8 @@ func TestParseNote(t *testing.T) {
 		if n.Dotted != each.dot {
 			t.Fatal("dot: line,exp,act", i, each.dot, n.Dotted)
 		}
-		if n.VelocityFactor() != each.vel {
-			t.Fatal("vel: line,exp,act", i, each.vel, n.VelocityFactor())
+		if n.Velocity != each.vel {
+			t.Fatal("vel: line,exp,act", i, each.vel, n.Velocity)
 		}
 	}
 }

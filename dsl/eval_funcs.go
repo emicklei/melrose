@@ -288,19 +288,6 @@ pitch(p,note('C'))`,
 			return nil
 		}}
 
-	eval["velocity"] = Function{
-		Title:         "controls softness",
-		Description:   "set the base velocity [1..127]; default is 70",
-		ControlsAudio: true,
-		Prefix:        "vel",
-		Template:      `velocity(${1:velocity})`,
-		Samples:       `velocity(90)`,
-		Func: func(i int) interface{} {
-			// TODO check range
-			melrose.Context().AudioDevice.SetBaseVelocity(i)
-			return nil
-		}}
-
 	eval["echo"] = Function{
 		Title:         "the notes being played",
 		Description:   "echo the notes being played; default is true",
@@ -408,7 +395,7 @@ note('2E#.--')`,
 
 	eval["serial"] = Function{
 		Title:       "Serial modifier",
-		Description: "serialise any parallelisation of notes in one or more musical objects",
+		Description: "serialise any grouping of notes in one or more musical objects",
 		Prefix:      "ser",
 		Template:    `serial(${1:sequenceable})`,
 		IsComposer:  true,

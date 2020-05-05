@@ -1,6 +1,7 @@
 package midi
 
 import (
+	"fmt"
 	"math"
 	"time"
 
@@ -14,6 +15,9 @@ func (m *Midi) Play(seq melrose.Sequenceable, bpm float64, beginAt time.Time) ti
 	moment := beginAt
 	if !m.enabled {
 		return moment
+	}
+	if m.echo {
+		fmt.Println() // start new line
 	}
 	channel := m.defaultOutputChannel
 	if sel, ok := seq.(melrose.ChannelSelector); ok {
@@ -57,13 +61,12 @@ func (m *Midi) Play(seq melrose.Sequenceable, bpm float64, beginAt time.Time) ti
 
 // Pre: notes not empty
 func (m *Midi) combinedMidiEvent(channel int, notes []melrose.Note) midiEvent {
-	v := notes[0].VelocityFactor()
-	velocity := int(float32(m.baseVelocity) * v)
+	velocity := notes[0].Velocity
 	if velocity > 127 {
 		velocity = 127
 	}
 	if velocity < 1 {
-		velocity = DefaultVelocity
+		velocity = melrose.Normal
 	}
 	nrs := []int64{}
 	for _, each := range notes {
@@ -83,12 +86,12 @@ func canCombineMidiEvents(notes []melrose.Note) bool {
 		return false
 	}
 	d := notes[0].DurationFactor()
-	v := notes[0].VelocityFactor()
+	v := notes[0].Velocity
 	for _, each := range notes[1:] {
 		if each.DurationFactor() != d {
 			return false
 		}
-		if each.VelocityFactor() != v {
+		if each.Velocity != v {
 			return false
 		}
 	}

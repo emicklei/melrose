@@ -28,21 +28,17 @@ const (
 	Inversion1
 	Inversion2
 	Inversion3
-
-	// https://nl.wikipedia.org/wiki/Dynamiek_(muziek)
-	Pianissimo // ---
-	Piano      // --
-	MezzoPiano // -
-	MezzoForte // +
-	Forte      // ++
-	Fortissimo // +++
 )
 
+// https://nl.wikipedia.org/wiki/Dynamiek_(muziek)
 const (
-	F_Pianissimo = 0.2 // ---
-	F_Piano      = 0.4 // --
-	F_MezzoPiano = 0.8 // -
-	F_MezzoForte = 1.2 // +
-	F_Forte      = 1.4 // ++
-	F_Fortissimo = 1.8 // +++
+	Pianississimo = 16 // ----
+	Pianissimo    = 33 // ---
+	Piano         = 49 // --
+	MezzoPiano    = 64 // -
+	Normal        = 72
+	MezzoForte    = 80  // +
+	Forte         = 96  // ++
+	Fortissimo    = 112 // +++
+	Fortississimo = 127 // ++++
 )

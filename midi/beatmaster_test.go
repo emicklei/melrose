@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose"
-	"github.com/emicklei/melrose/m"
 )
 
 // BEAT=on go test -v -run "^(TestBeatmaster)$"
@@ -24,8 +23,8 @@ func TestBeatmaster(t *testing.T) {
 	b.Start()
 	time.Sleep(1 * time.Second)
 
-	s1 := m.Sequence("8C 8E 8G")
-	l1 := m.Loop(s1)
+	s1 := melrose.MustParseSequence("8C 8E 8G")
+	l1 := melrose.NewLoop(s1)
 	b.Begin(l1)
 
 	// time.Sleep(3 * time.Second)

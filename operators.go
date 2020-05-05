@@ -95,7 +95,7 @@ type Undynamic struct {
 func (u Undynamic) S() Sequence {
 	n := []Note{}
 	u.Target.S().NotesDo(func(each Note) {
-		each.velocityFactor = 1.0
+		each.Velocity = Normal
 		n = append(n, each)
 	})
 	return BuildSequence(n)

@@ -12,11 +12,10 @@ import (
 
 // Midi is an melrose.AudioDevice
 type Midi struct {
-	enabled      bool
-	stream       *portmidi.Stream
-	deviceID     int
-	echo         bool
-	baseVelocity int
+	enabled  bool
+	stream   *portmidi.Stream
+	deviceID int
+	echo     bool
 
 	defaultOutputChannel  int
 	currentOutputDeviceID int
@@ -40,9 +39,7 @@ const (
 )
 
 var (
-	// http://www.music-software-development.com/midi-tutorial.html
-	DefaultVelocity = 72
-	DefaultChannel  = 1
+	DefaultChannel = 1
 )
 
 func (m *Midi) Reset() {
@@ -58,14 +55,6 @@ func (m *Midi) Reset() {
 }
 
 func (m *Midi) Timeline() *melrose.Timeline { return m.timeline }
-
-// SetBaseVelocity is part of melrose.AudioDevice
-func (m *Midi) SetBaseVelocity(velocity int) {
-	if velocity < 1 || velocity > 127 {
-		return
-	}
-	m.baseVelocity = velocity
-}
 
 // SetEchoNotes is part of melrose.AudioDevice
 func (m *Midi) SetEchoNotes(echo bool) {
@@ -111,7 +100,6 @@ func (m *Midi) printInfo() {
 	fmt.Println(":m input  <device-id> --- change the current MIDI input device id")
 	fmt.Println(":m output <device-id> --- change the current MIDI output device id")
 	fmt.Println()
-	fmt.Printf("MIDI: Base velocity: %d\n", m.baseVelocity)
 	fmt.Printf("MIDI: Echo notes: %v\n", m.echo)
 	fmt.Println("MIDI: Default output channel:", m.defaultOutputChannel)
 	var midiDeviceInfo *portmidi.DeviceInfo
@@ -146,7 +134,6 @@ func Open() (*Midi, error) {
 		return nil, errors.New("no default output MIDI device available")
 	}
 	m.enabled = true
-	m.baseVelocity = DefaultVelocity
 	m.echo = true
 	// for output
 	m.defaultOutputChannel = DefaultChannel

@@ -58,6 +58,5 @@ done:
 
 // TODO compute duration
 func (m *Midi) eventToNote(start, end portmidi.Event) melrose.Note {
-	factor := float32(start.Data2) / float32(m.baseVelocity)
-	return melrose.MIDItoNote(int(start.Data1), factor)
+	return melrose.MIDItoNote(int(start.Data1), int(start.Data2))
 }

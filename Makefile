@@ -1,7 +1,4 @@
-run: test install snippets grammar
-	melrose
-
-fast: install
+run: test install snippets grammar dslmd
 	melrose
 
 test:
@@ -10,7 +7,6 @@ test:
 build:
 	export LATEST_TAG=`git describe --abbrev=0`
 	cd cmd/melrose && go build -ldflags "-s -w -X main.version=${LATEST_TAG}" -o ../../target/melrose
-
 	
 install:
 	go install github.com/emicklei/melrose/cmd/melrose

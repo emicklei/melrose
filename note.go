@@ -15,21 +15,16 @@ import (
 //		D     = quarter duration, pitch D, octave 4, no accidental
 //      ⅛B♭  = eigth duration, pitch B, octave 4, flat
 //		=     = quarter rest
-//      -     = velocity -20%
-//      --    = velocity -40%
-//      ---   = velocity -80%
-//      +     = velocity +20%
-//      ++    = velocity +40%
-//      +++   = velocity +80%
+//      -/+   = velocity number
 // http://en.wikipedia.org/wiki/Musical_Note
 type Note struct {
 	Name       string // {C D E F G A B = }
 	Octave     int    // [0 .. 9]
 	Accidental int    // -1 Flat, +1 Sharp, 0 Normal
 	Dotted     bool   // if true then reported duration is increased by half
+	Velocity   int    // 1..127
 
-	duration       float32 // {0.0625,0.125,0.25,0.5,1}
-	velocityFactor float32 // {0.8,0.6,0.2,1.0,1.2,1.6,1.8}
+	duration float32 // {0.0625,0.125,0.25,0.5,1}
 }
 
 func (n Note) Storex() string {
@@ -38,7 +33,7 @@ func (n Note) Storex() string {
 
 var rest = Note{Name: "="}
 
-func NewNote(name string, octave int, duration float32, accidental int, dot bool, velocityFactor float32) (Note, error) {
+func NewNote(name string, octave int, duration float32, accidental int, dot bool, velocity int) (Note, error) {
 	if len(name) != 1 {
 		return rest, fmt.Errorf("note must be one character, got [%s]", name)
 	}
@@ -62,7 +57,7 @@ func NewNote(name string, octave int, duration float32, accidental int, dot bool
 		return rest, fmt.Errorf("invalid accidental :" + string(accidental))
 	}
 
-	return Note{Name: name, Octave: octave, duration: duration, Accidental: accidental, Dotted: dot, velocityFactor: velocityFactor}, nil
+	return Note{Name: name, Octave: octave, duration: duration, Accidental: accidental, Dotted: dot, Velocity: velocity}, nil
 }
 
 func (n Note) IsRest() bool { return "=" == n.Name }
@@ -74,19 +69,12 @@ func (n Note) DurationFactor() float32 {
 	return n.duration
 }
 
-func (n Note) VelocityFactor() float32 {
-	if n.velocityFactor == 0 {
-		return 1.0
-	}
-	return n.velocityFactor
-}
-
 func (n Note) S() Sequence {
 	return BuildSequence([]Note{n})
 }
 
 // TODO rename
-func (n Note) ModifiedVelocity(velo float32) Note {
+func (n Note) ModifiedVelocity(velo int) Note {
 	nn, _ := NewNote(n.Name, n.Octave, n.duration, n.Accidental, n.Dotted, velo)
 	return nn
 }
@@ -115,7 +103,7 @@ func (n Note) WithDuration(dur float64) Note {
 	default:
 		duration = 0.25 // quarter
 	}
-	nn, _ := NewNote(n.Name, n.Octave, duration, n.Accidental, n.Dotted, n.velocityFactor)
+	nn, _ := NewNote(n.Name, n.Octave, duration, n.Accidental, n.Dotted, n.Velocity)
 	return nn
 }
 
@@ -182,31 +170,34 @@ func ParseNote(input string) (Note, error) {
 		}
 		octave = i
 	}
-	var velocity float32 = 1.0 // audio decides
+	var velocity = Normal
 	if len(matches[6]) > 0 {
 		velocity = ParseVelocity(matches[6])
 	}
 	return NewNote(matches[2], octave, duration, accidental, dotted, velocity)
 }
 
-func ParseVelocity(plusmin string) (velocity float32) {
-	// 0.8,0.6,0.2,1.2,1.6,1.8
+func ParseVelocity(plusmin string) (velocity int) {
 	switch plusmin {
 	case "-":
-		velocity = F_MezzoPiano
+		velocity = MezzoPiano
 	case "--":
-		velocity = F_Piano
+		velocity = Piano
 	case "---":
-		velocity = F_Pianissimo
+		velocity = Pianissimo
+	case "----":
+		velocity = Pianississimo
 	case "+":
-		velocity = F_MezzoForte
+		velocity = MezzoForte
 	case "++":
-		velocity = F_Forte
+		velocity = Forte
 	case "+++":
-		velocity = F_Fortissimo
+		velocity = Fortissimo
+	case "++++":
+		velocity = Fortississimo
 	default:
 		// 0
-		velocity = 1.0
+		velocity = 72
 	}
 	return
 }
@@ -295,19 +286,19 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 	if n.Octave != 4 {
 		fmt.Fprintf(buf, "%d", n.Octave)
 	}
-	if n.velocityFactor != 1.0 {
-		switch n.velocityFactor {
-		case F_Pianissimo:
+	if n.Velocity != 72 {
+		switch n.Velocity {
+		case Pianissimo:
 			io.WriteString(buf, "---")
-		case F_Piano:
+		case Piano:
 			io.WriteString(buf, "--")
-		case F_MezzoPiano:
+		case MezzoPiano:
 			io.WriteString(buf, "-")
-		case F_MezzoForte:
+		case MezzoForte:
 			io.WriteString(buf, "+")
-		case F_Forte:
+		case Forte:
 			io.WriteString(buf, "++")
-		case F_Fortissimo:
+		case Fortissimo:
 			io.WriteString(buf, "+++")
 		}
 	}
