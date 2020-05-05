@@ -26,22 +26,6 @@ func (p Pitch) Storex() string {
 	return ""
 }
 
-type Repeat struct {
-	Target Sequenceable
-	Times  int
-}
-
-func (r Repeat) S() Sequence {
-	return r.Target.S().Repeated(r.Times)
-}
-
-func (r Repeat) Storex() string {
-	if s, ok := r.Target.(Storable); ok {
-		return fmt.Sprintf("repeat(%d,%s)", r.Times, s.Storex())
-	}
-	return ""
-}
-
 type Reverse struct {
 	Target Sequenceable
 }

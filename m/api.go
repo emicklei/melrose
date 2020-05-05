@@ -11,8 +11,8 @@ func Sequence(notation string) melrose.Sequence {
 	return melrose.MustParseSequence(notation)
 }
 
-func Repeat(times int, s melrose.Sequenceable) melrose.Repeat {
-	return melrose.Repeat{Target: s, Times: times}
+func Repeat(times int, s melrose.Sequenceable) op.Repeat {
+	return op.Repeat{Target: []melrose.Sequenceable{s}, Times: melrose.On(times)}
 }
 
 func Reverse(s melrose.Sequenceable) melrose.Reverse {

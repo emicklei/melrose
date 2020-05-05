@@ -72,6 +72,7 @@ duration(0.5,'8C 8G') // => C G , factor change`,
 	eval["progression"] = Function{
 		Title:    "create a Chord progression",
 		Prefix:   "pro",
+		IsCore:   true,
 		Template: `progression('${1:chords}')`,
 		Samples: `progression('E F') // => (E A♭ B) (F A C5)
 progression('(C D)') // => (C E G D G♭ A)`,
@@ -224,13 +225,17 @@ pitch(p,note('C'))`,
 		Template:    `repeat(${1:times},${2:sequenceable})`,
 		Samples:     `repeat(4,sequence('C D E'))`,
 		IsComposer:  true,
-		Func: func(howMany int, m interface{}) interface{} {
-			s, ok := getSequenceable(m)
-			if !ok {
-				notify.Print(notify.Warningf("cannot repeat (%T) %v", m, m))
-				return nil
+		Func: func(howMany interface{}, playables ...interface{}) interface{} {
+			joined := []melrose.Sequenceable{}
+			for _, p := range playables {
+				if s, ok := getSequenceable(p); !ok {
+					notify.Print(notify.Warningf("cannot repeat (%T) %v", p, p))
+					return nil
+				} else {
+					joined = append(joined, s)
+				}
 			}
-			return melrose.Repeat{Target: s, Times: howMany}
+			return op.Repeat{Target: joined, Times: getValueable(howMany)}
 		}}
 
 	eval["join"] = Function{
@@ -260,6 +265,10 @@ pitch(p,note('C'))`,
 		Prefix:        "bpm",
 		Template:      `bpm(${1:beats-per-minute})`,
 		Func: func(f float64) interface{} {
+			if f < 1 || f > 300 {
+				notify.Print(notify.Warningf("invalid beats-per-minute [1..399], %f = ", f))
+				return nil
+			}
 			melrose.Context().LoopControl.SetBPM(f)
 			return nil
 		}}
