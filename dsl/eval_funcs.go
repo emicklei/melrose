@@ -51,8 +51,8 @@ If the parameter is less than 1 then the note duration is scaled with a value, e
 		Prefix:     "dur",
 		IsComposer: true,
 		Template:   `duration(${1:object},${2:object})`,
-		Samples: `duration(8,'E F') // => ⅛E ⅛F , absolute change
-duration(0.5,'8C 8G') // => C G , factor change`,
+		Samples: `duration(8,sequence('E F')) // => ⅛E ⅛F , absolute change
+duration(0.5,sequence('8C 8G')) // => C G , factor change`,
 		Func: func(param float64, playables ...interface{}) interface{} {
 			if err := op.CheckDuration(param); err != nil {
 				notify.Print(notify.Error(err))

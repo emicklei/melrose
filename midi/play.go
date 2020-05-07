@@ -86,12 +86,8 @@ func canCombineMidiEvents(notes []melrose.Note) bool {
 		return false
 	}
 	d := notes[0].DurationFactor()
-	v := notes[0].Velocity
 	for _, each := range notes[1:] {
 		if each.DurationFactor() != d {
-			return false
-		}
-		if each.Velocity != v {
 			return false
 		}
 	}

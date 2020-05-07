@@ -68,9 +68,9 @@ If the parameter is greater than 0 then the note duration is set to a fixed valu
 If the parameter is less than 1 then the note duration is scaled with a value, e.g. 0.5 will make a quarter ¼ into an eight ⅛.
 .
 
-	duration(8,'E F') // => ⅛E ⅛F , absolute change
+	duration(8,sequence('E F')) // => ⅛E ⅛F , absolute change
 
-	duration(0.5,'8C 8G') // => C G , factor change
+	duration(0.5,sequence('8C 8G')) // => C G , factor change
 
 ### flatten<a name="flatten"></a>
 Flatten all operations on a musical object to a new sequence.
