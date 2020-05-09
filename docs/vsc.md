@@ -16,7 +16,7 @@ See [instructions](install.html#plugin) on how to install this plugin after you 
 
 ### edit
 
-This editor extension works with `.mel` and `.melrose` files.
+This editor extension works with `.mel` and `.melrōse` files.
 The syntax of the program uses the [Melrose Lanugage](dsl.html).
 
 

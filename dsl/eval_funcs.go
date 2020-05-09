@@ -151,6 +151,20 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 	**/
 
+	eval["midi"] = Function{
+		Title:       "Note creator",
+		Description: "create a Note",
+		Prefix:      "mid",
+		Alias:       "M",
+		Template:    `midi(${1:number},${2:number})`,
+		Samples:     `midi(52,80) // => E3+`,
+		IsCore:      true,
+		Func: func(nr interface{}, velocity interface{}) interface{} {
+			nrVal := getValueable(nr)
+			velVal := getValueable(velocity)
+			return melrose.NewMIDI(nrVal, velVal)
+		}}
+
 	eval["chord"] = Function{
 		Title:       "Chord creator",
 		Description: "create a Chord",

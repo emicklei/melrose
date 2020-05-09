@@ -11,7 +11,7 @@ This software can be used both as a library (Go package) or as part of the comma
 
 ### Use the tool
 
-See [documentation](https://emicklei.github.io/melrose/) how to install and use `melrose` for live performance.
+See [documentation](https://emicklei.github.io/melrose/) how to install and use `melrōse` for live performance.
 
 ### Use the Go Package
 

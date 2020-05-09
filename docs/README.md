@@ -1,4 +1,4 @@
-# Melrose
+# Melrōse
 
 [Home](index.html)
 [Usage](cli.html)
@@ -6,7 +6,7 @@
 [DAW](daw.html)
 [Install](install.html)
 
-The basic musical objects in Melrose are:
+The basic musical objects in Melrōse are:
 
 - [note](dsl.html#note)
 - [sequence](dsl.html#sequence)

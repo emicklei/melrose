@@ -139,7 +139,7 @@ func (p SequenceMapper) S() Sequence {
 	for _, indexEntry := range p.Indices {
 		mappedGroup := []Note{}
 		for j, each := range indexEntry {
-			if each < 0 || each > len(seq.Notes) {
+			if each < 1 || each > len(seq.Notes) {
 				notify.Print(notify.Warningf("index out of sequence range: %d, len=%d", j+1, len(seq.Notes)))
 			} else {
 				// TODO what if sequence had a multi note group?
@@ -157,7 +157,7 @@ func NewSequenceMapper(s Sequenceable, indices string) SequenceMapper {
 
 func (p SequenceMapper) Storex() string {
 	if s, ok := p.Target.(Storable); ok {
-		return fmt.Sprintf("indexmap(%s)", s.Storex())
+		return fmt.Sprintf("sequencemap(%s)", s.Storex())
 	}
 	return ""
 }

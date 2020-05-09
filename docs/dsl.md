@@ -1,5 +1,5 @@
 ---
-title: Melrose Language
+title: Melrōse Language
 ---
 
 [Home](index.html)
@@ -26,6 +26,11 @@ Create a Chord.
 	chord('C#5/m/1')
 
 	chord('G/M/2')
+
+### midi<a name="midi"></a>
+Create a Note.
+
+	midi(52,80) // => E3+
 
 ### note<a name="note"></a>
 Create a Note from the note notation.

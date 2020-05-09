@@ -10,10 +10,10 @@ title: Melrose and DAW
 
 # Digital Audio Workstation (DAW)
 
-`melrose` itself does not produce any sound; instead it sends MIDI messages to connected software, such as a DAW.
+`melrōse` itself does not produce any sound; instead it sends MIDI messages to connected software, such as a DAW.
 There are many open-source and commercial products that provide synthesized sounds for many software instruments.
 
-We have tested `melrose` with only a few such products:
+We have tested `melrōse` with only a few such products:
 
 - Garageband, available for Mac OSX
     - no support for multi-channel tracks

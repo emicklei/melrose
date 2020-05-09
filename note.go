@@ -31,6 +31,10 @@ func (n Note) Storex() string {
 	return fmt.Sprintf("note('%s')", n.String())
 }
 
+var (
+	Rest4 = Note{Name: "=", duration: 0.25}
+)
+
 var rest = Note{Name: "="}
 
 func NewNote(name string, octave int, duration float32, accidental int, dot bool, velocity int) (Note, error) {

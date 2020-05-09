@@ -15,7 +15,7 @@ import (
 
 var tmpl = template.Must(template.New("dsl").Parse(
 	`---
-title: Melrose Language
+title: Melrōse Language
 ---
 
 [Home](index.html)
