@@ -1,0 +1,29 @@
+package op
+
+import (
+	"fmt"
+
+	"github.com/emicklei/melrose"
+)
+
+type AtIndex struct {
+	Target melrose.Sequenceable
+	Index  melrose.Valueable
+}
+
+func (a AtIndex) S() melrose.Sequence {
+	s := a.Target.S()
+	i := melrose.Int(a.Index)
+	return melrose.BuildSequence(s.At(i))
+}
+
+func (a AtIndex) Storex() string {
+	if s, ok := a.Target.(melrose.Storable); ok {
+		return fmt.Sprintf("at(%v,%s)", a.Index, s.Storex())
+	}
+	return ""
+}
+
+func NewAtIndex(index melrose.Valueable, target melrose.Sequenceable) AtIndex {
+	return AtIndex{Target: target, Index: index}
+}

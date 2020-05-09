@@ -49,7 +49,7 @@ Create a Note from the note notation.
 ### scale<a name="scale"></a>
 Create a Scale using a starting Note and type indicator (Major,minor).
 
-	scale('E/m') // => E F G A B C5 D5
+	scale(1,'E/m') // => E F G A B C5 D5
 
 ### sequence<a name="sequence"></a>
 Create a Sequence from (space separated) notes.

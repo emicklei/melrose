@@ -358,16 +358,48 @@ note('2E#.--')`,
 		Title:       "Scale creator",
 		Description: "create a Scale using a starting Note and type indicator (Major,minor)",
 		Prefix:      "sc",
-		Template:    `scale('${1:letter}')`,
+		Template:    `scale(${1:octaves},'${2:note}')`,
 		IsCore:      true,
-		Samples:     `scale('E/m') // => E F G A B C5 D5`,
-		Func: func(s string) interface{} {
-			sc, err := melrose.ParseScale(s)
+		Samples:     `scale(1,'E/m') // => E F G A B C5 D5`,
+		Func: func(octaves int, s string) interface{} {
+			if octaves < 1 {
+				notify.Print(notify.Errorf("octaves must be >= 1%v", octaves))
+				return nil
+			}
+			sc, err := melrose.NewScale(octaves, s)
 			if err != nil {
 				notify.Print(notify.Error(err))
 				return nil
 			}
 			return sc
+		}}
+
+	eval["at"] = Function{
+		Title:       "Index based getter",
+		Description: "create an index based getter to select a musical object",
+		Prefix:      "at",
+		Template:    `at(${1:index},${2:object})`,
+		Samples:     `at(1,scale('E/m')) // => E`,
+		Func: func(index interface{}, object interface{}) interface{} {
+			indexVal := getValueable(index)
+			objectSeq, ok := getSequenceable(object)
+			if !ok {
+				notify.Print(notify.Warningf("cannot index (%T) %v", object, object))
+				return nil
+			}
+			return op.NewAtIndex(indexVal, objectSeq)
+		}}
+
+	eval["random"] = Function{
+		Title:       "Random generator",
+		Description: "create a random number generator",
+		Prefix:      "at",
+		Template:    `random(${1:from},${2:to})`,
+		Samples:     `random(1,10)`,
+		Func: func(from interface{}, to interface{}) interface{} {
+			fromVal := getValueable(from)
+			toVal := getValueable(to)
+			return op.NewRandomInteger(fromVal, toVal)
 		}}
 
 	eval["play"] = Function{

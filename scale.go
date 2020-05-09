@@ -10,10 +10,20 @@ import (
 type Scale struct {
 	start   Note
 	variant int
+	octaves int
 }
 
 func (s Scale) Storex() string {
-	return fmt.Sprintf("scale('%s')", s.start.Storex())
+	return fmt.Sprintf("scale(%d,%s)", s.octaves, s.start.String())
+}
+
+func NewScale(octaves int, input string) (Scale, error) {
+	s, err := ParseScale(input)
+	if err != nil {
+		return s, err
+	}
+	s.octaves = octaves
+	return s, nil
 }
 
 func ParseScale(s string) (Scale, error) {
@@ -22,7 +32,7 @@ func ParseScale(s string) (Scale, error) {
 	if strings.HasSuffix(s, "/m") {
 		v = Minor
 	}
-	return Scale{start: n, variant: v}, err
+	return Scale{start: n, variant: v, octaves: 1}, err
 }
 
 func MustParseScale(s string) Scale {
@@ -44,8 +54,10 @@ func (s Scale) S() Sequence {
 	if s.variant == Minor {
 		steps = naturalMinorScale
 	}
-	for _, p := range steps {
-		notes = append(notes, s.start.Pitched(p))
+	for o := 0; o < s.octaves; o++ {
+		for _, p := range steps {
+			notes = append(notes, s.start.Pitched(p+(o*12)))
+		}
 	}
 	return BuildSequence(notes)
 }

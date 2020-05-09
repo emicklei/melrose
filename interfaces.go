@@ -18,6 +18,10 @@ type Storable interface {
 	Storex() string
 }
 
+type Indexable interface {
+	At(i int) Sequenceable
+}
+
 type AudioDevice interface {
 	// Per device specific commands
 	Command(args []string) notify.Message

@@ -23,3 +23,10 @@ func TestScale_MajorG(t *testing.T) {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
+
+func TestScale_TwoOctaves(t *testing.T) {
+	s, _ := NewScale(2, "e")
+	if got, want := s.S().Storex(), "sequence('E G♭ A♭ A B D♭5 E♭5 E5 G♭5 A♭5 A5 B5 D♭6 E♭6')"; got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+}

@@ -1,5 +1,5 @@
 ---
-title: Melrose Command Line Interface (CLI)
+title: Melrōse Command Line Interface (CLI)
 ---
 
 [Home](index.html)
@@ -8,7 +8,7 @@ title: Melrose Command Line Interface (CLI)
 [DAW](daw.html)
 [Install](install.html)
 
-# Melrose program
+# Melrōse program
 
 The program `melrōse` is a Read–Eval–Print Loop (REPL) that produces or consumes MIDI. 
 By entering statements using the [language](dsl.html), `melrōse` will send out MIDI messages to any connected [DAW](daw.html).
@@ -51,8 +51,8 @@ Ctrl-Y       | Paste from Yank buffer (Alt-Y to paste next yank instead)
 
 ## API server
 
-Melrose starts a HTTP server on port 8118 and evaluates programs on `POST /v1/statements` providing the source as the payload (HTTP Body).
-This server is used by the [Melrose Plugin for Visual Studio Code](https://github.com/emicklei/melrōse-for-vscode).
+Melrōse starts a HTTP server on port 8118 and evaluates programs on `POST /v1/statements` providing the source as the payload (HTTP Body).
+This server is used by the [Melrōse Plugin for Visual Studio Code](https://github.com/emicklei/melrōse-for-vscode).
 
 ### HTTP response
 
@@ -61,7 +61,7 @@ This server is used by the [Melrose Plugin for Visual Studio Code](https://githu
 If the request was successful processed then the response looks like:
 
   {
-    "type": "melrōse.Sequence",
+    "type": "melrose.Sequence",
     "object: { ... }
   }
 
@@ -86,16 +86,16 @@ The port can be changed to e.g. 8000 with the program option `-http :8000`.
 
 ### tracing
 
-If the HTTP URL has the query parameter `trace=true` then `melrōse` will produce extra logging.
+If the HTTP URL has the query parameter `trace=true` then `Melrōse` will produce extra logging.
 
 ### play
 
-If the HTTP URL has the query parameter `action=play` then `melrōse` will try to play the result of the selected expression(s).
+If the HTTP URL has the query parameter `action=play` then `Melrōse` will try to play the result of the selected expression(s).
 
 ### begin
 
-If the HTTP URL has the query parameter `action=begin` then `melrōse` will try to `begin` the loop of the selected expression.
+If the HTTP URL has the query parameter `action=begin` then `Melrōse` will try to `begin` the loop of the selected expression.
 
 ### end
 
-If the HTTP URL has the query parameter `action=end` then `melrōse` will try to `end` the loop of the selected expression.
+If the HTTP URL has the query parameter `action=end` then `Melrōse` will try to `end` the loop of the selected expression.
