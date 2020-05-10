@@ -1,3 +1,5 @@
+LATEST_TAG := $(shell git describe --abbrev=0)
+
 run: test install snippets grammar dslmd
 	melrose
 
@@ -5,8 +7,8 @@ test:
 	go test -cover ./...
 
 build:
-	export LATEST_TAG=`git describe --abbrev=0`
-	cd cmd/melrose && go build -ldflags "-s -w -X main.version=${LATEST_TAG}" -o ../../target/melrose
+	export LATEST_TAG=$(shell git describe --abbrev=0)
+	cd cmd/melrose && go build -ldflags "-s -w -X main.version=$(LATEST_TAG)" -o ../../target/melrose
 	
 install:
 	go install github.com/emicklei/melrose/cmd/melrose
@@ -29,8 +31,8 @@ clean:
 	rm -rf target
 	mkdir target
 
-package: clean build snippets grammar vsc
+package: clean build vsc
 	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target
 	cp run.sh target
 	cp ../melrose-for-vscode/*vsix target
-	cd target && zip -mr melrose-${LATEST_TAG}.zip .
+	cd target && zip -mr macosx-melrose-$(LATEST_TAG).zip .
