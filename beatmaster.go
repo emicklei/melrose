@@ -10,42 +10,30 @@ import (
 
 // Beatmaster is a LoopController
 type Beatmaster struct {
-	beating        bool
-	ticker         *time.Ticker
-	done           chan bool
-	loopStartQueue chan *Loop
-	loopStopQueue  chan *Loop
-	beats          int64   // monotonic increasing number, starting at 0
-	biab           int64   // current number of beats in a bar
-	bpm            float64 // current beats per minute
-	verbose        bool    // if true log beats and bars
+	beating  bool
+	ticker   *time.Ticker
+	done     chan bool
+	schedule *BeatSchedule
+	beats    int64   // monotonic increasing number, starting at 0
+	biab     int64   // current number of beats in a bar
+	bpm      float64 // current beats per minute
+	verbose  bool    // if true log beats and bars
 }
 
 func NewBeatmaster(bpm float64) *Beatmaster {
 	return &Beatmaster{
-		beating:        false,
-		done:           make(chan bool),
-		loopStartQueue: make(chan *Loop),
-		loopStopQueue:  make(chan *Loop),
-		beats:          0,
-		biab:           4,
-		bpm:            bpm,
-		verbose:        false}
+		beating:  false,
+		done:     make(chan bool),
+		schedule: NewBeatSchedule(),
+		beats:    0,
+		biab:     4,
+		bpm:      bpm,
+		verbose:  false}
 }
 
 func (b *Beatmaster) Reset() {
 	b.Stop()
-	// flush
-	go func() {
-		for {
-			select {
-			case <-b.loopStartQueue:
-			case <-b.loopStopQueue:
-			default:
-				break
-			}
-		}
-	}()
+	b.schedule.Reset()
 	b.Start()
 }
 
@@ -74,9 +62,16 @@ func (b *Beatmaster) Begin(l *Loop) {
 	if l == nil || l.IsRunning() {
 		return
 	}
-	go func() {
-		b.loopStartQueue <- l
-	}()
+	b.schedule.Schedule(b.beatsAndNextBar(), func(b int64) {
+		l.Start(Context().AudioDevice)
+	})
+}
+
+func (b *Beatmaster) beatsAndNextBar() int64 {
+	if b.beats%b.biab == 0 {
+		return b.beats
+	}
+	return (b.beats * b.biab / b.biab) + 1
 }
 
 // End will schedule the stop of a Loop at the next bar, unless the master is not started.
@@ -87,9 +82,9 @@ func (b *Beatmaster) End(l *Loop) {
 	if l == nil || !l.IsRunning() {
 		return
 	}
-	go func() {
-		b.loopStopQueue <- l
-	}()
+	b.schedule.Schedule(b.beatsAndNextBar(), func(b int64) {
+		l.Stop()
+	})
 }
 
 // SetBPM will change the beats per minute at the next bar, unless the master is not started.
@@ -137,40 +132,12 @@ func (b *Beatmaster) Start() {
 	go func() {
 		for {
 			select {
-			// abort ?
 			case <-b.done:
 				return
 			case <-b.ticker.C:
-				if b.beats%b.biab == 0 {
-					if b.verbose {
-						fmt.Print("!")
-					}
-					// start all pending loops in start Q
-					// stop all pending loops in stop Q
-					for {
-						select {
-						// abort ?
-						case <-b.done:
-							return
-						case l := <-b.loopStartQueue:
-							if b.verbose {
-								fmt.Print("*")
-							}
-							l.Start(Context().AudioDevice)
-						case l := <-b.loopStopQueue:
-							if b.verbose {
-								fmt.Print("x")
-							}
-							l.Stop()
-						default:
-							goto emptyQueues
-						}
-					}
-				emptyQueues:
-				} else {
-					if b.verbose {
-						fmt.Print(".")
-					}
+				actions := b.schedule.Unschedule(b.beats)
+				for _, each := range actions {
+					each(b.beats)
 				}
 				b.beats++
 			}

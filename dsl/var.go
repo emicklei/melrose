@@ -38,3 +38,7 @@ func (v variable) Value() interface{} {
 	m, _ := v.store.Get(v.Name)
 	return m
 }
+
+type variableArithmetic struct{}
+
+func (variableArithmetic) Sub(v variable, i int) int { return i }

@@ -141,14 +141,15 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 // EvaluateExpression returns the result of an expression (entry) using a given store of variables.
 // The result is either FunctionResult or a "raw" Go object.
 func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
-	env := map[string]interface{}{}
+	env := envMap{}
 	for k, f := range e.funcs {
 		env[k] = f.Func
 	}
 	for k, _ := range e.store.Variables() {
 		env[k] = variable{Name: k, store: e.store}
 	}
-	program, err := expr.Compile(entry, expr.Env(env))
+	options := []expr.Option{expr.Env(env)}
+	program, err := expr.Compile(entry, append(options, env.exprOperators()...)...)
 	if err != nil {
 		return nil, err
 	}
