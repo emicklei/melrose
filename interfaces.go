@@ -14,6 +14,10 @@ type Sequenceable interface {
 	S() Sequence
 }
 
+type NoteConvertable interface {
+	ToNote() Note
+}
+
 type Storable interface {
 	Storex() string
 }

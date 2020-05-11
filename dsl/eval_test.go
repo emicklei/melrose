@@ -179,15 +179,30 @@ func TestEvaluateProgram_TwoTabs(t *testing.T) {
 }
 
 func TestEvaluateProgram_TrailingWhitespace(t *testing.T) {
-	v := NewVariableStore()
-	e := NewEvaluator(v, melrose.NoLooper)
+	e := newTestEvaluator()
 	r, err := e.EvaluateProgram(
 		`a=1
  `)
-	if err != nil {
-		t.Error(err)
-	}
+	checkError(t, err)
 	if got, want := r, 1; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
+}
+
+func newTestEvaluator() *Evaluator {
+	v := NewVariableStore()
+	e := NewEvaluator(v, melrose.NoLooper)
+	return e
+}
+
+func checkError(t *testing.T, err error) {
+	t.Helper()
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestEvaluateError_Play(t *testing.T) {
+	_, err := newTestEvaluator().evaluateCleanStatement(`repeat(-1,1)`)
+	checkError(t, err)
 }

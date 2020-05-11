@@ -99,6 +99,16 @@ Join two or more musical objects.
 
 	
 
+### notemap<a name="notemap"></a>
+.
+
+	
+
+### notemerge<a name="notemerge"></a>
+.
+
+	
+
 ### octave<a name="octave"></a>
 Changes the pitch of notes by steps of 12 semitones.
 

@@ -31,6 +31,11 @@ func (n Note) Storex() string {
 	return fmt.Sprintf("note('%s')", n.String())
 }
 
+// ToNote() is part of NoteConvertable
+func (n Note) ToNote() Note {
+	return n
+}
+
 var (
 	Rest4 = Note{Name: "=", duration: 0.25}
 )

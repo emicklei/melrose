@@ -7,10 +7,15 @@ type MIDI struct {
 	velocity Valueable
 }
 
-func (m MIDI) S() Sequence {
+// ToNote() is part of NoteConvertable
+func (m MIDI) ToNote() Note {
 	nr := Int(m.number)
 	velocity := Int(m.velocity)
-	return MIDItoNote(nr, velocity).S()
+	return MIDItoNote(nr, velocity)
+}
+
+func (m MIDI) S() Sequence {
+	return m.ToNote().S()
 }
 
 func NewMIDI(number Valueable, velocity Valueable) MIDI {

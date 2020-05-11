@@ -664,6 +664,25 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 			}
 			return melrose.NewSequenceMapper(s, indices)
 		}}
+
+	eval["notemap"] = Function{
+		Template:   `notemap('${1:space-separated-1-based-indices}',${2:note})`,
+		IsComposer: true,
+		Func: func(indices string, note interface{}) interface{} {
+			return op.NewNoteMapper(indices, getValueable(note))
+		}}
+
+	eval["notemerge"] = Function{
+		Template:   `notemerge(${1:count},${2:notemap})`,
+		IsComposer: true,
+		Func: func(count int, maps ...interface{}) interface{} {
+			noteMaps := []melrose.Valueable{}
+			for _, each := range maps {
+				noteMaps = append(noteMaps, getValueable(each))
+			}
+			return op.NewNoteMerge(count, noteMaps)
+		}}
+
 	return eval
 }
 
