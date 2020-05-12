@@ -8,7 +8,21 @@ title: Melrōse installation guide
 [DAW](daw.html)
 [Install](install.html)
 
-# Install
+
+# Download
+
+Pre-build binaries are available for download:
+
+- [macosx-melrose-v0.22.0.zip](https://storage.cloud.google.com/downloads.ernestmicklei.com/melrose/macosx-melrose-v0.22.0.zip)
+- [macosx-melrose-v0.22.0.md5](https://storage.cloud.google.com/downloads.ernestmicklei.com/melrose/macosx-melrose-v0.22.0.md5)
+
+The `md5` file can be used to verify the downloaded binary.
+
+Unzip the archive and start the tool using a Terminal:
+
+	$ melrose
+
+# Install from source
 
 In order to work with `Melrōse` on your operating system, the following components need to be installed:
 
@@ -51,4 +65,5 @@ If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH
 
 ## Melrōse plugin for Visual Studio Code<a name="plugin"></a>
 
-Currently, the `melrōse` plugin is not yet published so you need to [download the plugin](https://public.philemonworks.com/melrōse/melrose-for-vscode-1.0.0.vsix) archive. You install the plugin from the Extensions overview in Visual Studio Code.
+Currently, the `melrōse` plugin is not yet published.
+You install the plugin from the Extensions overview in Visual Studio Code and open the `.vsix` file from your download.
