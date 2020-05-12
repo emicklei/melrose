@@ -22,6 +22,8 @@ Unzip the archive and start the tool using a Terminal:
 
 	$ melrose
 
+Proceed with [install melrōse plugin](install.md#plugin)
+
 # Install from source
 
 In order to work with `Melrōse` on your operating system, the following components need to be installed:
@@ -65,5 +67,5 @@ If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH
 
 ## Melrōse plugin for Visual Studio Code<a name="plugin"></a>
 
-Currently, the `melrōse` plugin is not yet published.
-You install the plugin from the Extensions overview in Visual Studio Code and open the `.vsix` file from your download.
+Currently, the `melrōse` plugin is not yet published on the Marketplace.
+You install the plugin from the Extensions overview in Visual Studio Code and open the `.vsix` file from your extracted download.

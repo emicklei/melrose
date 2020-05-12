@@ -14,6 +14,7 @@
 ## todos
 
 - capture timing of recorded notes 
+- https://fusionauth.io/blog/2018/09/20/download-counts-from-google-cloud-storage
 
 ## docs
 - https://www.edb.gov.hk/attachment/tc/curriculum-development/kla/arts-edu/nss/gm_drumlist_8050.pdf
