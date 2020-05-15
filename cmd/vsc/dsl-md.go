@@ -79,6 +79,10 @@ func dslmarkdown() {
 	varstore := dsl.NewVariableStore()
 	gf := GroupedFunctions{}
 	for k, each := range dsl.EvalFunctions(varstore, melrose.NoLooper) {
+		// draft functions do not have a Title
+		if len(each.Title) == 0 {
+			continue
+		}
 		df := DocumentedFunction{
 			Title:            k,
 			ShortDescription: each.Title,

@@ -26,6 +26,10 @@ type Indexable interface {
 	At(i int) Sequenceable
 }
 
+type Nextable interface {
+	Next() interface{}
+}
+
 type AudioDevice interface {
 	// Per device specific commands
 	Command(args []string) notify.Message
@@ -53,6 +57,8 @@ type LoopController interface {
 
 	Begin(l *Loop)
 	End(l *Loop)
+
+	BeatsAndBars() (int64, int64)
 }
 
 type MapFunc func(seq Sequenceable) Sequenceable

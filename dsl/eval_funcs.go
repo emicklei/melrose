@@ -391,7 +391,7 @@ note('2E#.--')`,
 		}}
 
 	eval["random"] = Function{
-		Title:       "Random generator",
+		//Title:       "Random generator",
 		Description: "create a random number generator",
 		Prefix:      "at",
 		Template:    `random(${1:from},${2:to})`,
@@ -636,7 +636,7 @@ end(l1)`,
 			return melrose.ChannelSelector{Target: s, Number: getValueable(midiChannel)}
 		}}
 	eval["interval"] = Function{
-		Title:       "Integer Interval creator. Repeats on default",
+		//Title:       "Integer Interval creator. Repeats on default",
 		Description: "create an integer repeating interval (from,to,by)",
 		Prefix:      "int",
 		Alias:       "I",
@@ -683,6 +683,22 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 			return op.NewNoteMerge(count, noteMaps)
 		}}
 
+	eval["onbeat"] = Function{
+		Func: func(beats int, v melrose.Valueable) interface{} {
+			beatsVal := getValueable(beats)
+			return op.NewOnBeat(beatsVal, v, melrose.Context().LoopControl)
+		}}
+
+	eval["value"] = Function{
+		Func: func(v interface{}) interface{} {
+			return getValueable(v).Value()
+		}}
+
+	eval["next"] = Function{
+		Func: func(v interface{}) interface{} {
+			return melrose.Nexter{Target: getValueable(v)}
+		}}
+
 	return eval
 }
 
@@ -715,4 +731,11 @@ func getValueable(val interface{}) melrose.Valueable {
 		return v
 	}
 	return melrose.On(val)
+}
+
+func getValue(val interface{}) interface{} {
+	if v, ok := val.(melrose.Valueable); ok {
+		return v.Value()
+	}
+	return val
 }

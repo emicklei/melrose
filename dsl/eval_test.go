@@ -206,3 +206,15 @@ func TestEvaluateError_Play(t *testing.T) {
 	_, err := newTestEvaluator().evaluateCleanStatement(`repeat(-1,1)`)
 	checkError(t, err)
 }
+
+func TestEvaluateIndexOnVariable(t *testing.T) {
+	e := newTestEvaluator()
+	r, err := e.EvaluateProgram(
+		`([1,2,3])[1]
+a=[1,2,3]
+a[1]`)
+	checkError(t, err)
+	if got, want := r, 1; got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+}

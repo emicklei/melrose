@@ -82,29 +82,12 @@ Flatten all operations on a musical object to a new sequence.
 
 	flatten(sequence('(C E G) B')) // => C E G B
 
-### interval<a name="interval"></a>
-Create an integer repeating interval (from,to,by).
-
-	i1 = interval(-2,4,1)
-
-	l1 = loop(pitch(i1,sequence('C D E F')))
-
 ### join<a name="join"></a>
 Join two or more musical objects.
 
 	
 
 ### joinmap<a name="joinmap"></a>
-.
-
-	
-
-### notemap<a name="notemap"></a>
-.
-
-	
-
-### notemerge<a name="notemerge"></a>
 .
 
 	

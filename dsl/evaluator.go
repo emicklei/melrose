@@ -148,7 +148,7 @@ func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
 	for k, _ := range e.store.Variables() {
 		env[k] = variable{Name: k, store: e.store}
 	}
-	options := []expr.Option{expr.Env(env)}
+	options := []expr.Option{expr.Env(env), expr.Patch(new(indexedAccessPatcher))}
 	program, err := expr.Compile(entry, append(options, env.exprOperators()...)...)
 	if err != nil {
 		return nil, err

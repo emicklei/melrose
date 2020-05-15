@@ -72,16 +72,20 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		if r.FormValue("action") == "begin" {
 			if lp, ok := returnValue.(*melrose.Loop); ok {
 				v := l.store.NameFor(lp)
-				notify.Print(notify.Infof("begin loop: %v", v))
-				melrose.Context().LoopControl.Begin(lp)
+				if !lp.IsRunning() {
+					notify.Print(notify.Infof("begin loop: %v", v))
+					melrose.Context().LoopControl.Begin(lp)
+				}
 			}
 			// ignore if not Loop
 		}
 		if r.FormValue("action") == "end" {
 			if lp, ok := returnValue.(*melrose.Loop); ok {
 				v := l.store.NameFor(lp)
-				notify.Print(notify.Infof("end loop: %v", v))
-				lp.Stop()
+				if lp.IsRunning() {
+					notify.Print(notify.Infof("end loop: %v", v))
+					lp.Stop()
+				}
 			}
 			// ignore if not Loop
 		}

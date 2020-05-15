@@ -1,6 +1,11 @@
 package dsl
 
-import "github.com/antonmedv/expr"
+import (
+	"reflect"
+
+	"github.com/antonmedv/expr"
+	"github.com/antonmedv/expr/ast"
+)
 
 type envMap map[string]interface{}
 
@@ -38,4 +43,37 @@ func (v variable) dispatchAdd(r interface{}) interface{} {
 		}
 	}
 	return nil
+}
+
+var variableType = reflect.TypeOf(variable{})
+
+// indexedAccessPatcher exist to patch expression which use [] on variables.
+type indexedAccessPatcher struct{}
+
+func (p *indexedAccessPatcher) Enter(_ *ast.Node) {}
+func (p *indexedAccessPatcher) Exit(node *ast.Node) {
+	n, ok := (*node).(*ast.IndexNode)
+	if ok {
+		// check receiver type
+		in, ok := n.Node.(*ast.IdentifierNode)
+		if !ok {
+			return
+		}
+		if in.Type() != variableType {
+			return
+		}
+		// check argument type
+		methodName := "At"
+		in, ok = n.Index.(*ast.IdentifierNode)
+		if ok {
+			methodName = "AtVariable"
+		}
+		ast.Patch(node, &ast.MethodNode{
+			Node:   n.Node,
+			Method: methodName,
+			Arguments: []ast.Node{
+				n.Index,
+			},
+		})
+	}
 }

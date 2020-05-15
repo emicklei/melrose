@@ -9,9 +9,11 @@ func TestInterval_Value(t *testing.T) {
 	if got, want := i.Value(), 0; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
+	i.Next()
 	if got, want := i.Value(), 1; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
+	i.Next()
 	if got, want := i.Value(), 0; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
@@ -22,6 +24,7 @@ func TestInterval_Value_Backwards(t *testing.T) {
 	if got, want := i.Value(), 0; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
+	i.Next()
 	if got, want := i.Value(), 1; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}

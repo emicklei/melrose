@@ -24,25 +24,28 @@ type Interval struct {
 	value    int
 }
 
-// Value returns the current value of the interval and increases its value with [by].
 func (i *Interval) Value() interface{} {
-	c := i.value
+	return i.value
+}
+
+// Next returns and increases its value with [by].
+func (i *Interval) Next() interface{} {
 	by := Int(i.by)
-	next := c + by
+	next := i.value + by
 	if by < 0 {
 		if next < Int(i.from) {
 			i.value = Int(i.to)
-			return c
+			return i.value
 		}
 	}
 	if by > 0 {
 		if next > Int(i.to) {
 			i.value = Int(i.from)
-			return c
+			return i.value
 		}
 	}
 	i.value = next
-	return c
+	return i.value
 }
 
 // NewInterval creates new Interval. The initial Value is set to [from]. Specify the repeat strategy.
@@ -112,3 +115,32 @@ func (s strategyOnceFromToFrom) id() int { return OnceFromToFrom }
 type strategyRepeatFromToFrom struct{}
 
 func (s strategyRepeatFromToFrom) id() int { return RepeatFromToFrom }
+
+type Nexter struct {
+	Target Valueable
+}
+
+var emptySequence = Sequence{}
+
+// S is part of Sequenceable
+func (n Nexter) S() Sequence {
+	v := n.Target.Value()
+	if t, ok := v.(Nextable); ok {
+		t.Next()
+	}
+	return emptySequence
+}
+
+// Next is part of Nextable
+func (n Nexter) Next() interface{} {
+	v := n.Target.Value()
+	if t, ok := v.(Nextable); ok {
+		return t.Next()
+	}
+	return nil
+}
+
+// Value is part of Valueable
+func (n Nexter) Value() interface{} {
+	return n.Next()
+}
