@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -50,8 +51,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		// evaluation failed.
 		w.WriteHeader(http.StatusInternalServerError)
-		notify.Print(notify.Errorf("yourfile.mel: %s\n", err.Error()))
-		response = errorFrom(err)
+		response = resultFrom(err)
 	} else {
 		// evaluation was ok.
 
@@ -69,6 +69,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 				melrose.Context().LoopControl.Begin(lp)
 			}
 		}
+		// loop operation
 		if r.FormValue("action") == "begin" {
 			if lp, ok := returnValue.(*melrose.Loop); ok {
 				v := l.store.NameFor(lp)
@@ -79,6 +80,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 			}
 			// ignore if not Loop
 		}
+		// loop operation
 		if r.FormValue("action") == "end" {
 			if lp, ok := returnValue.(*melrose.Loop); ok {
 				v := l.store.NameFor(lp)
@@ -99,28 +101,44 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	w.Header().Set("content-type", "application/json")
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "\t")
-	enc.Encode(response)
+	err = enc.Encode(response)
+	if err != nil {
+		log.Printf("[melrose.error] %#v\n", err)
+	}
 	if trace {
-		log.Printf("[melrose.trace] %#v\n", response)
+		// doit again
+		buf := bytes.Buffer{}
+		enc := json.NewEncoder(&buf)
+		enc.SetIndent("", "\t")
+		err = enc.Encode(response)
+		log.Printf("[melrose.trace] %#v, error:%v\n", buf.String(), err)
 	}
 }
 
 type evaluationResult struct {
-	Type   string `json:"type"`
-	Object interface{}
+	Type     string      `json:"type"`
+	IsError  bool        `json:"is-error"`
+	Message  string      `json:"message"`
+	Filename string      `json:"file"`
+	Line     int         `json:"line"`
+	Column   int         `json:"column"`
+	Object   interface{} `json:"object"`
 }
 
 func resultFrom(val interface{}) evaluationResult {
-	return evaluationResult{Type: fmt.Sprintf("%T", val), Object: val}
-}
-
-type evaluationError struct {
-	Type    string `json:"type"`
-	Message string `json:"message"`
-	Line    int    `json:"line"`
-	Column  int    `json:"column"`
-}
-
-func errorFrom(err error) evaluationError {
-	return evaluationError{Type: fmt.Sprintf("%T", err), Message: err.Error()}
+	t := fmt.Sprintf("%T", val)
+	if err, ok := val.(error); ok {
+		return evaluationResult{
+			Type:     t,
+			IsError:  true,
+			Filename: "yours.mel",
+			Message:  err.Error(),
+			Object:   val,
+		}
+	}
+	var msg string
+	if stor, ok := val.(melrose.Storable); ok {
+		msg = stor.Storex()
+	}
+	return evaluationResult{Type: t, IsError: false, Message: msg, Object: val}
 }

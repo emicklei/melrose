@@ -60,6 +60,7 @@ func (v variable) At(index int) interface{} {
 	return nil
 }
 
+// AtVariable is called from expr after patching [].
 func (v variable) AtVariable(index variable) interface{} {
 	indexVal := melrose.Int(index)
 	if indexVal == 0 {

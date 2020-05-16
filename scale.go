@@ -14,7 +14,7 @@ type Scale struct {
 }
 
 func (s Scale) Storex() string {
-	return fmt.Sprintf("scale(%d,%s)", s.octaves, s.start.String())
+	return fmt.Sprintf("scale(%d,'%s')", s.octaves, s.start.String())
 }
 
 func NewScale(octaves int, input string) (Scale, error) {
@@ -60,4 +60,8 @@ func (s Scale) S() Sequence {
 		}
 	}
 	return BuildSequence(notes)
+}
+
+func (s Scale) At(index int) interface{} {
+	return s.start
 }

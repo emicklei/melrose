@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/op"
 )
 
 func TestIsCompatible(t *testing.T) {
@@ -203,8 +204,11 @@ func checkError(t *testing.T, err error) {
 }
 
 func TestEvaluateError_Play(t *testing.T) {
-	_, err := newTestEvaluator().evaluateCleanStatement(`repeat(-1,1)`)
+	r, err := newTestEvaluator().evaluateCleanStatement(`repeat(-1,1)`)
 	checkError(t, err)
+	if r != nil {
+		t.Error("expected nil")
+	}
 }
 
 func TestEvaluateIndexOnVariable(t *testing.T) {
@@ -216,5 +220,16 @@ a[1]`)
 	checkError(t, err)
 	if got, want := r, 1; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
+	}
+}
+
+func TestEvaluate_Scale_At(t *testing.T) {
+	e := newTestEvaluator()
+	r, err := e.EvaluateProgram(
+		`at(1,scale(2,'C'))`)
+	checkError(t, err)
+	at, _ := r.(op.AtIndex)
+	if got, want := at.Target.S().At(0)[0], melrose.MustParseNote("C"); got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }

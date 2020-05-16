@@ -124,23 +124,15 @@ var emptySequence = Sequence{}
 
 // S is part of Sequenceable
 func (n Nexter) S() Sequence {
-	v := n.Target.Value()
-	if t, ok := v.(Nextable); ok {
-		t.Next()
-	}
+	_ = n.Value()
 	return emptySequence
 }
 
-// Next is part of Nextable
-func (n Nexter) Next() interface{} {
+// Value is part of Valueable
+func (n Nexter) Value() interface{} {
 	v := n.Target.Value()
 	if t, ok := v.(Nextable); ok {
 		return t.Next()
 	}
 	return nil
-}
-
-// Value is part of Valueable
-func (n Nexter) Value() interface{} {
-	return n.Next()
 }

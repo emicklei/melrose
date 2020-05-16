@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 )
 
@@ -11,19 +12,14 @@ type Sequence struct {
 	Notes [][]Note
 }
 
-func (s Sequence) Size() int {
-	sum := 0
-	s.NotesDo(func(n Note) {
-		sum++
-	})
-	return sum
-}
-
 func (s Sequence) Length() int {
 	return len(s.Notes)
 }
 
 func (s Sequence) At(i int) []Note {
+	if i < 0 || i > len(s.Notes)-1 {
+		panic("Sequence index out of bounds:" + strconv.Itoa(i))
+	}
 	return s.Notes[i]
 }
 
