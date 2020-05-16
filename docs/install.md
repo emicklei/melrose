@@ -20,7 +20,7 @@ The `md5` file can be used to verify the downloaded binary.
 
 Unzip the archive and start the tool using a Terminal:
 
-	$ melrose
+	$ sh run.sh
 
 Proceed with [install melrōse plugin](install.md#plugin)
 
