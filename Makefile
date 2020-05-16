@@ -35,4 +35,4 @@ package: clean build vsc
 	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target
 	cp run.sh target
 	cp ../melrose-for-vscode/*vsix target
-	cd target && zip -mr macosx-melrose-$(LATEST_TAG).zip .
+	cd target && zip -mr macosx-melrose-$(LATEST_TAG).zip . && md5 macosx-melrose-$(LATEST_TAG).zip > macosx-melrose-$(LATEST_TAG).zip.md5

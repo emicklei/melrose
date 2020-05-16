@@ -13,8 +13,8 @@ title: Melrōse installation guide
 
 Pre-build binaries are available for download:
 
-- [macosx-melrose-v0.22.0.zip](https://storage.cloud.google.com/downloads.ernestmicklei.com/melrose/macosx-melrose-v0.22.0.zip)
-- [macosx-melrose-v0.22.0.md5](https://storage.cloud.google.com/downloads.ernestmicklei.com/melrose/macosx-melrose-v0.22.0.md5)
+- [macosx-melrose-v0.23.0.zip](https://storage.cloud.google.com/downloads.ernestmicklei.com/melrose/macosx-melrose-v0.23.0.zip)
+- [macosx-melrose-v0.23.0.md5](https://storage.cloud.google.com/downloads.ernestmicklei.com/melrose/macosx-melrose-v0.23.0.zip.md5)
 
 The `md5` file can be used to verify the downloaded binary.
 
