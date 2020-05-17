@@ -87,7 +87,6 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 
 	eval["call"] = Function{
-		Title:      "Call all the functions of a Pipeline with an object",
 		Prefix:     "call",
 		IsComposer: true,
 		Template:   `call(${1:pipeline},${2:object})`,
@@ -116,7 +115,6 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 
 	eval["pipeline"] = Function{
-		Title:      "Pipeline of functions",
 		Prefix:     "pip",
 		IsComposer: true,
 		Template:   `pipeline(${1:func1},${2:func2})`,
@@ -125,7 +123,6 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 
 	eval["joinmap"] = Function{
-		Title:      "Join mapper",
 		Prefix:     "joinm",
 		IsComposer: true,
 		Template:   `joinmain('${1:indices}',${2:join})`,
@@ -167,7 +164,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 
 	eval["chord"] = Function{
 		Title:       "Chord creator",
-		Description: "create a Chord",
+		Description: `create a Chord from its string <a href="/index.html#chord-not">notation</a>`,
 		Prefix:      "cho",
 		Alias:       "C",
 		Template:    `chord('${1:note}')`,
@@ -636,13 +633,13 @@ end(l1)`,
 			return melrose.ChannelSelector{Target: s, Number: getValueable(midiChannel)}
 		}}
 	eval["interval"] = Function{
-		//Title:       "Integer Interval creator. Repeats on default",
-		Description: "create an integer repeating interval (from,to,by)",
+		Title:       "Integer interval creator; default method is repeat.",
+		Description: "create an integer repeating interval (from,to,by,method)",
 		Prefix:      "int",
 		Alias:       "I",
 		Template:    `interval(${1:from},${2:to},${3:by})`,
 		Samples: `i1 = interval(-2,4,1)
-l1 = loop(pitch(i1,sequence('C D E F')))`,
+l1 = loop(pitch(i1,sequence('C D E F')), next(i1))`,
 		IsComposer: true,
 		Func: func(from, to, by interface{}) *melrose.Interval {
 			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by), melrose.RepeatFromTo)
