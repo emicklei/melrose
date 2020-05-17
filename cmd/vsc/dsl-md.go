@@ -93,8 +93,8 @@ func dslmarkdown() {
 			if each.IsCore {
 				gf.Core = append(gf.Core, df)
 			} else {
+				gf.Composer = append(gf.Composer, df)
 			}
-			gf.Composer = append(gf.Composer, df)
 		}
 		gf.All = append(gf.All, df)
 	}

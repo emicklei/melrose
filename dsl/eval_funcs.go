@@ -164,7 +164,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 
 	eval["chord"] = Function{
 		Title:       "Chord creator",
-		Description: `create a Chord from its string <a href="/index.html#chord-not">notation</a>`,
+		Description: `create a Chord from its string <a href="/melrose/index.html#chord-not">notation</a>`,
 		Prefix:      "cho",
 		Alias:       "C",
 		Template:    `chord('${1:note}')`,
