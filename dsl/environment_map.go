@@ -15,7 +15,15 @@ func (envMap) exprOperators() []expr.Option {
 		expr.Operator("+", "Add"),
 	}
 }
-func (envMap) Sub(v variable, i int) int { return i }
+func (envMap) Sub(l, r interface{}) interface{} {
+	if vl, ok := l.(variable); ok {
+		return vl.dispatchSub(r)
+	}
+	if vr, ok := r.(variable); ok {
+		return vr.dispatchSubFrom(l)
+	}
+	return nil
+}
 
 func (envMap) Add(l, r interface{}) interface{} {
 	if vl, ok := l.(variable); ok {
@@ -23,24 +31,6 @@ func (envMap) Add(l, r interface{}) interface{} {
 	}
 	if vr, ok := r.(variable); ok {
 		return vr.dispatchAdd(l)
-	}
-	return nil
-}
-
-func (v variable) dispatchAdd(r interface{}) interface{} {
-	if vr, ok := r.(variable); ok {
-		// int
-		il, lok := v.Value().(int)
-		ir, rok := vr.Value().(int)
-		if lok && rok {
-			return il + ir
-		}
-	}
-	if ir, ok := r.(int); ok {
-		il, lok := v.Value().(int)
-		if lok {
-			return il + ir
-		}
 	}
 	return nil
 }

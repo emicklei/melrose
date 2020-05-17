@@ -11,7 +11,6 @@ import (
 
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
-	"github.com/emicklei/melrose/notify"
 )
 
 // LanguageServer can execute DSL statements received over HTTP
@@ -64,17 +63,13 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 					time.Now())
 			}
 			if lp, ok := returnValue.(*melrose.Loop); ok {
-				v := l.store.NameFor(lp)
-				notify.Print(notify.Infof("begin loop: %v", v))
 				melrose.Context().LoopControl.Begin(lp)
 			}
 		}
 		// loop operation
 		if r.FormValue("action") == "begin" {
 			if lp, ok := returnValue.(*melrose.Loop); ok {
-				v := l.store.NameFor(lp)
 				if !lp.IsRunning() {
-					notify.Print(notify.Infof("begin loop: %v", v))
 					melrose.Context().LoopControl.Begin(lp)
 				}
 			}
@@ -83,9 +78,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		// loop operation
 		if r.FormValue("action") == "end" {
 			if lp, ok := returnValue.(*melrose.Loop); ok {
-				v := l.store.NameFor(lp)
 				if lp.IsRunning() {
-					notify.Print(notify.Infof("end loop: %v", v))
 					lp.Stop()
 				}
 			}
@@ -140,5 +133,6 @@ func resultFrom(val interface{}) evaluationResult {
 	if stor, ok := val.(melrose.Storable); ok {
 		msg = stor.Storex()
 	}
-	return evaluationResult{Type: t, IsError: false, Message: msg, Object: val}
+	// no Object if ok
+	return evaluationResult{Type: t, IsError: false, Message: msg}
 }

@@ -65,7 +65,7 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 
 
 ### at<a name="at"></a>
-Create an index based getter to select a musical object.
+Create an index getter (1-based) to select a musical object.
 
 	at(1,scale('E/m')) // => E
 
@@ -134,7 +134,7 @@ Play all musical objects in parallel.
 	go(s1,s1,s3) // play s1 and s2 and s3 simultaneously
 
 ### interval<a name="interval"></a>
-Create an integer repeating interval (from,to,by,method).
+Create an integer repeating interval (from,to,by,method). Default method is 'repeat', Use next() to get a new integer.
 
 	i1 = interval(-2,4,1)
 

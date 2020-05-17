@@ -128,6 +128,13 @@ func (n Nexter) S() Sequence {
 	return emptySequence
 }
 
+func (n Nexter) Storex() string {
+	if st, ok := n.Target.(Storable); ok {
+		return fmt.Sprintf("next(%s)", st.Storex())
+	}
+	return fmt.Sprintf("next(%v)", n.Target)
+}
+
 // Value is part of Valueable
 func (n Nexter) Value() interface{} {
 	v := n.Target.Value()

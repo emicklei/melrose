@@ -372,8 +372,8 @@ note('2E#.--')`,
 		}}
 
 	eval["at"] = Function{
-		Title:       "Index based getter",
-		Description: "create an index based getter to select a musical object",
+		Title:       "Index getter",
+		Description: "create an index getter (1-based) to select a musical object",
 		Prefix:      "at",
 		Template:    `at(${1:index},${2:object})`,
 		Samples:     `at(1,scale('E/m')) // => E`,
@@ -389,7 +389,7 @@ note('2E#.--')`,
 
 	eval["random"] = Function{
 		//Title:       "Random generator",
-		Description: "create a random number generator",
+		Description: "create a random integer generator. Use next() to get a new integer",
 		Prefix:      "at",
 		Template:    `random(${1:from},${2:to})`,
 		Samples:     `random(1,10)`,
@@ -634,7 +634,7 @@ end(l1)`,
 		}}
 	eval["interval"] = Function{
 		Title:       "Integer interval creator",
-		Description: "create an integer repeating interval (from,to,by,method). default method is 'repeat'",
+		Description: "create an integer repeating interval (from,to,by,method). Default method is 'repeat', Use next() to get a new integer",
 		Prefix:      "int",
 		Alias:       "I",
 		Template:    `interval(${1:from},${2:to},${3:by})`,

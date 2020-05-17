@@ -25,6 +25,10 @@ func NewVariableStore() *VariableStore {
 	}
 }
 
+func (v *VariableStore) getVariable(name string) variable {
+	return variable{Name: name, store: v}
+}
+
 // NameFor finds the entry for a value and returns its (first) associated name
 func (v *VariableStore) NameFor(value interface{}) string {
 	v.mutex.RLock()

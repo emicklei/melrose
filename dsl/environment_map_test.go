@@ -13,7 +13,7 @@ func Test_envMap_Add(t *testing.T) {
 	m := envMap{}
 	s := NewVariableStore()
 	s.Put("v1", 1)
-	v1 := variable{Name: "v1", store: s}
+	v1 := s.getVariable("v1")
 	tests := []struct {
 		name string
 		e    envMap
