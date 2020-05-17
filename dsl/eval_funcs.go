@@ -46,7 +46,7 @@ func EvalFunctions(storage VariableStorage, control melrose.LoopController) map[
 		Description: `Creates a new modified musical object for which the duration of all notes are changed.
 The first parameter controls the length (duration) of the note.
 If the parameter is greater than 0 then the note duration is set to a fixed value, e.g. 4=quarter,1=whole.
-If the parameter is less than 1 then the note duration is scaled with a value, e.g. 0.5 will make a quarter ¼ into an eight ⅛.
+If the parameter is less than 1 then the note duration is scaled with a value, e.g. 0.5 will make a quarter ¼ into an eight ⅛
 `,
 		Prefix:     "dur",
 		IsComposer: true,
@@ -335,7 +335,7 @@ sequence('(C D E)')`,
 
 	eval["note"] = Function{
 		Title:       "Note creator",
-		Description: "create a Note from the note notation",
+		Description: `create a Note  from its string <a href="/index.html#note-not">notation</a>`,
 		Prefix:      "no",
 		Alias:       "N",
 		Template:    `note('${1:letter}')`,
@@ -633,8 +633,8 @@ end(l1)`,
 			return melrose.ChannelSelector{Target: s, Number: getValueable(midiChannel)}
 		}}
 	eval["interval"] = Function{
-		Title:       "Integer interval creator; default method is repeat.",
-		Description: "create an integer repeating interval (from,to,by,method)",
+		Title:       "Integer interval creator",
+		Description: "create an integer repeating interval (from,to,by,method). default method is 'repeat'",
 		Prefix:      "int",
 		Alias:       "I",
 		Template:    `interval(${1:from},${2:to},${3:by})`,

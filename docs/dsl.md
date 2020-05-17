@@ -29,16 +29,23 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 
 ## Composition functions
 
+- <a href="#at">at</a>
+- <a href="#chord">chord</a>
 - <a href="#duration">duration</a>
 - <a href="#flatten">flatten</a>
 - <a href="#interval">interval</a>
 - <a href="#join">join</a>
+- <a href="#midi">midi</a>
+- <a href="#note">note</a>
 - <a href="#octave">octave</a>
 - <a href="#octavemap">octavemap</a>
 - <a href="#parallel">parallel</a>
 - <a href="#pitch">pitch</a>
+- <a href="#progression">progression</a>
 - <a href="#repeat">repeat</a>
 - <a href="#reverse">reverse</a>
+- <a href="#scale">scale</a>
+- <a href="#sequence">sequence</a>
 - <a href="#sequencemap">sequencemap</a>
 - <a href="#serial">serial</a>
 - <a href="#undynamic">undynamic</a>
@@ -87,7 +94,7 @@ Select a MIDI channel, must be in [0..16].
 	channel(2,sequence('C2 E3') // plays on instrument connected to MIDI channel 2'
 
 ### chord<a name="chord"></a>
-Create a Chord.
+Create a Chord from its string <a href="/index.html#chord-not">notation</a>.
 
 	chord('C#5/m/1')
 
@@ -97,7 +104,7 @@ Create a Chord.
 Creates a new modified musical object for which the duration of all notes are changed.
 The first parameter controls the length (duration) of the note.
 If the parameter is greater than 0 then the note duration is set to a fixed value, e.g. 4=quarter,1=whole.
-If the parameter is less than 1 then the note duration is scaled with a value, e.g. 0.5 will make a quarter ¼ into an eight ⅛.
+If the parameter is less than 1 then the note duration is scaled with a value, e.g. 0.5 will make a quarter ¼ into an eight ⅛
 .
 
 	duration(8,sequence('E F')) // => ⅛E ⅛F , absolute change
@@ -151,7 +158,7 @@ Create a Note.
 	midi(52,80) // => E3+
 
 ### note<a name="note"></a>
-Create a Note from the note notation.
+Create a Note  from its string <a href="/index.html#note-not">notation</a>.
 
 	note('E')
 

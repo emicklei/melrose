@@ -40,6 +40,9 @@ func showHelp(args []string) notify.Message {
 		keys := []string{}
 		width := 0
 		for k, f := range funcs {
+			if len(f.Title) == 0 {
+				continue
+			}
 			if f.ControlsAudio {
 				continue
 			}
@@ -60,6 +63,9 @@ func showHelp(args []string) notify.Message {
 		keys := []string{}
 		width := 0
 		for k, f := range funcs {
+			if len(f.Title) == 0 {
+				continue
+			}
 			if !f.ControlsAudio {
 				continue
 			}

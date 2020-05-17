@@ -89,11 +89,11 @@ func dslmarkdown() {
 		}
 		if each.ControlsAudio {
 			gf.Audio = append(gf.Audio, df)
-		}
-		if each.IsCore {
-			gf.Core = append(gf.Core, df)
-		}
-		if each.IsComposer {
+		} else {
+			if each.IsCore {
+				gf.Core = append(gf.Core, df)
+			} else {
+			}
 			gf.Composer = append(gf.Composer, df)
 		}
 		gf.All = append(gf.All, df)
