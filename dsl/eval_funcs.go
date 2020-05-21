@@ -86,41 +86,41 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			return p
 		}}
 
-	eval["call"] = Function{
-		Prefix:     "call",
-		IsComposer: true,
-		Template:   `call(${1:pipeline},${2:object})`,
-		Func: func(pipeline interface{}, object interface{}) interface{} {
-			s, ok := getSequenceable(object)
-			if !ok {
-				notify.Print(notify.Warningf("cannot call (%T) %v", object, object))
-				return nil
-			}
-			v, ok := pipeline.(melrose.Valueable)
-			if !ok {
-				notify.Print(notify.Warningf("expected variable (%T) %v", pipeline, pipeline))
-				return nil
-			}
-			p, ok := v.Value().(op.Pipeline)
-			if !ok {
-				notify.Print(notify.Warningf("expected pipeline (%T) %v", pipeline, pipeline))
-				return nil
-			}
-			r, err := p.Execute(s)
-			if err != nil {
-				notify.Print(notify.Errorf("cannot call %v:%v", p, err))
-				return nil
-			}
-			return r
-		}}
+	// eval["call"] = Function{
+	// 	Prefix:     "call",
+	// 	IsComposer: true,
+	// 	Template:   `call(${1:pipeline},${2:object})`,
+	// 	Func: func(pipeline interface{}, object interface{}) interface{} {
+	// 		s, ok := getSequenceable(object)
+	// 		if !ok {
+	// 			notify.Print(notify.Warningf("cannot call (%T) %v", object, object))
+	// 			return nil
+	// 		}
+	// 		v, ok := pipeline.(melrose.Valueable)
+	// 		if !ok {
+	// 			notify.Print(notify.Warningf("expected variable (%T) %v", pipeline, pipeline))
+	// 			return nil
+	// 		}
+	// 		p, ok := v.Value().(op.Pipeline)
+	// 		if !ok {
+	// 			notify.Print(notify.Warningf("expected pipeline (%T) %v", pipeline, pipeline))
+	// 			return nil
+	// 		}
+	// 		r, err := p.Execute(s)
+	// 		if err != nil {
+	// 			notify.Print(notify.Errorf("cannot call %v:%v", p, err))
+	// 			return nil
+	// 		}
+	// 		return r
+	// 	}}
 
-	eval["pipeline"] = Function{
-		Prefix:     "pip",
-		IsComposer: true,
-		Template:   `pipeline(${1:func1},${2:func2})`,
-		Func: func(arguments ...interface{}) op.Pipeline {
-			return op.Pipeline{Target: arguments}
-		}}
+	// eval["pipeline"] = Function{
+	// 	Prefix:     "pip",
+	// 	IsComposer: true,
+	// 	Template:   `pipeline(${1:func1},${2:func2})`,
+	// 	Func: func(arguments ...interface{}) op.Pipeline {
+	// 		return op.Pipeline{Target: arguments}
+	// 	}}
 
 	eval["joinmap"] = Function{
 		Prefix:     "joinm",
@@ -136,9 +136,8 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			return op.NewJoinMapper(v, indices)
 		}}
 
-	/**
 	eval["delay"] = Function{
-		Title:    "Delay playing a musical object",
+		//	Title:    "Delay playing a musical object",
 		Prefix:   "del",
 		Template: `delay('${1:bar},${2:beat},${3:object}')`,
 		Samples:  `delay(0,0,sequence('C D E')) // => immediate play C D E`,
@@ -146,7 +145,6 @@ progression('(C D)') // => (C E G D G♭ A)`,
 
 			return nil
 		}}
-	**/
 
 	eval["midi"] = Function{
 		Title:       "Note creator",
@@ -680,16 +678,16 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 			return op.NewNoteMerge(count, noteMaps)
 		}}
 
-	eval["onbeat"] = Function{
-		Func: func(beats int, v melrose.Valueable) interface{} {
-			beatsVal := getValueable(beats)
-			return op.NewOnBeat(beatsVal, v, melrose.Context().LoopControl)
-		}}
+	// eval["onbeat"] = Function{
+	// 	Func: func(beats int, v melrose.Valueable) interface{} {
+	// 		beatsVal := getValueable(beats)
+	// 		return op.NewOnBeat(beatsVal, v, melrose.Context().LoopControl)
+	// 	}}
 
-	eval["value"] = Function{
-		Func: func(v interface{}) interface{} {
-			return getValueable(v).Value()
-		}}
+	// eval["value"] = Function{
+	// 	Func: func(v interface{}) interface{} {
+	// 		return getValueable(v).Value()
+	// 	}}
 
 	eval["next"] = Function{
 		Func: func(v interface{}) interface{} {
