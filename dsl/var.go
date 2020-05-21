@@ -34,6 +34,23 @@ func (v variable) S() melrose.Sequence {
 	return melrose.Sequence{}
 }
 
+// Replaced is part of Replaceable
+func (v variable) Replaced(from, to melrose.Sequenceable) melrose.Sequenceable {
+	if melrose.IsIdenticalTo(from, v) {
+		return to
+	}
+	currentValue := v.Value()
+	if currentS, ok := currentValue.(melrose.Sequenceable); ok {
+		if melrose.IsIdenticalTo(from, currentS) {
+			return to
+		}
+	}
+	if rep, ok := currentValue.(melrose.Replaceable); ok {
+		return rep.Replaced(from, to)
+	}
+	return v
+}
+
 func (v variable) Value() interface{} {
 	m, _ := v.store.Get(v.Name)
 	return m

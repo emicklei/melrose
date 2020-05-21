@@ -17,6 +17,14 @@ func (s Scale) Storex() string {
 	return fmt.Sprintf("scale(%d,'%s')", s.octaves, s.start.String())
 }
 
+// Replaced is part of Replaceable
+func (s Scale) Replaced(from, to Sequenceable) Sequenceable {
+	if IsIdenticalTo(from, s) {
+		return to
+	}
+	return s
+}
+
 func NewScale(octaves int, input string) (Scale, error) {
 	s, err := ParseScale(input)
 	if err != nil {

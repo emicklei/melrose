@@ -65,6 +65,14 @@ func (p Progression) S() Sequence {
 	return Sequence{Notes: notes}
 }
 
+// Replaced is part of Replaceable
+func (p Progression) Replaced(from, to Sequenceable) Sequenceable {
+	if IsIdenticalTo(from, p) {
+		return to
+	}
+	return p
+}
+
 func (p Progression) Storex() string {
 	var b bytes.Buffer
 	fmt.Fprint(&b, "progression('")

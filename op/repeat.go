@@ -24,3 +24,11 @@ func (r Repeat) Storex() string {
 	fmt.Fprintf(&b, ")")
 	return b.String()
 }
+
+// Replaced is part of Replaceable
+func (r Repeat) Replaced(from, to melrose.Sequenceable) melrose.Sequenceable {
+	if melrose.IsIdenticalTo(r, from) {
+		return to
+	}
+	return Repeat{Target: replacedAll(r.Target, from, to), Times: r.Times}
+}

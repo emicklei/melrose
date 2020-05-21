@@ -26,6 +26,21 @@ func (p Pitch) Storex() string {
 	return ""
 }
 
+// Replaced is part of Replaceable
+func (p Pitch) Replaced(from, to Sequenceable) Sequenceable {
+	if IsIdenticalTo(p, from) {
+		return to
+	}
+	if IsIdenticalTo(p.Target, from) {
+		return Pitch{Target: to, Semitones: p.Semitones}
+	}
+	// https://play.golang.org/p/qHbbK_sTo84
+	if r, ok := p.Target.(Replaceable); ok {
+		return r.Replaced(from, to)
+	}
+	return p
+}
+
 type Reverse struct {
 	Target Sequenceable
 }
@@ -157,7 +172,21 @@ func NewSequenceMapper(s Sequenceable, indices string) SequenceMapper {
 
 func (p SequenceMapper) Storex() string {
 	if s, ok := p.Target.(Storable); ok {
-		return fmt.Sprintf("sequencemap(%s)", s.Storex())
+		return fmt.Sprintf("sequencemap('%s',%s)", formatIndices(p.Indices), s.Storex())
 	}
 	return ""
+}
+
+// Replaced is part of Replaceable
+func (p SequenceMapper) Replaced(from, to Sequenceable) Sequenceable {
+	if IsIdenticalTo(p, from) {
+		return to
+	}
+	if IsIdenticalTo(p.Target, from) {
+		return SequenceMapper{Target: to, Indices: p.Indices}
+	}
+	if rep, ok := p.Target.(Replaceable); ok {
+		return SequenceMapper{Target: rep.Replaced(from, to), Indices: p.Indices}
+	}
+	return p
 }

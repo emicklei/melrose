@@ -19,6 +19,14 @@ func NewDuration(checkedParameter float64, target []melrose.Sequenceable) Durati
 	}
 }
 
+// Return a new Duration in which any occurrences of "from" are replaced by "to".
+func (d Duration) Replaced(from, to melrose.Sequenceable) melrose.Sequenceable {
+	if from == melrose.Sequenceable(d) {
+		return to
+	}
+	return Duration{Target: replacedAll(d.Target, from, to), Parameter: d.Parameter}
+}
+
 func (d Duration) S() melrose.Sequence {
 	target := [][]melrose.Note{}
 	source := Join{Target: d.Target}.S().Notes

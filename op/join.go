@@ -29,3 +29,11 @@ func (j Join) S() melrose.Sequence {
 	}
 	return head
 }
+
+// Replaced is part of Replaceable
+func (j Join) Replaced(from, to melrose.Sequenceable) melrose.Sequenceable {
+	if melrose.IsIdenticalTo(j, from) {
+		return to
+	}
+	return Join{Target: replacedAll(j.Target, from, to)}
+}

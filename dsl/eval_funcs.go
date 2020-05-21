@@ -696,6 +696,26 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 			return melrose.Nexter{Target: getValueable(v)}
 		}}
 
+	eval["replace"] = Function{
+		Func: func(target interface{}, from, to interface{}) interface{} {
+			targetS, ok := getSequenceable(target)
+			if !ok {
+				notify.Print(notify.Warningf("cannot create replace inside (%T) %v", target, target))
+				return nil
+			}
+			fromS, ok := getSequenceable(from)
+			if !ok {
+				notify.Print(notify.Warningf("cannot create replace (%T) %v", from, from))
+				return nil
+			}
+			toS, ok := getSequenceable(to)
+			if !ok {
+				notify.Print(notify.Warningf("cannot create replace with (%T) %v", to, to))
+				return nil
+			}
+			return op.Replace{Target: targetS, From: fromS, To: toS}
+		}}
+
 	return eval
 }
 

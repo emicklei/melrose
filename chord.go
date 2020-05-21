@@ -90,6 +90,14 @@ func (c Chord) S() Sequence {
 	return Sequence{[][]Note{c.Notes()}}
 }
 
+// Replaced is part of Replaceable
+func (c Chord) Replaced(from, to Sequenceable) Sequenceable {
+	if IsIdenticalTo(from, c) {
+		return to
+	}
+	return c
+}
+
 // Notes returns the Note values for this chord.
 func (c Chord) Notes() []Note {
 	notes := []Note{c.start}

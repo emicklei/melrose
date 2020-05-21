@@ -23,6 +23,14 @@ func (s Sequence) At(i int) []Note {
 	return s.Notes[i]
 }
 
+// Replaced is part of Replaceable
+func (s Sequence) Replaced(from, to Sequenceable) Sequenceable {
+	if IsIdenticalTo(from, s) {
+		return to
+	}
+	return s
+}
+
 // SequenceJoin returns s + t
 func (s Sequence) SequenceJoin(t Sequence) Sequence {
 	return Sequence{append(s.Notes, t.Notes...)}

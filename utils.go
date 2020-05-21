@@ -1,10 +1,30 @@
 package melrose
 
 import (
+	"bytes"
+	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 	"text/scanner"
 )
+
+// "1 (4 5 6) 2 (4 5 6) 3 (4 5 6) 2 (4 5 6)"
+func formatIndices(src [][]int) string {
+	var b bytes.Buffer
+	for _, each := range src {
+		if len(each) == 1 {
+			fmt.Fprintf(&b, "%d ", each[0])
+		} else {
+			fmt.Fprintf(&b, "(")
+			for _, other := range each {
+				fmt.Fprintf(&b, "%d ", other)
+			}
+			fmt.Fprintf(&b, ") ")
+		}
+	}
+	return b.String()
+}
 
 // "1 (4 5 6) 2 (4 5 6) 3 (4 5 6) 2 (4 5 6)"
 func parseIndices(src string) [][]int {
@@ -44,4 +64,8 @@ func parseIndices(src string) [][]int {
 		ii = append(ii, container)
 	}
 	return ii
+}
+
+func IsIdenticalTo(left, right Sequenceable) bool {
+	return reflect.DeepEqual(left, right)
 }

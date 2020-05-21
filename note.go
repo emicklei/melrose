@@ -36,6 +36,14 @@ func (n Note) ToNote() Note {
 	return n
 }
 
+// Replaced is part of Replaceable
+func (n Note) Replaced(from, to Sequenceable) Sequenceable {
+	if IsIdenticalTo(from, n) {
+		return to
+	}
+	return n
+}
+
 var (
 	Rest4 = Note{Name: "=", duration: 0.25}
 )

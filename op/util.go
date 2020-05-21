@@ -69,3 +69,19 @@ func parseIndices(src string) [][]int {
 	}
 	return ii
 }
+
+func replacedAll(target []melrose.Sequenceable, from, to melrose.Sequenceable) []melrose.Sequenceable {
+	newTarget := []melrose.Sequenceable{}
+	for _, each := range target {
+		if melrose.IsIdenticalTo(each, from) {
+			newTarget = append(newTarget, to)
+		} else {
+			if other, ok := each.(melrose.Replaceable); ok {
+				newTarget = append(newTarget, other.Replaced(from, to))
+			} else {
+				newTarget = append(newTarget, each)
+			}
+		}
+	}
+	return newTarget
+}

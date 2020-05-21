@@ -67,3 +67,8 @@ type MapFunc func(seq Sequenceable) Sequenceable
 type Mappeable interface {
 	Map(m MapFunc) Mappeable
 }
+
+type Replaceable interface {
+	// Returns a new value in which any occurrences of "from" are replaced by "to".
+	Replaced(from, to Sequenceable) Sequenceable
+}
