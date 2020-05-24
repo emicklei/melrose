@@ -28,9 +28,6 @@ func (s Sequence) Reversed() Sequence {
 	}
 	return Sequence{groups}
 }
-func (s Sequence) Reverse() Reverse {
-	return Reverse{Target: s}
-}
 
 func (s Sequence) Repeated(howMany int) Sequence {
 	groups := [][]Note{}

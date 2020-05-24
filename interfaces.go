@@ -59,6 +59,7 @@ type LoopController interface {
 	End(l *Loop)
 
 	BeatsAndBars() (int64, int64)
+	Delay(bars int64, beats int64, seq Sequenceable)
 }
 
 type MapFunc func(seq Sequenceable) Sequenceable

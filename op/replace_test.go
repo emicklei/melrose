@@ -18,7 +18,7 @@ func TestReplace_Operators(t *testing.T) {
 		}
 	}
 	{
-		p := melrose.Pitch{Target: c, Semitones: melrose.On(12)}
+		p := Pitch{Target: c, Semitones: melrose.On(12)}
 		r := Replace{Target: p, From: c, To: d}
 		if got, want := fmt.Sprintf("%v", r.S()), "D5"; got != want {
 			t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
@@ -39,7 +39,7 @@ func TestReplace_Operators(t *testing.T) {
 		}
 	}
 	{
-		s := melrose.SequenceMapper{Target: c, Indices: [][]int{[]int{1}}}
+		s := SequenceMapper{Target: c, Indices: [][]int{[]int{1}}}
 		r := Replace{Target: s, From: c, To: d}
 		if got, want := fmt.Sprintf("%v", r.S()), "D"; got != want {
 			t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)

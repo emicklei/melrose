@@ -1,21 +1,53 @@
 package op
 
-import "github.com/emicklei/melrose"
+import (
+	"bytes"
+	"errors"
+	"fmt"
+	"strings"
+
+	"github.com/emicklei/melrose"
+)
 
 type NoteMap struct {
 	Target  melrose.Valueable
 	Indices []int
 }
 
-func NewNoteMapper(indices string, note melrose.Valueable) NoteMap {
+// NewNoteMapper returns a NoteMap that creates a sequence from occurrences of a note.
+// The format of indices can be one of:
+// 1 2 4 ; each number is an index in the sequence where the note is present; rest notes are placed in the gaps.
+// ! . ! ; each dot is a rest, each exclamation mark is a presence of a note.
+func NewNoteMapper(indices string, note melrose.Valueable) (NoteMap, error) {
 	idx := []int{}
-	for _, each := range parseIndices(indices) {
+	// check for dots and bangs first
+	var parsed [][]int
+	if strings.ContainsAny(indices, "!.") {
+		parsed = parseIndices(convertDotsAndBangs(indices))
+	} else if strings.ContainsAny(indices, "1234567890 ") {
+		parsed = parseIndices(indices)
+	} else {
+		return NoteMap{}, errors.New("bad syntax NoteMap; must have digits,spaces OR dots and exclamation marks")
+	}
+	for _, each := range parsed {
 		idx = append(idx, each[0])
 	}
 	return NoteMap{
 		Target:  note,
 		Indices: idx,
+	}, nil
+}
+
+func convertDotsAndBangs(format string) string {
+	var b bytes.Buffer
+	for i, each := range []rune(format) {
+		if '.' == each {
+			fmt.Fprintf(&b, "  ")
+		} else {
+			fmt.Fprintf(&b, "%d ", i+1)
+		}
 	}
+	return b.String()
 }
 
 func (n NoteMap) S() melrose.Sequence {

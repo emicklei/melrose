@@ -39,7 +39,7 @@ func (j JoinMapper) S() melrose.Sequence {
 					target = append(target, melrose.Rest4) // what should be the duration?
 				}
 			}
-			target = append(target, melrose.Parallel{Target: melrose.BuildSequence(notes)})
+			target = append(target, Parallel{Target: melrose.BuildSequence(notes)})
 		}
 	}
 	return Join{Target: target}.S()

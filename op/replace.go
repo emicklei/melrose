@@ -7,17 +7,17 @@ import (
 	"github.com/emicklei/melrose"
 )
 
+// Replace will replace a Sequenceable upon creating a Sequence.
 type Replace struct {
 	Target   melrose.Sequenceable
 	From, To melrose.Sequenceable
 }
 
+// S is part of Sequenceable
 func (r Replace) S() melrose.Sequence {
 	if rep, ok := r.Target.(melrose.Replaceable); ok {
-		fmt.Println("replace inside target")
 		return rep.Replaced(r.From, r.To).S()
 	}
-	fmt.Printf("not replaced inside target (%T)", r.Target)
 	return r.Target.S()
 }
 

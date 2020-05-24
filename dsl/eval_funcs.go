@@ -141,8 +141,13 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		Prefix:   "del",
 		Template: `delay('${1:bar},${2:beat},${3:object}')`,
 		Samples:  `delay(0,0,sequence('C D E')) // => immediate play C D E`,
-		Func: func(bar, beat int, seq interface{}) interface{} {
-
+		Func: func(bars, beats int, seq interface{}) interface{} {
+			s, ok := getSequenceable(seq)
+			if !ok {
+				notify.Print(notify.Warningf("cannot delay (%T) %v", seq, seq))
+				return nil
+			}
+			melrose.Context().LoopControl.Delay(int64(bars), int64(beats), s)
 			return nil
 		}}
 
@@ -210,7 +215,7 @@ pitch(p,note('C'))`,
 				notify.Print(notify.Warningf("cannot pitch (%T) %v", m, m))
 				return nil
 			}
-			return melrose.Pitch{Target: s, Semitones: getValueable(semitones)}
+			return op.Pitch{Target: s, Semitones: getValueable(semitones)}
 		}}
 
 	eval["reverse"] = Function{
@@ -227,7 +232,7 @@ pitch(p,note('C'))`,
 				notify.Print(notify.Warningf("cannot reverse (%T) %v", m, m))
 				return nil
 			}
-			return melrose.Reverse{Target: s}
+			return op.Reverse{Target: s}
 		}}
 
 	eval["repeat"] = Function{
@@ -456,7 +461,7 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 					joined = append(joined, s)
 				}
 			}
-			return melrose.Serial{Target: joined}
+			return op.Serial{Target: joined}
 		}}
 
 	eval["octave"] = Function{
@@ -507,7 +512,7 @@ s = r.Sequence()`,
 				notify.Print(notify.Warningf("cannot undynamic (%T) %v", value, value))
 				return nil
 			} else {
-				return melrose.Undynamic{Target: s}
+				return op.Undynamic{Target: s}
 			}
 		}}
 
@@ -541,7 +546,7 @@ s = r.Sequence()`,
 				notify.Print(notify.Warningf("cannot parallel (%T) %v", value, value))
 				return nil
 			} else {
-				return melrose.Parallel{Target: s}
+				return op.Parallel{Target: s}
 			}
 		}}
 	// BEGIN Loop and control
@@ -657,14 +662,18 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 				notify.Print(notify.Warningf("cannot create sequence mapper on (%T) %v", m, m))
 				return nil
 			}
-			return melrose.NewSequenceMapper(s, indices)
+			return op.NewSequenceMapper(s, indices)
 		}}
 
 	eval["notemap"] = Function{
 		Template:   `notemap('${1:space-separated-1-based-indices}',${2:note})`,
 		IsComposer: true,
 		Func: func(indices string, note interface{}) interface{} {
-			return op.NewNoteMapper(indices, getValueable(note))
+			m, err := op.NewNoteMapper(indices, getValueable(note))
+			if err != nil {
+				notify.Print(notify.Errorf("cannot create notemap, error:%v", err))
+			}
+			return m
 		}}
 
 	eval["notemerge"] = Function{

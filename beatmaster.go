@@ -80,6 +80,18 @@ func (b *Beatmaster) Begin(l *Loop) {
 	})
 }
 
+func (b *Beatmaster) Delay(bars int64, beats int64, seq Sequenceable) {
+	if !b.beating {
+		return
+	}
+	atBeats := b.beatsAndNextBar()
+	atBeats += (b.biab * bars)
+	atBeats += beats
+	b.schedule.Schedule(atBeats, func(beats int64) {
+		Context().AudioDevice.Play(seq, b.bpm, time.Now())
+	})
+}
+
 func (b *Beatmaster) beatsAndNextBar() int64 {
 	if b.beats%b.biab == 0 {
 		return b.beats
@@ -208,17 +220,19 @@ func (b *Beatmaster) Stop() {
 	}
 }
 
+// NoLooper is a Beatmaster that does not loop
 var NoLooper = zeroBeat{}
 
 type zeroBeat struct{}
 
-func (s zeroBeat) Begin(l *Loop)                {}
-func (s zeroBeat) End(l *Loop)                  {}
-func (s zeroBeat) Start()                       {}
-func (s zeroBeat) Stop()                        {}
-func (s zeroBeat) Reset()                       {}
-func (s zeroBeat) SetBPM(bpm float64)           {}
-func (s zeroBeat) BPM() float64                 { return 120.0 }
-func (s zeroBeat) SetBIAB(biab int)             {}
-func (s zeroBeat) BIAB() int                    { return 4 }
-func (s zeroBeat) BeatsAndBars() (int64, int64) { return 0, 0 }
+func (s zeroBeat) Begin(l *Loop)                                   {}
+func (s zeroBeat) End(l *Loop)                                     {}
+func (s zeroBeat) Start()                                          {}
+func (s zeroBeat) Stop()                                           {}
+func (s zeroBeat) Reset()                                          {}
+func (s zeroBeat) SetBPM(bpm float64)                              {}
+func (s zeroBeat) BPM() float64                                    { return 120.0 }
+func (s zeroBeat) SetBIAB(biab int)                                {}
+func (s zeroBeat) BIAB() int                                       { return 4 }
+func (s zeroBeat) BeatsAndBars() (int64, int64)                    { return 0, 0 }
+func (s zeroBeat) Delay(bars int64, beats int64, seq Sequenceable) {}
