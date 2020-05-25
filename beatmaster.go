@@ -80,7 +80,8 @@ func (b *Beatmaster) Begin(l *Loop) {
 	})
 }
 
-func (b *Beatmaster) Delay(bars int64, beats int64, seq Sequenceable) {
+// Plan is part of LoopControl
+func (b *Beatmaster) Plan(bars int64, beats int64, seq Sequenceable) {
 	if !b.beating {
 		return
 	}
@@ -225,14 +226,14 @@ var NoLooper = zeroBeat{}
 
 type zeroBeat struct{}
 
-func (s zeroBeat) Begin(l *Loop)                                   {}
-func (s zeroBeat) End(l *Loop)                                     {}
-func (s zeroBeat) Start()                                          {}
-func (s zeroBeat) Stop()                                           {}
-func (s zeroBeat) Reset()                                          {}
-func (s zeroBeat) SetBPM(bpm float64)                              {}
-func (s zeroBeat) BPM() float64                                    { return 120.0 }
-func (s zeroBeat) SetBIAB(biab int)                                {}
-func (s zeroBeat) BIAB() int                                       { return 4 }
-func (s zeroBeat) BeatsAndBars() (int64, int64)                    { return 0, 0 }
-func (s zeroBeat) Delay(bars int64, beats int64, seq Sequenceable) {}
+func (s zeroBeat) Begin(l *Loop)                                  {}
+func (s zeroBeat) End(l *Loop)                                    {}
+func (s zeroBeat) Start()                                         {}
+func (s zeroBeat) Stop()                                          {}
+func (s zeroBeat) Reset()                                         {}
+func (s zeroBeat) SetBPM(bpm float64)                             {}
+func (s zeroBeat) BPM() float64                                   { return 120.0 }
+func (s zeroBeat) SetBIAB(biab int)                               {}
+func (s zeroBeat) BIAB() int                                      { return 4 }
+func (s zeroBeat) BeatsAndBars() (int64, int64)                   { return 0, 0 }
+func (s zeroBeat) Plan(bars int64, beats int64, seq Sequenceable) {}

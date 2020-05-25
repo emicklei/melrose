@@ -37,6 +37,6 @@ func (t *TestLooper) BeatsAndBars() (int64, int64) {
 	return t.Beats, t.Bars
 }
 
-func (t *TestLooper) Delay(bars int64, beats int64, seq Sequenceable) {
+func (t *TestLooper) Plan(bars int64, beats int64, seq Sequenceable) {
 
 }

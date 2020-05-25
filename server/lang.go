@@ -7,8 +7,10 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
+	"github.com/antonmedv/expr/file"
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 )
@@ -39,6 +41,18 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	}
 	r.ParseForm()
 	trace := r.FormValue("trace") == "true"
+	if trace {
+		log.Printf("[melrose.trace] %s\n", r.URL.String())
+	}
+	// get line
+	line := 1
+	lineString := r.FormValue("line")
+	if len(lineString) > 0 {
+		if i, err := strconv.Atoi(lineString); err == nil {
+			line = i
+		}
+	}
+	// get expression
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -50,7 +64,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		// evaluation failed.
 		w.WriteHeader(http.StatusInternalServerError)
-		response = resultFrom(err)
+		response = resultFrom(line, err)
 	} else {
 		// evaluation was ok.
 
@@ -89,7 +103,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 			melrose.Context().LoopControl.Reset()
 			melrose.Context().AudioDevice.Reset()
 		}
-		response = resultFrom(returnValue)
+		response = resultFrom(line, returnValue)
 	}
 	w.Header().Set("content-type", "application/json")
 	enc := json.NewEncoder(w)
@@ -118,14 +132,19 @@ type evaluationResult struct {
 	Object   interface{} `json:"object"`
 }
 
-func resultFrom(val interface{}) evaluationResult {
+func resultFrom(line int, val interface{}) evaluationResult {
 	t := fmt.Sprintf("%T", val)
 	if err, ok := val.(error); ok {
+		// patch Location of error
+		if fe, ok := err.(*file.Error); ok {
+			fe.Location.Line = fe.Location.Line - 1 + line
+		}
 		return evaluationResult{
 			Type:     t,
 			IsError:  true,
 			Filename: "yours.mel",
 			Message:  err.Error(),
+			Line:     line,
 			Object:   val,
 		}
 	}

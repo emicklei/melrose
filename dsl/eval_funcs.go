@@ -125,7 +125,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 	eval["joinmap"] = Function{
 		Prefix:     "joinm",
 		IsComposer: true,
-		Template:   `joinmain('${1:indices}',${2:join})`,
+		Template:   `joinmap('${1:indices}',${2:join})`,
 		Func: func(indices string, join interface{}) interface{} { // allow multiple seq?
 			v := getValueable(join)
 			vNow := v.Value()
@@ -136,18 +136,46 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			return op.NewJoinMapper(v, indices)
 		}}
 
-	eval["delay"] = Function{
-		//	Title:    "Delay playing a musical object",
-		Prefix:   "del",
-		Template: `delay('${1:bar},${2:beat},${3:object}')`,
-		Samples:  `delay(0,0,sequence('C D E')) // => immediate play C D E`,
-		Func: func(bars, beats int, seq interface{}) interface{} {
+	eval["bars"] = Function{
+		Prefix:     "ba",
+		IsComposer: true,
+		Template:   `bars(${1:object})`,
+		Func: func(seq interface{}) interface{} {
 			s, ok := getSequenceable(seq)
 			if !ok {
-				notify.Print(notify.Warningf("cannot delay (%T) %v", seq, seq))
+				notify.Print(notify.Warningf("cannot compute how many bar for (%T) %v", seq, seq))
 				return nil
 			}
-			melrose.Context().LoopControl.Delay(int64(bars), int64(beats), s)
+			// TODO handle loop
+			biab := melrose.Context().LoopControl.BIAB()
+			return len(s.S().Notes) / biab
+		}}
+
+	eval["beats"] = Function{
+		Prefix:     "be",
+		IsComposer: true,
+		Template:   `beats(${1:object})`,
+		Func: func(seq interface{}) interface{} {
+			s, ok := getSequenceable(seq)
+			if !ok {
+				notify.Print(notify.Warningf("cannot compute how many beats for (%T) %v", seq, seq))
+				return nil
+			}
+			return len(s.S().Notes)
+		}}
+
+	eval["plan"] = Function{
+		//	Title:    "Plan to play a musical object",
+		Prefix:   "pla",
+		Template: `plan('${1:bar},${2:beat},${3:object}')`,
+		Samples:  `plan(0,0,sequence('C D E')) // => immediate play C D E`,
+		Func: func(bars, beats int, seq interface{}) interface{} {
+			s, ok := getSequenceable(getValue(seq)) // unwrap var
+			if !ok {
+				notify.Print(notify.Warningf("cannot plan (%T) %v", seq, seq))
+				return nil
+			}
+			melrose.Context().LoopControl.Plan(int64(bars), int64(beats), s)
 			return nil
 		}}
 
@@ -412,7 +440,7 @@ note('2E#.--')`,
 		Func: func(playables ...interface{}) interface{} {
 			moment := time.Now()
 			for _, p := range playables {
-				if s, ok := getSequenceable(p); ok {
+				if s, ok := getSequenceable(getValue(p)); ok { // unwrap var
 					moment = melrose.Context().AudioDevice.Play(s, melrose.Context().LoopControl.BPM(), moment)
 				} else {
 					notify.Print(notify.Warningf("cannot play (%T) %v", p, p))
@@ -434,7 +462,7 @@ note('2E#.--')`,
 		Func: func(playables ...interface{}) interface{} {
 			moment := time.Now()
 			for _, p := range playables {
-				if s, ok := getSequenceable(p); ok {
+				if s, ok := getSequenceable(getValue(p)); ok { // unwrap var
 					melrose.Context().AudioDevice.Play(s, melrose.Context().LoopControl.BPM(), moment)
 				} else {
 					notify.Print(notify.Warningf("cannot go (%T) %v", p, p))
