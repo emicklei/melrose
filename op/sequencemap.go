@@ -3,6 +3,7 @@ package op
 import (
 	"fmt"
 
+	"github.com/emicklei/melrose"
 	. "github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
 )
@@ -10,12 +11,21 @@ import (
 type SequenceMapper struct {
 	Target  Sequenceable
 	Indices [][]int
+	Pattern melrose.Valueable
 }
 
 func (p SequenceMapper) S() Sequence {
+	if p.Pattern == nil {
+		return p.Target.S()
+	}
+	sPattern := melrose.String(p.Pattern)
+	if len(sPattern) == 0 {
+		return p.Target.S()
+	}
+	indices := parseIndices(sPattern)
 	seq := p.Target.S()
 	groups := [][]Note{}
-	for _, indexEntry := range p.Indices {
+	for _, indexEntry := range indices {
 		mappedGroup := []Note{}
 		for j, each := range indexEntry {
 			if each < 1 || each > len(seq.Notes) {
@@ -30,13 +40,13 @@ func (p SequenceMapper) S() Sequence {
 	return Sequence{Notes: groups}
 }
 
-func NewSequenceMapper(s Sequenceable, indices string) SequenceMapper {
-	return SequenceMapper{Target: s, Indices: parseIndices(indices)}
+func NewSequenceMapper(s Sequenceable, pattern melrose.Valueable) SequenceMapper {
+	return SequenceMapper{Target: s, Pattern: pattern}
 }
 
 func (p SequenceMapper) Storex() string {
 	if s, ok := p.Target.(Storable); ok {
-		return fmt.Sprintf("sequencemap('%s',%s)", formatIndices(p.Indices), s.Storex())
+		return fmt.Sprintf("sequencemap(%v,%s)", p.Pattern, s.Storex())
 	}
 	return ""
 }
@@ -47,10 +57,10 @@ func (p SequenceMapper) Replaced(from, to Sequenceable) Sequenceable {
 		return to
 	}
 	if IsIdenticalTo(p.Target, from) {
-		return SequenceMapper{Target: to, Indices: p.Indices}
+		return SequenceMapper{Target: to, Pattern: p.Pattern}
 	}
 	if rep, ok := p.Target.(Replaceable); ok {
-		return SequenceMapper{Target: rep.Replaced(from, to), Indices: p.Indices}
+		return SequenceMapper{Target: rep.Replaced(from, to), Pattern: p.Pattern}
 	}
 	return p
 }
