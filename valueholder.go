@@ -6,16 +6,34 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-type Valueable interface {
-	Value() interface{}
+func String(h Valueable) string {
+	if h == nil {
+		return ""
+	}
+	val := h.Value()
+	if val == nil {
+		return ""
+	}
+	if v, ok := val.(string); ok {
+		return v
+	}
+	return ""
 }
 
 func Int(h Valueable) int {
-	if v, ok := h.Value().(int); ok {
+	// TODO notify somehow
+	if h == nil {
+		return 0
+	}
+	val := h.Value()
+	if val == nil {
+		return 0
+	}
+	if v, ok := val.(int); ok {
 		return v
 	}
 	// maybe the value is a Valueable
-	if vv, ok := h.Value().(Valueable); ok {
+	if vv, ok := val.(Valueable); ok {
 		return Int(vv)
 	}
 	notify.Print(notify.Warningf("expected [int] but got [%T]", h.Value()))
