@@ -1,4 +1,4 @@
-# Melrose - programming of music melodies
+# Melrōse - programming of music melodies
 
 [![Build Status](https://travis-ci.org/emicklei/melrose.png)](https://travis-ci.org/emicklei/melrose)
 [![Go Report Card](https://goreportcard.com/badge/github.com/emicklei/melrose)](https://goreportcard.com/report/github.com/emicklei/melrose)
@@ -37,7 +37,7 @@ See [documentation](https://emicklei.github.io/melrose/) how to install and use 
       f2 := m.MustParseSequence("E F 2G")
       f3 := m.MustParseSequence("8G 8A 8G 8F E C")
       f4 := m.MustParseSequence("2C 2G3 2C 1=")
-      r8 := op.Repeat{Times: m.On(8), Target: []m.Sequenceable{m.Note("=")}}
+      r8 := op.Repeat{Target: []m.Sequenceable{m.Note("=")}, Times: m.On(8)}
 
       v1 := op.Join{Target: []m.Sequenceable{f1, f1, f2, f2, f3, f3, f4}}
       v2 := op.Join{Target: []m.Sequenceable{r8, v1}}
