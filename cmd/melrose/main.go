@@ -112,7 +112,7 @@ func repl(line *liner.State, store dsl.VariableStorage, control melrose.LoopCont
 			// even on error, add entry to history so we can edit/fix it
 		} else {
 			if result != nil {
-				printValue(result)
+				melrose.PrintValue(result)
 			}
 		}
 		line.AppendHistory(entry)
@@ -133,25 +133,6 @@ func processInputFile(store dsl.VariableStorage, inputFile string) {
 			notify.Print(notify.Errorf("line %d:%v", line, err))
 		}
 	}
-}
-
-func printValue(v interface{}) {
-	if v == nil {
-		return
-	}
-	if s, ok := v.(melrose.Storable); ok {
-		fmt.Printf("\033[94m(%T)\033[0m %s\n", v, s.Storex())
-		return
-	}
-	if s, ok := v.(string); ok {
-		fmt.Printf("'%s'\n", s)
-		return
-	}
-	if i, ok := v.(int); ok {
-		fmt.Printf("%d\n", i)
-		return
-	}
-	fmt.Printf("\033[94m(%T)\033[0m %v\n", v, v)
 }
 
 // setupCloseHandler creates a 'listener' on a new goroutine which will notify the

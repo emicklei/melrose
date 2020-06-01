@@ -69,3 +69,22 @@ func parseIndices(src string) [][]int {
 func IsIdenticalTo(left, right Sequenceable) bool {
 	return reflect.DeepEqual(left, right)
 }
+
+func PrintValue(v interface{}) {
+	if v == nil {
+		return
+	}
+	if s, ok := v.(Storable); ok {
+		fmt.Printf("\033[94m(%T)\033[0m %s\n", v, s.Storex())
+		return
+	}
+	if s, ok := v.(string); ok {
+		fmt.Printf("'%s'\n", s)
+		return
+	}
+	if i, ok := v.(int); ok {
+		fmt.Printf("%d\n", i)
+		return
+	}
+	fmt.Printf("\033[94m(%T)\033[0m %v\n", v, v)
+}

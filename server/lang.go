@@ -13,6 +13,7 @@ import (
 	"github.com/antonmedv/expr/file"
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
+	"github.com/emicklei/melrose/notify"
 )
 
 // LanguageServer can execute DSL statements received over HTTP
@@ -60,7 +61,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	}
 	defer r.Body.Close()
 	returnValue, err := l.evaluator.EvaluateProgram(string(data))
-	var response interface{}
+	var response evaluationResult
 	if err != nil {
 		// evaluation failed.
 		w.WriteHeader(http.StatusInternalServerError)
@@ -111,6 +112,11 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	err = enc.Encode(response)
 	if err != nil {
 		log.Printf("[melrose.error] %#v\n", err)
+	}
+	if response.IsError {
+		notify.Print(notify.Error(response.Object.(error)))
+	} else {
+		melrose.PrintValue(response.Object)
 	}
 	if trace {
 		// doit again
