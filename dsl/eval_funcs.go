@@ -684,13 +684,13 @@ l1 = loop(pitch(i1,sequence('C D E F')), next(i1))`,
 		Samples: `s1 = sequence('C D E F G A B')
 i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		IsComposer: true,
-		Func: func(indices string, m interface{}) interface{} {
+		Func: func(pattern, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
 				notify.Print(notify.Warningf("cannot create sequence mapper on (%T) %v", m, m))
 				return nil
 			}
-			return op.NewSequenceMapper(s, indices)
+			return op.NewSequenceMapper(s, melrose.ToValueable(pattern))
 		}}
 
 	eval["notemap"] = Function{
