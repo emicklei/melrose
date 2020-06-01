@@ -58,7 +58,7 @@ func main() {
 }
 
 func welcome() {
-	fmt.Println("\033[1;34mmelrose\033[0m" + " - program your melody")
+	fmt.Println("\033[1;34mmelrōse\033[0m" + " - program your melodies")
 }
 
 var functionNames = []string{"play"}
@@ -141,9 +141,17 @@ func printValue(v interface{}) {
 	}
 	if s, ok := v.(melrose.Storable); ok {
 		fmt.Printf("\033[94m(%T)\033[0m %s\n", v, s.Storex())
-	} else {
-		fmt.Printf("\033[94m(%T)\033[0m %v\n", v, v)
+		return
 	}
+	if s, ok := v.(string); ok {
+		fmt.Printf("'%s'\n", s)
+		return
+	}
+	if i, ok := v.(int); ok {
+		fmt.Printf("%d\n", i)
+		return
+	}
+	fmt.Printf("\033[94m(%T)\033[0m %v\n", v, v)
 }
 
 // setupCloseHandler creates a 'listener' on a new goroutine which will notify the
