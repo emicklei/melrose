@@ -39,14 +39,14 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-	r.ParseForm()
-	trace := r.FormValue("trace") == "true"
+	query := r.URL.Query()
+	trace := query.Get("trace") == "true"
 	if trace {
 		log.Printf("[melrose.trace] %s\n", r.URL.String())
 	}
 	// get line
 	line := 1
-	lineString := r.FormValue("line")
+	lineString := query.Get("line")
 	if len(lineString) > 0 {
 		if i, err := strconv.Atoi(lineString); err == nil {
 			line = i
@@ -69,7 +69,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		// evaluation was ok.
 
 		// check if play was requested and is playable
-		if r.FormValue("action") == "play" {
+		if query.Get("action") == "play" {
 			if s, ok := returnValue.(melrose.Sequenceable); ok {
 				melrose.Context().AudioDevice.Play(
 					s,
@@ -81,7 +81,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 			}
 		}
 		// loop operation
-		if r.FormValue("action") == "begin" {
+		if query.Get("action") == "begin" {
 			if lp, ok := returnValue.(*melrose.Loop); ok {
 				if !lp.IsRunning() {
 					melrose.Context().LoopControl.Begin(lp)
@@ -90,7 +90,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 			// ignore if not Loop
 		}
 		// loop operation
-		if r.FormValue("action") == "end" {
+		if query.Get("action") == "end" {
 			if lp, ok := returnValue.(*melrose.Loop); ok {
 				if lp.IsRunning() {
 					lp.Stop()
@@ -98,7 +98,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 			}
 			// ignore if not Loop
 		}
-		if r.FormValue("action") == "kill" {
+		if query.Get("action") == "kill" {
 			// kill the play and any loop
 			melrose.Context().LoopControl.Reset()
 			melrose.Context().AudioDevice.Reset()
@@ -148,6 +148,7 @@ func resultFrom(line int, val interface{}) evaluationResult {
 			Object:   val,
 		}
 	}
+	// no error
 	var msg string
 	if stor, ok := val.(melrose.Storable); ok {
 		msg = stor.Storex()
