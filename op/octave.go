@@ -23,3 +23,11 @@ func (o Octave) Storex() string {
 	fmt.Fprintf(&b, ")")
 	return b.String()
 }
+
+// Replaced is part of Replaceable
+func (o Octave) Replaced(from, to melrose.Sequenceable) melrose.Sequenceable {
+	if melrose.IsIdenticalTo(o, from) {
+		return to
+	}
+	return Octave{Target: replacedAll(o.Target, from, to), Offset: o.Offset}
+}
