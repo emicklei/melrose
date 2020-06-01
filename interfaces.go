@@ -73,3 +73,7 @@ type Replaceable interface {
 	// Returns a new value in which any occurrences of "from" are replaced by "to".
 	Replaced(from, to Sequenceable) Sequenceable
 }
+
+type Valueable interface {
+	Value() interface{}
+}
