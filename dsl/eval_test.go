@@ -190,19 +190,6 @@ func TestEvaluateProgram_TrailingWhitespace(t *testing.T) {
 	}
 }
 
-func newTestEvaluator() *Evaluator {
-	v := NewVariableStore()
-	e := NewEvaluator(v, melrose.NoLooper)
-	return e
-}
-
-func checkError(t *testing.T, err error) {
-	t.Helper()
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
 func TestEvaluateError_Play(t *testing.T) {
 	r, err := newTestEvaluator().evaluateCleanStatement(`repeat(-1,1)`)
 	checkError(t, err)
