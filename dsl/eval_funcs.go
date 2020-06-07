@@ -86,42 +86,6 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			return p
 		}}
 
-	// eval["call"] = Function{
-	// 	Prefix:     "call",
-	// 	IsComposer: true,
-	// 	Template:   `call(${1:pipeline},${2:object})`,
-	// 	Func: func(pipeline interface{}, object interface{}) interface{} {
-	// 		s, ok := getSequenceable(object)
-	// 		if !ok {
-	// 			notify.Print(notify.Warningf("cannot call (%T) %v", object, object))
-	// 			return nil
-	// 		}
-	// 		v, ok := pipeline.(melrose.Valueable)
-	// 		if !ok {
-	// 			notify.Print(notify.Warningf("expected variable (%T) %v", pipeline, pipeline))
-	// 			return nil
-	// 		}
-	// 		p, ok := v.Value().(op.Pipeline)
-	// 		if !ok {
-	// 			notify.Print(notify.Warningf("expected pipeline (%T) %v", pipeline, pipeline))
-	// 			return nil
-	// 		}
-	// 		r, err := p.Execute(s)
-	// 		if err != nil {
-	// 			notify.Print(notify.Errorf("cannot call %v:%v", p, err))
-	// 			return nil
-	// 		}
-	// 		return r
-	// 	}}
-
-	// eval["pipeline"] = Function{
-	// 	Prefix:     "pip",
-	// 	IsComposer: true,
-	// 	Template:   `pipeline(${1:func1},${2:func2})`,
-	// 	Func: func(arguments ...interface{}) op.Pipeline {
-	// 		return op.Pipeline{Target: arguments}
-	// 	}}
-
 	eval["joinmap"] = Function{
 		Prefix:     "joinm",
 		IsComposer: true,
@@ -164,18 +128,19 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			return len(s.S().Notes)
 		}}
 
-	eval["plan"] = Function{
-		//	Title:    "Plan to play a musical object",
-		Prefix:   "pla",
-		Template: `plan('${1:bar},${2:beat},${3:object}')`,
-		Samples:  `plan(0,0,sequence('C D E')) // => immediate play C D E`,
-		Func: func(bars, beats int, seq interface{}) interface{} {
+	eval["onbar"] = Function{
+		Title:         "Schedule to play a musical object on a bar (starts with 1)",
+		Prefix:        "onb",
+		Template:      `onbar('${1:bar},${2:object}')`,
+		ControlsAudio: true,
+		Samples:       `onbar(1,sequence('C D E')) // => immediately play C D E`,
+		Func: func(bars int, seq interface{}) interface{} {
 			s, ok := getSequenceable(getValue(seq)) // unwrap var
 			if !ok {
-				notify.Print(notify.Warningf("cannot plan (%T) %v", seq, seq))
+				notify.Print(notify.Warningf("cannot onbar (%T) %v", seq, seq))
 				return nil
 			}
-			melrose.Context().LoopControl.Plan(int64(bars), int64(beats), s)
+			melrose.Context().LoopControl.Plan(int64(bars-1), int64(0), s)
 			return nil
 		}}
 

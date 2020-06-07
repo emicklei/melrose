@@ -18,12 +18,12 @@ var parsetests = []struct {
 	{"C3", "C", 3, 0.25, 0, false, Normal},
 	{"4C3", "C", 3, 0.25, 0, false, Normal},
 	{"C#3", "C", 3, 0.25, 1, false, Normal},
-	{"4C#.3", "C", 3, 0.25, 1, true, Normal},
-	{"16C", "C", 4, 0.0625, 0, false, Normal},
+	{"4.C#3", "C", 3, 0.25, 1, true, Normal},
+	{"16C", "C", 4, 0.25, 0, false, Normal},
 	{"4C#", "C", 4, 0.25, 1, false, Normal},
 	{"C#", "C", 4, 0.25, 1, false, Normal},
 	{"B_", "B", 4, 0.25, -1, false, Normal}, //8
-	{"F#.9", "F", 9, 0.25, 1, true, Normal},
+	{".F#9", "F", 9, 0.25, 1, true, Normal},
 	{"1C", "C", 4, 1, 0, false, Normal},
 	{"=", "=", 4, 0.25, 0, false, Normal},
 	{"D++", "D", 4, 0.25, 0, false, Forte},
@@ -72,10 +72,6 @@ var midi = []struct {
 	{"B9", 131},
 }
 
-func TestAdjecentName(t *testing.T) {
-
-}
-
 func TestMIDI(t *testing.T) {
 	for _, each := range midi {
 		n, _ := ParseNote(each.note)
@@ -120,21 +116,21 @@ func TestModifiedPitch(t *testing.T) {
 
 func ExampleParseNote() {
 	n1, _ := ParseNote("2C#3")
-	n2, _ := ParseNote("2E_.2")
-	n3, _ := ParseNote("F_.2++")
+	n2, _ := ParseNote("2.E_2")
+	n3, _ := ParseNote(".F_2++")
 	fmt.Println(n1)
 	fmt.Println(n2)
 	fmt.Println(n3)
 	// Output:
 	// ½C♯3
-	// ½E♭.2
-	// F♭.2++
+	// ½.E♭2
+	// .F♭2++
 }
 
 func ExampleParseNoteAsPrinted() {
 	n1, _ := ParseNote("½C♯")
 	n2, _ := ParseNote("⅛B♭")
-	n3, _ := ParseNote("¼D.")
+	n3, _ := ParseNote("¼.D")
 	n4, _ := ParseNote("E♭")
 	fmt.Println(n1)
 	fmt.Println(n2)
@@ -143,7 +139,7 @@ func ExampleParseNoteAsPrinted() {
 	// Output:
 	// ½C♯
 	// ⅛B♭
-	// D.
+	// .D
 	// E♭
 }
 

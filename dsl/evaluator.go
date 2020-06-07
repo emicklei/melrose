@@ -8,7 +8,6 @@ import (
 
 	"github.com/antonmedv/expr"
 	"github.com/emicklei/melrose"
-	"github.com/emicklei/melrose/op"
 )
 
 type Evaluator struct {
@@ -170,11 +169,4 @@ func IsAssignment(entry string) (varname string, expression string, ok bool) {
 		return "", "", false
 	}
 	return res[0][1], res[0][2], true
-}
-
-// TODO somehow reverse loopup the functionnames and arguments in a Pipeline
-// functions can be zero-arg, one-arg, two-arg functions.
-// if multi-arg then arguments are part of the pipeline target
-func WithIdentifiedFunctionNames(p op.Pipeline) op.Pipeline {
-	return p
 }

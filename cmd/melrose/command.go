@@ -25,6 +25,8 @@ func cmdFunctions() map[string]Command {
 	}}
 	cmds[":k"] = Command{Description: "end all running Loops", Func: func(args []string) notify.Message {
 		dsl.StopAllLoops(globalStore)
+		melrose.Context().LoopControl.Reset()
+		melrose.Context().AudioDevice.Reset()
 		return nil
 	}}
 	cmds[":b"] = Command{Description: "Beat settings", Func: handleBeatSetting}

@@ -126,7 +126,7 @@ func (n Note) WithDuration(dur float64) Note {
 
 // Conversion
 
-var noteRegexp = regexp.MustCompile("([1]?[½¼⅛12468]?)([CDEFGAB=])([#♯_♭]?)(\\.?)([0-9]?)([-+]?[-+]?[-+]?)")
+var noteRegexp = regexp.MustCompile("([½¼⅛12468]?)(\\.?)([CDEFGAB=])([#♯_♭]?)([0-9]?)([-+]?[-+]?[-+]?)")
 
 // MustParseNote returns a Note by parsing the input. Panic if it fails.
 func MustParseNote(input string) Note {
@@ -162,8 +162,10 @@ func ParseNote(input string) (Note, error) {
 		duration = 0.25 // quarter
 	}
 
+	dotted := matches[2] == "."
+
 	var accidental int
-	switch matches[3] {
+	switch matches[4] {
 	case "#":
 		accidental = 1
 	case "♯":
@@ -175,8 +177,6 @@ func ParseNote(input string) (Note, error) {
 	default:
 		accidental = 0
 	}
-
-	dotted := matches[4] == "."
 
 	octave := 4
 	if len(matches[5]) > 0 {
@@ -191,7 +191,7 @@ func ParseNote(input string) (Note, error) {
 	if len(matches[6]) > 0 {
 		velocity = ParseVelocity(matches[6])
 	}
-	return NewNote(matches[2], octave, duration, accidental, dotted, velocity)
+	return NewNote(matches[3], octave, duration, accidental, dotted, velocity)
 }
 
 func ParseVelocity(plusmin string) (velocity int) {
@@ -281,6 +281,11 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 	if n.duration != 0.25 {
 		buf.WriteString(n.durationf(false))
 	}
+
+	if n.Dotted {
+		buf.WriteString(".")
+	}
+
 	if n.IsRest() {
 		buf.WriteString(n.Name)
 		return
@@ -296,9 +301,6 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 		if n.Accidental != 0 {
 			buf.WriteString(n.accidentalf(false))
 		}
-	}
-	if n.Dotted {
-		buf.WriteString(".")
 	}
 	if n.Octave != 4 {
 		fmt.Fprintf(buf, "%d", n.Octave)

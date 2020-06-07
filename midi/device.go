@@ -100,20 +100,20 @@ func (m *Midi) printInfo() {
 	fmt.Println(":m input  <device-id> --- change the current MIDI input device id")
 	fmt.Println(":m output <device-id> --- change the current MIDI output device id")
 	fmt.Println()
-	fmt.Printf("MIDI: Echo notes: %v\n", m.echo)
-	fmt.Println("MIDI: Default output channel:", m.defaultOutputChannel)
+	fmt.Printf("[midi] echo notes: %v\n", m.echo)
+	fmt.Println("[midi] default output channel:", m.defaultOutputChannel)
 	var midiDeviceInfo *portmidi.DeviceInfo
 	defaultOut := portmidi.DefaultOutputDeviceID()
-	fmt.Println("MIDI: Default output device id:", defaultOut)
-	fmt.Println("MIDI: Current output device id:", m.currentOutputDeviceID)
+	fmt.Println("[midi] default output device id:", defaultOut)
+	fmt.Println("[midi] current output device id:", m.currentOutputDeviceID)
 
 	defaultIn := portmidi.DefaultInputDeviceID()
-	fmt.Println("MIDI: Default input device id:", defaultIn)
-	fmt.Println("MIDI: Current input device id:", m.currentInputDeviceID)
+	fmt.Println("[midi] default input device id:", defaultIn)
+	fmt.Println("[midi] current input device id:", m.currentInputDeviceID)
 
 	for i := 0; i < portmidi.CountDevices(); i++ {
 		midiDeviceInfo = portmidi.Info(portmidi.DeviceID(i)) // returns info about a MIDI device
-		fmt.Printf("MIDI: Device id %d: ", i)
+		fmt.Printf("[midi] cevice id %d: ", i)
 		usage := "output"
 		if midiDeviceInfo.IsInputAvailable {
 			usage = "input"

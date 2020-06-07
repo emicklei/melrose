@@ -43,6 +43,7 @@ func (m *Midi) Play(seq melrose.Sequenceable, bpm float64, beginAt time.Time) ti
 			for i, eachNote := range eachGroup {
 				actualDuration = time.Duration(float32(wholeNoteDuration) * eachNote.DurationFactor())
 				if eachNote.IsRest() {
+					event.echoString = eachNote.String()
 					continue
 				}
 				event = m.combinedMidiEvent(channel, eachGroup[i:i+1])

@@ -2,7 +2,6 @@ package melrose
 
 import (
 	"fmt"
-	"strings"
 )
 
 // noteMidiOffsets maps a tone index (C=0) to the number of semitones on the scale
@@ -13,14 +12,23 @@ const (
 	nonRestNoteNames = "CDEFGAB"
 )
 
+var noteNameToOffset = map[string]int{
+	"C": 0,
+	"D": 2,
+	"E": 4,
+	"F": 5,
+	"G": 7,
+	"A": 9,
+	"B": 11,
+}
+
 func (n Note) MIDI() int {
 	// http://en.wikipedia.org/wiki/Musical_Note
 	// C4 = 60 (scientific pitch notation)
 	if n.IsRest() { // TODO
 		return 0
 	}
-	nameIndex := strings.Index(nonRestNoteNames, n.Name)
-	nameOffset := noteMidiOffsets[nameIndex]
+	nameOffset := noteNameToOffset[n.Name]
 	return ((1 + n.Octave) * 12) + nameOffset + n.Accidental
 }
 
