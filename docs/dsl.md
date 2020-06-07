@@ -54,6 +54,7 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 - <a href="#end">end</a>
 - <a href="#go">go</a>
 - <a href="#loop">loop</a>
+- <a href="#onbar">onbar</a>
 - <a href="#play">play</a>
 - <a href="#record">record</a>
 
@@ -167,6 +168,11 @@ Changes the pitch of notes by steps of 12 semitones.
 Create a sequence with notes for which order and the octaves are changed.
 
 	octavemap('1:-1,2:0,3:1',chord('C')) // => (C3 E G5)
+
+### onbar<a name="onbar"></a>
+.
+
+	onbar(1,sequence('C D E')) // => immediately play C D E
 
 ### parallel<a name="parallel"></a>
 Create a new sequence in which all notes of a musical object are synched in time.
