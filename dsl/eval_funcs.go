@@ -135,6 +135,10 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		ControlsAudio: true,
 		Samples:       `onbar(1,sequence('C D E')) // => immediately play C D E`,
 		Func: func(bars int, seq interface{}) interface{} {
+			if bars <= 0 {
+				notify.Print(notify.Warningf("cannot start on bar [%d], bars start at 1", bars))
+				return nil
+			}
 			s, ok := getSequenceable(getValue(seq)) // unwrap var
 			if !ok {
 				notify.Print(notify.Warningf("cannot onbar (%T) %v", seq, seq))
