@@ -37,7 +37,10 @@ func main() {
 
 	// process file if given
 	if len(*inputFile) > 0 {
-		processInputFile(globalStore, *inputFile)
+		if err := processInputFile(globalStore, *inputFile); err != nil {
+			notify.Print(notify.Error(err))
+			os.Exit(0)
+		}
 	}
 
 	loopControl := melrose.Context().LoopControl
@@ -60,8 +63,6 @@ func main() {
 func welcome() {
 	fmt.Println("\033[1;34mmelrōse\033[0m" + " - program your melodies")
 }
-
-var functionNames = []string{"play"}
 
 func tearDown(line *liner.State, store dsl.VariableStorage, control melrose.LoopController) {
 	dsl.StopAllLoops(store)
@@ -120,19 +121,15 @@ func repl(line *liner.State, store dsl.VariableStorage, control melrose.LoopCont
 exit:
 }
 
-func processInputFile(store dsl.VariableStorage, inputFile string) {
+func processInputFile(store dsl.VariableStorage, inputFile string) error {
 	data, err := ioutil.ReadFile(inputFile)
 	if err != nil {
 		notify.Print(notify.Errorf("unable to read file:%v", err))
-		return
+		return nil
 	}
 	eval := dsl.NewEvaluator(store, melrose.NoLooper)
-	for line, each := range strings.Split(string(data), "\n") {
-		entry := strings.TrimSpace(each)
-		if _, err := eval.EvaluateStatement(entry); err != nil {
-			notify.Print(notify.Errorf("line %d:%v", line, err))
-		}
-	}
+	_, err = eval.EvaluateProgram(string(data))
+	return err
 }
 
 // setupCloseHandler creates a 'listener' on a new goroutine which will notify the
