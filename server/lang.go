@@ -158,6 +158,8 @@ func resultFrom(line int, val interface{}) evaluationResult {
 	var msg string
 	if stor, ok := val.(melrose.Storable); ok {
 		msg = stor.Storex()
+	} else {
+		msg = fmt.Sprintf("%v", val)
 	}
 	// no Object if ok
 	return evaluationResult{Type: t, IsError: false, Message: msg}

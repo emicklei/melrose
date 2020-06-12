@@ -79,7 +79,7 @@ func NewNote(name string, octave int, duration float32, accidental int, dot bool
 
 func (n Note) IsRest() bool { return "=" == n.Name }
 
-func (n Note) DurationFactor() float32 {
+func (n Note) Length() float32 {
 	if n.Dotted {
 		return n.duration * 1.5
 	}
@@ -126,7 +126,7 @@ func (n Note) WithDuration(dur float64) Note {
 
 // Conversion
 
-var noteRegexp = regexp.MustCompile("([½¼⅛12468]?)(\\.?)([CDEFGAB=])([#♯_♭]?)([0-9]?)([-+]?[-+]?[-+]?)")
+var noteRegexp = regexp.MustCompile("([1]?[½¼⅛12468]?)(\\.?)([CDEFGAB=])([#♯_♭]?)([0-9]?)([-+]?[-+]?[-+]?)")
 
 // MustParseNote returns a Note by parsing the input. Panic if it fails.
 func MustParseNote(input string) Note {
@@ -265,6 +265,12 @@ func (n Note) durationf(encoded bool) string {
 		return "1"
 	}
 	return ""
+}
+
+func (n Note) Inspect(i Inspection) {
+	i.Properties["length"] = n.Length()
+	i.Properties["midi"] = n.MIDI()
+	i.Properties["velocity"] = n.Velocity
 }
 
 func (n Note) String() string {

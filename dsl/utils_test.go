@@ -20,6 +20,7 @@ func checkError(t *testing.T, err error) {
 }
 
 func eval(t *testing.T, expression string) interface{} {
+	melrose.Context().LoopControl = new(melrose.TestLooper)
 	r, err := newTestEvaluator().EvaluateExpression(expression)
 	checkError(t, err)
 	return r

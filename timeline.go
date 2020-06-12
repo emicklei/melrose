@@ -180,8 +180,8 @@ func (t *Timeline) schedule(event *scheduledTimelineEvent) {
 	event.next = here
 }
 
-// eventsDo visits all scheduled events and call the block for each.
-func (t *Timeline) eventsDo(block func(event TimelineEvent, when time.Time)) {
+// EventsDo visits all scheduled events and call the block for each.
+func (t *Timeline) EventsDo(block func(event TimelineEvent, when time.Time)) {
 	t.protection.Lock()
 	defer t.protection.Unlock()
 	here := t.head

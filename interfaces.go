@@ -77,3 +77,7 @@ type Replaceable interface {
 type Valueable interface {
 	Value() interface{}
 }
+
+type Inspectable interface {
+	Inspect(i Inspection)
+}

@@ -20,6 +20,20 @@ func String(h Valueable) string {
 	return ""
 }
 
+func Float(h Valueable) float64 {
+	if h == nil {
+		return 0.0
+	}
+	val := h.Value()
+	if val == nil {
+		return 0.0
+	}
+	if v, ok := val.(float64); ok {
+		return v
+	}
+	return 0.0
+}
+
 func Int(h Valueable) int {
 	// TODO notify somehow
 	if h == nil {

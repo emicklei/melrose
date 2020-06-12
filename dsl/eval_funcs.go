@@ -107,12 +107,12 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		Func: func(seq interface{}) interface{} {
 			s, ok := getSequenceable(seq)
 			if !ok {
-				notify.Print(notify.Warningf("cannot compute how many bar for (%T) %v", seq, seq))
+				notify.Print(notify.Warningf("cannot compute how many bars for (%T) %v", seq, seq))
 				return nil
 			}
 			// TODO handle loop
 			biab := melrose.Context().LoopControl.BIAB()
-			return len(s.S().Notes) / biab
+			return float64(s.S().NoteLength()) / float64(biab)
 		}}
 
 	eval["beats"] = Function{
@@ -754,6 +754,7 @@ func getValueable(val interface{}) melrose.Valueable {
 	return melrose.On(val)
 }
 
+// getValue returns the Value() of val iff val is a Valueable, else returns val
 func getValue(val interface{}) interface{} {
 	if v, ok := val.(melrose.Valueable); ok {
 		return v.Value()

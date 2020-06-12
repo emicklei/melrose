@@ -117,6 +117,27 @@ func (s Sequence) S() Sequence {
 	return s
 }
 
+func (s Sequence) NoteLength() float64 {
+	dur := float32(0.0)
+	for _, each := range s.Notes {
+		lead := each[0]
+		dur += lead.Length()
+	}
+	return float64(dur)
+}
+
+func (s Sequence) Inspect(i Inspection) {
+	i.Properties["length"] = s.NoteLength()
+	i.Properties["notes"] = len(s.Notes)
+	i.Properties["bars"] = float64(s.NoteLength()) / float64(Context().LoopControl.BIAB())
+}
+
+// func (s Sequence) HighestNote() Note {
+// 	for _ , g := range s.Notes {
+// 		for
+// 	}
+// }
+
 // Conversion
 
 // Storex returns the command line expression that creates the receiver

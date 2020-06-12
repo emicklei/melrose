@@ -127,14 +127,13 @@ func (m *Midi) printInfo() {
 
 func Open() (*Midi, error) {
 	m := new(Midi)
-	m.enabled = false
 	portmidi.Initialize()
 	deviceID := portmidi.DefaultOutputDeviceID()
 	if deviceID == -1 {
 		return nil, errors.New("no default output MIDI device available")
 	}
 	m.enabled = true
-	m.echo = true
+	m.echo = false
 	// for output
 	m.defaultOutputChannel = DefaultChannel
 	m.changeOutputDeviceID(int(portmidi.DefaultOutputDeviceID()))

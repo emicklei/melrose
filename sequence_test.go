@@ -37,3 +37,14 @@ func TestSequence_Storex(t *testing.T) {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
+
+func TestSequence_Duration(t *testing.T) {
+	m, _ := ParseSequence("C (E G)")
+	if got, want := m.NoteLength(), 0.5; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	m, _ = ParseSequence("e5 d#5 2.c#5")
+	if got, want := m.NoteLength(), 1.25; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}

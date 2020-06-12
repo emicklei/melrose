@@ -55,7 +55,7 @@ func (r *Recording) Sequence() Sequence { return r.S() }
 func (r *Recording) S() Sequence {
 	activeNotes := map[int64]noteChangeEvent{}
 	notes := []Note{}
-	r.timeline.eventsDo(func(event TimelineEvent, when time.Time) {
+	r.timeline.EventsDo(func(event TimelineEvent, when time.Time) {
 		change := event.(NoteChange)
 		if change.isOn {
 			_, ok := activeNotes[change.note]

@@ -43,6 +43,10 @@ func (l *Loop) Start(d AudioDevice) *Loop {
 	return l
 }
 
+func (l *Loop) Inspect(i Inspection) {
+	i.Properties["running"] = l.isRunning
+}
+
 func (l *Loop) reschedule(d AudioDevice, when time.Time) {
 	endOfLastNote := d.Play(l.Target, Context().LoopControl.BPM(), when)
 	// schedule the loop itself so it can play again when Handle is called

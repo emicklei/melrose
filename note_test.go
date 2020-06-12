@@ -188,3 +188,28 @@ func TestNote_Storex(t *testing.T) {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
+
+func TestNoteLength(t *testing.T) {
+	for _, each := range []struct {
+		note   string
+		length float32
+	}{
+		{"=", 0.25},
+		{".=", 0.375},
+		{"c", 0.25},
+		{".c", 0.375},
+		{"2c", 0.5},
+		{"2.c", 0.75},
+		{"1c", 1.0},
+		{"1.c", 1.5},
+		{"4c", 0.25},
+		{"4.c", 0.375},
+		{"8c", 0.125},
+		{"16c", 0.0625},
+	} {
+		n := MustParseNote(each.note)
+		if got, want := n.Length(), each.length; got != want {
+			t.Errorf("got [%s] [%v:%T] want [%v:%T]", each.note, got, got, want, want)
+		}
+	}
+}

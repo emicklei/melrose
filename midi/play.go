@@ -33,7 +33,7 @@ func (m *Midi) Play(seq melrose.Sequenceable, bpm float64, beginAt time.Time) ti
 		var event midiEvent
 		if canCombineMidiEvents(eachGroup) {
 			// combined
-			actualDuration = time.Duration(float32(wholeNoteDuration) * eachGroup[0].DurationFactor())
+			actualDuration = time.Duration(float32(wholeNoteDuration) * eachGroup[0].Length())
 			event = m.combinedMidiEvent(channel, eachGroup)
 			if m.echo {
 				event.echoString = melrose.StringFromNoteGroup(eachGroup)
@@ -41,9 +41,11 @@ func (m *Midi) Play(seq melrose.Sequenceable, bpm float64, beginAt time.Time) ti
 		} else {
 			// one-by-one
 			for i, eachNote := range eachGroup {
-				actualDuration = time.Duration(float32(wholeNoteDuration) * eachNote.DurationFactor())
+				actualDuration = time.Duration(float32(wholeNoteDuration) * eachNote.Length())
 				if eachNote.IsRest() {
-					event.echoString = eachNote.String()
+					if m.echo {
+						event.echoString = eachNote.String()
+					}
 					continue
 				}
 				event = m.combinedMidiEvent(channel, eachGroup[i:i+1])
@@ -86,9 +88,9 @@ func canCombineMidiEvents(notes []melrose.Note) bool {
 	if len(notes) < 2 {
 		return false
 	}
-	d := notes[0].DurationFactor()
+	d := notes[0].Length()
 	for _, each := range notes[1:] {
-		if each.DurationFactor() != d {
+		if each.Length() != d {
 			return false
 		}
 	}

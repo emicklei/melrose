@@ -22,7 +22,7 @@ func (m midiEvent) String() string {
 	if m.onoff == noteOff {
 		onoff = "off"
 	}
-	return fmt.Sprintf("[%d] %s %s", m.channel, m.echoString, onoff)
+	return fmt.Sprintf("ch=%d nrs=%v notes=%s %s", m.channel, m.which, m.echoString, onoff)
 }
 
 func (m midiEvent) Handle(tim *melrose.Timeline, when time.Time) {
