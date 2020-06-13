@@ -129,7 +129,7 @@ func (s Sequence) NoteLength() float64 {
 func (s Sequence) Inspect(i Inspection) {
 	i.Properties["length"] = s.NoteLength()
 	i.Properties["notes"] = len(s.Notes)
-	i.Properties["bars"] = float64(s.NoteLength()) / float64(Context().LoopControl.BIAB())
+	i.Properties["bars"] = float64(s.NoteLength()) * 4 / float64(Context().LoopControl.BIAB()) // 4 because signature
 }
 
 // func (s Sequence) HighestNote() Note {

@@ -14,7 +14,13 @@ type AtIndex struct {
 func (a AtIndex) S() melrose.Sequence {
 	s := a.Target.S()
 	i := melrose.Int(a.Index)
-	return melrose.BuildSequence(s.At(i))
+	if i < 1 {
+		return melrose.Sequence{}
+	}
+	if i > len(s.Notes) {
+		return melrose.Sequence{}
+	}
+	return melrose.BuildSequence(s.At(i - 1))
 }
 
 func (a AtIndex) Storex() string {

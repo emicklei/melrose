@@ -162,6 +162,18 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			return melrose.NewMIDI(nrVal, velVal)
 		}}
 
+	eval["watch"] = Function{
+		Title:       "Watch creator",
+		Description: "create a Note",
+		Func: func(m interface{}) interface{} {
+			s, ok := getSequenceable(getValue(m))
+			if !ok {
+				notify.Print(notify.Warningf("cannot watch (%T) %v", m, m))
+				return nil
+			}
+			return melrose.Watch{Target: s}
+		}}
+
 	eval["chord"] = Function{
 		Title:       "Chord creator",
 		Description: `create a Chord from its string <a href="/melrose/index.html#chord-not">notation</a>`,

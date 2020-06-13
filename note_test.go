@@ -19,7 +19,7 @@ var parsetests = []struct {
 	{"4C3", "C", 3, 0.25, 0, false, Normal},
 	{"C#3", "C", 3, 0.25, 1, false, Normal},
 	{"4.C#3", "C", 3, 0.25, 1, true, Normal},
-	{"16C", "C", 4, 0.25, 0, false, Normal},
+	{"16C", "C", 4, 0.0625, 0, false, Normal},
 	{"4C#", "C", 4, 0.25, 1, false, Normal},
 	{"C#", "C", 4, 0.25, 1, false, Normal},
 	{"B_", "B", 4, 0.25, -1, false, Normal}, //8

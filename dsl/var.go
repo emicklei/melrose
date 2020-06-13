@@ -1,6 +1,10 @@
 package dsl
 
-import "github.com/emicklei/melrose"
+import (
+	"fmt"
+
+	"github.com/emicklei/melrose"
+)
 
 type VariableStorage interface {
 	NameFor(value interface{}) string
@@ -20,7 +24,7 @@ func (v variable) Storex() string {
 }
 
 func (v variable) String() string {
-	return v.Name
+	return fmt.Sprintf("var %s", v.Name)
 }
 
 func (v variable) S() melrose.Sequence {
