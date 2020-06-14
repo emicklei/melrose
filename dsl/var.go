@@ -30,12 +30,12 @@ func (v variable) String() string {
 func (v variable) S() melrose.Sequence {
 	m, ok := v.store.Get(v.Name)
 	if !ok {
-		return melrose.Sequence{}
+		return melrose.EmptySequence
 	}
 	if s, ok := m.(melrose.Sequenceable); ok {
 		return s.S()
 	}
-	return melrose.Sequence{}
+	return melrose.EmptySequence
 }
 
 // Replaced is part of Replaceable

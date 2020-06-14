@@ -17,7 +17,7 @@ func (j JoinMapper) Storex() string {
 func (j JoinMapper) S() melrose.Sequence {
 	join, ok := j.Target.Value().(Join)
 	if !ok {
-		return melrose.Sequence{}
+		return melrose.EmptySequence
 	}
 	source := join.Target
 	target := []melrose.Sequenceable{}

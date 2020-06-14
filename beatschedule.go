@@ -17,6 +17,12 @@ func NewBeatSchedule() *BeatSchedule {
 	}
 }
 
+func (s *BeatSchedule) IsEmpty() bool {
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
+	return len(s.entries) == 0
+}
+
 func (s *BeatSchedule) Reset() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()

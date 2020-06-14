@@ -188,20 +188,18 @@ func (b *Beatmaster) Start() {
 			case <-b.done:
 				return
 			case <-b.ticker.C:
-				actions := b.schedule.Unschedule(b.beats)
-				for _, each := range actions {
-					each(b.beats)
+				if b.schedule.IsEmpty() {
+					b.beats = 0
+				} else {
+					actions := b.schedule.Unschedule(b.beats)
+					for _, each := range actions {
+						each(b.beats)
+					}
+					b.beats++
 				}
-				b.beats++
 			}
 		}
 	}()
-
-	/**
-	  select {
-	  -
-	  **/
-
 }
 
 func tickerDuration(bpm float64) time.Duration {

@@ -54,7 +54,7 @@ func (n NoteMap) S() melrose.Sequence {
 	notelike, ok := n.Target.Value().(melrose.NoteConvertable)
 	if !ok {
 		// TODO warning here?
-		return melrose.Sequence{}
+		return melrose.EmptySequence
 	}
 	max := 0
 	min := 10000
@@ -98,14 +98,14 @@ func (m NoteMerge) S() melrose.Sequence {
 			eachMap, ok := eachMapVal.Value().(NoteMap)
 			if !ok {
 				// TODO warning here?
-				return melrose.Sequence{}
+				return melrose.EmptySequence
 			}
 			for _, eachIndex := range eachMap.Indices {
 				if eachIndex == g {
 					notelike, ok := eachMap.Target.Value().(melrose.NoteConvertable)
 					if !ok {
 						// TODO warning here?
-						return melrose.Sequence{}
+						return melrose.EmptySequence
 					}
 					group = append(group, notelike.ToNote())
 					break

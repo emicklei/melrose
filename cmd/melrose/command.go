@@ -58,7 +58,7 @@ func handleMIDISetting(args []string) notify.Message {
 
 func handleBeatSetting(args []string) notify.Message {
 	l := melrose.Context().LoopControl
-	fmt.Printf("Beats per minute (BPM):%v\n", l.BPM())
-	fmt.Printf("Beats in a bar  (BIAB):%d\n", l.BIAB())
+	fmt.Printf("[sequencer] beats per minute (BPM): %v\n", l.BPM())
+	fmt.Printf("[sequencer] beats in a bar  (BIAB): %d\n", l.BIAB())
 	return nil
 }

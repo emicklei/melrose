@@ -65,8 +65,11 @@ func welcome() {
 }
 
 func tearDown(line *liner.State, store dsl.VariableStorage, control melrose.LoopController) {
-	dsl.StopAllLoops(store)
-	control.Stop()
+	//dsl.StopAllLoops(store)
+	//control.Stop()
+
+	melrose.Context().LoopControl.Reset()
+	melrose.Context().AudioDevice.Reset()
 	if f, err := os.Create(history); err != nil {
 		notify.Print(notify.Errorf("error writing history file:%v", err))
 	} else {

@@ -21,7 +21,7 @@ func (j Join) Storex() string {
 
 func (j Join) S() melrose.Sequence {
 	if len(j.Target) == 0 {
-		return melrose.Sequence{}
+		return melrose.EmptySequence
 	}
 	head := j.Target[0].S()
 	for i := 1; i < len(j.Target); i++ {

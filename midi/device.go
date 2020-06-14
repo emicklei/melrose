@@ -113,7 +113,7 @@ func (m *Midi) printInfo() {
 
 	for i := 0; i < portmidi.CountDevices(); i++ {
 		midiDeviceInfo = portmidi.Info(portmidi.DeviceID(i)) // returns info about a MIDI device
-		fmt.Printf("[midi] cevice id %d: ", i)
+		fmt.Printf("[midi] device id %d: ", i)
 		usage := "output"
 		if midiDeviceInfo.IsInputAvailable {
 			usage = "input"

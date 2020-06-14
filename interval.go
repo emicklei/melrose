@@ -63,6 +63,12 @@ func (i Interval) Storex() string {
 	return fmt.Sprintf("interval(%v,%v,%v,'%s')", i.from, i.to, i.by, name)
 }
 
+// Inpsect is part of Inspectable
+func (i Interval) Inspect(n Inspection) {
+	n.Properties["value"] = i.Value()
+	n.Properties["length"] = (Int(i.to)-Int(i.from))/Int(i.by) + 1
+}
+
 // ParseIntervalStrategy return the non-exposed strategy based on the name. If unknown then return OnceFromTo ("once").
 func ParseIntervalStrategy(s string) intervalStrategy {
 	if is, ok := intervalStrategies[s]; ok {

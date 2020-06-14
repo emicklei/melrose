@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var EmptySequence = Sequence{}
+
 type Sequence struct {
 	Notes [][]Note
 }
@@ -84,7 +86,7 @@ const (
 
 // ParseSequence creates a Sequence by reading the format "Note* [Note Note*]* Note*"
 func ParseSequence(input string) (Sequence, error) {
-	m := Sequence{}
+	m := EmptySequence
 	// hack to keep scanning simple, TODO
 	splitable := strings.Replace(input, groupOpen, " "+groupOpen+" ", -1)
 	splitable = strings.Replace(splitable, groupClose, " "+groupClose+" ", -1)
