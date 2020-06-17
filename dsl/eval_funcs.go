@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/emicklei/melrose/midi/file"
+
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
 	"github.com/emicklei/melrose/op"
@@ -710,6 +712,20 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 	eval["next"] = Function{
 		Func: func(v interface{}) interface{} {
 			return melrose.Nexter{Target: getValueable(v)}
+		}}
+
+	eval["export"] = Function{
+		Func: func(filename string, m interface{}) interface{} {
+			if len(filename) == 0 {
+				notify.Print(notify.Warningf("missing filename to export MIDI %v", m))
+				return nil
+			}
+			targetS, ok := getSequenceable(m)
+			if !ok {
+				notify.Print(notify.Warningf("cannot MIDI export (%T) %v", m, m))
+				return nil
+			}
+			return file.Export(filename, targetS, melrose.Context().LoopControl.BPM())
 		}}
 
 	eval["replace"] = Function{

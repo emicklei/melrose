@@ -69,7 +69,7 @@ var midi = []struct {
 	{"C#", 61},
 	{"C0", 12},
 	{"C9", 120},
-	{"B9", 131},
+	{"G9", 127},
 }
 
 func TestMIDI(t *testing.T) {

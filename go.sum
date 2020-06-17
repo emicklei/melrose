@@ -1,4 +1,6 @@
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
+github.com/Try431/EasyMIDI v1.0.3 h1:SQ+HGlh7Ocn6kW93zv/oSJSQMsf4WKh2SK/mhcC8Guc=
+github.com/Try431/EasyMIDI v1.0.3/go.mod h1:G2Hh7MmGyph2YRKHBcfMeH78kmRGo1nwo0Gy9TkzdAc=
 github.com/antonmedv/expr v1.8.2 h1:BfkVHGudYqq7jp3Ji33kTn+qZ9D19t/Mndg0ag/Ycq4=
 github.com/antonmedv/expr v1.8.2/go.mod h1:5qsM3oLGDND7sDmQGDXHkYfkjYMUX14qsgqmHhwGEk8=
 github.com/antonmedv/expr v1.8.5 h1:QwZVa6LamhOGpElAWqgkOKGcTAXQnCja+YcypTUncC8=

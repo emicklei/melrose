@@ -4,3 +4,4 @@ melrose.json
 backup_melrose.json
 .vscode
 target
+*.mid

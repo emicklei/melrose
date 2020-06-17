@@ -3,6 +3,7 @@ module github.com/emicklei/melrose
 go 1.14
 
 require (
+	github.com/Try431/EasyMIDI v1.0.3
 	github.com/antonmedv/expr v1.8.8
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/peterh/liner v1.2.0

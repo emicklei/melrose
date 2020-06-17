@@ -62,13 +62,6 @@ type LoopController interface {
 	Plan(bars int64, beats int64, seq Sequenceable)
 }
 
-type MapFunc func(seq Sequenceable) Sequenceable
-
-// TODO experiment
-type Mappeable interface {
-	Map(m MapFunc) Mappeable
-}
-
 type Replaceable interface {
 	// Returns a new value in which any occurrences of "from" are replaced by "to".
 	Replaced(from, to Sequenceable) Sequenceable

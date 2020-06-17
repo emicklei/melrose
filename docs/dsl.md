@@ -43,6 +43,7 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 - <a href="#sequencemap">sequencemap</a>
 - <a href="#serial">serial</a>
 - <a href="#undynamic">undynamic</a>
+- <a href="#watch">watch</a>
 
 ## Audio control functions
 
@@ -247,6 +248,11 @@ Serialise any grouping of notes in one or more musical objects.
 Undynamic all the notes in a musical object.
 
 	undynamic('A+ B++ C-- D-') // =>  A B C D
+
+### watch<a name="watch"></a>
+Create a Note.
+
+	
 
 
 

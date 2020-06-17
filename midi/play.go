@@ -24,7 +24,7 @@ func (m *Midi) Play(seq melrose.Sequenceable, bpm float64, beginAt time.Time) ti
 		channel = sel.Channel()
 	}
 	actualSequence := seq.S()
-	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/bpm))) * time.Millisecond // 4 = signature
+	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/bpm))) * time.Millisecond // 4 = signature TODO create func
 	for _, eachGroup := range actualSequence.Notes {
 		if len(eachGroup) == 0 {
 			continue
