@@ -3,7 +3,6 @@ package file
 import (
 	"bufio"
 	"encoding/binary"
-	"log"
 	"math"
 	"os"
 	"time"
@@ -65,11 +64,12 @@ func Export(fileName string, seq melrose.Sequenceable, bpm float64) error {
 		channel := uint8(0x00)
 		actualDuration := time.Duration(float32(wholeNoteDuration) * group[0].Length())
 		if group[0].IsRest() {
+			//log.Println("rest", moment)
 			moment = moment + actualDuration
 			continue
 		}
 		absoluteTicks := ticksFromDuration(moment, quarterMS)
-		log.Println("on", moment)
+		//log.Println("on", moment)
 		for i, each := range group {
 			var deltaTicks uint32 = 0
 			if i == 0 {
@@ -86,7 +86,7 @@ func Export(fileName string, seq melrose.Sequenceable, bpm float64) error {
 		}
 		lastTicks = absoluteTicks
 		moment = moment + actualDuration
-		log.Println("off", moment)
+		//log.Println("off", moment)
 		absoluteTicks = ticksFromDuration(moment, quarterMS)
 		for i, each := range group {
 			var deltaTicks uint32 = 0
@@ -133,7 +133,8 @@ func Export(fileName string, seq melrose.Sequenceable, bpm float64) error {
 
 func ticksFromDuration(dur time.Duration, quarterUSFromBPM uint32) uint32 {
 	us := dur.Microseconds()
-	return uint32(us) / quarterUSFromBPM * uint32(ticksPerBeat)
+	f := float64(us) / float64(quarterUSFromBPM) * float64(ticksPerBeat)
+	return uint32(math.Round(f))
 }
 
 // duration in microseconds of one quarter note

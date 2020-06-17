@@ -15,8 +15,31 @@ func Test_microsecondsFromBPM(t *testing.T) {
 }
 
 func Test_ticksFromDuration(t *testing.T) {
-	if got, want := ticksFromDuration(5*time.Second, quarterUSFromBPM(120.0)), uint32(9600); got != want {
-		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	for _, each := range []struct {
+		dur   string
+		bpm   float64
+		ticks int
+	}{
+		{
+			"5s",
+			120.0,
+			9600,
+		},
+		{
+			"1s",
+			120.0,
+			1920,
+		},
+		{
+			"125ms",
+			120.0,
+			240,
+		},
+	} {
+		d, _ := time.ParseDuration(each.dur)
+		if got, want := ticksFromDuration(d, quarterUSFromBPM(each.bpm)), uint32(each.ticks); got != want {
+			t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+		}
 	}
 }
 

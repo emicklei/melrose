@@ -79,3 +79,6 @@ func (l *Loop) SetTarget(newTarget Sequenceable) {
 	defer l.mutex.Unlock()
 	l.Target = newTarget
 }
+
+func (l *Loop) Inspect(i Inspection) {
+}

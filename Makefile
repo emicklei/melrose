@@ -1,6 +1,8 @@
 LATEST_TAG := $(shell git describe --abbrev=0)
 
-run: test install snippets grammar dslmd
+refresh: test install snippets grammar dslmd
+
+run: refresh
 	melrose
 
 test:
