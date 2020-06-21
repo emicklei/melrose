@@ -752,17 +752,6 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 			return op.NewNoteMerge(count, noteMaps)
 		}}
 
-	// eval["onbeat"] = Function{
-	// 	Func: func(beats int, v melrose.Valueable) interface{} {
-	// 		beatsVal := getValueable(beats)
-	// 		return op.NewOnBeat(beatsVal, v, melrose.Context().LoopControl)
-	// 	}}
-
-	// eval["value"] = Function{
-	// 	Func: func(v interface{}) interface{} {
-	// 		return getValueable(v).Value()
-	// 	}}
-
 	eval["next"] = Function{
 		Func: func(v interface{}) interface{} {
 			return melrose.Nexter{Target: getValueable(v)}
@@ -774,12 +763,15 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 				notify.Print(notify.Warningf("missing filename to export MIDI %v", m))
 				return nil
 			}
-			targetS, ok := getSequenceable(m)
+			_, ok := getSequenceable(m)
 			if !ok {
 				notify.Print(notify.Warningf("cannot MIDI export (%T) %v", m, m))
 				return nil
 			}
-			return file.Export(filename, targetS, melrose.Context().LoopControl.BPM())
+			if !strings.HasSuffix(filename, "mid") {
+				filename += ".mid"
+			}
+			return file.Export(filename, getValue(m), melrose.Context().LoopControl.BPM())
 		}}
 
 	eval["replace"] = Function{

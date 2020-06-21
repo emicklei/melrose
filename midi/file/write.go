@@ -3,6 +3,7 @@ package file
 import (
 	"bufio"
 	"encoding/binary"
+	"fmt"
 	"math"
 	"os"
 	"time"
@@ -14,50 +15,44 @@ import (
 
 const ticksPerBeat uint16 = 960
 
-// Export creates (overwrites) a SMF Midi file
-func Export(fileName string, seq melrose.Sequenceable, bpm float64) error {
-	// Create division
-	// https://www.recordingblogs.com/wiki/time-division-of-a-midi-file
-	division, err := smf.NewDivision(ticksPerBeat, smf.NOSMTPE)
-	if err != nil {
-		return err
+// Export creates (overwrites) a SMF multi-track Midi file
+func Export(fileName string, m interface{}, bpm float64) error {
+	if mt, ok := m.(melrose.MultiTrack); ok {
+		return exportMultiTrack(fileName, mt, bpm)
 	}
-
-	// Create new midi struct
-	midi, err := smf.NewSMF(smf.Format0, *division)
-	if err != nil {
-		return err
+	if seq, ok := m.(melrose.Sequenceable); ok {
+		t := melrose.NewTrack("melrōse-track", 1)
+		t.Add(seq)
+		mt := melrose.MultiTrack{Tracks: []melrose.Valueable{melrose.On(t)}}
+		return exportMultiTrack(fileName, mt, bpm)
 	}
+	return fmt.Errorf("cannot export [%v] (%T)", m, m)
+}
 
+func createMidiTrack(t *melrose.Track, bpm float64) (*smf.Track, error) {
 	// Create track struct
-	track := &smf.Track{}
-
-	// Add track to new midi struct
-	err = midi.AddTrack(track)
-	if err != nil {
-		return err
-	}
+	track := new(smf.Track)
 
 	// https://www.recordingblogs.com/wiki/midi-set-tempo-meta-message
-	// time = 10000 * (500ms / 960)  5.2 sec
+	// time = 10000 * (500ms / 960) ~ 5.2 sec
 
 	quarterMS := quarterUSFromBPM(bpm)
 	tempoData := make([]byte, 4)
 	binary.BigEndian.PutUint32(tempoData, quarterMS)
 	tempo, err := smf.NewMetaEvent(0, smf.MetaSetTempo, tempoData[1:]) // take 3 bytes only
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = track.AddEvent(tempo)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// All the notes
 	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/bpm))) * time.Millisecond // 4 = signature TODO create func
 	var moment time.Duration
 	var lastTicks uint32 = 0
-	for _, group := range seq.S().Notes {
+	for _, group := range t.S().Notes { // TODO
 		if len(group) == 0 {
 			continue
 		}
@@ -77,11 +72,11 @@ func Export(fileName string, seq melrose.Sequenceable, bpm float64) error {
 			}
 			noteOn, err := smf.NewMIDIEvent(deltaTicks, smf.NoteOnStatus, channel, uint8(each.MIDI()), uint8(each.Velocity))
 			if err != nil {
-				return err
+				return nil, err
 			}
 			err = track.AddEvent(noteOn)
 			if err != nil {
-				return err
+				return nil, err
 			}
 		}
 		lastTicks = absoluteTicks
@@ -95,11 +90,11 @@ func Export(fileName string, seq melrose.Sequenceable, bpm float64) error {
 			}
 			noteOff, err := smf.NewMIDIEvent(deltaTicks, smf.NoteOffStatus, channel, uint8(each.MIDI()), 0x00) // zero velocity
 			if err != nil {
-				return err
+				return nil, err
 			}
 			err = track.AddEvent(noteOff)
 			if err != nil {
-				return err
+				return nil, err
 			}
 		}
 		lastTicks = absoluteTicks
@@ -108,11 +103,46 @@ func Export(fileName string, seq melrose.Sequenceable, bpm float64) error {
 	// Track end
 	endTrack, err := smf.NewMetaEvent(0, smf.MetaEndOfTrack, []byte{})
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = track.AddEvent(endTrack)
 	if err != nil {
+		return nil, err
+	}
+
+	return track, nil
+}
+
+func exportMultiTrack(fileName string, m melrose.MultiTrack, bpm float64) error {
+	// Create division
+	// https://www.recordingblogs.com/wiki/time-division-of-a-midi-file
+	division, err := smf.NewDivision(ticksPerBeat, smf.NOSMTPE)
+	if err != nil {
 		return err
+	}
+
+	// Create new midi struct
+	midi, err := smf.NewSMF(smf.Format1, *division)
+	if err != nil {
+		return err
+	}
+
+	for i, eachVal := range m.Tracks {
+		if each, ok := eachVal.Value().(*melrose.Track); ok {
+
+			// Create track struct
+			track, err := createMidiTrack(each, bpm)
+			if err != nil {
+				return err
+			}
+			// Add track to new midi struct
+			err = midi.AddTrack(track)
+			if err != nil {
+				return err
+			}
+		} else {
+			return fmt.Errorf("multi track contains non-track at [%d] (%T)", i+1, eachVal.Value())
+		}
 	}
 
 	// Actual write
