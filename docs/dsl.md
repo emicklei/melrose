@@ -42,6 +42,7 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 - <a href="#reverse">reverse</a>
 - <a href="#sequencemap">sequencemap</a>
 - <a href="#serial">serial</a>
+- <a href="#track">track</a>
 - <a href="#undynamic">undynamic</a>
 - <a href="#watch">watch</a>
 
@@ -55,7 +56,7 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 - <a href="#end">end</a>
 - <a href="#go">go</a>
 - <a href="#loop">loop</a>
-- <a href="#onbar">onbar</a>
+- <a href="#multi">multi</a>
 - <a href="#play">play</a>
 - <a href="#record">record</a>
 
@@ -85,7 +86,7 @@ Set the Beats Per Minute [1..300]; default is 120.
 	
 
 ### channel<a name="channel"></a>
-Select a MIDI channel, must be in [0..16].
+Select a MIDI channel, must be in [1..15].
 
 	channel(2,sequence('C2 E3') // plays on instrument connected to MIDI channel 2'
 
@@ -153,6 +154,11 @@ Create a Note.
 
 	midi(52,80) // => E3+
 
+### multi<a name="multi"></a>
+.
+
+	
+
 ### note<a name="note"></a>
 Create a Note  from its string <a href="/index.html#note-not">notation</a>.
 
@@ -169,11 +175,6 @@ Changes the pitch of notes by steps of 12 semitones.
 Create a sequence with notes for which order and the octaves are changed.
 
 	octavemap('1:-1,2:0,3:1',chord('C')) // => (C3 E G5)
-
-### onbar<a name="onbar"></a>
-.
-
-	onbar(1,sequence('C D E')) // => immediately play C D E
 
 ### parallel<a name="parallel"></a>
 Create a new sequence in which all notes of a musical object are synched in time.
@@ -243,6 +244,11 @@ Serialise any grouping of notes in one or more musical objects.
 	serial(chord('E')) // => E G B
 
 	serial(sequence('(C D)'),note('E')) // => C D E
+
+### track<a name="track"></a>
+.
+
+	track("lullaby",1) // => a new track on MIDI channel 1
 
 ### undynamic<a name="undynamic"></a>
 Undynamic all the notes in a musical object.

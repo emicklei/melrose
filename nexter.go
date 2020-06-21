@@ -2,7 +2,7 @@ package melrose
 
 import "fmt"
 
-// Nexter is an empty Sequence that has a sideeffect to call Value() on its target when asked for the Sequence.
+// Nexter is an empty Sequence that has a sideeffect to call Value().Next() on its target when asked for the Sequence.
 type Nexter struct {
 	Target Valueable
 }

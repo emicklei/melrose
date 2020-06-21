@@ -74,3 +74,7 @@ type Valueable interface {
 type Inspectable interface {
 	Inspect(i Inspection)
 }
+
+type Playable interface {
+	Play(d AudioDevice) error
+}

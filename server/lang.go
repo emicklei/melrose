@@ -75,14 +75,17 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 
 		// check if play was requested and is playable
 		if query.Get("action") == "play" {
-			if s, ok := returnValue.(melrose.Sequenceable); ok {
-				melrose.Context().AudioDevice.Play(
-					s,
-					melrose.Context().LoopControl.BPM(),
-					time.Now())
-			}
-			if lp, ok := returnValue.(*melrose.Loop); ok {
-				melrose.Context().LoopControl.Begin(lp)
+			// first check Playable
+			if pl, ok := returnValue.(melrose.Playable); ok {
+				_ = pl.Play(melrose.Context().AudioDevice)
+			} else {
+				// any sequenceable is playable
+				if s, ok := returnValue.(melrose.Sequenceable); ok {
+					melrose.Context().AudioDevice.Play(
+						s,
+						melrose.Context().LoopControl.BPM(),
+						time.Now())
+				}
 			}
 		}
 		// loop operation

@@ -80,5 +80,8 @@ func (l *Loop) SetTarget(newTarget Sequenceable) {
 	l.Target = newTarget
 }
 
-func (l *Loop) Inspect(i Inspection) {
+// Play is part of Playable
+func (l *Loop) Play(d AudioDevice) error {
+	Context().LoopControl.Begin(l)
+	return nil
 }

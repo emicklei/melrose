@@ -131,7 +131,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 
 	eval["onbar"] = Function{
-		Title:         "Schedule to play a musical object on a bar (starts with 1)",
+		//Title:         "Schedule to play a musical object on a bar (starts with 1)",
 		Prefix:        "onb",
 		Template:      `onbar('${1:bar},${2:object}')`,
 		ControlsAudio: true,
@@ -148,6 +148,45 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			}
 			melrose.Context().LoopControl.Plan(int64(bars-1), int64(0), s)
 			return nil
+		}}
+
+	eval["track"] = Function{
+		Title:    "Create a new Track",
+		Prefix:   "tr",
+		Template: `track('${1:title},${2:channel}')`,
+		Samples:  `track("lullaby",1) // => a new track on MIDI channel 1`,
+		Func: func(title string, channel int, playables ...interface{}) interface{} {
+			if len(title) == 0 {
+				notify.Print(notify.Warningf("cannot have a track without title"))
+				return nil
+			}
+			if channel < 1 || channel > 15 {
+				notify.Print(notify.Warningf("MIDI channel must be in [1..15]"))
+				return nil
+			}
+			tr := melrose.NewTrack(title, channel)
+			for _, p := range playables {
+				if s, ok := getSequenceable(p); !ok {
+					notify.Print(notify.Warningf("cannot compose track with (%T) %v", p, p))
+					return nil
+				} else {
+					tr.Add(s)
+				}
+			}
+			return tr
+		}}
+
+	eval["multi"] = Function{
+		Title:         "Create a new multi track",
+		Prefix:        "mtr",
+		Template:      `multi()`,
+		ControlsAudio: true,
+		Func: func(varOrTrack ...interface{}) interface{} {
+			tracks := []melrose.Valueable{}
+			for _, each := range varOrTrack {
+				tracks = append(tracks, getValueable(each))
+			}
+			return melrose.MultiTrack{Tracks: tracks}
 		}}
 
 	eval["midi"] = Function{
@@ -401,6 +440,21 @@ note('2E#.--')`,
 			return op.NewAtIndex(indexVal, objectSeq)
 		}}
 
+	eval["put"] = Function{
+		//Title:       "Index getter",
+		//Description: "create an index getter (1-based) to select a musical object",
+		//Prefix:      "at",
+		//Template:    `at(${1:index},${2:object})`,
+		//Samples:     `at(1,scale('E/m')) // => E`,
+		Func: func(bar int, seq interface{}) interface{} {
+			s, ok := getSequenceable(seq)
+			if !ok {
+				notify.Print(notify.Warningf("cannot put on track (%T) %v", seq, seq))
+				return nil
+			}
+			return melrose.NewSequenceOnTrack(bar, s)
+		}}
+
 	eval["random"] = Function{
 		//Title:       "Random generator",
 		Description: "create a random integer generator. Use next() to get a new integer",
@@ -632,7 +686,7 @@ end(l1)`,
 	// END Loop and control
 	eval["channel"] = Function{
 		Title:         "MIDI channel modifier ; must be a top-level modifier",
-		Description:   "select a MIDI channel, must be in [0..16]",
+		Description:   "select a MIDI channel, must be in [1..15]",
 		ControlsAudio: true,
 		Prefix:        "chan",
 		Alias:         "Ch",

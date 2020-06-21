@@ -14,7 +14,13 @@ type Repeat struct {
 
 func (r Repeat) S() melrose.Sequence {
 	times := melrose.Int(r.Times)
-	return Join{Target: r.Target}.S().Repeated(times)
+	repeated := []melrose.Sequenceable{}
+	for i := 0; i < times; i++ {
+		for _, each := range r.Target {
+			repeated = append(repeated, each.S())
+		}
+	}
+	return Join{Target: repeated}.S()
 }
 
 func (r Repeat) Storex() string {
