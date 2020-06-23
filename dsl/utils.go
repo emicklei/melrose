@@ -1,6 +1,8 @@
 package dsl
 
 import (
+	"time"
+
 	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
 )
@@ -15,4 +17,23 @@ func StopAllLoops(storage VariableStorage) {
 			}
 		}
 	}
+}
+
+// Run executes the program (source) and return the value of the last expression or any error while executing.
+func Run(ctx *melrose.PlayContext, source string) (interface{}, error) {
+	store := NewVariableStore()
+	eval := NewEvaluator(store, ctx.LoopControl)
+
+	r, err := eval.EvaluateProgram(source)
+
+	if err != nil {
+		return r, err
+	}
+
+	// wait until all sounds are played
+	for !ctx.AudioDevice.Timeline().IsEmpty() {
+		time.Sleep(1 * time.Second)
+	}
+
+	return r, err
 }

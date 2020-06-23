@@ -19,33 +19,30 @@ See [documentation](https://emicklei.github.io/melrose/) how to install and use 
 
     import (
       "log"
-      "time"
 
-      m "github.com/emicklei/melrose"
+      "github.com/emicklei/melrose"
+      "github.com/emicklei/melrose/dsl"
       "github.com/emicklei/melrose/midi"
-      "github.com/emicklei/melrose/op"
     )
 
     func main() {
+      ctx := melrose.Context()
+
       audio, err := midi.Open()
       if err != nil {
         log.Fatal(err)
       }
       defer audio.Close()
+      ctx.SetCurrentDevice(audio)
 
-      f1 := m.MustParseSequence("C D E C")
-      f2 := m.MustParseSequence("E F 2G")
-      f3 := m.MustParseSequence("8G 8A 8G 8F E C")
-      f4 := m.MustParseSequence("2C 2G3 2C 1=")
-      r8 := op.Repeat{Target: []m.Sequenceable{m.Note("=")}, Times: m.On(8)}
-
-      v1 := op.Join{Target: []m.Sequenceable{f1, f1, f2, f2, f3, f3, f4}}
-      v2 := op.Join{Target: []m.Sequenceable{r8, v1}}
-      v3 := op.Join{Target: []m.Sequenceable{r8, v2}}
-
-      audio.Play(op.Join{Target: []m.Sequenceable{v1, v2, v3}}, 200, time.Now())
+      _, err = dsl.Run(ctx, `
+    bpm(120)
+    play(sequence('C C# D D# E F G 2A- 2A#-- 2C5---'))
+    `)
+      if err != nil {
+        log.Fatal(err)
+      }
     }
 
-
 Software is licensed under [Apache 2.0 license](LICENSE).
-(c) 2014-2020 http://ernestmicklei.com 
+(c) 2014-2020 [ernestmicklei.com](http://ernestmicklei.com)
