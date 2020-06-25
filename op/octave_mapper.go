@@ -88,3 +88,17 @@ func (o OctaveMapper) Storex() string {
 	fmt.Fprintf(&b, ")")
 	return b.String()
 }
+
+// Replaced is part of Replaceable
+func (o OctaveMapper) Replaced(from, to melrose.Sequenceable) melrose.Sequenceable {
+	if melrose.IsIdenticalTo(o, from) {
+		return to
+	}
+	if melrose.IsIdenticalTo(o.Target, from) {
+		return OctaveMapper{Target: to, IndexOffsets: o.IndexOffsets}
+	}
+	if rep, ok := o.Target.(melrose.Replaceable); ok {
+		return OctaveMapper{Target: rep.Replaced(from, to), IndexOffsets: o.IndexOffsets}
+	}
+	return o
+}

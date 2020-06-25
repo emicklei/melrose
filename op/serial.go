@@ -22,6 +22,7 @@ func (a Serial) S() Sequence {
 	return BuildSequence(n)
 }
 
+// Storex is part of Storable
 func (a Serial) Storex() string {
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "serial(")
@@ -37,4 +38,12 @@ func (a Serial) Storex() string {
 	}
 	fmt.Fprintf(&b, ")")
 	return b.String()
+}
+
+// Replaced is part of Replaceable
+func (a Serial) Replaced(from, to Sequenceable) Sequenceable {
+	if IsIdenticalTo(a, from) {
+		return to
+	}
+	return Serial{Target: replacedAll(a.Target, from, to)}
 }
