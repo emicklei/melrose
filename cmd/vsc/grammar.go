@@ -22,8 +22,12 @@ func grammar() {
 	content := string(data)
 
 	varstore := dsl.NewVariableStore()
+	ctx := melrose.PlayContext{
+		VariableStorage: varstore,
+		LoopControl:     melrose.NoLooper,
+	}
 	var buffer bytes.Buffer
-	for k, _ := range dsl.EvalFunctions(varstore, melrose.NoLooper) {
+	for k, _ := range dsl.EvalFunctions(ctx) {
 		if buffer.Len() > 0 {
 			fmt.Fprintf(&buffer, "|")
 		}

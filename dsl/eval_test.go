@@ -20,7 +20,7 @@ func TestIsCompatible(t *testing.T) {
 }
 
 func TestNestedFunctions(t *testing.T) {
-	e := NewEvaluator(NewVariableStore(), melrose.NoLooper)
+	e := NewEvaluator(testContext())
 	input := `pitch(1,repeat(1,reverse(join(note('E'),sequence('F G')))))`
 	_, err := e.EvaluateExpression(input)
 	if err != nil {
@@ -29,7 +29,7 @@ func TestNestedFunctions(t *testing.T) {
 }
 
 func TestMulitLineEvaluate(t *testing.T) {
-	e := NewEvaluator(NewVariableStore(), melrose.NoLooper)
+	e := NewEvaluator(testContext())
 	input := `sequence("
 		C D E C 
 		C D E C 
@@ -93,32 +93,35 @@ func Test_isAssignment(t *testing.T) {
 }
 
 func TestEvaluateProgram_SingleLine(t *testing.T) {
-	v := NewVariableStore()
-	e := NewEvaluator(v, melrose.NoLooper)
+	e := NewEvaluator(testContext())
 	if _, err := e.EvaluateProgram(`a = 1`); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestEvaluateProgram_CommentLine(t *testing.T) {
-	v := NewVariableStore()
-	e := NewEvaluator(v, melrose.NoLooper)
+	e := NewEvaluator(testContext())
 	if _, err := e.EvaluateProgram(`// a = 1`); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestEvaluateProgram_FirstTab(t *testing.T) {
-	v := NewVariableStore()
-	e := NewEvaluator(v, melrose.NoLooper)
+	e := NewEvaluator(testContext())
 	if _, err := e.EvaluateProgram(`	a = 1`); err == nil {
 		t.Error(err)
 	}
 }
 
+func testContext() melrose.Context {
+	return melrose.PlayContext{
+		VariableStorage: NewVariableStore(),
+		LoopControl:     melrose.NoLooper,
+	}
+}
+
 func TestEvaluateProgram_TwoLines(t *testing.T) {
-	v := NewVariableStore()
-	e := NewEvaluator(v, melrose.NoLooper)
+	e := NewEvaluator(testContext())
 	r, err := e.EvaluateProgram(
 		`a = 1
 b = 2`)
@@ -131,8 +134,7 @@ b = 2`)
 }
 
 func TestEvaluateProgram_BrokenSequence(t *testing.T) {
-	v := NewVariableStore()
-	e := NewEvaluator(v, melrose.NoLooper)
+	e := NewEvaluator(testContext())
 	r, err := e.EvaluateProgram(
 		`a = sequence(
 	'A')`)
@@ -144,8 +146,7 @@ func TestEvaluateProgram_BrokenSequence(t *testing.T) {
 	}
 }
 func TestEvaluateProgram_AllBrokenSequence(t *testing.T) {
-	v := NewVariableStore()
-	e := NewEvaluator(v, melrose.NoLooper)
+	e := NewEvaluator(testContext())
 	r, err := e.EvaluateProgram(
 		`a = sequence
 	(
@@ -165,8 +166,7 @@ func TestEvaluateProgram_AllBrokenSequence(t *testing.T) {
 }
 
 func TestEvaluateProgram_TwoTabs(t *testing.T) {
-	v := NewVariableStore()
-	e := NewEvaluator(v, melrose.NoLooper)
+	e := NewEvaluator(testContext())
 	r, err := e.EvaluateProgram(
 		`a
 	=

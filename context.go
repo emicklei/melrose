@@ -1,19 +1,11 @@
 package melrose
 
 type PlayContext struct {
-	LoopControl LoopController
-	AudioDevice AudioDevice
+	LoopControl     LoopController
+	AudioDevice     AudioDevice
+	VariableStorage VariableStorage
 }
 
-var globalPlayContext = &PlayContext{
-	LoopControl: NewBeatmaster(120.0),
-	AudioDevice: nil, // set later
-}
-
-func Context() *PlayContext {
-	return globalPlayContext
-}
-
-func (c *PlayContext) SetCurrentDevice(a AudioDevice) {
-	c.AudioDevice = a
-}
+func (p PlayContext) Control() LoopController    { return p.LoopControl }
+func (p PlayContext) Device() AudioDevice        { return p.AudioDevice }
+func (p PlayContext) Variables() VariableStorage { return p.VariableStorage }

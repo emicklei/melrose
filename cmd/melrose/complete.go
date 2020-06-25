@@ -29,12 +29,12 @@ func completeMe(line string, pos int) (head string, c []string, tail string) {
 		return line[0:pos], c, line[pos:]
 	}
 	// vars first
-	for k, _ := range globalStore.Variables() {
-		if strings.HasPrefix(k, prefix) {
-			c = append(c, k[len(prefix):])
-		}
-	}
-	for k, f := range dsl.EvalFunctions(globalStore, melrose.NoLooper) {
+	// for k, _ := range melrose.Context{}.VariableStorage.Variables() {  // broken
+	// 	if strings.HasPrefix(k, prefix) {
+	// 		c = append(c, k[len(prefix):])
+	// 	}
+	// }
+	for k, f := range dsl.EvalFunctions(melrose.PlayContext{}) {
 		// TODO start from closest (
 		if strings.HasPrefix(k, prefix) {
 			stripped := stripParameters(f.Template)

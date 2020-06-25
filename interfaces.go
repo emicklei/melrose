@@ -76,5 +76,19 @@ type Inspectable interface {
 }
 
 type Playable interface {
-	Play(d AudioDevice) error
+	Play(ctx Context) error
+}
+
+type VariableStorage interface {
+	NameFor(value interface{}) string
+	Get(key string) (interface{}, bool)
+	Put(key string, value interface{})
+	Delete(key string)
+	Variables() map[string]interface{}
+}
+
+type Context interface {
+	Control() LoopController
+	Device() AudioDevice
+	Variables() VariableStorage
 }

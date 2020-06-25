@@ -11,16 +11,14 @@ import (
 )
 
 type Evaluator struct {
-	store       VariableStorage
-	funcs       map[string]Function
-	loopControl melrose.LoopController
+	context melrose.Context
+	funcs   map[string]Function
 }
 
-func NewEvaluator(store VariableStorage, loopControl melrose.LoopController) *Evaluator {
+func NewEvaluator(ctx melrose.Context) *Evaluator {
 	return &Evaluator{
-		store:       store,
-		funcs:       EvalFunctions(store, loopControl),
-		loopControl: loopControl,
+		context: ctx,
+		funcs:   EvalFunctions(ctx),
 	}
 }
 
@@ -87,7 +85,7 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 	if len(entry) == 0 {
 		return nil, nil
 	}
-	if value, ok := e.store.Get(entry); ok {
+	if value, ok := e.context.Variables().Get(entry); ok {
 		return value, nil
 	}
 	if variable, expression, ok := IsAssignment(entry); ok {
@@ -97,7 +95,7 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 		}
 		// check delete
 		if r == nil {
-			e.store.Delete(variable)
+			e.context.Variables().Delete(variable)
 		} else {
 			// special case for Loop
 			// if the value is a Loop
@@ -106,21 +104,21 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 			//		else store the loop
 			// else store the result
 			if theLoop, ok := r.(*melrose.Loop); ok {
-				if storedValue, present := e.store.Get(variable); present {
+				if storedValue, present := e.context.Variables().Get(variable); present {
 					if otherLoop, replaceme := storedValue.(*melrose.Loop); replaceme {
 						otherLoop.SetTarget(theLoop.Target)
 						r = otherLoop
 					} else {
 						// existing variable but not a Loop
-						e.store.Put(variable, theLoop)
+						e.context.Variables().Put(variable, theLoop)
 					}
 				} else {
 					// new variable for theLoop
-					e.store.Put(variable, theLoop)
+					e.context.Variables().Put(variable, theLoop)
 				}
 			} else {
 				// not a Loop
-				e.store.Put(variable, r)
+				e.context.Variables().Put(variable, r)
 			}
 		}
 		return r, nil
@@ -144,8 +142,8 @@ func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
 	for k, f := range e.funcs {
 		env[k] = f.Func
 	}
-	for k, _ := range e.store.Variables() {
-		env[k] = variable{Name: k, store: e.store}
+	for k, _ := range e.context.Variables().Variables() {
+		env[k] = variable{Name: k, store: e.context.Variables()}
 	}
 	options := []expr.Option{expr.Env(env), expr.Patch(new(indexedAccessPatcher))}
 	program, err := expr.Compile(entry, append(options, env.exprOperators()...)...)

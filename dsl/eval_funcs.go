@@ -40,7 +40,7 @@ type Function struct {
 	Func          interface{}
 }
 
-func EvalFunctions(storage VariableStorage, control melrose.LoopController) map[string]Function {
+func EvalFunctions(ctx melrose.Context) map[string]Function {
 	eval := map[string]Function{}
 
 	eval["duration"] = Function{
@@ -113,7 +113,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 				return nil
 			}
 			// TODO handle loop
-			biab := melrose.Context().LoopControl.BIAB()
+			biab := ctx.Control().BIAB()
 			return float64(s.S().NoteLength()) / float64(biab)
 		}}
 
@@ -146,7 +146,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 				notify.Print(notify.Warningf("cannot onbar (%T) %v", seq, seq))
 				return nil
 			}
-			melrose.Context().LoopControl.Plan(int64(bars-1), int64(0), s)
+			ctx.Control().Plan(int64(bars-1), int64(0), s)
 			return nil
 		}}
 
@@ -337,7 +337,7 @@ pitch(p,note('C'))`,
 				notify.Print(notify.Warningf("invalid beats-per-minute [1..399], %f = ", f))
 				return nil
 			}
-			melrose.Context().LoopControl.SetBPM(f)
+			ctx.Control().SetBPM(f)
 			return nil
 		}}
 
@@ -352,7 +352,7 @@ pitch(p,note('C'))`,
 				notify.Print(notify.Warningf("invalid beats-in-a-bar [1..6], %d = ", i))
 				return nil
 			}
-			melrose.Context().LoopControl.SetBIAB(i)
+			ctx.Control().SetBIAB(i)
 			return nil
 		}}
 
@@ -364,7 +364,7 @@ pitch(p,note('C'))`,
 		Template:      `echo(${0:true|false})`,
 		Samples:       `echo(false)`,
 		Func: func(on bool) interface{} {
-			melrose.Context().AudioDevice.SetEchoNotes(on)
+			ctx.Device().SetEchoNotes(on)
 			return nil
 		}}
 
@@ -478,7 +478,7 @@ note('2E#.--')`,
 			moment := time.Now()
 			for _, p := range playables {
 				if s, ok := getSequenceable(getValue(p)); ok { // unwrap var
-					moment = melrose.Context().AudioDevice.Play(s, melrose.Context().LoopControl.BPM(), moment)
+					moment = ctx.Device().Play(s, ctx.Control().BPM(), moment)
 				} else {
 					notify.Print(notify.Warningf("cannot play (%T) %v", p, p))
 				}
@@ -500,7 +500,7 @@ note('2E#.--')`,
 			moment := time.Now()
 			for _, p := range playables {
 				if s, ok := getSequenceable(getValue(p)); ok { // unwrap var
-					melrose.Context().AudioDevice.Play(s, melrose.Context().LoopControl.BPM(), moment)
+					ctx.Device().Play(s, ctx.Control().BPM(), moment)
 				} else {
 					notify.Print(notify.Warningf("cannot go (%T) %v", p, p))
 				}
@@ -558,7 +558,7 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 		Samples: `r = record(1,5) // record notes played on device ID=1 and stop recording after 5 seconds
 s = r.Sequence()`,
 		Func: func(deviceID int, secondsInactivity int) interface{} {
-			seq, err := melrose.Context().AudioDevice.Record(deviceID, time.Duration(secondsInactivity)*time.Second)
+			seq, err := ctx.Device().Record(deviceID, time.Duration(secondsInactivity)*time.Second)
 			if err != nil {
 				notify.Print(notify.Error(err))
 				return nil
@@ -635,9 +635,9 @@ lp_cb = loop(cb,reverse(cb))`,
 				}
 			}
 			if len(joined) == 1 {
-				return melrose.NewLoop(joined[0])
+				return melrose.NewLoop(ctx, joined[0])
 			}
-			return melrose.NewLoop(op.Join{Target: joined})
+			return melrose.NewLoop(ctx, op.Join{Target: joined})
 		}}
 	eval["begin"] = Function{
 		Title:         "Loop runner",
@@ -655,7 +655,7 @@ begin(l1)`,
 					notify.Print(notify.Warningf("cannot begin (%T) %v", l, l))
 					continue
 				}
-				control.Begin(l)
+				ctx.Control().Begin(l)
 				notify.Print(notify.Infof("started loop: %s", each.Name))
 			}
 			return nil
@@ -669,7 +669,7 @@ begin(l1)`,
 end(l1)`,
 		Func: func(vars ...variable) interface{} {
 			if len(vars) == 0 {
-				StopAllLoops(storage)
+				StopAllLoops(ctx)
 				return nil
 			}
 			for _, each := range vars {
@@ -679,7 +679,7 @@ end(l1)`,
 					continue
 				}
 				notify.Print(notify.Infof("stopping loop: %s", each.Name))
-				control.End(l)
+				ctx.Control().End(l)
 			}
 			return nil
 		}}
@@ -771,7 +771,7 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 			if !strings.HasSuffix(filename, "mid") {
 				filename += ".mid"
 			}
-			return file.Export(filename, getValue(m), melrose.Context().LoopControl.BPM())
+			return file.Export(filename, getValue(m), ctx.Control().BPM())
 		}}
 
 	eval["replace"] = Function{

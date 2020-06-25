@@ -7,9 +7,7 @@ import (
 )
 
 func newTestEvaluator() *Evaluator {
-	v := NewVariableStore()
-	e := NewEvaluator(v, melrose.NoLooper)
-	return e
+	return NewEvaluator(testContext())
 }
 
 func checkError(t *testing.T, err error) {
@@ -20,8 +18,11 @@ func checkError(t *testing.T, err error) {
 }
 
 func eval(t *testing.T, expression string) interface{} {
-	melrose.Context().LoopControl = new(melrose.TestLooper)
-	r, err := newTestEvaluator().EvaluateExpression(expression)
+	ctx := melrose.PlayContext{
+		VariableStorage: NewVariableStore(),
+		LoopControl:     new(melrose.TestLooper),
+	}
+	r, err := NewEvaluator(ctx).EvaluateExpression(expression)
 	checkError(t, err)
 	return r
 }

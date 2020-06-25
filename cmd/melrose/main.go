@@ -22,8 +22,7 @@ var (
 	inputFile = flag.String("i", "", "read expressions from a file")
 	httpPort  = flag.String("http", ":8118", "address on which to listen for HTTP requests")
 
-	history                         = ".melrose.history"
-	globalStore dsl.VariableStorage = dsl.NewVariableStore()
+	history = ".melrose.history"
 )
 
 func main() {
@@ -33,43 +32,45 @@ func main() {
 	// set audio
 	currentDevice := setupAudio("midi")
 	defer currentDevice.Close()
-	melrose.Context().SetCurrentDevice(currentDevice)
+
+	ctx := new(melrose.PlayContext)
+	ctx.AudioDevice = currentDevice
+	ctx.VariableStorage = dsl.NewVariableStore()
+	ctx.LoopControl = melrose.NewBeatmaster(ctx, 120)
 
 	// process file if given
 	if len(*inputFile) > 0 {
-		if err := processInputFile(globalStore, *inputFile); err != nil {
+		if err := processInputFile(ctx, *inputFile); err != nil {
 			notify.Print(notify.Error(err))
 			os.Exit(0)
 		}
 	}
 
-	loopControl := melrose.Context().LoopControl
-
 	if len(*httpPort) > 0 {
 		// start DSL server
-		go server.NewLanguageServer(globalStore, loopControl, *httpPort).Start()
+		go server.NewLanguageServer(ctx, *httpPort).Start()
 	}
 
 	// start REPL
 	line := liner.NewLiner()
 	defer line.Close()
-	defer tearDown(line, globalStore, loopControl)
+	defer tearDown(line, ctx)
 	// TODO liner catches control+c
 	//setupCloseHandler(line)
 	setup(line)
-	repl(line, globalStore, loopControl)
+	repl(line, ctx)
 }
 
 func welcome() {
 	fmt.Println("\033[1;34mmelrōse\033[0m" + " - program your melodies")
 }
 
-func tearDown(line *liner.State, store dsl.VariableStorage, control melrose.LoopController) {
+func tearDown(line *liner.State, ctx melrose.Context) {
 	//dsl.StopAllLoops(store)
 	//control.Stop()
 
-	melrose.Context().LoopControl.Reset()
-	melrose.Context().AudioDevice.Reset()
+	ctx.Control().Reset()
+	ctx.Device().Reset()
 	if f, err := os.Create(history); err != nil {
 		notify.Print(notify.Errorf("error writing history file:%v", err))
 	} else {
@@ -88,9 +89,9 @@ func setup(line *liner.State) {
 	}
 }
 
-func repl(line *liner.State, store dsl.VariableStorage, control melrose.LoopController) {
-	eval := dsl.NewEvaluator(store, control)
-	control.Start()
+func repl(line *liner.State, ctx melrose.Context) {
+	eval := dsl.NewEvaluator(ctx)
+	ctx.Control().Start()
 	for {
 		entry, err := line.Prompt("𝄞 ")
 		if err != nil {
@@ -105,7 +106,7 @@ func repl(line *liner.State, store dsl.VariableStorage, control melrose.LoopCont
 			}
 			args := strings.Split(entry, " ")
 			if cmd, ok := lookupCommand(args[0]); ok {
-				if msg := cmd.Func(args[1:]); msg != nil {
+				if msg := cmd.Func(ctx, args[1:]); msg != nil {
 					notify.Print(msg)
 				}
 				continue
@@ -116,7 +117,7 @@ func repl(line *liner.State, store dsl.VariableStorage, control melrose.LoopCont
 			// even on error, add entry to history so we can edit/fix it
 		} else {
 			if result != nil {
-				melrose.PrintValue(result)
+				melrose.PrintValue(ctx, result)
 			}
 		}
 		line.AppendHistory(entry)
@@ -124,13 +125,13 @@ func repl(line *liner.State, store dsl.VariableStorage, control melrose.LoopCont
 exit:
 }
 
-func processInputFile(store dsl.VariableStorage, inputFile string) error {
+func processInputFile(ctx melrose.Context, inputFile string) error {
 	data, err := ioutil.ReadFile(inputFile)
 	if err != nil {
 		notify.Print(notify.Errorf("unable to read file:%v", err))
 		return nil
 	}
-	eval := dsl.NewEvaluator(store, melrose.NoLooper)
+	eval := dsl.NewEvaluator(ctx)
 	_, err = eval.EvaluateProgram(string(data))
 	return err
 }
@@ -138,13 +139,13 @@ func processInputFile(store dsl.VariableStorage, inputFile string) error {
 // setupCloseHandler creates a 'listener' on a new goroutine which will notify the
 // program if it receives an interrupt from the OS. We then handle this by calling
 // our clean up procedure and exiting the program.
-func setupCloseHandler(line *liner.State, control melrose.LoopController) {
+func setupCloseHandler(line *liner.State, ctx melrose.Context) {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-c
 		fmt.Println("\r- Ctrl+C pressed in Terminal")
-		tearDown(line, globalStore, control)
+		tearDown(line, ctx)
 		os.Exit(0)
 	}()
 }

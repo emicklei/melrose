@@ -70,10 +70,10 @@ func IsIdenticalTo(left, right Sequenceable) bool {
 	return reflect.DeepEqual(left, right)
 }
 
-func PrintValue(v interface{}) {
+func PrintValue(ctx Context, v interface{}) {
 	if v == nil {
 		return
 	}
-	i := NewInspect(v)
+	i := NewInspect(ctx, v)
 	fmt.Println(i.String())
 }

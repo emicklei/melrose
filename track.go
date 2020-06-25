@@ -104,12 +104,12 @@ func (m MultiTrack) Storex() string {
 }
 
 // Play is part of Playable
-func (m MultiTrack) Play(d AudioDevice) error {
+func (m MultiTrack) Play(ctx Context) error {
 	for _, each := range m.Tracks {
 		if track, ok := each.Value().(*Track); ok {
 			for bar, seq := range track.Content {
 				ch := ChannelSelector{Number: On(track.Channel), Target: seq}
-				Context().LoopControl.Plan(int64(bar-1), int64(0), ch)
+				ctx.Control().Plan(int64(bar-1), int64(0), ch)
 			}
 		} else {
 			// TODO

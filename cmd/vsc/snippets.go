@@ -19,9 +19,12 @@ type Snippet struct {
 }
 
 func snippets() {
-	varstore := dsl.NewVariableStore()
 	snippets := map[string]Snippet{}
-	for _, v := range dsl.EvalFunctions(varstore, melrose.NoLooper) {
+	ctx := melrose.PlayContext{
+		VariableStorage: dsl.NewVariableStore(),
+		LoopControl:     melrose.NoLooper,
+	}
+	for _, v := range dsl.EvalFunctions(ctx) {
 		if len(v.Prefix) > 0 && len(v.Title) > 0 {
 			snip := Snippet{
 				Prefix:      v.Prefix,

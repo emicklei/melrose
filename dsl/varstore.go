@@ -76,7 +76,7 @@ func (v *VariableStore) Variables() map[string]interface{} {
 }
 
 // ListVariables prints a list of sorted key=value pairs.
-func ListVariables(storage VariableStorage, args []string) notify.Message {
+func ListVariables(storage melrose.VariableStorage, args []string) notify.Message {
 	keys := []string{}
 	width := 0
 	variables := storage.Variables()

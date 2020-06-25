@@ -7,13 +7,15 @@ import (
 )
 
 type Loop struct {
+	ctx       Context
 	Target    Sequenceable
 	isRunning bool
 	mutex     sync.RWMutex
 }
 
-func NewLoop(target Sequenceable) *Loop {
+func NewLoop(ctx Context, target Sequenceable) *Loop {
 	return &Loop{
+		ctx:    ctx,
 		Target: target,
 	}
 }
@@ -48,7 +50,7 @@ func (l *Loop) Inspect(i Inspection) {
 }
 
 func (l *Loop) reschedule(d AudioDevice, when time.Time) {
-	endOfLastNote := d.Play(l.Target, Context().LoopControl.BPM(), when)
+	endOfLastNote := d.Play(l.Target, l.ctx.Control().BPM(), when)
 	// schedule the loop itself so it can play again when Handle is called
 	d.Timeline().Schedule(l, endOfLastNote)
 }
@@ -61,7 +63,7 @@ func (l *Loop) Handle(tim *Timeline, when time.Time) {
 		return
 	}
 	l.mutex.RUnlock()
-	l.reschedule(Context().AudioDevice, when)
+	l.reschedule(l.ctx.Device(), when)
 }
 
 func (l *Loop) Stop() *Loop {
@@ -82,6 +84,6 @@ func (l *Loop) SetTarget(newTarget Sequenceable) {
 
 // Play is part of Playable
 func (l *Loop) Play(d AudioDevice) error {
-	Context().LoopControl.Begin(l)
+	l.ctx.Control().Begin(l)
 	return nil
 }

@@ -7,13 +7,15 @@ import (
 )
 
 type Inspection struct {
+	Context    Context
 	Type       string
 	Text       string
 	Properties map[string]interface{}
 }
 
-func NewInspect(value interface{}) Inspection {
+func NewInspect(ctx Context, value interface{}) Inspection {
 	i := Inspection{
+		Context:    ctx,
 		Type:       fmt.Sprintf("%T", value),
 		Properties: map[string]interface{}{},
 	}
@@ -35,13 +37,17 @@ func NewInspect(value interface{}) Inspection {
 
 func (i Inspection) String() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "\033[94m(%s)\033[0m %s ", i.Type, i.Text)
+	fmt.Fprintf(&b, "%s ", i.Text)
 	// sort keys
 	keys := []string{}
 	for k, _ := range i.Properties {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
+	// last minute prop
+	keys = append(keys, "type")
+	i.Properties["type"] = i.Type
+
 	for _, k := range keys {
 		v := i.Properties[k]
 		fmt.Fprintf(&b, "\033[94m%s:\033[0m%v ", k, v)

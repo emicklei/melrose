@@ -18,14 +18,14 @@ import (
 
 // LanguageServer can execute DSL statements received over HTTP
 type LanguageServer struct {
-	store     dsl.VariableStorage
+	context   melrose.Context
 	address   string
 	evaluator *dsl.Evaluator
 }
 
 // NewLanguageServer returns a new LanguageService. It is not started.
-func NewLanguageServer(store dsl.VariableStorage, loopControl melrose.LoopController, addr string) *LanguageServer {
-	return &LanguageServer{store: store, address: addr, evaluator: dsl.NewEvaluator(store, loopControl)}
+func NewLanguageServer(ctx melrose.Context, addr string) *LanguageServer {
+	return &LanguageServer{context: ctx, address: addr, evaluator: dsl.NewEvaluator(ctx)}
 }
 
 // Start will start a HTTP listener for serving DSL statements
@@ -70,20 +70,20 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		// evaluation was ok.
 
 		if query.Get("action") == "inspect" {
-			melrose.PrintValue(returnValue)
+			melrose.PrintValue(l.context, returnValue)
 		}
 
 		// check if play was requested and is playable
 		if query.Get("action") == "play" {
 			// first check Playable
 			if pl, ok := returnValue.(melrose.Playable); ok {
-				_ = pl.Play(melrose.Context().AudioDevice)
+				_ = pl.Play(l.context)
 			} else {
 				// any sequenceable is playable
 				if s, ok := returnValue.(melrose.Sequenceable); ok {
-					melrose.Context().AudioDevice.Play(
+					l.context.Device().Play(
 						s,
-						melrose.Context().LoopControl.BPM(),
+						l.context.Control().BPM(),
 						time.Now())
 				}
 			}
@@ -92,7 +92,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		if query.Get("action") == "begin" {
 			if lp, ok := returnValue.(*melrose.Loop); ok {
 				if !lp.IsRunning() {
-					melrose.Context().LoopControl.Begin(lp)
+					l.context.Control().Begin(lp)
 				}
 			}
 			// ignore if not Loop
@@ -108,8 +108,8 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		}
 		if query.Get("action") == "kill" {
 			// kill the play and any loop
-			melrose.Context().LoopControl.Reset()
-			melrose.Context().AudioDevice.Reset()
+			l.context.Control().Reset()
+			l.context.Device().Reset()
 		}
 		response = resultFrom(line, returnValue)
 	}
@@ -123,7 +123,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	if response.IsError {
 		notify.Print(notify.Error(response.Object.(error)))
 	} else {
-		melrose.PrintValue(response.Object)
+		melrose.PrintValue(l.context, response.Object)
 	}
 	if trace {
 		// doit again

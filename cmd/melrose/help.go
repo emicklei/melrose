@@ -12,7 +12,7 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-func showHelp(args []string) notify.Message {
+func showHelp(ctx melrose.Context, args []string) notify.Message {
 	var b bytes.Buffer
 
 	fmt.Fprintf(&b, "\nversion %s, syntax: %s\n", version, dsl.Syntax)
@@ -27,7 +27,7 @@ func showHelp(args []string) notify.Message {
 			fmt.Fprintf(&b, "%s\n", cmd.Sample)
 			return notify.Infof("%s", b.String())
 		}
-		if fun, ok := dsl.EvalFunctions(globalStore, melrose.NoLooper)[cmdfunc]; ok {
+		if fun, ok := dsl.EvalFunctions(ctx)[cmdfunc]; ok {
 			fmt.Fprintf(&b, "%s\n", cmdfunc)
 			fmt.Fprintf(&b, "%s\n", fun.Description)
 			fmt.Fprintf(&b, "%s\n", fun.Template)
@@ -36,7 +36,7 @@ func showHelp(args []string) notify.Message {
 	}
 	io.WriteString(&b, "\n")
 	{
-		funcs := dsl.EvalFunctions(globalStore, melrose.NoLooper)
+		funcs := dsl.EvalFunctions(ctx)
 		keys := []string{}
 		width := 0
 		for k, f := range funcs {
@@ -59,7 +59,7 @@ func showHelp(args []string) notify.Message {
 	}
 	io.WriteString(&b, "\n")
 	{
-		funcs := dsl.EvalFunctions(globalStore, melrose.NoLooper)
+		funcs := dsl.EvalFunctions(ctx)
 		keys := []string{}
 		width := 0
 		for k, f := range funcs {

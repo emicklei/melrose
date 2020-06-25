@@ -73,9 +73,12 @@ type GroupedFunctions struct {
 }
 
 func dslmarkdown() {
-	varstore := dsl.NewVariableStore()
 	gf := GroupedFunctions{}
-	for k, each := range dsl.EvalFunctions(varstore, melrose.NoLooper) {
+	ctx := melrose.PlayContext{
+		VariableStorage: dsl.NewVariableStore(),
+		LoopControl:     melrose.NoLooper,
+	}
+	for k, each := range dsl.EvalFunctions(ctx) {
 		// draft functions do not have a Title
 		if len(each.Title) == 0 {
 			continue
