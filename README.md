@@ -20,22 +20,18 @@ See [documentation](https://emicklei.github.io/melrose/) how to install and use 
     import (
       "log"
 
-      "github.com/emicklei/melrose"
       "github.com/emicklei/melrose/dsl"
       "github.com/emicklei/melrose/midi"
     )
 
     func main() {
-      ctx := melrose.Context()
-
       audio, err := midi.Open()
       if err != nil {
         log.Fatal(err)
       }
       defer audio.Close()
-      ctx.SetCurrentDevice(audio)
 
-      _, err = dsl.Run(ctx, `
+      _, err = dsl.Run(audio, `
     bpm(120)
     play(sequence('C C# D D# E F G 2A- 2A#-- 2C5---'))
     `)

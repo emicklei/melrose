@@ -20,7 +20,12 @@ func StopAllLoops(context melrose.Context) {
 }
 
 // Run executes the program (source) and return the value of the last expression or any error while executing.
-func Run(ctx melrose.Context, source string) (interface{}, error) {
+func Run(device melrose.AudioDevice, source string) (interface{}, error) {
+	ctx := &melrose.PlayContext{
+		AudioDevice:     device,
+		LoopControl:     melrose.NewBeatSchedule(120),
+		VariableStorage: NewVariableStore(),
+	}
 	eval := NewEvaluator(ctx)
 
 	r, err := eval.EvaluateProgram(source)
