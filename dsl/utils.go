@@ -23,9 +23,9 @@ func StopAllLoops(context melrose.Context) {
 func Run(device melrose.AudioDevice, source string) (interface{}, error) {
 	ctx := &melrose.PlayContext{
 		AudioDevice:     device,
-		LoopControl:     melrose.NewBeatSchedule(120),
 		VariableStorage: NewVariableStore(),
 	}
+	ctx.LoopControl = melrose.NewBeatmaster(ctx, 120)
 	eval := NewEvaluator(ctx)
 
 	r, err := eval.EvaluateProgram(source)

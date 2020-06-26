@@ -15,7 +15,7 @@ Due to increased restrictions and costs of releasing non-commercial packages for
 
 # Install from source
 
-In order to work with `Melrōse` on your operating system, the following components need to be installed:
+In order to work with `melrōse` on your operating system, the following components need to be installed:
 
 - portmidi library
 - melrōse executable program
