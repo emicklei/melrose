@@ -19,7 +19,6 @@ See [instructions](install.html#plugin) on how to install this plugin after you 
 This editor extension works with `.mel` and `.melrose` files.
 The syntax of the program uses the [Melrose Lanugage](dsl.html).
 
-
 ### evaluate
 
 To evaluate a single line statement or expression, the cursor must be on that line and then use `cmd+e`.
@@ -41,6 +40,13 @@ You can also evaluate the function `begin(...)`.
 To end a running loop, use `cmd+5`.
 You can also evaluate the function `end(...)`.
 
+### inspect
+
+To inspect the value of an expression, use `cmd+2`.
+
+### stop all sound
+
+To stop sounds being played, including loops, use `cmd+k`.
 
 ### comment
 
@@ -54,7 +60,7 @@ Lines can have inline comment at the end.
 
 ### multiline
 
-An statement can span multiple lines, each line after the first must be indented by either a TAB or 4 spaces.
+A statement can span multiple lines, each line after the first must be indented by either a TAB or 4 spaces.
 
 	  y = sequence('F#2 
 	  [TAB]C#3 F#3 A3 C# F#')

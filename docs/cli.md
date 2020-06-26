@@ -8,20 +8,31 @@ title: Melrōse Command Line Interface (CLI)
 [DAW](daw.html)
 [Install](install.html)
 
-# Melrōse program
+## Melrōse program
 
 The program `melrōse` is a Read–Eval–Print Loop (REPL) that produces or consumes MIDI. 
 By entering statements using the [language](dsl.html), `melrōse` will send out MIDI messages to any connected [DAW](daw.html).
 Although it is possible to program directly using the command line interface of `melrōse`, it is much more convenient to use the Visual Studio Code editor with the [Melrose Plugin](vsc.html).
 
+### program flags
+
+You can start the program `melrōse` without any flags. You can use the following flag to change its behavior.
+
+    -http string
+        address on which to listen for HTTP requests (default ":8118")
+    -i  string
+        read expressions from a file
+    -v  boolean
+        verbose logging
+
 ### control
 Commands to control the program itself are prefix with a colon `:`.
-With `:h` you get list of known functions and commands.
+With `:h` you get the list of known commands.
 
 ### line editing
 
 The following line editing commands are supported on platforms and terminals
-that Melrose supports:
+that `melrōse` supports:
 
 Keystroke    | Action
 ---------    | ------
@@ -102,4 +113,4 @@ If the HTTP URL has the query parameter `action=end` then `melrōse` will try to
 
 ### inspecting
 
-If the HTTP URL has the query parameter `action=inspect` then `melrōse` will print inspection details.
+If the HTTP URL has the query parameter `action=inspect` then `melrōse` will print inspection details of the selected expression.
