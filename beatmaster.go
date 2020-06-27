@@ -10,7 +10,7 @@ import (
 
 // Beatmaster is a LoopController
 type Beatmaster struct {
-	ctx        Context
+	context    Context
 	beating    bool
 	bpmChanges chan float64
 	ticker     *time.Ticker
@@ -24,7 +24,7 @@ type Beatmaster struct {
 
 func NewBeatmaster(ctx Context, bpm float64) *Beatmaster {
 	return &Beatmaster{
-		ctx:        ctx,
+		context:    ctx,
 		beating:    false,
 		done:       make(chan bool),
 		bpmChanges: make(chan float64),
@@ -78,7 +78,7 @@ func (b *Beatmaster) Begin(l *Loop) {
 		return
 	}
 	b.schedule.Schedule(b.beatsAndNextBar(), func(beats int64) {
-		l.Start(b.ctx.Device())
+		l.Start(b.context.Device())
 	})
 }
 
@@ -91,7 +91,7 @@ func (b *Beatmaster) Plan(bars int64, beats int64, seq Sequenceable) {
 	atBeats += (b.biab * bars)
 	atBeats += beats
 	b.schedule.Schedule(atBeats, func(beats int64) {
-		b.ctx.Device().Play(seq, b.bpm, time.Now())
+		b.context.Device().Play(seq, b.bpm, time.Now())
 	})
 }
 

@@ -13,6 +13,10 @@ func TestNote(t *testing.T) {
 		"sequence('C')")
 }
 
+func TestNote_Invalid(t *testing.T) {
+	mustError(t, "note('k')", "illegal note")
+}
+
 func TestChord(t *testing.T) {
 	r := eval(t, "chord('C#/m')")
 	checkStorex(t, r, "chord('C♯/m')")
@@ -20,9 +24,17 @@ func TestChord(t *testing.T) {
 		"sequence('(C♯ E A♭)')")
 }
 
+func TestChord_Invalid(t *testing.T) {
+	mustError(t, "chord('k')", "illegal note")
+}
+
 func TestSequence(t *testing.T) {
 	r := eval(t, "sequence('c (d e g) =')")
 	checkStorex(t, r, "sequence('C (D E G) =')")
+}
+
+func TestSequence_Invalid(t *testing.T) {
+	mustError(t, "sequence('k')", "illegal note")
 }
 
 func TestProgression(t *testing.T) {
@@ -30,6 +42,10 @@ func TestProgression(t *testing.T) {
 	checkStorex(t, r, "progression('C/m (D7 E G) =')")
 	checkStorex(t, r.(melrose.Sequenceable).S(),
 		"sequence('(C E♭ G) (D7 G♭7 A7 E A♭ B G B D5) =')")
+}
+
+func TestProgression_Invalid(t *testing.T) {
+	mustError(t, "progression('k')", "illegal note")
 }
 
 func TestScale(t *testing.T) {
@@ -51,4 +67,9 @@ func TestPitch_Progression(t *testing.T) {
 	checkStorex(t, r, "pitch(1,progression('C/m (D7 E G) ='))")
 	checkStorex(t, r.(melrose.Sequenceable).S(),
 		"sequence('(D♭ E A♭) (E♭7 G7 B♭7 F A C5 A♭ C5 E♭5) =')")
+}
+
+func TestTrack(t *testing.T) {
+	r := eval(t, "track('test',1,note('c'))")
+	checkStorex(t, r, "track('test',1,put(1,note('C')))")
 }

@@ -57,6 +57,10 @@ type ChannelSelector struct {
 	Number Valueable
 }
 
+func NewChannelSelector(target Sequenceable, channel Valueable) ChannelSelector {
+	return ChannelSelector{Target: target, Number: channel}
+}
+
 func (c ChannelSelector) S() Sequence {
 	return c.Target.S()
 }

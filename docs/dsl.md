@@ -248,7 +248,7 @@ Serialise any grouping of notes in one or more musical objects.
 ### track<a name="track"></a>
 .
 
-	track("lullaby",1) // => a new track on MIDI channel 1
+	track("lullaby",1,sequence('C D E')) // => a new track on MIDI channel 1
 
 ### undynamic<a name="undynamic"></a>
 Undynamic all the notes in a musical object.

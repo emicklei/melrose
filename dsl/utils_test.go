@@ -1,6 +1,7 @@
 package dsl
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/emicklei/melrose"
@@ -18,6 +19,7 @@ func checkError(t *testing.T, err error) {
 }
 
 func eval(t *testing.T, expression string) interface{} {
+	t.Helper()
 	ctx := melrose.PlayContext{
 		VariableStorage: NewVariableStore(),
 		LoopControl:     new(melrose.TestLooper),
@@ -25,6 +27,21 @@ func eval(t *testing.T, expression string) interface{} {
 	r, err := NewEvaluator(ctx).EvaluateExpression(expression)
 	checkError(t, err)
 	return r
+}
+
+func mustError(t *testing.T, expression string, substring string) {
+	t.Helper()
+	ctx := melrose.PlayContext{
+		VariableStorage: NewVariableStore(),
+		LoopControl:     new(melrose.TestLooper),
+	}
+	_, err := NewEvaluator(ctx).EvaluateExpression(expression)
+	if err == nil {
+		t.Fatal("error expected")
+	}
+	if !strings.Contains(err.Error(), substring) {
+		t.Fatalf("error message should contain [%s] but it [%s]", substring, err.Error())
+	}
 }
 
 func checkStorex(t *testing.T, r interface{}, storex string) {

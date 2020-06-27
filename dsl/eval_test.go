@@ -191,10 +191,9 @@ func TestEvaluateProgram_TrailingWhitespace(t *testing.T) {
 }
 
 func TestEvaluateError_Play(t *testing.T) {
-	r, err := newTestEvaluator().evaluateCleanStatement(`repeat(-1,1)`)
-	checkError(t, err)
-	if r != nil {
-		t.Error("expected nil")
+	_, err := newTestEvaluator().evaluateCleanStatement(`repeat(-1,1)`)
+	if err == nil {
+		t.Fail()
 	}
 }
 

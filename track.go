@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"time"
 )
 
 type Track struct {
@@ -27,6 +28,15 @@ func (t *Track) S() Sequence {
 		return one.S()
 	}
 	return EmptySequence
+}
+
+func (t *Track) Play(ctx Context) error {
+	// TODO
+	if one, ok := t.Content[1]; ok {
+		cs := NewChannelSelector(one, On(t.Channel))
+		ctx.Device().Play(cs, ctx.Control().BPM(), time.Now())
+	}
+	return nil
 }
 
 func (t *Track) Inspect(i Inspection) {

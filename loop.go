@@ -83,7 +83,7 @@ func (l *Loop) SetTarget(newTarget Sequenceable) {
 }
 
 // Play is part of Playable
-func (l *Loop) Play(d AudioDevice) error {
-	l.ctx.Control().Begin(l)
+func (l *Loop) Play(ctx Context) error {
+	ctx.Control().Begin(l)
 	return nil
 }

@@ -82,8 +82,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		Func: func(chords string) interface{} {
 			p, err := melrose.ParseProgression(chords)
 			if err != nil {
-				notify.Print(notify.Errorf("%v", err))
-				return nil
+				return notify.Panic(err)
 			}
 			return p
 		}}
@@ -96,8 +95,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			v := getValueable(join)
 			vNow := v.Value()
 			if _, ok := vNow.(op.Join); !ok {
-				notify.Print(notify.Warningf("cannot joinmap (%T) %v", join, join))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot joinmap (%T) %v", join, join))
 			}
 			return op.NewJoinMapper(v, indices)
 		}}
@@ -109,8 +107,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		Func: func(seq interface{}) interface{} {
 			s, ok := getSequenceable(seq)
 			if !ok {
-				notify.Print(notify.Warningf("cannot compute how many bars for (%T) %v", seq, seq))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot compute how many bars for (%T) %v", seq, seq))
 			}
 			// TODO handle loop
 			biab := ctx.Control().BIAB()
@@ -124,8 +121,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		Func: func(seq interface{}) interface{} {
 			s, ok := getSequenceable(seq)
 			if !ok {
-				notify.Print(notify.Warningf("cannot compute how many beats for (%T) %v", seq, seq))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot compute how many beats for (%T) %v", seq, seq))
 			}
 			return len(s.S().Notes)
 		}}
@@ -138,13 +134,11 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		Samples:       `onbar(1,sequence('C D E')) // => immediately play C D E`,
 		Func: func(bars int, seq interface{}) interface{} {
 			if bars <= 0 {
-				notify.Print(notify.Warningf("cannot start on bar [%d], bars start at 1", bars))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot start on bar [%d], bars start at 1", bars))
 			}
 			s, ok := getSequenceable(getValue(seq)) // unwrap var
 			if !ok {
-				notify.Print(notify.Warningf("cannot onbar (%T) %v", seq, seq))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot onbar (%T) %v", seq, seq))
 			}
 			ctx.Control().Plan(int64(bars-1), int64(0), s)
 			return nil
@@ -154,21 +148,18 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		Title:    "Create a new Track",
 		Prefix:   "tr",
 		Template: `track('${1:title},${2:channel}')`,
-		Samples:  `track("lullaby",1) // => a new track on MIDI channel 1`,
+		Samples:  `track("lullaby",1,sequence('C D E')) // => a new track on MIDI channel 1`,
 		Func: func(title string, channel int, playables ...interface{}) interface{} {
 			if len(title) == 0 {
-				notify.Print(notify.Warningf("cannot have a track without title"))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot have a track without title"))
 			}
 			if channel < 1 || channel > 15 {
-				notify.Print(notify.Warningf("MIDI channel must be in [1..15]"))
-				return nil
+				return notify.Panic(fmt.Errorf("MIDI channel must be in [1..15]"))
 			}
 			tr := melrose.NewTrack(title, channel)
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
-					notify.Print(notify.Warningf("cannot compose track with (%T) %v", p, p))
-					return nil
+					return notify.Panic(fmt.Errorf("cannot compose track with (%T) %v", p, p))
 				} else {
 					tr.Add(s)
 				}
@@ -209,8 +200,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		Func: func(m interface{}) interface{} {
 			s, ok := getSequenceable(getValue(m))
 			if !ok {
-				notify.Print(notify.Warningf("cannot watch (%T) %v", m, m))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot watch (%T) %v", m, m))
 			}
 			return melrose.Watch{Target: s}
 		}}
@@ -227,8 +217,7 @@ chord('G/M/2')`,
 		Func: func(chord string) interface{} {
 			c, err := melrose.ParseChord(chord)
 			if err != nil {
-				notify.Print(notify.Errorf("%v", err))
-				return nil
+				return notify.Panic(err)
 			}
 			return c
 		}}
@@ -243,8 +232,7 @@ chord('G/M/2')`,
 		Func: func(indices string, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
-				notify.Print(notify.Warningf("cannot octavemap (%T) %v", m, m))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot octavemap (%T) %v", m, m))
 			}
 			return op.NewOctaveMapper(s, indices)
 		}}
@@ -262,8 +250,7 @@ pitch(p,note('C'))`,
 		Func: func(semitones, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
-				notify.Print(notify.Warningf("cannot pitch (%T) %v", m, m))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot pitch (%T) %v", m, m))
 			}
 			return op.Pitch{Target: s, Semitones: getValueable(semitones)}
 		}}
@@ -279,8 +266,7 @@ pitch(p,note('C'))`,
 		Func: func(m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
-				notify.Print(notify.Warningf("cannot reverse (%T) %v", m, m))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot reverse (%T) %v", m, m))
 			}
 			return op.Reverse{Target: s}
 		}}
@@ -297,8 +283,7 @@ pitch(p,note('C'))`,
 			joined := []melrose.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
-					notify.Print(notify.Warningf("cannot repeat (%T) %v", p, p))
-					return nil
+					return notify.Panic(fmt.Errorf("cannot repeat (%T) %v", p, p))
 				} else {
 					joined = append(joined, s)
 				}
@@ -317,8 +302,7 @@ pitch(p,note('C'))`,
 			joined := []melrose.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
-					notify.Print(notify.Warningf("cannot join (%T) %v", p, p))
-					return nil
+					return notify.Panic(fmt.Errorf("cannot join (%T) %v", p, p))
 				} else {
 					joined = append(joined, s)
 				}
@@ -334,8 +318,7 @@ pitch(p,note('C'))`,
 		Template:      `bpm(${1:beats-per-minute})`,
 		Func: func(f float64) interface{} {
 			if f < 1 || f > 300 {
-				notify.Print(notify.Warningf("invalid beats-per-minute [1..399], %f = ", f))
-				return nil
+				return notify.Panic(fmt.Errorf("invalid beats-per-minute [1..399], %f = ", f))
 			}
 			ctx.Control().SetBPM(f)
 			return nil
@@ -349,8 +332,7 @@ pitch(p,note('C'))`,
 		Template:      `biab(${1:beats-in-a-bar})`,
 		Func: func(i int) interface{} {
 			if i < 1 || i > 6 {
-				notify.Print(notify.Warningf("invalid beats-in-a-bar [1..6], %d = ", i))
-				return nil
+				return notify.Panic(fmt.Errorf("invalid beats-in-a-bar [1..6], %d = ", i))
 			}
 			ctx.Control().SetBIAB(i)
 			return nil
@@ -380,8 +362,7 @@ sequence('(C D E)')`,
 		Func: func(s string) interface{} {
 			sq, err := melrose.ParseSequence(s)
 			if err != nil {
-				notify.Print(notify.Error(err))
-				return nil
+				return notify.Panic(err)
 			}
 			return sq
 		}}
@@ -398,8 +379,7 @@ note('2E#.--')`,
 		Func: func(s string) interface{} {
 			n, err := melrose.ParseNote(s)
 			if err != nil {
-				notify.Print(notify.Error(err))
-				return nil
+				return notify.Panic(err)
 			}
 			return n
 		}}
@@ -413,8 +393,7 @@ note('2E#.--')`,
 		Samples:     `scale(1,'E/m') // => E F G A B C5 D5`,
 		Func: func(octaves int, s string) interface{} {
 			if octaves < 1 {
-				notify.Print(notify.Errorf("octaves must be >= 1%v", octaves))
-				return nil
+				return notify.Panic(fmt.Errorf("octaves must be >= 1%v", octaves))
 			}
 			sc, err := melrose.NewScale(octaves, s)
 			if err != nil {
@@ -434,8 +413,7 @@ note('2E#.--')`,
 			indexVal := getValueable(index)
 			objectSeq, ok := getSequenceable(object)
 			if !ok {
-				notify.Print(notify.Warningf("cannot index (%T) %v", object, object))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot index (%T) %v", object, object))
 			}
 			return op.NewAtIndex(indexVal, objectSeq)
 		}}
@@ -449,8 +427,7 @@ note('2E#.--')`,
 		Func: func(bar int, seq interface{}) interface{} {
 			s, ok := getSequenceable(seq)
 			if !ok {
-				notify.Print(notify.Warningf("cannot put on track (%T) %v", seq, seq))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot put on track (%T) %v", seq, seq))
 			}
 			return melrose.NewSequenceOnTrack(bar, s)
 		}}
@@ -560,8 +537,7 @@ s = r.Sequence()`,
 		Func: func(deviceID int, secondsInactivity int) interface{} {
 			seq, err := ctx.Device().Record(deviceID, time.Duration(secondsInactivity)*time.Second)
 			if err != nil {
-				notify.Print(notify.Error(err))
-				return nil
+				return notify.Panic(err)
 			}
 			return seq
 		}}
@@ -574,8 +550,7 @@ s = r.Sequence()`,
 		Samples:     `undynamic('A+ B++ C-- D-') // =>  A B C D`,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
-				notify.Print(notify.Warningf("cannot undynamic (%T) %v", value, value))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot undynamic (%T) %v", value, value))
 			} else {
 				return op.Undynamic{Target: s}
 			}
@@ -591,8 +566,7 @@ s = r.Sequence()`,
 		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
-				notify.Print(notify.Warningf("cannot flatten (%T) %v", value, value))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot flatten (%T) %v", value, value))
 			} else {
 				return s.S()
 			}
@@ -608,8 +582,7 @@ s = r.Sequence()`,
 		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
-				notify.Print(notify.Warningf("cannot parallel (%T) %v", value, value))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot parallel (%T) %v", value, value))
 			} else {
 				return op.Parallel{Target: s}
 			}
@@ -695,8 +668,7 @@ end(l1)`,
 		Func: func(midiChannel, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
-				notify.Print(notify.Warningf("cannot decorate with channel (%T) %v", m, m))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot decorate with channel (%T) %v", m, m))
 			}
 			return melrose.ChannelSelector{Target: s, Number: getValueable(midiChannel)}
 		}}
@@ -724,8 +696,7 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		Func: func(pattern, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
-				notify.Print(notify.Warningf("cannot create sequence mapper on (%T) %v", m, m))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot create sequence mapper on (%T) %v", m, m))
 			}
 			return op.NewSequenceMapper(s, melrose.ToValueable(pattern))
 		}}
@@ -736,7 +707,7 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		Func: func(indices string, note interface{}) interface{} {
 			m, err := op.NewNoteMapper(indices, getValueable(note))
 			if err != nil {
-				notify.Print(notify.Errorf("cannot create notemap, error:%v", err))
+				return notify.Panic(fmt.Errorf("cannot create notemap, error:%v", err))
 			}
 			return m
 		}}
@@ -760,13 +731,11 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 	eval["export"] = Function{
 		Func: func(filename string, m interface{}) interface{} {
 			if len(filename) == 0 {
-				notify.Print(notify.Warningf("missing filename to export MIDI %v", m))
-				return nil
+				return notify.Panic(fmt.Errorf("missing filename to export MIDI %v", m))
 			}
 			_, ok := getSequenceable(m)
 			if !ok {
-				notify.Print(notify.Warningf("cannot MIDI export (%T) %v", m, m))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot MIDI export (%T) %v", m, m))
 			}
 			if !strings.HasSuffix(filename, "mid") {
 				filename += ".mid"
@@ -778,18 +747,15 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		Func: func(target interface{}, from, to interface{}) interface{} {
 			targetS, ok := getSequenceable(target)
 			if !ok {
-				notify.Print(notify.Warningf("cannot create replace inside (%T) %v", target, target))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot create replace inside (%T) %v", target, target))
 			}
 			fromS, ok := getSequenceable(from)
 			if !ok {
-				notify.Print(notify.Warningf("cannot create replace (%T) %v", from, from))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot create replace (%T) %v", from, from))
 			}
 			toS, ok := getSequenceable(to)
 			if !ok {
-				notify.Print(notify.Warningf("cannot create replace with (%T) %v", to, to))
-				return nil
+				return notify.Panic(fmt.Errorf("cannot create replace with (%T) %v", to, to))
 			}
 			return op.Replace{Target: targetS, From: fromS, To: toS}
 		}}
