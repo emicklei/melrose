@@ -73,7 +73,7 @@ duration(0.5,sequence('8C 8G')) // => C G , factor change`,
 		}}
 
 	eval["progression"] = Function{
-		Title:    "create a Chord progression",
+		Title:    `create a Chord progression using this <a href="/notations.html#progression-not">format</a>`,
 		Prefix:   "pro",
 		IsCore:   true,
 		Template: `progression('${1:chords}')`,
@@ -207,7 +207,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 
 	eval["chord"] = Function{
 		Title:       "Chord creator",
-		Description: `create a Chord from its string <a href="/melrose/index.html#chord-not">notation</a>`,
+		Description: `create a Chord from its string <a href="/melrose/notations.html#chord-not">notation</a>`,
 		Prefix:      "cho",
 		Alias:       "C",
 		Template:    `chord('${1:note}')`,
@@ -352,7 +352,7 @@ pitch(p,note('C'))`,
 
 	eval["sequence"] = Function{
 		Title:       "Sequence creator",
-		Description: "create a Sequence from (space separated) notes",
+		Description: `create a Sequence using this <a href="/notations.html#sequence-not">format</a>`,
 		Prefix:      "seq",
 		Alias:       "S",
 		Template:    `sequence('${1:space-separated-notes}')`,
@@ -369,7 +369,7 @@ sequence('(C D E)')`,
 
 	eval["note"] = Function{
 		Title:       "Note creator",
-		Description: `create a Note  from its string <a href="/index.html#note-not">notation</a>`,
+		Description: `create a Note using this <a href="/notations.html#note-not">format</a>`,
 		Prefix:      "no",
 		Alias:       "N",
 		Template:    `note('${1:letter}')`,
@@ -386,7 +386,7 @@ note('2E#.--')`,
 
 	eval["scale"] = Function{
 		Title:       "Scale creator",
-		Description: "create a Scale using a starting Note and type indicator (Major,minor)",
+		Description: `create a Scale using this <a href="/notations.html#scale-not">format</a>`,
 		Prefix:      "sc",
 		Template:    `scale(${1:octaves},'${2:note}')`,
 		IsCore:      true,

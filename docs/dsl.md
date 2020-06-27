@@ -91,7 +91,7 @@ Select a MIDI channel, must be in [1..15].
 	channel(2,sequence('C2 E3') // plays on instrument connected to MIDI channel 2'
 
 ### chord<a name="chord"></a>
-Create a Chord from its string <a href="/melrose/index.html#chord-not">notation</a>.
+Create a Chord from its string <a href="/melrose/notations.html#chord-not">notation</a>.
 
 	chord('C#5/m/1')
 
@@ -160,7 +160,7 @@ Create a Note.
 	
 
 ### note<a name="note"></a>
-Create a Note  from its string <a href="/index.html#note-not">notation</a>.
+Create a Note using this <a href="/notations.html#note-not">format</a>.
 
 	note('E')
 
@@ -220,12 +220,12 @@ Reverse the (groups of) notes in a sequence.
 	reverse(chord('A'))
 
 ### scale<a name="scale"></a>
-Create a Scale using a starting Note and type indicator (Major,minor).
+Create a Scale using this <a href="/notations.html#scale-not">format</a>.
 
 	scale(1,'E/m') // => E F G A B C5 D5
 
 ### sequence<a name="sequence"></a>
-Create a Sequence from (space separated) notes.
+Create a Sequence using this <a href="/notations.html#sequence-not">format</a>.
 
 	sequence('C D E')
 
