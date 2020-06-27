@@ -4,7 +4,7 @@ title: Melrōse musical object notation
 
 ## Note
 
-Format: `(duration)(pitch)(accidential)(dynamic)`
+Format: `(duration)(pitch)(accidental)(dynamic)`
 
 | Notation | Alternative | Description
 |----------|-------|-------------
@@ -20,6 +20,8 @@ Format: `(duration)(pitch)(accidential)(dynamic)`
 | D+       | d+    | quarter D octave 4 MezzoForte
 | 16.E#--  | 16.e♯-- | sixteenth E sharp duration x 1.5 Piano
 
+    n = note('c#5')
+
 ## Note dynamics<a name="note-not"></a>
 
 | Notation    | Description
@@ -27,10 +29,12 @@ Format: `(duration)(pitch)(accidential)(dynamic)`
 | \-\-\-      |Pianissimo (pp)
 | \-\-	      |Piano (p)
 | \-	      |MezzoPiano (mp)
-| 0           |Normal
+| 0           |Normal (optional)
 | +	          |MezzoForte (mf)
 | ++	      |Forte (f)
 | +++         |Fortissimo (ff)
+
+    n = note('E++')
 
 ## Sequence<a name="sequence-not"></a>
 
@@ -39,6 +43,8 @@ Format: `(duration)(pitch)(accidential)(dynamic)`
 | C D E F       | 4 quarter tones
 | (C E) (d5 f5) | 2 doublets
 | (1C 1E 1G)    | C Chord
+
+    doremi = sequence('c d e')
 
 ## Chord<a name="chord-not"></a>
 
@@ -50,6 +56,8 @@ Format: `(duration)(pitch)(accidential)(dynamic)`
 | G/m7        | G minor seventh chord
 | 1=          | No chord, a whole rest note
 
+    b7 = chor('b/7')
+
 ## Scale<a name="scale-not"></a>
 
 | Notation    | Description
@@ -58,6 +66,8 @@ Format: `(duration)(pitch)(accidential)(dynamic)`
 | E/m         | E natural minor scale, Octave 4
 | G/M7        | G major 7 scale, Octave 4
 
+    sf = scale(2,'f')
+
 ## Progression<a name="progression-not"></a>
 
 | Notation    | Description
@@ -65,3 +75,5 @@ Format: `(duration)(pitch)(accidential)(dynamic)`
 | C/m D/m     | C minor followed by a D minor 
 | (C3 C5)     | C major, Octave 3 together with a C major, Octave 5
 | E =         | E major followed by a quarter rest note
+
+    p = progression('C F G')
