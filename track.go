@@ -31,10 +31,12 @@ func (t *Track) S() Sequence {
 }
 
 func (t *Track) Play(ctx Context) error {
-	// TODO
-	if one, ok := t.Content[1]; ok {
-		cs := NewChannelSelector(one, On(t.Channel))
-		ctx.Device().Play(cs, ctx.Control().BPM(), time.Now())
+	now := time.Now()
+	bpm := ctx.Control().BPM()
+	whole := WholeNoteDuration(bpm)
+	for bars, each := range t.Content {
+		cs := NewChannelSelector(each, On(t.Channel))
+		ctx.Device().Play(cs, bpm, now.Add(time.Duration(bars-1)*whole))
 	}
 	return nil
 }
@@ -48,7 +50,7 @@ func (t *Track) Inspect(i Inspection) {
 // Add adds a SequenceOnTrack or a Sequence at bar 1.
 func (t *Track) Add(seq interface{}) {
 	if at, ok := seq.(SequenceOnTrack); ok {
-		t.Content[at.Bar] = at.Target
+		t.Content[Int(at.Bar)] = at.Target
 		return
 	}
 	if s, ok := seq.(Sequenceable); ok {
@@ -62,7 +64,7 @@ func (t *Track) Storex() string {
 	fmt.Fprintf(&buf, "track('%s',%d", t.Title, t.Channel)
 	for k, v := range t.Content {
 		fmt.Fprintf(&buf, ",")
-		sont := NewSequenceOnTrack(k, v)
+		sont := NewSequenceOnTrack(On(k), v)
 		fmt.Fprintf(&buf, sont.Storex())
 	}
 	fmt.Fprintf(&buf, ")")
@@ -70,11 +72,11 @@ func (t *Track) Storex() string {
 }
 
 type SequenceOnTrack struct {
-	Bar    int
+	Bar    Valueable
 	Target Sequenceable
 }
 
-func NewSequenceOnTrack(bar int, seq Sequenceable) SequenceOnTrack {
+func NewSequenceOnTrack(bar Valueable, seq Sequenceable) SequenceOnTrack {
 	return SequenceOnTrack{Bar: bar, Target: seq}
 }
 
@@ -85,10 +87,9 @@ func (s SequenceOnTrack) S() Sequence {
 // Storex implements Storable
 func (s SequenceOnTrack) Storex() string {
 	if st, ok := s.Target.(Storable); ok {
-		return fmt.Sprintf("put(%d,%s)", s.Bar, st.Storex())
-	} else {
-		return fmt.Sprintf("put(%d,%v)", s.Bar, s.Target)
+		return fmt.Sprintf("put(%v,%s)", s.Bar, st.Storex())
 	}
+	return ""
 }
 
 type MultiTrack struct {

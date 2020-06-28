@@ -1,10 +1,12 @@
 package dsl
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/antonmedv/expr"
 	"github.com/antonmedv/expr/ast"
+	"github.com/emicklei/melrose/notify"
 )
 
 type envMap map[string]interface{}
@@ -22,6 +24,12 @@ func (envMap) Sub(l, r interface{}) interface{} {
 	if vr, ok := r.(variable); ok {
 		return vr.dispatchSubFrom(l)
 	}
+	if li, ok := l.(int); ok {
+		if ri, ok := r.(int); ok {
+			return li - ri
+		}
+	}
+	notify.Panic(fmt.Errorf("substraction failed [%v (%T) - %v (%T)]", l, l, r, r))
 	return nil
 }
 
@@ -32,6 +40,12 @@ func (envMap) Add(l, r interface{}) interface{} {
 	if vr, ok := r.(variable); ok {
 		return vr.dispatchAdd(l)
 	}
+	if li, ok := l.(int); ok {
+		if ri, ok := r.(int); ok {
+			return li + ri
+		}
+	}
+	notify.Panic(fmt.Errorf("addition failed [%v (%T) + %v (%T)]", l, l, r, r))
 	return nil
 }
 

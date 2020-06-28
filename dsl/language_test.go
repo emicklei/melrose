@@ -73,3 +73,17 @@ func TestTrack(t *testing.T) {
 	r := eval(t, "track('test',1,note('c'))")
 	checkStorex(t, r, "track('test',1,put(1,note('C')))")
 }
+
+func TestBars(t *testing.T) {
+	r := eval(t, "bars(sequence('a b c d'))")
+	if got, want := r.(int), 1; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}
+
+func TestBars_Arithmetic(t *testing.T) {
+	r := eval(t, "1+bars(sequence('a b c d'))")
+	if got, want := r.(int), 2; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}

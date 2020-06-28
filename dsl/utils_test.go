@@ -20,9 +20,11 @@ func checkError(t *testing.T, err error) {
 
 func eval(t *testing.T, expression string) interface{} {
 	t.Helper()
+	lp := new(melrose.TestLooper)
+	lp.SetBIAB(4)
 	ctx := melrose.PlayContext{
 		VariableStorage: NewVariableStore(),
-		LoopControl:     new(melrose.TestLooper),
+		LoopControl:     lp,
 	}
 	r, err := NewEvaluator(ctx).EvaluateExpression(expression)
 	checkError(t, err)
@@ -31,9 +33,11 @@ func eval(t *testing.T, expression string) interface{} {
 
 func mustError(t *testing.T, expression string, substring string) {
 	t.Helper()
+	lp := new(melrose.TestLooper)
+	lp.SetBIAB(4)
 	ctx := melrose.PlayContext{
 		VariableStorage: NewVariableStore(),
-		LoopControl:     new(melrose.TestLooper),
+		LoopControl:     lp,
 	}
 	_, err := NewEvaluator(ctx).EvaluateExpression(expression)
 	if err == nil {

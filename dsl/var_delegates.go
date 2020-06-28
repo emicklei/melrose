@@ -1,6 +1,11 @@
 package dsl
 
-import "github.com/emicklei/melrose"
+import (
+	"fmt"
+
+	"github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/notify"
+)
 
 // At is called from expr after patching []. One-based
 func (v variable) At(index int) interface{} {
@@ -49,6 +54,7 @@ func (v variable) dispatchSub(r interface{}) interface{} {
 			return il - ir
 		}
 	}
+	notify.Panic(fmt.Errorf("substraction failed [%v (%T) - %v (%T)]", v, v, r, r))
 	return nil
 }
 
@@ -69,6 +75,7 @@ func (v variable) dispatchSubFrom(l interface{}) interface{} {
 			return il - ir
 		}
 	}
+	notify.Panic(fmt.Errorf("substraction failed [%v (%T) - %v (%T)]", l, l, v, v))
 	return nil
 }
 
@@ -87,5 +94,6 @@ func (v variable) dispatchAdd(r interface{}) interface{} {
 			return il + ir
 		}
 	}
+	notify.Panic(fmt.Errorf("substraction failed [%v (%T) + %v (%T)]", r, r, v, v))
 	return nil
 }

@@ -3,6 +3,7 @@ package dsl
 import (
 	"fmt"
 	"log"
+	"math"
 	"strings"
 	"time"
 
@@ -111,7 +112,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			}
 			// TODO handle loop
 			biab := ctx.Control().BIAB()
-			return float64(s.S().NoteLength()) / float64(biab)
+			return int(math.Round((s.S().NoteLength() * 4) / float64(biab)))
 		}}
 
 	eval["beats"] = Function{
@@ -126,23 +127,23 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			return len(s.S().Notes)
 		}}
 
-	eval["onbar"] = Function{
-		//Title:         "Schedule to play a musical object on a bar (starts with 1)",
-		Prefix:        "onb",
-		Template:      `onbar('${1:bar},${2:object}')`,
-		ControlsAudio: true,
-		Samples:       `onbar(1,sequence('C D E')) // => immediately play C D E`,
-		Func: func(bars int, seq interface{}) interface{} {
-			if bars <= 0 {
-				return notify.Panic(fmt.Errorf("cannot start on bar [%d], bars start at 1", bars))
-			}
-			s, ok := getSequenceable(getValue(seq)) // unwrap var
-			if !ok {
-				return notify.Panic(fmt.Errorf("cannot onbar (%T) %v", seq, seq))
-			}
-			ctx.Control().Plan(int64(bars-1), int64(0), s)
-			return nil
-		}}
+	// eval["onbar"] = Function{
+	// 	//Title:         "Schedule to play a musical object on a bar (starts with 1)",
+	// 	Prefix:        "onb",
+	// 	Template:      `onbar('${1:bar},${2:object}')`,
+	// 	ControlsAudio: true,
+	// 	Samples:       `onbar(1,sequence('C D E')) // => immediately play C D E`,
+	// 	Func: func(bars int, seq interface{}) interface{} {
+	// 		if bars <= 0 {
+	// 			return notify.Panic(fmt.Errorf("cannot start on bar [%d], bars start at 1", bars))
+	// 		}
+	// 		s, ok := getSequenceable(getValue(seq)) // unwrap var
+	// 		if !ok {
+	// 			return notify.Panic(fmt.Errorf("cannot onbar (%T) %v", seq, seq))
+	// 		}
+	// 		ctx.Control().Plan(int64(bars-1), int64(0), s)
+	// 		return nil
+	// 	}}
 
 	eval["track"] = Function{
 		Title:    "Create a new Track",
@@ -427,12 +428,12 @@ note('2E#.--')`,
 		//Prefix:      "at",
 		//Template:    `at(${1:index},${2:object})`,
 		//Samples:     `at(1,scale('E/m')) // => E`,
-		Func: func(bar int, seq interface{}) interface{} {
+		Func: func(bar interface{}, seq interface{}) interface{} {
 			s, ok := getSequenceable(seq)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot put on track (%T) %v", seq, seq))
 			}
-			return melrose.NewSequenceOnTrack(bar, s)
+			return melrose.NewSequenceOnTrack(getValueable(bar), s)
 		}}
 
 	eval["random"] = Function{
