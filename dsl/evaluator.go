@@ -89,6 +89,11 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 		return value, nil
 	}
 	if variable, expression, ok := IsAssignment(entry); ok {
+		// variable cannot be named after function
+		if _, conflict := e.funcs[variable]; conflict {
+			return nil, fmt.Errorf("cannot use variable [%s] because it is a defined function", variable)
+		}
+
 		r, err := e.EvaluateExpression(expression)
 		if err != nil {
 			return nil, err

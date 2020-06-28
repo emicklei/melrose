@@ -29,6 +29,7 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 
 ## Composition functions
 
+- <a href="#J">J</a>
 - <a href="#at">at</a>
 - <a href="#duration">duration</a>
 - <a href="#flatten">flatten</a>
@@ -61,6 +62,15 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 - <a href="#record">record</a>
 
 
+### J<a name="J"></a>
+When played, each musical object is played in sequence.
+
+	a = chord('A')
+
+	b = sequence('(C E G))
+
+	ab = join(a,b)
+
 ### at<a name="at"></a>
 Create an index getter (1-based) to select a musical object.
 
@@ -88,7 +98,7 @@ Set the Beats Per Minute [1..300]; default is 120.
 ### channel<a name="channel"></a>
 Select a MIDI channel, must be in [1..15].
 
-	channel(2,sequence('C2 E3') // plays on instrument connected to MIDI channel 2'
+	channel(2,sequence('C2 E3') // plays on instrument connected to MIDI channel 2
 
 ### chord<a name="chord"></a>
 Create a Chord from its string <a href="/melrose/melrose/notations.html#chord-not">notation</a>.
@@ -133,14 +143,18 @@ Play all musical objects in parallel.
 ### interval<a name="interval"></a>
 Create an integer repeating interval (from,to,by,method). Default method is 'repeat', Use next() to get a new integer.
 
-	i1 = interval(-2,4,1)
+	int1 = interval(-2,4,1)
 
-	l1 = loop(pitch(i1,sequence('C D E F')), next(i1))
+	lp_cdef = loop(pitch(int1,sequence('C D E F')), next(int1))
 
 ### join<a name="join"></a>
-Join two or more musical objects.
+When played, each musical object is played in sequence.
 
-	
+	a = chord('A')
+
+	b = sequence('(C E G))
+
+	ab = join(a,b)
 
 ### loop<a name="loop"></a>
 Create a new loop from one or more objects.

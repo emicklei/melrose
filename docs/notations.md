@@ -56,7 +56,7 @@ Format: `(duration)(pitch)(accidental)(dynamic)`
 | G/m7        | G minor seventh chord
 | 1=          | No chord, a whole rest note
 
-    b7 = chor('b/7')
+    b7 = chord('b/7')
 
 ## Scale<a name="scale-not"></a>
 

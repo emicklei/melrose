@@ -50,7 +50,7 @@ func Int(h Valueable) int {
 	if vv, ok := val.(Valueable); ok {
 		return Int(vv)
 	}
-	notify.Print(notify.Warningf("expected [int] but got [%T]", h.Value()))
+	notify.Print(notify.Warningf("Int() expected [int] but got [%T], return 0", h.Value()))
 	return 0
 }
 

@@ -291,13 +291,16 @@ pitch(p,note('C'))`,
 			return op.Repeat{Target: joined, Times: getValueable(howMany)}
 		}}
 
-	eval["join"] = Function{
-		Title:       "Join modifier",
-		Description: "join two or more musical objects",
+	registerFunction(eval, "join", Function{
+		Title:       "Create a Join from two or more musical objects",
+		Description: "When played, each musical object is played in sequence",
 		Prefix:      "joi",
 		Alias:       "J",
 		Template:    `join(${1:first},${2:second})`,
-		IsComposer:  true,
+		Samples: `a = chord('A')
+b = sequence('(C E G))
+ab = join(a,b)`,
+		IsComposer: true,
 		Func: func(playables ...interface{}) interface{} {
 			joined := []melrose.Sequenceable{}
 			for _, p := range playables {
@@ -308,7 +311,7 @@ pitch(p,note('C'))`,
 				}
 			}
 			return op.Join{Target: joined}
-		}}
+		}})
 
 	eval["bpm"] = Function{
 		Title:         "Beats Per Minute",
@@ -664,7 +667,7 @@ end(l1)`,
 		Prefix:        "chan",
 		Alias:         "Ch",
 		Template:      `channel(${1:number},${2:sequenceable})`,
-		Samples:       `channel(2,sequence('C2 E3') // plays on instrument connected to MIDI channel 2'`,
+		Samples:       `channel(2,sequence('C2 E3') // plays on instrument connected to MIDI channel 2`,
 		Func: func(midiChannel, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -678,8 +681,8 @@ end(l1)`,
 		Prefix:      "int",
 		Alias:       "I",
 		Template:    `interval(${1:from},${2:to},${3:by})`,
-		Samples: `i1 = interval(-2,4,1)
-l1 = loop(pitch(i1,sequence('C D E F')), next(i1))`,
+		Samples: `int1 = interval(-2,4,1)
+lp_cdef = loop(pitch(int1,sequence('C D E F')), next(int1))`,
 		IsComposer: true,
 		Func: func(from, to, by interface{}) *melrose.Interval {
 			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by), melrose.RepeatFromTo)
