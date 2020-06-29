@@ -3,16 +3,16 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"io"
 	"sort"
 	"strings"
 
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
 )
 
-func showHelp(ctx melrose.Context, args []string) notify.Message {
+func showHelp(ctx core.Context, args []string) notify.Message {
 	var b bytes.Buffer
 
 	fmt.Fprintf(&b, "\nversion %s, syntax: %s\n", version, dsl.Syntax)

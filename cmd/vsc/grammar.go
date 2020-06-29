@@ -3,12 +3,12 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
 
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 )
 
@@ -22,9 +22,9 @@ func grammar() {
 	content := string(data)
 
 	varstore := dsl.NewVariableStore()
-	ctx := melrose.PlayContext{
+	ctx := core.PlayContext{
 		VariableStorage: varstore,
-		LoopControl:     melrose.NoLooper,
+		LoopControl:     core.NoLooper,
 	}
 	var buffer bytes.Buffer
 	for k, _ := range dsl.EvalFunctions(ctx) {

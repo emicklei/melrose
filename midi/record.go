@@ -2,15 +2,15 @@ package midi
 
 import (
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"time"
 
-	"github.com/emicklei/melrose"
 	"github.com/rakyll/portmidi"
 )
 
 // Record is part of melrose.AudioDevice
-func (m *Midi) Record(deviceID int, stopAfterInactivity time.Duration) (*melrose.Recording, error) {
-	rec := melrose.NewRecording()
+func (m *Midi) Record(deviceID int, stopAfterInactivity time.Duration) (*core.Recording, error) {
+	rec := core.NewRecording()
 	in, err := portmidi.NewInputStream(portmidi.DeviceID(deviceID), 1024) // buffer
 	if err != nil {
 		return rec, err
@@ -33,8 +33,8 @@ func (m *Midi) Record(deviceID int, stopAfterInactivity time.Duration) (*melrose
 		case each := <-ch: // depending on the device, this may not block and other events are received
 			when := now.Add(time.Duration(each.Timestamp) * time.Millisecond)
 			if each.Status == noteOn {
-				print(melrose.MIDItoNote(int(each.Data1), 1.0))
-				rec.Add(melrose.NewNoteChange(true, each.Data1, each.Data2), when)
+				print(core.MIDItoNote(int(each.Data1), 1.0))
+				rec.Add(core.NewNoteChange(true, each.Data1, each.Data2), when)
 				needsReset = true
 				continue
 			}
@@ -43,7 +43,7 @@ func (m *Midi) Record(deviceID int, stopAfterInactivity time.Duration) (*melrose
 			}
 			// note off
 			needsReset = true
-			rec.Add(melrose.NewNoteChange(false, each.Data1, each.Data2), when)
+			rec.Add(core.NewNoteChange(false, each.Data1, each.Data2), when)
 			if !timeout.Stop() {
 				<-timeout.C
 			}
@@ -57,6 +57,6 @@ done:
 }
 
 // TODO compute duration
-func (m *Midi) eventToNote(start, end portmidi.Event) melrose.Note {
-	return melrose.MIDItoNote(int(start.Data1), int(start.Data2))
+func (m *Midi) eventToNote(start, end portmidi.Event) core.Note {
+	return core.MIDItoNote(int(start.Data1), int(start.Data2))
 }

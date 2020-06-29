@@ -3,13 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"io/ioutil"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
 
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
 	"github.com/emicklei/melrose/server"
@@ -33,10 +33,10 @@ func main() {
 	currentDevice := setupAudio("midi")
 	defer currentDevice.Close()
 
-	ctx := new(melrose.PlayContext)
+	ctx := new(core.PlayContext)
 	ctx.AudioDevice = currentDevice
 	ctx.VariableStorage = dsl.NewVariableStore()
-	ctx.LoopControl = melrose.NewBeatmaster(ctx, 120)
+	ctx.LoopControl = core.NewBeatmaster(ctx, 120)
 
 	// process file if given
 	if len(*inputFile) > 0 {
@@ -65,7 +65,7 @@ func welcome() {
 	fmt.Println("\033[1;34mmelrōse\033[0m" + " - program your melodies")
 }
 
-func tearDown(line *liner.State, ctx melrose.Context) {
+func tearDown(line *liner.State, ctx core.Context) {
 	//dsl.StopAllLoops(store)
 	//control.Stop()
 
@@ -89,7 +89,7 @@ func setup(line *liner.State) {
 	}
 }
 
-func repl(line *liner.State, ctx melrose.Context) {
+func repl(line *liner.State, ctx core.Context) {
 	eval := dsl.NewEvaluator(ctx)
 	ctx.Control().Start()
 	for {
@@ -117,7 +117,7 @@ func repl(line *liner.State, ctx melrose.Context) {
 			// even on error, add entry to history so we can edit/fix it
 		} else {
 			if result != nil {
-				melrose.PrintValue(ctx, result)
+				core.PrintValue(ctx, result)
 			}
 		}
 		line.AppendHistory(entry)
@@ -125,7 +125,7 @@ func repl(line *liner.State, ctx melrose.Context) {
 exit:
 }
 
-func processInputFile(ctx melrose.Context, inputFile string) error {
+func processInputFile(ctx core.Context, inputFile string) error {
 	data, err := ioutil.ReadFile(inputFile)
 	if err != nil {
 		notify.Print(notify.Errorf("unable to read file:%v", err))
@@ -139,7 +139,7 @@ func processInputFile(ctx melrose.Context, inputFile string) error {
 // setupCloseHandler creates a 'listener' on a new goroutine which will notify the
 // program if it receives an interrupt from the OS. We then handle this by calling
 // our clean up procedure and exiting the program.
-func setupCloseHandler(line *liner.State, ctx melrose.Context) {
+func setupCloseHandler(line *liner.State, ctx core.Context) {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {

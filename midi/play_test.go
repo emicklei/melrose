@@ -1,11 +1,10 @@
 package midi
 
 import (
+	"github.com/emicklei/melrose/core"
 	"math"
 	"testing"
 	"time"
-
-	"github.com/emicklei/melrose"
 )
 
 func TestDurations(t *testing.T) {
@@ -13,8 +12,8 @@ func TestDurations(t *testing.T) {
 		t.Log("bpm", bpm)
 		wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/bpm))) * time.Millisecond
 		t.Log("whole", wholeNoteDuration)
-		s := melrose.S("1C 2C 4C 8C 16C")
-		s.NotesDo(func(each melrose.Note) {
+		s := core.S("1C 2C 4C 8C 16C")
+		s.NotesDo(func(each core.Note) {
 			actualDuration := time.Duration(float32(wholeNoteDuration) * each.Length())
 			t.Log(each.String(), actualDuration)
 		})
@@ -36,10 +35,10 @@ func TestEventNoteOff(t *testing.T) {
 func TestPlay(t *testing.T) {
 	m := new(Midi)
 	m.enabled = true
-	m.timeline = melrose.NewTimeline()
+	m.timeline = core.NewTimeline()
 	now := time.Now()
-	m.Play(melrose.MustParseSequence("C D"), 120.0, now)
-	m.timeline.EventsDo(func(event melrose.TimelineEvent, when time.Time) {
+	m.Play(core.MustParseSequence("C D"), 120.0, now)
+	m.timeline.EventsDo(func(event core.TimelineEvent, when time.Time) {
 		t.Logf("on [%v] event [%v]\n", when.Sub(now), event)
 	})
 }

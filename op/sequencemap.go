@@ -2,31 +2,30 @@ package op
 
 import (
 	"fmt"
+	"github.com/emicklei/melrose/core"
 
-	"github.com/emicklei/melrose"
-	. "github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
 )
 
 type SequenceMapper struct {
-	Target  Sequenceable
+	Target  core.Sequenceable
 	Indices [][]int
-	Pattern melrose.Valueable
+	Pattern core.Valueable
 }
 
-func (p SequenceMapper) S() Sequence {
+func (p SequenceMapper) S() core.Sequence {
 	if p.Pattern == nil {
 		return p.Target.S()
 	}
-	sPattern := melrose.String(p.Pattern)
+	sPattern := core.String(p.Pattern)
 	if len(sPattern) == 0 {
 		return p.Target.S()
 	}
 	indices := parseIndices(sPattern)
 	seq := p.Target.S()
-	groups := [][]Note{}
+	groups := [][]core.Note{}
 	for _, indexEntry := range indices {
-		mappedGroup := []Note{}
+		mappedGroup := []core.Note{}
 		for j, each := range indexEntry {
 			if each < 1 || each > len(seq.Notes) {
 				notify.Print(notify.Warningf("index out of sequence range: %d, len=%d", j+1, len(seq.Notes)))
@@ -37,29 +36,29 @@ func (p SequenceMapper) S() Sequence {
 		}
 		groups = append(groups, mappedGroup)
 	}
-	return Sequence{Notes: groups}
+	return core.Sequence{Notes: groups}
 }
 
-func NewSequenceMapper(s Sequenceable, pattern melrose.Valueable) SequenceMapper {
+func NewSequenceMapper(s core.Sequenceable, pattern core.Valueable) SequenceMapper {
 	return SequenceMapper{Target: s, Pattern: pattern}
 }
 
 func (p SequenceMapper) Storex() string {
-	if s, ok := p.Target.(Storable); ok {
+	if s, ok := p.Target.(core.Storable); ok {
 		return fmt.Sprintf("sequencemap(%v,%s)", p.Pattern, s.Storex())
 	}
 	return ""
 }
 
 // Replaced is part of Replaceable
-func (p SequenceMapper) Replaced(from, to Sequenceable) Sequenceable {
-	if IsIdenticalTo(p, from) {
+func (p SequenceMapper) Replaced(from, to core.Sequenceable) core.Sequenceable {
+	if core.IsIdenticalTo(p, from) {
 		return to
 	}
-	if IsIdenticalTo(p.Target, from) {
+	if core.IsIdenticalTo(p.Target, from) {
 		return SequenceMapper{Target: to, Pattern: p.Pattern}
 	}
-	if rep, ok := p.Target.(Replaceable); ok {
+	if rep, ok := p.Target.(core.Replaceable); ok {
 		return SequenceMapper{Target: rep.Replaced(from, to), Pattern: p.Pattern}
 	}
 	return p

@@ -2,20 +2,19 @@ package op
 
 import (
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"math/rand"
 	"time"
-
-	"github.com/emicklei/melrose"
 )
 
 type RandomInteger struct {
-	From melrose.Valueable
-	To   melrose.Valueable
+	From core.Valueable
+	To   core.Valueable
 	rnd  *rand.Rand
 	last int
 }
 
-func NewRandomInteger(from, to melrose.Valueable) *RandomInteger {
+func NewRandomInteger(from, to core.Valueable) *RandomInteger {
 	rnd := &RandomInteger{
 		From: from,
 		To:   to,
@@ -37,8 +36,8 @@ func (r *RandomInteger) Value() interface{} {
 
 // Next is part of Nextable
 func (r *RandomInteger) Next() interface{} {
-	f := melrose.Int(r.From)
-	t := melrose.Int(r.To)
+	f := core.Int(r.From)
+	t := core.Int(r.To)
 	if t < f {
 		r.last = f
 		return f

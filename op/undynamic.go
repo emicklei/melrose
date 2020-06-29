@@ -2,25 +2,24 @@ package op
 
 import (
 	"fmt"
-
-	. "github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/core"
 )
 
 type Undynamic struct {
-	Target Sequenceable
+	Target core.Sequenceable
 }
 
-func (u Undynamic) S() Sequence {
-	n := []Note{}
-	u.Target.S().NotesDo(func(each Note) {
-		each.Velocity = Normal
+func (u Undynamic) S() core.Sequence {
+	n := []core.Note{}
+	u.Target.S().NotesDo(func(each core.Note) {
+		each.Velocity = core.Normal
 		n = append(n, each)
 	})
-	return BuildSequence(n)
+	return core.BuildSequence(n)
 }
 
 func (u Undynamic) Storex() string {
-	if s, ok := u.Target.(Storable); ok {
+	if s, ok := u.Target.(core.Storable); ok {
 		return fmt.Sprintf("undynamic(%s)", s.Storex())
 	}
 	return ""

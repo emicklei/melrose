@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -11,20 +12,19 @@ import (
 	"time"
 
 	"github.com/antonmedv/expr/file"
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
 )
 
 // LanguageServer can execute DSL statements received over HTTP
 type LanguageServer struct {
-	context   melrose.Context
+	context   core.Context
 	address   string
 	evaluator *dsl.Evaluator
 }
 
 // NewLanguageServer returns a new LanguageService. It is not started.
-func NewLanguageServer(ctx melrose.Context, addr string) *LanguageServer {
+func NewLanguageServer(ctx core.Context, addr string) *LanguageServer {
 	return &LanguageServer{context: ctx, address: addr, evaluator: dsl.NewEvaluator(ctx)}
 }
 
@@ -70,17 +70,17 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		// evaluation was ok.
 
 		if query.Get("action") == "inspect" {
-			melrose.PrintValue(l.context, returnValue)
+			core.PrintValue(l.context, returnValue)
 		}
 
 		// check if play was requested and is playable
 		if query.Get("action") == "play" {
 			// first check Playable
-			if pl, ok := returnValue.(melrose.Playable); ok {
+			if pl, ok := returnValue.(core.Playable); ok {
 				_ = pl.Play(l.context)
 			} else {
 				// any sequenceable is playable
-				if s, ok := returnValue.(melrose.Sequenceable); ok {
+				if s, ok := returnValue.(core.Sequenceable); ok {
 					l.context.Device().Play(
 						s,
 						l.context.Control().BPM(),
@@ -90,7 +90,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		}
 		// loop operation
 		if query.Get("action") == "begin" {
-			if lp, ok := returnValue.(*melrose.Loop); ok {
+			if lp, ok := returnValue.(*core.Loop); ok {
 				if !lp.IsRunning() {
 					l.context.Control().Begin(lp)
 				}
@@ -99,7 +99,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		}
 		// loop operation
 		if query.Get("action") == "end" {
-			if lp, ok := returnValue.(*melrose.Loop); ok {
+			if lp, ok := returnValue.(*core.Loop); ok {
 				if lp.IsRunning() {
 					lp.Stop()
 				}
@@ -123,7 +123,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	if response.IsError {
 		notify.Print(notify.Error(response.Object.(error)))
 	} else {
-		melrose.PrintValue(l.context, response.Object)
+		core.PrintValue(l.context, response.Object)
 	}
 	if trace {
 		// doit again
@@ -163,7 +163,7 @@ func resultFrom(line int, val interface{}) evaluationResult {
 	}
 	// no error
 	var msg string
-	if stor, ok := val.(melrose.Storable); ok {
+	if stor, ok := val.(core.Storable); ok {
 		msg = stor.Storex()
 	} else {
 		msg = fmt.Sprintf("%v", val)

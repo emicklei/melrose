@@ -1,16 +1,16 @@
 package dsl
 
 import (
+	"github.com/emicklei/melrose/core"
 	"time"
 
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
 )
 
-func StopAllLoops(context melrose.Context) {
+func StopAllLoops(context core.Context) {
 	// stop any running loops
 	for k, v := range context.Variables().Variables() {
-		if l, ok := v.(*melrose.Loop); ok {
+		if l, ok := v.(*core.Loop); ok {
 			if l.IsRunning() {
 				notify.Print(notify.Infof("stopping loop [%s]", k))
 				l.Stop()
@@ -19,13 +19,13 @@ func StopAllLoops(context melrose.Context) {
 	}
 }
 
-// Run executes the program (source) and return the value of the last expression or any error while executing.
-func Run(device melrose.AudioDevice, source string) (interface{}, error) {
-	ctx := &melrose.PlayContext{
+// Run executes the program (source) and returns the value of the last expression or any error while executing.
+func Run(device core.AudioDevice, source string) (interface{}, error) {
+	ctx := &core.PlayContext{
 		AudioDevice:     device,
 		VariableStorage: NewVariableStore(),
 	}
-	ctx.LoopControl = melrose.NewBeatmaster(ctx, 120)
+	ctx.LoopControl = core.NewBeatmaster(ctx, 120)
 	eval := NewEvaluator(ctx)
 
 	r, err := eval.EvaluateProgram(source)

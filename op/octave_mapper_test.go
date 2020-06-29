@@ -1,13 +1,12 @@
 package op
 
 import (
+	"github.com/emicklei/melrose/core"
 	"testing"
-
-	"github.com/emicklei/melrose"
 )
 
 func TestOctaveMapper_S(t *testing.T) {
-	o := NewOctaveMapper(melrose.MustParseSequence("C (D E) F"), "1:-1,2:1")
+	o := NewOctaveMapper(core.MustParseSequence("C (D E) F"), "1:-1,2:1")
 	if got, want := o.S().Storex(), "sequence('C3 (D5 E5)')"; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}

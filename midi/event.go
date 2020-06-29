@@ -2,9 +2,9 @@ package midi
 
 import (
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"time"
 
-	"github.com/emicklei/melrose"
 	"github.com/rakyll/portmidi"
 )
 
@@ -25,7 +25,7 @@ func (m midiEvent) String() string {
 	return fmt.Sprintf("ch=%d nrs=%v notes=%s %s", m.channel, m.which, m.echoString, onoff)
 }
 
-func (m midiEvent) Handle(tim *melrose.Timeline, when time.Time) {
+func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
 	if len(m.echoString) > 0 {
 		print(m.echoString)
 	}

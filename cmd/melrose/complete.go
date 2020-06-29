@@ -2,11 +2,11 @@ package main
 
 import (
 	"bytes"
+	"github.com/emicklei/melrose/core"
 	"sort"
 	"strings"
 	"unicode"
 
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 )
 
@@ -34,7 +34,7 @@ func completeMe(line string, pos int) (head string, c []string, tail string) {
 	// 		c = append(c, k[len(prefix):])
 	// 	}
 	// }
-	for k, f := range dsl.EvalFunctions(melrose.PlayContext{}) {
+	for k, f := range dsl.EvalFunctions(core.PlayContext{}) {
 		// TODO start from closest (
 		if strings.HasPrefix(k, prefix) {
 			stripped := stripParameters(f.Template)

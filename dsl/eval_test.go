@@ -1,9 +1,9 @@
 package dsl
 
 import (
+	"github.com/emicklei/melrose/core"
 	"testing"
 
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/op"
 )
 
@@ -113,10 +113,10 @@ func TestEvaluateProgram_FirstTab(t *testing.T) {
 	}
 }
 
-func testContext() melrose.Context {
-	return melrose.PlayContext{
+func testContext() core.Context {
+	return core.PlayContext{
 		VariableStorage: NewVariableStore(),
-		LoopControl:     melrose.NoLooper,
+		LoopControl:     core.NoLooper,
 	}
 }
 
@@ -141,7 +141,7 @@ func TestEvaluateProgram_BrokenSequence(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if got, want := r, 1; got.(melrose.Sequence).Length() != want {
+	if got, want := r, 1; got.(core.Sequence).Length() != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
@@ -160,7 +160,7 @@ func TestEvaluateProgram_AllBrokenSequence(t *testing.T) {
 	if r == nil {
 		t.Fatal()
 	}
-	if got, want := r, 1; got.(melrose.Sequence).Length() != want {
+	if got, want := r, 1; got.(core.Sequence).Length() != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
@@ -215,7 +215,7 @@ func TestEvaluate_Scale_At(t *testing.T) {
 		`at(1,scale(2,'C'))`)
 	checkError(t, err)
 	at, _ := r.(op.AtIndex)
-	if got, want := at.Target.S().At(0)[0], melrose.MustParseNote("C"); got != want {
+	if got, want := at.Target.S().At(0)[0], core.MustParseNote("C"); got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }

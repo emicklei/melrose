@@ -2,6 +2,7 @@ package dsl
 
 import (
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"log"
 	"math"
 	"strings"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/emicklei/melrose/midi/file"
 
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
 	"github.com/emicklei/melrose/op"
 )
@@ -41,7 +41,7 @@ type Function struct {
 	Func          interface{}
 }
 
-func EvalFunctions(ctx melrose.Context) map[string]Function {
+func EvalFunctions(ctx core.Context) map[string]Function {
 	eval := map[string]Function{}
 
 	eval["duration"] = Function{
@@ -61,7 +61,7 @@ duration(0.5,sequence('8C 8G')) // => C G , factor change`,
 				notify.Print(notify.Error(err))
 				return nil
 			}
-			joined := []melrose.Sequenceable{}
+			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
 					notify.Print(notify.Warningf("cannot duration (%T) %v", p, p))
@@ -81,7 +81,7 @@ duration(0.5,sequence('8C 8G')) // => C G , factor change`,
 		Samples: `progression('E F') // => (E A♭ B) (F A C5)
 progression('(C D)') // => (C E G D G♭ A)`,
 		Func: func(chords string) interface{} {
-			p, err := melrose.ParseProgression(chords)
+			p, err := core.ParseProgression(chords)
 			if err != nil {
 				return notify.Panic(err)
 			}
@@ -157,7 +157,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			if channel < 1 || channel > 15 {
 				return notify.Panic(fmt.Errorf("MIDI channel must be in [1..15]"))
 			}
-			tr := melrose.NewTrack(title, channel)
+			tr := core.NewTrack(title, channel)
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
 					return notify.Panic(fmt.Errorf("cannot compose track with (%T) %v", p, p))
@@ -174,11 +174,11 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		Template:      `multi()`,
 		ControlsAudio: true,
 		Func: func(varOrTrack ...interface{}) interface{} {
-			tracks := []melrose.Valueable{}
+			tracks := []core.Valueable{}
 			for _, each := range varOrTrack {
 				tracks = append(tracks, getValueable(each))
 			}
-			return melrose.MultiTrack{Tracks: tracks}
+			return core.MultiTrack{Tracks: tracks}
 		}}
 
 	eval["midi"] = Function{
@@ -192,7 +192,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		Func: func(nr interface{}, velocity interface{}) interface{} {
 			nrVal := getValueable(nr)
 			velVal := getValueable(velocity)
-			return melrose.NewMIDI(nrVal, velVal)
+			return core.NewMIDI(nrVal, velVal)
 		}}
 
 	eval["watch"] = Function{
@@ -203,7 +203,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot watch (%T) %v", m, m))
 			}
-			return melrose.Watch{Target: s}
+			return core.Watch{Target: s}
 		}}
 
 	eval["chord"] = Function{
@@ -216,7 +216,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 chord('G/M/2')`,
 		IsCore: true,
 		Func: func(chord string) interface{} {
-			c, err := melrose.ParseChord(chord)
+			c, err := core.ParseChord(chord)
 			if err != nil {
 				return notify.Panic(err)
 			}
@@ -281,7 +281,7 @@ pitch(p,note('C'))`,
 		Samples:     `repeat(4,sequence('C D E'))`,
 		IsComposer:  true,
 		Func: func(howMany interface{}, playables ...interface{}) interface{} {
-			joined := []melrose.Sequenceable{}
+			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
 					return notify.Panic(fmt.Errorf("cannot repeat (%T) %v", p, p))
@@ -303,7 +303,7 @@ b = sequence('(C E G))
 ab = join(a,b)`,
 		IsComposer: true,
 		Func: func(playables ...interface{}) interface{} {
-			joined := []melrose.Sequenceable{}
+			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
 					return notify.Panic(fmt.Errorf("cannot join (%T) %v", p, p))
@@ -364,7 +364,7 @@ ab = join(a,b)`,
 sequence('(C D E)')`,
 		IsCore: true,
 		Func: func(s string) interface{} {
-			sq, err := melrose.ParseSequence(s)
+			sq, err := core.ParseSequence(s)
 			if err != nil {
 				return notify.Panic(err)
 			}
@@ -381,7 +381,7 @@ sequence('(C D E)')`,
 note('2E#.--')`,
 		IsCore: true,
 		Func: func(s string) interface{} {
-			n, err := melrose.ParseNote(s)
+			n, err := core.ParseNote(s)
 			if err != nil {
 				return notify.Panic(err)
 			}
@@ -399,7 +399,7 @@ note('2E#.--')`,
 			if octaves < 1 {
 				return notify.Panic(fmt.Errorf("octaves must be >= 1%v", octaves))
 			}
-			sc, err := melrose.NewScale(octaves, s)
+			sc, err := core.NewScale(octaves, s)
 			if err != nil {
 				notify.Print(notify.Error(err))
 				return nil
@@ -433,7 +433,7 @@ note('2E#.--')`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot put on track (%T) %v", seq, seq))
 			}
-			return melrose.NewSequenceOnTrack(getValueable(bar), s)
+			return core.NewSequenceOnTrack(getValueable(bar), s)
 		}}
 
 	eval["random"] = Function{
@@ -498,7 +498,7 @@ note('2E#.--')`,
 		Samples: `serial(chord('E')) // => E G B
 serial(sequence('(C D)'),note('E')) // => C D E`,
 		Func: func(playables ...interface{}) interface{} {
-			joined := []melrose.Sequenceable{}
+			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
 					notify.Print(notify.Warningf("cannot serial (%T) %v", p, p))
@@ -518,7 +518,7 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 		IsComposer:  true,
 		Samples:     `octave(1,sequence('C D')) // => C5 D5`,
 		Func: func(scalarOrVar interface{}, playables ...interface{}) interface{} {
-			joined := []melrose.Sequenceable{}
+			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
 					notify.Print(notify.Warningf("cannot octave (%T) %v", p, p))
@@ -527,7 +527,7 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 					joined = append(joined, s)
 				}
 			}
-			return op.Octave{Target: joined, Offset: melrose.ToValueable(scalarOrVar)}
+			return op.Octave{Target: joined, Offset: core.ToValueable(scalarOrVar)}
 		}}
 
 	eval["record"] = Function{
@@ -602,7 +602,7 @@ s = r.Sequence()`,
 		Samples: `cb = sequence('C D E F G A B')
 lp_cb = loop(cb,reverse(cb))`,
 		Func: func(playables ...interface{}) interface{} {
-			joined := []melrose.Sequenceable{}
+			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
 					notify.Print(notify.Warningf("cannot loop (%T) %v", p, p))
@@ -612,9 +612,9 @@ lp_cb = loop(cb,reverse(cb))`,
 				}
 			}
 			if len(joined) == 1 {
-				return melrose.NewLoop(ctx, joined[0])
+				return core.NewLoop(ctx, joined[0])
 			}
-			return melrose.NewLoop(ctx, op.Join{Target: joined})
+			return core.NewLoop(ctx, op.Join{Target: joined})
 		}}
 	eval["begin"] = Function{
 		Title:         "Loop runner",
@@ -627,7 +627,7 @@ end(l1)
 begin(l1)`,
 		Func: func(vars ...variable) interface{} {
 			for _, each := range vars {
-				l, ok := each.Value().(*melrose.Loop)
+				l, ok := each.Value().(*core.Loop)
 				if !ok {
 					notify.Print(notify.Warningf("cannot begin (%T) %v", l, l))
 					continue
@@ -650,7 +650,7 @@ end(l1)`,
 				return nil
 			}
 			for _, each := range vars {
-				l, ok := each.Value().(*melrose.Loop)
+				l, ok := each.Value().(*core.Loop)
 				if !ok {
 					notify.Print(notify.Warningf("cannot end (%T) %v", l, l))
 					continue
@@ -674,7 +674,7 @@ end(l1)`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot decorate with channel (%T) %v", m, m))
 			}
-			return melrose.ChannelSelector{Target: s, Number: getValueable(midiChannel)}
+			return core.ChannelSelector{Target: s, Number: getValueable(midiChannel)}
 		}}
 	eval["interval"] = Function{
 		Title:       "Integer interval creator",
@@ -685,8 +685,8 @@ end(l1)`,
 		Samples: `int1 = interval(-2,4,1)
 lp_cdef = loop(pitch(int1,sequence('C D E F')), next(int1))`,
 		IsComposer: true,
-		Func: func(from, to, by interface{}) *melrose.Interval {
-			return melrose.NewInterval(melrose.ToValueable(from), melrose.ToValueable(to), melrose.ToValueable(by), melrose.RepeatFromTo)
+		Func: func(from, to, by interface{}) *core.Interval {
+			return core.NewInterval(core.ToValueable(from), core.ToValueable(to), core.ToValueable(by), core.RepeatFromTo)
 		}}
 	eval["sequencemap"] = Function{
 		Title:       "Integer Sequence Map modifier",
@@ -702,7 +702,7 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot create sequence mapper on (%T) %v", m, m))
 			}
-			return op.NewSequenceMapper(s, melrose.ToValueable(pattern))
+			return op.NewSequenceMapper(s, core.ToValueable(pattern))
 		}}
 
 	eval["notemap"] = Function{
@@ -720,7 +720,7 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		Template:   `notemerge(${1:count},${2:notemap})`,
 		IsComposer: true,
 		Func: func(count int, maps ...interface{}) interface{} {
-			noteMaps := []melrose.Valueable{}
+			noteMaps := []core.Valueable{}
 			for _, each := range maps {
 				noteMaps = append(noteMaps, getValueable(each))
 			}
@@ -729,7 +729,7 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 
 	eval["next"] = Function{
 		Func: func(v interface{}) interface{} {
-			return melrose.Nexter{Target: getValueable(v)}
+			return core.Nexter{Target: getValueable(v)}
 		}}
 
 	eval["export"] = Function{
@@ -784,23 +784,23 @@ func registerFunction(m map[string]Function, k string, f Function) {
 	}
 }
 
-func getSequenceable(v interface{}) (melrose.Sequenceable, bool) {
-	if s, ok := v.(melrose.Sequenceable); ok {
+func getSequenceable(v interface{}) (core.Sequenceable, bool) {
+	if s, ok := v.(core.Sequenceable); ok {
 		return s, ok
 	}
 	return nil, false
 }
 
-func getValueable(val interface{}) melrose.Valueable {
-	if v, ok := val.(melrose.Valueable); ok {
+func getValueable(val interface{}) core.Valueable {
+	if v, ok := val.(core.Valueable); ok {
 		return v
 	}
-	return melrose.On(val)
+	return core.On(val)
 }
 
 // getValue returns the Value() of val iff val is a Valueable, else returns val
 func getValue(val interface{}) interface{} {
-	if v, ok := val.(melrose.Valueable); ok {
+	if v, ok := val.(core.Valueable); ok {
 		return v.Value()
 	}
 	return val

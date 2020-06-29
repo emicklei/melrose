@@ -3,12 +3,11 @@ package op
 import (
 	"bytes"
 	"fmt"
-
-	"github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/core"
 )
 
 type Join struct {
-	Target []melrose.Sequenceable
+	Target []core.Sequenceable
 }
 
 func (j Join) Storex() string {
@@ -19,9 +18,9 @@ func (j Join) Storex() string {
 	return b.String()
 }
 
-func (j Join) S() melrose.Sequence {
+func (j Join) S() core.Sequence {
 	if len(j.Target) == 0 {
-		return melrose.EmptySequence
+		return core.EmptySequence
 	}
 	head := j.Target[0].S()
 	for i := 1; i < len(j.Target); i++ {
@@ -31,8 +30,8 @@ func (j Join) S() melrose.Sequence {
 }
 
 // Replaced is part of Replaceable
-func (j Join) Replaced(from, to melrose.Sequenceable) melrose.Sequenceable {
-	if melrose.IsIdenticalTo(j, from) {
+func (j Join) Replaced(from, to core.Sequenceable) core.Sequenceable {
+	if core.IsIdenticalTo(j, from) {
 		return to
 	}
 	return Join{Target: replacedAll(j.Target, from, to)}

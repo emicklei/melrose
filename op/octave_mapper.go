@@ -3,14 +3,13 @@ package op
 import (
 	"bytes"
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"strconv"
 	"strings"
-
-	"github.com/emicklei/melrose"
 )
 
 type OctaveMapper struct {
-	Target       melrose.Sequenceable
+	Target       core.Sequenceable
 	IndexOffsets []int2int // one-based
 }
 
@@ -19,20 +18,20 @@ type int2int struct {
 	to   int
 }
 
-func NewOctaveMapper(target melrose.Sequenceable, indices string) OctaveMapper {
+func NewOctaveMapper(target core.Sequenceable, indices string) OctaveMapper {
 	return OctaveMapper{
 		Target:       target,
 		IndexOffsets: parseIndexOffsets(indices),
 	}
 }
 
-func (o OctaveMapper) S() melrose.Sequence {
-	return melrose.Sequence{Notes: o.Notes()}
+func (o OctaveMapper) S() core.Sequence {
+	return core.Sequence{Notes: o.Notes()}
 }
 
-func (o OctaveMapper) Notes() [][]melrose.Note {
+func (o OctaveMapper) Notes() [][]core.Note {
 	source := o.Target.S().Notes
-	target := [][]melrose.Note{}
+	target := [][]core.Note{}
 	for _, entry := range o.IndexOffsets {
 		if entry.from <= 0 || entry.from > len(source) {
 			// invalid offset, skip
@@ -44,7 +43,7 @@ func (o OctaveMapper) Notes() [][]melrose.Note {
 			target = append(target, eachGroup)
 			continue
 		}
-		newGroup := []melrose.Note{}
+		newGroup := []core.Note{}
 		for _, eachNote := range eachGroup {
 			newGroup = append(newGroup, eachNote.Octaved(entry.to))
 		}
@@ -72,7 +71,7 @@ func parseIndexOffsets(s string) (m []int2int) {
 }
 
 func (o OctaveMapper) Storex() string {
-	s, ok := o.Target.(melrose.Storable)
+	s, ok := o.Target.(core.Storable)
 	if !ok {
 		return ""
 	}
@@ -90,14 +89,14 @@ func (o OctaveMapper) Storex() string {
 }
 
 // Replaced is part of Replaceable
-func (o OctaveMapper) Replaced(from, to melrose.Sequenceable) melrose.Sequenceable {
-	if melrose.IsIdenticalTo(o, from) {
+func (o OctaveMapper) Replaced(from, to core.Sequenceable) core.Sequenceable {
+	if core.IsIdenticalTo(o, from) {
 		return to
 	}
-	if melrose.IsIdenticalTo(o.Target, from) {
+	if core.IsIdenticalTo(o.Target, from) {
 		return OctaveMapper{Target: to, IndexOffsets: o.IndexOffsets}
 	}
-	if rep, ok := o.Target.(melrose.Replaceable); ok {
+	if rep, ok := o.Target.(core.Replaceable); ok {
 		return OctaveMapper{Target: rep.Replaced(from, to), IndexOffsets: o.IndexOffsets}
 	}
 	return o

@@ -3,23 +3,22 @@ package op
 import (
 	"bytes"
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"io"
-
-	. "github.com/emicklei/melrose"
 )
 
 type Serial struct {
-	Target []Sequenceable
+	Target []core.Sequenceable
 }
 
-func (a Serial) S() Sequence {
-	n := []Note{}
+func (a Serial) S() core.Sequence {
+	n := []core.Note{}
 	for _, each := range a.Target {
-		each.S().NotesDo(func(each Note) {
+		each.S().NotesDo(func(each core.Note) {
 			n = append(n, each)
 		})
 	}
-	return BuildSequence(n)
+	return core.BuildSequence(n)
 }
 
 // Storex is part of Storable
@@ -27,7 +26,7 @@ func (a Serial) Storex() string {
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "serial(")
 	for i, each := range a.Target {
-		s, ok := each.(Storable)
+		s, ok := each.(core.Storable)
 		if !ok {
 			return ""
 		}
@@ -41,8 +40,8 @@ func (a Serial) Storex() string {
 }
 
 // Replaced is part of Replaceable
-func (a Serial) Replaced(from, to Sequenceable) Sequenceable {
-	if IsIdenticalTo(a, from) {
+func (a Serial) Replaced(from, to core.Sequenceable) core.Sequenceable {
+	if core.IsIdenticalTo(a, from) {
 		return to
 	}
 	return Serial{Target: replacedAll(a.Target, from, to)}

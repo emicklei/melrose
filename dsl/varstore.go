@@ -2,12 +2,12 @@ package dsl
 
 import (
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"reflect"
 	"sort"
 	"strings"
 	"sync"
 
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -76,7 +76,7 @@ func (v *VariableStore) Variables() map[string]interface{} {
 }
 
 // ListVariables prints a list of sorted key=value pairs.
-func ListVariables(storage melrose.VariableStorage, args []string) notify.Message {
+func ListVariables(storage core.VariableStorage, args []string) notify.Message {
 	keys := []string{}
 	width := 0
 	variables := storage.Variables()
@@ -93,7 +93,7 @@ func ListVariables(storage melrose.VariableStorage, args []string) notify.Messag
 	sort.Strings(keys)
 	for _, k := range keys {
 		v := variables[k]
-		if s, ok := v.(melrose.Storable); ok {
+		if s, ok := v.(core.Storable); ok {
 			fmt.Printf("%s = %s\n", strings.Repeat(" ", width-len(k))+k, s.Storex())
 		} else {
 			fmt.Printf("%s = (%T) %v\n", strings.Repeat(" ", width-len(k))+k, v, v)

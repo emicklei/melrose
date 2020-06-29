@@ -1,10 +1,9 @@
 package dsl
 
 import (
+	"github.com/emicklei/melrose/core"
 	"strings"
 	"testing"
-
-	"github.com/emicklei/melrose"
 )
 
 func newTestEvaluator() *Evaluator {
@@ -20,9 +19,9 @@ func checkError(t *testing.T, err error) {
 
 func eval(t *testing.T, expression string) interface{} {
 	t.Helper()
-	lp := new(melrose.TestLooper)
+	lp := new(core.TestLooper)
 	lp.SetBIAB(4)
-	ctx := melrose.PlayContext{
+	ctx := core.PlayContext{
 		VariableStorage: NewVariableStore(),
 		LoopControl:     lp,
 	}
@@ -33,9 +32,9 @@ func eval(t *testing.T, expression string) interface{} {
 
 func mustError(t *testing.T, expression string, substring string) {
 	t.Helper()
-	lp := new(melrose.TestLooper)
+	lp := new(core.TestLooper)
 	lp.SetBIAB(4)
-	ctx := melrose.PlayContext{
+	ctx := core.PlayContext{
 		VariableStorage: NewVariableStore(),
 		LoopControl:     lp,
 	}
@@ -50,7 +49,7 @@ func mustError(t *testing.T, expression string, substring string) {
 
 func checkStorex(t *testing.T, r interface{}, storex string) {
 	t.Helper()
-	if s, ok := r.(melrose.Storable); ok {
+	if s, ok := r.(core.Storable); ok {
 		if got, want := s.Storex(), storex; got != want {
 			t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 		}

@@ -3,15 +3,14 @@ package op
 import (
 	"bytes"
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"io"
 	"strconv"
 	"strings"
 	"text/scanner"
-
-	"github.com/emicklei/melrose"
 )
 
-func appendStorexList(b *bytes.Buffer, isFirstParameter bool, list []melrose.Sequenceable) {
+func appendStorexList(b *bytes.Buffer, isFirstParameter bool, list []core.Sequenceable) {
 	if len(list) == 0 {
 		return
 	}
@@ -19,7 +18,7 @@ func appendStorexList(b *bytes.Buffer, isFirstParameter bool, list []melrose.Seq
 		fmt.Fprintf(b, ",")
 	}
 	for i, each := range list {
-		if s, ok := each.(melrose.Storable); !ok {
+		if s, ok := each.(core.Storable); !ok {
 			fmt.Fprintf(b, "nil")
 		} else {
 			fmt.Fprintf(b, "%s", s.Storex())
@@ -70,13 +69,13 @@ func parseIndices(src string) [][]int {
 	return ii
 }
 
-func replacedAll(target []melrose.Sequenceable, from, to melrose.Sequenceable) []melrose.Sequenceable {
-	newTarget := []melrose.Sequenceable{}
+func replacedAll(target []core.Sequenceable, from, to core.Sequenceable) []core.Sequenceable {
+	newTarget := []core.Sequenceable{}
 	for _, each := range target {
-		if melrose.IsIdenticalTo(each, from) {
+		if core.IsIdenticalTo(each, from) {
 			newTarget = append(newTarget, to)
 		} else {
-			if other, ok := each.(melrose.Replaceable); ok {
+			if other, ok := each.(core.Replaceable); ok {
 				newTarget = append(newTarget, other.Replaced(from, to))
 			} else {
 				newTarget = append(newTarget, each)

@@ -2,40 +2,39 @@ package op
 
 import (
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"strings"
-
-	"github.com/emicklei/melrose"
 )
 
 type DynamicMapper struct {
-	Target       melrose.Sequenceable
+	Target       core.Sequenceable
 	NoteDynamics []string
 }
 
-func NewDynamicMapper(s melrose.Sequenceable, dynamics string) DynamicMapper {
+func NewDynamicMapper(s core.Sequenceable, dynamics string) DynamicMapper {
 	return DynamicMapper{Target: s, NoteDynamics: strings.Split(dynamics, " ")}
 }
 
-func (d DynamicMapper) S() melrose.Sequence {
-	target := [][]melrose.Note{}
+func (d DynamicMapper) S() core.Sequence {
+	target := [][]core.Note{}
 	source := d.Target.S().Notes
 	for i, eachGroup := range source {
 		if i >= len(d.NoteDynamics) {
 			// no change of dynamic
 			target = append(target, eachGroup)
 		} else {
-			mappedGroup := []melrose.Note{}
+			mappedGroup := []core.Note{}
 			for _, eachNote := range eachGroup {
-				mappedGroup = append(mappedGroup, eachNote.ModifiedVelocity(melrose.ParseVelocity(d.NoteDynamics[i])))
+				mappedGroup = append(mappedGroup, eachNote.ModifiedVelocity(core.ParseVelocity(d.NoteDynamics[i])))
 			}
 			target = append(target, mappedGroup)
 		}
 	}
-	return melrose.Sequence{Notes: target}
+	return core.Sequence{Notes: target}
 }
 
 func (d DynamicMapper) Storex() string {
-	if s, ok := d.Target.(melrose.Storable); ok {
+	if s, ok := d.Target.(core.Storable); ok {
 		return fmt.Sprintf("dynamicmap(%s,%s)", strings.Join(d.NoteDynamics, " "), s.Storex())
 	}
 	return ""

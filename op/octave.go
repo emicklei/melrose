@@ -3,17 +3,16 @@ package op
 import (
 	"bytes"
 	"fmt"
-
-	"github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/core"
 )
 
 type Octave struct {
-	Target []melrose.Sequenceable
-	Offset melrose.Valueable
+	Target []core.Sequenceable
+	Offset core.Valueable
 }
 
-func (o Octave) S() melrose.Sequence {
-	return Join{Target: o.Target}.S().Octaved(melrose.Int(o.Offset))
+func (o Octave) S() core.Sequence {
+	return Join{Target: o.Target}.S().Octaved(core.Int(o.Offset))
 }
 
 func (o Octave) Storex() string {
@@ -25,8 +24,8 @@ func (o Octave) Storex() string {
 }
 
 // Replaced is part of Replaceable
-func (o Octave) Replaced(from, to melrose.Sequenceable) melrose.Sequenceable {
-	if melrose.IsIdenticalTo(o, from) {
+func (o Octave) Replaced(from, to core.Sequenceable) core.Sequenceable {
+	if core.IsIdenticalTo(o, from) {
 		return to
 	}
 	return Octave{Target: replacedAll(o.Target, from, to), Offset: o.Offset}

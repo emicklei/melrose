@@ -3,19 +3,19 @@ package dsl
 import (
 	"errors"
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"regexp"
 	"strings"
 
 	"github.com/antonmedv/expr"
-	"github.com/emicklei/melrose"
 )
 
 type Evaluator struct {
-	context melrose.Context
+	context core.Context
 	funcs   map[string]Function
 }
 
-func NewEvaluator(ctx melrose.Context) *Evaluator {
+func NewEvaluator(ctx core.Context) *Evaluator {
 	return &Evaluator{
 		context: ctx,
 		funcs:   EvalFunctions(ctx),
@@ -108,9 +108,9 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 			// 		then change to Target of that loop
 			//		else store the loop
 			// else store the result
-			if theLoop, ok := r.(*melrose.Loop); ok {
+			if theLoop, ok := r.(*core.Loop); ok {
 				if storedValue, present := e.context.Variables().Get(variable); present {
-					if otherLoop, replaceme := storedValue.(*melrose.Loop); replaceme {
+					if otherLoop, replaceme := storedValue.(*core.Loop); replaceme {
 						otherLoop.SetTarget(theLoop.Target)
 						r = otherLoop
 					} else {
@@ -131,7 +131,7 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 	// evaluate and print
 	r, err := e.EvaluateExpression(entry)
 	// special case for Loop
-	if theLoop, ok := r.(*melrose.Loop); ok {
+	if theLoop, ok := r.(*core.Loop); ok {
 		return nil, fmt.Errorf("cannot have an unnamed Loop, use e.g. myLoop = %s", theLoop.Storex())
 	}
 	if err != nil {

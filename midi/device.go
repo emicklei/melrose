@@ -3,9 +3,9 @@ package midi
 import (
 	"errors"
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"strconv"
 
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
 	"github.com/rakyll/portmidi"
 )
@@ -21,7 +21,7 @@ type Midi struct {
 	currentOutputDeviceID int
 	currentInputDeviceID  int
 
-	timeline *melrose.Timeline
+	timeline *core.Timeline
 }
 
 type MIDIWriter interface {
@@ -54,7 +54,7 @@ func (m *Midi) Reset() {
 	}
 }
 
-func (m *Midi) Timeline() *melrose.Timeline { return m.timeline }
+func (m *Midi) Timeline() *core.Timeline { return m.timeline }
 
 // SetEchoNotes is part of melrose.AudioDevice
 func (m *Midi) SetEchoNotes(echo bool) {
@@ -139,7 +139,7 @@ func Open() (*Midi, error) {
 	m.changeOutputDeviceID(int(portmidi.DefaultOutputDeviceID()))
 
 	// start timeline
-	m.timeline = melrose.NewTimeline()
+	m.timeline = core.NewTimeline()
 	go m.timeline.Play()
 
 	return m, nil

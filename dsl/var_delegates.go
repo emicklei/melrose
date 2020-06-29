@@ -2,8 +2,8 @@ package dsl
 
 import (
 	"fmt"
+	"github.com/emicklei/melrose/core"
 
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -19,18 +19,18 @@ func (v variable) At(index int) interface{} {
 		}
 		return intArray[index-1]
 	}
-	if indexable, ok := m.(melrose.Indexable); ok {
+	if indexable, ok := m.(core.Indexable); ok {
 		return indexable.At(index)
 	}
-	if sequenceable, ok := m.(melrose.Sequenceable); ok {
-		return melrose.BuildSequence(sequenceable.S().At(index))
+	if sequenceable, ok := m.(core.Sequenceable); ok {
+		return core.BuildSequence(sequenceable.S().At(index))
 	}
 	return nil
 }
 
 // AtVariable is called from expr after patching [].
 func (v variable) AtVariable(index variable) interface{} {
-	indexVal := melrose.Int(index)
+	indexVal := core.Int(index)
 	if indexVal == 0 {
 		return nil
 	}

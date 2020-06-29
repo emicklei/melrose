@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"github.com/emicklei/melrose/core"
 	"log"
 	"os"
 	"sort"
@@ -9,7 +10,6 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 )
 
@@ -74,9 +74,9 @@ type GroupedFunctions struct {
 
 func dslmarkdown() {
 	gf := GroupedFunctions{}
-	ctx := melrose.PlayContext{
+	ctx := core.PlayContext{
 		VariableStorage: dsl.NewVariableStore(),
-		LoopControl:     melrose.NoLooper,
+		LoopControl:     core.NoLooper,
 	}
 	for k, each := range dsl.EvalFunctions(ctx) {
 		// draft functions do not have a Title

@@ -4,13 +4,12 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"strings"
-
-	"github.com/emicklei/melrose"
 )
 
 type NoteMap struct {
-	Target  melrose.Valueable
+	Target  core.Valueable
 	Indices []int
 }
 
@@ -18,7 +17,7 @@ type NoteMap struct {
 // The format of indices can be one of:
 // 1 2 4 ; each number is an index in the sequence where the note is present; rest notes are placed in the gaps.
 // ! . ! ; each dot is a rest, each exclamation mark is a presence of a note.
-func NewNoteMapper(indices string, note melrose.Valueable) (NoteMap, error) {
+func NewNoteMapper(indices string, note core.Valueable) (NoteMap, error) {
 	idx := []int{}
 	// check for dots and bangs first
 	var parsed [][]int
@@ -50,11 +49,11 @@ func convertDotsAndBangs(format string) string {
 	return b.String()
 }
 
-func (n NoteMap) S() melrose.Sequence {
-	notelike, ok := n.Target.Value().(melrose.NoteConvertable)
+func (n NoteMap) S() core.Sequence {
+	notelike, ok := n.Target.Value().(core.NoteConvertable)
 	if !ok {
 		// TODO warning here?
-		return melrose.EmptySequence
+		return core.EmptySequence
 	}
 	max := 0
 	min := 10000
@@ -65,47 +64,47 @@ func (n NoteMap) S() melrose.Sequence {
 			min = each
 		}
 	}
-	notes := make([]melrose.Note, max)
+	notes := make([]core.Note, max)
 	for i := range notes {
-		notes[i] = melrose.Rest4
+		notes[i] = core.Rest4
 	}
 	note := notelike.ToNote()
 	for _, each := range n.Indices {
 		notes[each-1] = note
 	}
-	return melrose.BuildSequence(notes)
+	return core.BuildSequence(notes)
 }
 
 type NoteMerge struct {
-	Target []melrose.Valueable
+	Target []core.Valueable
 	Count  int
 }
 
-func NewNoteMerge(count int, maps []melrose.Valueable) NoteMerge {
+func NewNoteMerge(count int, maps []core.Valueable) NoteMerge {
 	return NoteMerge{
 		Count:  count,
 		Target: maps,
 	}
 }
 
-var restGroup = []melrose.Note{melrose.Rest4}
+var restGroup = []core.Note{core.Rest4}
 
-func (m NoteMerge) S() melrose.Sequence {
-	groups := [][]melrose.Note{}
+func (m NoteMerge) S() core.Sequence {
+	groups := [][]core.Note{}
 	for g := 1; g <= m.Count; g++ {
-		group := []melrose.Note{}
+		group := []core.Note{}
 		for _, eachMapVal := range m.Target {
 			eachMap, ok := eachMapVal.Value().(NoteMap)
 			if !ok {
 				// TODO warning here?
-				return melrose.EmptySequence
+				return core.EmptySequence
 			}
 			for _, eachIndex := range eachMap.Indices {
 				if eachIndex == g {
-					notelike, ok := eachMap.Target.Value().(melrose.NoteConvertable)
+					notelike, ok := eachMap.Target.Value().(core.NoteConvertable)
 					if !ok {
 						// TODO warning here?
-						return melrose.EmptySequence
+						return core.EmptySequence
 					}
 					group = append(group, notelike.ToNote())
 					break
@@ -118,5 +117,5 @@ func (m NoteMerge) S() melrose.Sequence {
 			groups = append(groups, group)
 		}
 	}
-	return melrose.Sequence{Notes: groups}
+	return core.Sequence{Notes: groups}
 }

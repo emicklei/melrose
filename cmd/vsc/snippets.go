@@ -4,9 +4,9 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/emicklei/melrose/core"
 	"os"
 
-	"github.com/emicklei/melrose"
 	"github.com/emicklei/melrose/dsl"
 )
 
@@ -20,9 +20,9 @@ type Snippet struct {
 
 func snippets() {
 	snippets := map[string]Snippet{}
-	ctx := melrose.PlayContext{
+	ctx := core.PlayContext{
 		VariableStorage: dsl.NewVariableStore(),
-		LoopControl:     melrose.NoLooper,
+		LoopControl:     core.NoLooper,
 	}
 	for _, v := range dsl.EvalFunctions(ctx) {
 		if len(v.Prefix) > 0 && len(v.Title) > 0 {

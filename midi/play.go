@@ -2,15 +2,14 @@ package midi
 
 import (
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"time"
-
-	"github.com/emicklei/melrose"
 )
 
 // Play is part of melrose.AudioDevice
 // It schedules all the notes on the timeline beginning at a give time (now or in the future).
 // Returns the end time of the last played Note.
-func (m *Midi) Play(seq melrose.Sequenceable, bpm float64, beginAt time.Time) time.Time {
+func (m *Midi) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
 	moment := beginAt
 	if !m.enabled {
 		return moment
@@ -19,11 +18,11 @@ func (m *Midi) Play(seq melrose.Sequenceable, bpm float64, beginAt time.Time) ti
 		fmt.Println() // start new line
 	}
 	channel := m.defaultOutputChannel
-	if sel, ok := seq.(melrose.ChannelSelector); ok {
+	if sel, ok := seq.(core.ChannelSelector); ok {
 		channel = sel.Channel()
 	}
 	actualSequence := seq.S()
-	wholeNoteDuration := melrose.WholeNoteDuration(bpm)
+	wholeNoteDuration := core.WholeNoteDuration(bpm)
 	for _, eachGroup := range actualSequence.Notes {
 		if len(eachGroup) == 0 {
 			continue
@@ -35,7 +34,7 @@ func (m *Midi) Play(seq melrose.Sequenceable, bpm float64, beginAt time.Time) ti
 			actualDuration = time.Duration(float32(wholeNoteDuration) * eachGroup[0].Length())
 			event = m.combinedMidiEvent(channel, eachGroup)
 			if m.echo {
-				event.echoString = melrose.StringFromNoteGroup(eachGroup)
+				event.echoString = core.StringFromNoteGroup(eachGroup)
 			}
 		} else {
 			// one-by-one
@@ -62,13 +61,13 @@ func (m *Midi) Play(seq melrose.Sequenceable, bpm float64, beginAt time.Time) ti
 }
 
 // Pre: notes not empty
-func (m *Midi) combinedMidiEvent(channel int, notes []melrose.Note) midiEvent {
+func (m *Midi) combinedMidiEvent(channel int, notes []core.Note) midiEvent {
 	velocity := notes[0].Velocity
 	if velocity > 127 {
 		velocity = 127
 	}
 	if velocity < 1 {
-		velocity = melrose.Normal
+		velocity = core.Normal
 	}
 	nrs := []int64{}
 	for _, each := range notes {
@@ -83,7 +82,7 @@ func (m *Midi) combinedMidiEvent(channel int, notes []melrose.Note) midiEvent {
 	}
 }
 
-func canCombineMidiEvents(notes []melrose.Note) bool {
+func canCombineMidiEvents(notes []core.Note) bool {
 	if len(notes) < 2 {
 		return false
 	}

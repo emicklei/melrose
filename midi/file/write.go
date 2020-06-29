@@ -4,32 +4,32 @@ import (
 	"bufio"
 	"encoding/binary"
 	"fmt"
+	"github.com/emicklei/melrose/core"
 	"math"
 	"os"
 	"time"
 
 	"github.com/Try431/EasyMIDI/smf"
 	"github.com/Try431/EasyMIDI/smfio"
-	"github.com/emicklei/melrose"
 )
 
 const ticksPerBeat uint16 = 960
 
 // Export creates (overwrites) a SMF multi-track Midi file
 func Export(fileName string, m interface{}, bpm float64) error {
-	if mt, ok := m.(melrose.MultiTrack); ok {
+	if mt, ok := m.(core.MultiTrack); ok {
 		return exportMultiTrack(fileName, mt, bpm)
 	}
-	if seq, ok := m.(melrose.Sequenceable); ok {
-		t := melrose.NewTrack("melrōse-track", 1)
+	if seq, ok := m.(core.Sequenceable); ok {
+		t := core.NewTrack("melrōse-track", 1)
 		t.Add(seq)
-		mt := melrose.MultiTrack{Tracks: []melrose.Valueable{melrose.On(t)}}
+		mt := core.MultiTrack{Tracks: []core.Valueable{core.On(t)}}
 		return exportMultiTrack(fileName, mt, bpm)
 	}
 	return fmt.Errorf("cannot export [%v] (%T)", m, m)
 }
 
-func createMidiTrack(t *melrose.Track, bpm float64) (*smf.Track, error) {
+func createMidiTrack(t *core.Track, bpm float64) (*smf.Track, error) {
 	// Create track struct
 	track := new(smf.Track)
 
@@ -113,7 +113,7 @@ func createMidiTrack(t *melrose.Track, bpm float64) (*smf.Track, error) {
 	return track, nil
 }
 
-func exportMultiTrack(fileName string, m melrose.MultiTrack, bpm float64) error {
+func exportMultiTrack(fileName string, m core.MultiTrack, bpm float64) error {
 	// Create division
 	// https://www.recordingblogs.com/wiki/time-division-of-a-midi-file
 	division, err := smf.NewDivision(ticksPerBeat, smf.NOSMTPE)
@@ -128,7 +128,7 @@ func exportMultiTrack(fileName string, m melrose.MultiTrack, bpm float64) error 
 	}
 
 	for i, eachVal := range m.Tracks {
-		if each, ok := eachVal.Value().(*melrose.Track); ok {
+		if each, ok := eachVal.Value().(*core.Track); ok {
 
 			// Create track struct
 			track, err := createMidiTrack(each, bpm)

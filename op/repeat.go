@@ -3,18 +3,17 @@ package op
 import (
 	"bytes"
 	"fmt"
-
-	"github.com/emicklei/melrose"
+	"github.com/emicklei/melrose/core"
 )
 
 type Repeat struct {
-	Target []melrose.Sequenceable
-	Times  melrose.Valueable
+	Target []core.Sequenceable
+	Times  core.Valueable
 }
 
-func (r Repeat) S() melrose.Sequence {
-	times := melrose.Int(r.Times)
-	repeated := []melrose.Sequenceable{}
+func (r Repeat) S() core.Sequence {
+	times := core.Int(r.Times)
+	repeated := []core.Sequenceable{}
 	for i := 0; i < times; i++ {
 		for _, each := range r.Target {
 			repeated = append(repeated, each.S())
@@ -32,8 +31,8 @@ func (r Repeat) Storex() string {
 }
 
 // Replaced is part of Replaceable
-func (r Repeat) Replaced(from, to melrose.Sequenceable) melrose.Sequenceable {
-	if melrose.IsIdenticalTo(r, from) {
+func (r Repeat) Replaced(from, to core.Sequenceable) core.Sequenceable {
+	if core.IsIdenticalTo(r, from) {
 		return to
 	}
 	return Repeat{Target: replacedAll(r.Target, from, to), Times: r.Times}
