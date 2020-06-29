@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/emicklei/melrose/notify"
 )
 
 // Note represents a musical note.
@@ -118,9 +120,16 @@ func (n Note) WithDuration(dur float64) Note {
 	case 0.0625:
 		duration = n.duration / 16.0
 	default:
-		duration = 0.25 // quarter
+		notify.Panic(fmt.Errorf("cannot create note with duration [%f]", dur))
 	}
-	nn, _ := NewNote(n.Name, n.Octave, duration, n.Accidental, n.Dotted, n.Velocity)
+	// shortest
+	if duration < 0.0625 {
+		duration = 0.0625
+	}
+	nn, err := NewNote(n.Name, n.Octave, duration, n.Accidental, n.Dotted, n.Velocity)
+	if err != nil {
+		notify.Panic(fmt.Errorf("cannot create note with duration [%f] because:%v", dur, err))
+	}
 	return nn
 }
 

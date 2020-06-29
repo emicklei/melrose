@@ -3,9 +3,10 @@ package dsl
 import (
 	"errors"
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"regexp"
 	"strings"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/antonmedv/expr"
 )
@@ -172,4 +173,13 @@ func IsAssignment(entry string) (varname string, expression string, ok bool) {
 		return "", "", false
 	}
 	return res[0][1], res[0][2], true
+}
+
+func (e *Evaluator) LookupFunction(fn string) (Function, bool) {
+	for name, each := range e.funcs {
+		if name == fn {
+			return each, true
+		}
+	}
+	return Function{}, false
 }

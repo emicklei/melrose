@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"reflect"
 	"strconv"
 	"time"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/antonmedv/expr/file"
 	"github.com/emicklei/melrose/dsl"
@@ -70,7 +72,14 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		// evaluation was ok.
 
 		if query.Get("action") == "inspect" {
-			core.PrintValue(l.context, returnValue)
+			// check for function
+			if reflect.TypeOf(returnValue).Kind() == reflect.Func {
+				if fn, ok := l.evaluator.LookupFunction(string(data)); ok {
+					fmt.Println(fn.Description)
+				}
+			} else {
+				core.PrintValue(l.context, returnValue)
+			}
 		}
 
 		// check if play was requested and is playable
