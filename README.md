@@ -11,5 +11,10 @@ This software can be used both as a library (Go package) or as part of the comma
 
 See [documentation](https://emicklei.github.io/melrose/) how to install and use `melrōse` for live performance.
 
+### Status
+
+Until `v1.0.0` both language syntax and package api may change.
+
+
 Software is licensed under [Apache 2.0 license](LICENSE).
 (c) 2014-2020 [ernestmicklei.com](http://ernestmicklei.com)

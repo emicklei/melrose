@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"math"
 	"time"
 )
 
 type Track struct {
 	Title   string
 	Channel int
+	// TODO make this beats -> musical object
 	Content map[int]Sequenceable // bar -> musical object
 }
 
@@ -47,14 +49,25 @@ func (t *Track) Inspect(i Inspection) {
 	i.Properties["pieces"] = len(t.Content)
 }
 
-// Add adds a SequenceOnTrack or a Sequence at bar 1.
+// Add adds a SequenceOnTrack or a Sequence.
+// If a Sequence then append it to the track.
+// Overrides any sequence at the bar.
 func (t *Track) Add(seq interface{}) {
 	if at, ok := seq.(SequenceOnTrack); ok {
 		t.Content[Int(at.Bar)] = at.Target
 		return
 	}
 	if s, ok := seq.(Sequenceable); ok {
-		t.Content[1] = s
+		// find a free bar :-)
+		here := 1
+		for {
+			x, ok := t.Content[here]
+			if !ok {
+				t.Content[1] = s
+				return
+			}
+			here += int(math.Round((x.S().NoteLength())))
+		}
 	}
 }
 
