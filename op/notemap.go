@@ -17,7 +17,8 @@ const (
 type NoteMap struct {
 	Target        core.Valueable
 	Indices       []int
-	IndicesFormat int
+	indicesFormat int
+	maxIndex      int
 }
 
 // NewNoteMap returns a NoteMap that creates a sequence from occurrences of a note.
@@ -29,21 +30,30 @@ func NewNoteMap(indices string, note core.Valueable) (NoteMap, error) {
 	// check for dots and bangs first
 	var parsed [][]int
 	format := formatDigits
+	var maxIndex int
 	if strings.ContainsAny(indices, "!.") {
 		parsed = parseIndices(convertDotsAndBangs(indices))
 		format = formatDotAndBangs
-	} else if strings.ContainsAny(indices, "1234567890 ") {
+		maxIndex = len(indices)
+	} else if strings.ContainsAny(indices, "1234567890 ") { // space is allowed
 		parsed = parseIndices(indices)
+		format = formatDigits
 	} else {
 		return NoteMap{}, errors.New("bad syntax NoteMap; must have digits,spaces OR dots and exclamation marks")
 	}
 	for _, each := range parsed {
 		idx = append(idx, each[0])
 	}
+	max := sliceMax(idx)
+	if max > maxIndex {
+		maxIndex = max
+	}
 	return NoteMap{
-		Target:        note,
-		Indices:       idx,
-		IndicesFormat: format,
+		Target:  note,
+		Indices: idx,
+		// internal
+		indicesFormat: format,
+		maxIndex:      maxIndex,
 	}, nil
 }
 
@@ -61,8 +71,28 @@ func convertDotsAndBangs(format string) string {
 
 func (n NoteMap) formattedIndices() string {
 	var b bytes.Buffer
-	if n.IndicesFormat == formatDotAndBangs {
-		fmt.Fprintf(&b, "?")
+	if n.indicesFormat == formatDotAndBangs {
+		for i := 1; i < n.maxIndex; i++ {
+			found := false
+			for _, each := range n.Indices {
+				if each == i {
+					found = true
+					break
+				}
+			}
+			if found {
+				fmt.Fprintf(&b, "!")
+			} else {
+				fmt.Fprintf(&b, ".")
+			}
+		}
+	} else {
+		for i, each := range n.Indices {
+			if i > 0 {
+				fmt.Fprintf(&b, " ")
+			}
+			fmt.Fprintf(&b, "%d", each)
+		}
 	}
 	return b.String()
 }
@@ -74,17 +104,14 @@ func (n NoteMap) Storex() string {
 	return ""
 }
 
-func (n NoteMap) minMax() (int, int) {
+func sliceMax(indices []int) int {
 	max := 0
-	min := 10000
-	for _, each := range n.Indices {
+	for _, each := range indices {
 		if each > max {
 			max = each
-		} else if each < min {
-			min = each
 		}
 	}
-	return min, max
+	return max
 }
 
 func (n NoteMap) S() core.Sequence {
@@ -93,8 +120,7 @@ func (n NoteMap) S() core.Sequence {
 		// TODO warning here?
 		return core.EmptySequence
 	}
-	_, max := n.minMax()
-	notes := make([]core.Note, max)
+	notes := make([]core.Note, sliceMax(n.Indices))
 	for i := range notes {
 		notes[i] = core.Rest4
 	}

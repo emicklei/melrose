@@ -62,6 +62,12 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 	defer r.Body.Close()
+	if query.Get("action") == "kill" {
+		// kill the play and any loop
+		l.context.Control().Reset()
+		l.context.Device().Reset()
+		return
+	}
 	returnValue, err := l.evaluator.EvaluateProgram(string(data))
 	var response evaluationResult
 	if err != nil {
@@ -75,6 +81,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 			// check for function
 			if reflect.TypeOf(returnValue).Kind() == reflect.Func {
 				if fn, ok := l.evaluator.LookupFunction(string(data)); ok {
+					fmt.Println(fn.Title)
 					fmt.Println(fn.Description)
 				}
 			} else {
@@ -114,11 +121,6 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 				}
 			}
 			// ignore if not Loop
-		}
-		if query.Get("action") == "kill" {
-			// kill the play and any loop
-			l.context.Control().Reset()
-			l.context.Device().Reset()
 		}
 		response = resultFrom(line, returnValue)
 	}
