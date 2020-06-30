@@ -63,7 +63,7 @@ func (t *Track) Add(seq interface{}) {
 		for {
 			x, ok := t.Content[here]
 			if !ok {
-				t.Content[1] = s
+				t.Content[here] = s
 				return
 			}
 			here += int(math.Round((x.S().NoteLength())))

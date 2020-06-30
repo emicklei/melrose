@@ -5,16 +5,16 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-type JoinMapper struct {
+type JoinMap struct {
 	Target  core.Valueable
 	Indices [][]int
 }
 
-func (j JoinMapper) Storex() string {
+func (j JoinMap) Storex() string {
 	return ""
 }
 
-func (j JoinMapper) S() core.Sequence {
+func (j JoinMap) S() core.Sequence {
 	join, ok := j.Target.Value().(Join)
 	if !ok {
 		return core.EmptySequence
@@ -45,7 +45,7 @@ func (j JoinMapper) S() core.Sequence {
 	return Join{Target: target}.S()
 }
 
-func (j JoinMapper) check(index, subindex, value, length int) bool { // indices are zero-based
+func (j JoinMap) check(index, subindex, value, length int) bool { // indices are zero-based
 	if value < 1 || value > length {
 		notify.Print(notify.Warningf("index out of join range: [%d][%d]=%d, len=%d, using a rest(=) instead", index+1, subindex+1, value, length))
 		return false
@@ -53,6 +53,6 @@ func (j JoinMapper) check(index, subindex, value, length int) bool { // indices 
 	return true
 }
 
-func NewJoinMapper(v core.Valueable, indices string) JoinMapper {
-	return JoinMapper{Target: v, Indices: parseIndices(indices)}
+func NewJoinMapper(v core.Valueable, indices string) JoinMap {
+	return JoinMap{Target: v, Indices: parseIndices(indices)}
 }

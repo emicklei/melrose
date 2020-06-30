@@ -4,25 +4,34 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"strings"
+
+	"github.com/emicklei/melrose/core"
+)
+
+const (
+	formatDotAndBangs = iota
+	formatDigits
 )
 
 type NoteMap struct {
-	Target  core.Valueable
-	Indices []int
+	Target        core.Valueable
+	Indices       []int
+	IndicesFormat int
 }
 
-// NewNoteMapper returns a NoteMap that creates a sequence from occurrences of a note.
+// NewNoteMap returns a NoteMap that creates a sequence from occurrences of a note.
 // The format of indices can be one of:
 // 1 2 4 ; each number is an index in the sequence where the note is present; rest notes are placed in the gaps.
 // ! . ! ; each dot is a rest, each exclamation mark is a presence of a note.
-func NewNoteMapper(indices string, note core.Valueable) (NoteMap, error) {
+func NewNoteMap(indices string, note core.Valueable) (NoteMap, error) {
 	idx := []int{}
 	// check for dots and bangs first
 	var parsed [][]int
+	format := formatDigits
 	if strings.ContainsAny(indices, "!.") {
 		parsed = parseIndices(convertDotsAndBangs(indices))
+		format = formatDotAndBangs
 	} else if strings.ContainsAny(indices, "1234567890 ") {
 		parsed = parseIndices(indices)
 	} else {
@@ -32,8 +41,9 @@ func NewNoteMapper(indices string, note core.Valueable) (NoteMap, error) {
 		idx = append(idx, each[0])
 	}
 	return NoteMap{
-		Target:  note,
-		Indices: idx,
+		Target:        note,
+		Indices:       idx,
+		IndicesFormat: format,
 	}, nil
 }
 
@@ -49,12 +59,22 @@ func convertDotsAndBangs(format string) string {
 	return b.String()
 }
 
-func (n NoteMap) S() core.Sequence {
-	notelike, ok := n.Target.Value().(core.NoteConvertable)
-	if !ok {
-		// TODO warning here?
-		return core.EmptySequence
+func (n NoteMap) formattedIndices() string {
+	var b bytes.Buffer
+	if n.IndicesFormat == formatDotAndBangs {
+		fmt.Fprintf(&b, "?")
 	}
+	return b.String()
+}
+
+func (n NoteMap) Storex() string {
+	if st, ok := n.Target.Value().(core.Storable); ok {
+		return fmt.Sprintf("notemap('%s',%s)", n.formattedIndices(), st.Storex())
+	}
+	return ""
+}
+
+func (n NoteMap) minMax() (int, int) {
 	max := 0
 	min := 10000
 	for _, each := range n.Indices {
@@ -64,6 +84,16 @@ func (n NoteMap) S() core.Sequence {
 			min = each
 		}
 	}
+	return min, max
+}
+
+func (n NoteMap) S() core.Sequence {
+	notelike, ok := n.Target.Value().(core.NoteConvertable)
+	if !ok {
+		// TODO warning here?
+		return core.EmptySequence
+	}
+	_, max := n.minMax()
 	notes := make([]core.Note, max)
 	for i := range notes {
 		notes[i] = core.Rest4

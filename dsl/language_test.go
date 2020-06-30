@@ -1,8 +1,9 @@
 package dsl
 
 import (
-	"github.com/emicklei/melrose/core"
 	"testing"
+
+	"github.com/emicklei/melrose/core"
 )
 
 func TestNote(t *testing.T) {

@@ -2,11 +2,12 @@ package dsl
 
 import (
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"log"
 	"math"
 	"strings"
 	"time"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/midi/file"
 
@@ -709,7 +710,7 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		Template:   `notemap('${1:space-separated-1-based-indices}',${2:note})`,
 		IsComposer: true,
 		Func: func(indices string, note interface{}) interface{} {
-			m, err := op.NewNoteMapper(indices, getValueable(note))
+			m, err := op.NewNoteMap(indices, getValueable(note))
 			if err != nil {
 				return notify.Panic(fmt.Errorf("cannot create notemap, error:%v", err))
 			}
