@@ -72,7 +72,7 @@ func (r *Recording) S() Sequence {
 				// note was never on ?
 			} else {
 				//duration := when.Sub(active.when)
-				note := MIDItoNote(int(change.note), 1.0)
+				note := MIDItoNote(int(change.note), int(change.velocity))
 				notes = append(notes, note)
 				delete(activeNotes, change.note)
 			}

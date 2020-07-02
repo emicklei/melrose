@@ -27,3 +27,9 @@ func NewMIDI(number Valueable, velocity Valueable) MIDI {
 func (m MIDI) Storex() string {
 	return fmt.Sprintf("midi(%v,%v)", m.number, m.velocity)
 }
+
+func (m MIDI) Inspect(i Inspection) {
+	n := m.ToNote()
+	i.Properties["note"] = n.Storex()
+	i.Properties["velocity"] = n.Velocity
+}

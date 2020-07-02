@@ -536,7 +536,7 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 		Description:   "creates a recorded sequence of notes from a MIDI device",
 		ControlsAudio: true,
 		Prefix:        "rec",
-		Template:      `record(${1:input-device-id},${1:seconds-inactivity})`,
+		Template:      `record(${1:input-device-id},${2:seconds-inactivity})`,
 		Samples: `r = record(1,5) // record notes played on device ID=1 and stop recording after 5 seconds
 s = r.Sequence()`,
 		Func: func(deviceID int, secondsInactivity int) interface{} {
