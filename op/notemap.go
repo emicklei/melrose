@@ -7,11 +7,12 @@ import (
 	"strings"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 )
 
 const (
 	formatDotAndBangs = iota
-	formatDigits
+	formatNumbers
 )
 
 type NoteMap struct {
@@ -29,7 +30,7 @@ func NewNoteMap(indices string, note core.Valueable) (NoteMap, error) {
 	idx := []int{}
 	// check for dots and bangs first
 	var parsed [][]int
-	format := formatDigits
+	format := formatNumbers
 	var maxIndex int
 	if strings.ContainsAny(indices, "!.") {
 		parsed = parseIndices(convertDotsAndBangs(indices))
@@ -37,7 +38,6 @@ func NewNoteMap(indices string, note core.Valueable) (NoteMap, error) {
 		maxIndex = len(indices)
 	} else if strings.ContainsAny(indices, "1234567890 ") { // space is allowed
 		parsed = parseIndices(indices)
-		format = formatDigits
 	} else {
 		return NoteMap{}, errors.New("bad syntax NoteMap; must have digits,spaces OR dots and exclamation marks")
 	}
@@ -117,14 +117,14 @@ func sliceMax(indices []int) int {
 func (n NoteMap) S() core.Sequence {
 	notelike, ok := n.Target.Value().(core.NoteConvertable)
 	if !ok {
-		// TODO warning here?
+		notify.Panic(fmt.Errorf("cannot map"))
 		return core.EmptySequence
 	}
-	notes := make([]core.Note, sliceMax(n.Indices))
-	for i := range notes {
-		notes[i] = core.Rest4
-	}
+	notes := make([]core.Note, n.maxIndex)
 	note := notelike.ToNote()
+	for i := range notes {
+		notes[i] = note.ToRest()
+	}
 	for _, each := range n.Indices {
 		notes[each-1] = note
 	}
@@ -143,9 +143,24 @@ func NewNoteMerge(count int, maps []core.Valueable) NoteMerge {
 	}
 }
 
-var restGroup = []core.Note{core.Rest4}
-
 func (m NoteMerge) S() core.Sequence {
+	if len(m.Target) == 0 {
+		return core.EmptySequence
+	}
+
+	firstNoteMap, ok := m.Target[0].Value().(NoteMap)
+	if !ok {
+		// TODO warning here?
+		return core.EmptySequence
+	}
+	notelike, ok := firstNoteMap.Target.Value().(core.NoteConvertable)
+	if !ok {
+		// TODO warning here?
+		return core.EmptySequence
+	}
+	restGroup := []core.Note{notelike.ToNote().ToRest()}
+
+	// now build sequence
 	groups := [][]core.Note{}
 	for g := 1; g <= m.Count; g++ {
 		group := []core.Note{}

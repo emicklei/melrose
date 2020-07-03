@@ -3,7 +3,9 @@ package op
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 )
 
 type Duration struct {
@@ -45,6 +47,17 @@ func (d Duration) Storex() string {
 	appendStorexList(&b, false, d.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
+}
+
+func (d Duration) ToNote() core.Note {
+	if len(d.Target) == 0 {
+		notify.Panic(fmt.Errorf("cannot take note from [%s]", d.Storex()))
+	}
+	one, ok := d.Target[0].(core.NoteConvertable)
+	if !ok {
+		notify.Panic(fmt.Errorf("cannot take note from [%v]", one))
+	}
+	return one.ToNote().WithDuration(d.Parameter)
 }
 
 var validDurationParameterValues = []float64{0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16}

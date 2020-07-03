@@ -87,3 +87,10 @@ func TestBars_Arithmetic(t *testing.T) {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
+
+func TestNotemapNumbers(t *testing.T) {
+	r := eval(t, "notemap('2 4 11',note('c'))")
+	checkStorex(t, r, "notemap('2 4 11',note('C'))")
+	checkStorex(t, r.(core.Sequenceable).S(),
+		"sequence('= C = C = = = = = = C')")
+}

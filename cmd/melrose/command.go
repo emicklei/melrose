@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"strings"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
@@ -26,6 +27,7 @@ func cmdFunctions() map[string]Command {
 	cmds[":b"] = Command{Description: "Beat settings", Func: handleBeatSetting}
 	cmds[":m"] = Command{Description: "MIDI settings", Func: handleMIDISetting}
 	cmds[":q"] = Command{Description: "quit"} // no Func because it is handled in the main loop
+	cmds[":d"] = Command{Description: "toggle debug lines", Func: handleToggleDebug}
 	return cmds
 }
 
@@ -55,4 +57,8 @@ func handleBeatSetting(ctx core.Context, args []string) notify.Message {
 	fmt.Printf("[sequencer] beats per minute (BPM): %v\n", l.BPM())
 	fmt.Printf("[sequencer] beats in a bar  (BIAB): %d\n", l.BIAB())
 	return nil
+}
+
+func handleToggleDebug(ctx core.Context, args []string) notify.Message {
+	return notify.Infof("debug enabled:%v", core.ToggleDebug())
 }

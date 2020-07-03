@@ -38,6 +38,17 @@ func (n Note) ToNote() Note {
 	return n
 }
 
+func (n Note) ToRest() Note {
+	return Note{
+		Name:       "=",
+		Octave:     n.Octave,
+		Accidental: n.Accidental,
+		Dotted:     n.Dotted,
+		Velocity:   n.Velocity,
+		duration:   n.duration,
+	}
+}
+
 // Replaced is part of Replaceable
 func (n Note) Replaced(from, to Sequenceable) Sequenceable {
 	if IsIdenticalTo(from, n) {

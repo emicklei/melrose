@@ -44,8 +44,12 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	}
 	query := r.URL.Query()
 	trace := query.Get("trace") == "true"
-	if trace {
-		log.Printf("[melrose.trace] %s\n", r.URL.String())
+	if trace && !core.IsDebug() {
+		core.ToggleDebug()
+		defer core.ToggleDebug()
+	}
+	if core.IsDebug() {
+		notify.Debugf("%s", r.URL.String())
 	}
 	// get line
 	line := 1

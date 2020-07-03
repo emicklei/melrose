@@ -4,6 +4,17 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
+var debugEnabled = false
+
+func IsDebug() bool {
+	return debugEnabled
+}
+
+func ToggleDebug() bool {
+	debugEnabled = !debugEnabled
+	return debugEnabled
+}
+
 type Watch struct {
 	Context Context
 	Target  Sequenceable
