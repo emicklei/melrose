@@ -183,17 +183,23 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 
 	eval["midi"] = Function{
-		Title:       "Note creator",
-		Description: "create a Note",
-		Prefix:      "mid",
-		Alias:       "M",
-		Template:    `midi(${1:number},${2:number})`,
-		Samples:     `midi(52,80) // => E3+`,
-		IsCore:      true,
-		Func: func(nr interface{}, velocity interface{}) interface{} {
+		Title: "Note creator",
+		Description: `create a Note from MIDI information and is typically used for drum sets.
+The first parameter is the duration and must be one of {0.0625,0.125,0.25,0.5,1,2,4,8,16}.
+A duration of 0.25 or 4 means create a quarter note.
+Second parameter is the MIDI number and must be one of [0..127].
+The third parameter is the velocity (~ loudness) and must be one of [0..127]`,
+		Prefix:   "mid",
+		Alias:    "M",
+		Template: `midi(${1:number},${2:number},${3:number})`,
+		Samples: `midi(0.25,52,80) // => E3+
+midi(16,36,70) // => 16C2 (kick)`,
+		IsCore: true,
+		Func: func(dur, nr, velocity interface{}) interface{} {
+			durVal := getValueable(dur)
 			nrVal := getValueable(nr)
 			velVal := getValueable(velocity)
-			return core.NewMIDI(nrVal, velVal)
+			return core.NewMIDI(durVal, nrVal, velVal)
 		}}
 
 	eval["watch"] = Function{
@@ -633,7 +639,7 @@ begin(l1)`,
 					notify.Print(notify.Warningf("cannot begin (%T) %v", l, l))
 					continue
 				}
-				ctx.Control().Begin(l)
+				ctx.Control().StartLoop(l)
 				notify.Print(notify.Infof("started loop: %s", each.Name))
 			}
 			return nil
@@ -657,7 +663,7 @@ end(l1)`,
 					continue
 				}
 				notify.Print(notify.Infof("stopping loop: %s", each.Name))
-				ctx.Control().End(l)
+				ctx.Control().EndLoop(l)
 			}
 			return nil
 		}}

@@ -1,6 +1,9 @@
 package notify
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func Print(m Message) {
 	if m == nil {
@@ -33,5 +36,5 @@ func printWarning(args ...interface{}) {
 
 func Debugf(format string, args ...interface{}) {
 	m := fmt.Sprintf(format, args...)
-	Println(append([]interface{}{"\033[1;33mwarning:\033[0m"}, []interface{}{m}...)...)
+	Println(append([]interface{}{time.Now().Format("15:04:05.00") + " \033[1;33mdebug:\033[0m"}, []interface{}{m}...)...)
 }

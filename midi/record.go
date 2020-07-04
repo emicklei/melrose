@@ -2,8 +2,9 @@ package midi
 
 import (
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"time"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/rakyll/portmidi"
 )
@@ -33,7 +34,7 @@ func (m *Midi) Record(deviceID int, stopAfterInactivity time.Duration) (*core.Re
 		case each := <-ch: // depending on the device, this may not block and other events are received
 			when := now.Add(time.Duration(each.Timestamp) * time.Millisecond)
 			if each.Status == noteOn {
-				print(core.MIDItoNote(int(each.Data1), 1.0))
+				print(core.MIDItoNote(0.25, int(each.Data1), 1.0)) // TODO
 				rec.Add(core.NewNoteChange(true, each.Data1, each.Data2), when)
 				needsReset = true
 				continue
@@ -58,5 +59,5 @@ done:
 
 // TODO compute duration
 func (m *Midi) eventToNote(start, end portmidi.Event) core.Note {
-	return core.MIDItoNote(int(start.Data1), int(start.Data2))
+	return core.MIDItoNote(0.25, int(start.Data1), int(start.Data2)) // TODO
 }

@@ -55,8 +55,8 @@ type LoopController interface {
 	SetBIAB(biab int)
 	BIAB() int
 
-	Begin(l *Loop)
-	End(l *Loop)
+	StartLoop(l *Loop)
+	EndLoop(l *Loop)
 
 	BeatsAndBars() (int64, int64)
 	Plan(bars int64, beats int64, seq Sequenceable)

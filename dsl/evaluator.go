@@ -112,7 +112,7 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 			if theLoop, ok := r.(*core.Loop); ok {
 				if storedValue, present := e.context.Variables().Get(variable); present {
 					if otherLoop, replaceme := storedValue.(*core.Loop); replaceme {
-						otherLoop.SetTarget(theLoop.Target)
+						otherLoop.SetTarget(theLoop.Target())
 						r = otherLoop
 					} else {
 						// existing variable but not a Loop

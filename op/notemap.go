@@ -143,6 +143,14 @@ func NewNoteMerge(count int, maps []core.Valueable) NoteMerge {
 	}
 }
 
+func (m NoteMerge) Storex() string {
+	var b bytes.Buffer
+	fmt.Fprintf(&b, "notemerge(%d", m.Count)
+	appendStorexValueableList(&b, false, m.Target)
+	fmt.Fprintf(&b, ")")
+	return b.String()
+}
+
 func (m NoteMerge) S() core.Sequence {
 	if len(m.Target) == 0 {
 		return core.EmptySequence

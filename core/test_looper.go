@@ -30,8 +30,8 @@ func (t *TestLooper) BIAB() int {
 	return int(t.Biab)
 }
 
-func (t *TestLooper) Begin(l *Loop) {}
-func (t *TestLooper) End(l *Loop)   {}
+func (t *TestLooper) StartLoop(l *Loop) {}
+func (t *TestLooper) EndLoop(l *Loop)   {}
 
 func (t *TestLooper) BeatsAndBars() (int64, int64) {
 	return t.Beats, t.Bars

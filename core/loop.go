@@ -4,24 +4,29 @@ import (
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/emicklei/melrose/notify"
 )
 
 type Loop struct {
 	ctx       Context
-	Target    Sequenceable
+	target    Sequenceable
 	isRunning bool
 	mutex     sync.RWMutex
+	name      string
 }
 
 func NewLoop(ctx Context, target Sequenceable) *Loop {
 	return &Loop{
 		ctx:    ctx,
-		Target: target,
+		target: target,
 	}
 }
 
+func (l *Loop) Target() Sequenceable { return l.target }
+
 func (l *Loop) Storex() string {
-	if s, ok := l.Target.(Storable); ok {
+	if s, ok := l.target.(Storable); ok {
 		return fmt.Sprintf("loop(%s)", s.Storex())
 	}
 	return ""
@@ -50,7 +55,10 @@ func (l *Loop) Inspect(i Inspection) {
 }
 
 func (l *Loop) reschedule(d AudioDevice, when time.Time) {
-	endOfLastNote := d.Play(l.Target, l.ctx.Control().BPM(), when)
+	endOfLastNote := d.Play(l.target, l.ctx.Control().BPM(), when)
+	if IsDebug() {
+		notify.Debugf("next loop until [%s]", endOfLastNote.Format("15:04:05.00"))
+	}
 	// schedule the loop itself so it can play again when Handle is called
 	d.Timeline().Schedule(l, endOfLastNote)
 }
@@ -79,11 +87,11 @@ func (l *Loop) Stop() *Loop {
 func (l *Loop) SetTarget(newTarget Sequenceable) {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
-	l.Target = newTarget
+	l.target = newTarget
 }
 
 // Play is part of Playable
 func (l *Loop) Play(ctx Context) error {
-	ctx.Control().Begin(l)
+	ctx.Control().StartLoop(l)
 	return nil
 }

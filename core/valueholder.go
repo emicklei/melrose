@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -19,7 +20,7 @@ func String(h Valueable) string {
 	return ""
 }
 
-func Float(h Valueable) float64 {
+func Float(h Valueable) float32 {
 	if h == nil {
 		return 0.0
 	}
@@ -27,8 +28,14 @@ func Float(h Valueable) float64 {
 	if val == nil {
 		return 0.0
 	}
-	if v, ok := val.(float64); ok {
+	if v, ok := val.(float32); ok {
 		return v
+	}
+	if v, ok := val.(float64); ok {
+		return float32(v)
+	}
+	if v, ok := val.(int); ok {
+		return float32(v)
 	}
 	return 0.0
 }

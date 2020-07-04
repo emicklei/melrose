@@ -11,7 +11,7 @@ type JoinMap struct {
 }
 
 func (j JoinMap) Storex() string {
-	return ""
+	return "joinmap"
 }
 
 func (j JoinMap) S() core.Sequence {

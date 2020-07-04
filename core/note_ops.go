@@ -5,7 +5,7 @@ func (n Note) Pitched(howManySemitones int) Note {
 	if howManySemitones == 0 {
 		return n
 	}
-	simple := MIDItoNote(n.MIDI()+howManySemitones, 1.0)
+	simple := MIDItoNote(1.0, n.MIDI()+howManySemitones, 1.0)
 	nn, _ := NewNote(simple.Name, simple.Octave, n.duration, simple.Accidental, n.Dotted, n.Velocity)
 	return nn
 }

@@ -164,9 +164,15 @@ Create a new loop from one or more objects.
 	lp_cb = loop(cb,reverse(cb))
 
 ### midi<a name="midi"></a>
-Create a Note.
+Create a Note from MIDI information and is typically used for drum sets.
+The first parameter is the duration and must be one of {0.0625,0.125,0.25,0.5,1,2,4,8,16}.
+A duration of 0.25 or 4 means create a quarter note.
+Second parameter is the MIDI number and must be one of [0..127].
+The third parameter is the velocity (~ loudness) and must be one of [0..127].
 
-	midi(52,80) // => E3+
+	midi(0.25,52,80) // => E3+
+
+	midi(16,36,70) // => 16C2 (kick)
 
 ### multi<a name="multi"></a>
 .

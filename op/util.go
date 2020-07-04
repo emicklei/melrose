@@ -3,13 +3,25 @@ package op
 import (
 	"bytes"
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"io"
 	"strconv"
 	"strings"
 	"text/scanner"
+
+	"github.com/emicklei/melrose/core"
 )
 
+func appendStorexValueableList(b *bytes.Buffer, isFirstParameter bool, list []core.Valueable) {
+	target := []core.Sequenceable{}
+	for _, each := range list {
+		if s, ok := each.(core.Sequenceable); ok {
+			target = append(target, s)
+		}
+	}
+	appendStorexList(b, isFirstParameter, target)
+}
+
+// if not isFirstParameter then write comma first
 func appendStorexList(b *bytes.Buffer, isFirstParameter bool, list []core.Sequenceable) {
 	if len(list) == 0 {
 		return

@@ -33,7 +33,7 @@ func (n Note) MIDI() int {
 }
 
 // TODO handle duration
-func MIDItoNote(nr int, vel int) Note {
+func MIDItoNote(duration float32, nr int, vel int) Note {
 	octave := (nr / 12) - 1
 	nrIndex := nr - ((octave + 1) * 12)
 	var offsetIndex, offset int
@@ -48,7 +48,7 @@ func MIDItoNote(nr int, vel int) Note {
 	if nrIndex != offset {
 		accidental = -1
 	}
-	nn, _ := NewNote(string(nonRestNoteNames[offsetIndex]), octave, 0.25, accidental, false, vel)
+	nn, _ := NewNote(string(nonRestNoteNames[offsetIndex]), octave, duration, accidental, false, vel)
 	return nn
 }
 

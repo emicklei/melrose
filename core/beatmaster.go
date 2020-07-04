@@ -69,8 +69,8 @@ func (b *Beatmaster) BeatsAndBars() (int64, int64) {
 	return b.beats, b.beats / b.biab
 }
 
-// Begin will schedule the start of a Loop at the next bar, unless the master is not started.
-func (b *Beatmaster) Begin(l *Loop) {
+// StartLoop will schedule the start of a Loop at the next bar, unless the master is not started.
+func (b *Beatmaster) StartLoop(l *Loop) {
 	if !b.beating {
 		return
 	}
@@ -102,8 +102,8 @@ func (b *Beatmaster) beatsAndNextBar() int64 {
 	return (b.beats * b.biab / b.biab) + 1
 }
 
-// End will schedule the stop of a Loop at the next bar, unless the master is not started.
-func (b *Beatmaster) End(l *Loop) {
+// EndLoop will schedule the stop of a Loop at the next bar, unless the master is not started.
+func (b *Beatmaster) EndLoop(l *Loop) {
 	if !b.beating {
 		return
 	}
@@ -226,14 +226,14 @@ var NoLooper = zeroBeat{}
 
 type zeroBeat struct{}
 
-func (s zeroBeat) Begin(l *Loop) {}
-func (s zeroBeat) End(l *Loop)   {}
-func (s zeroBeat) Start()        {}
-func (s zeroBeat) Stop()                                                  {}
-func (s zeroBeat) Reset()                                                 {}
-func (s zeroBeat) SetBPM(bpm float64)                                     {}
-func (s zeroBeat) BPM() float64                                           { return 120.0 }
-func (s zeroBeat) SetBIAB(biab int)                                       {}
-func (s zeroBeat) BIAB() int                                              { return 4 }
+func (s zeroBeat) StartLoop(l *Loop)                              {}
+func (s zeroBeat) EndLoop(l *Loop)                                {}
+func (s zeroBeat) Start()                                         {}
+func (s zeroBeat) Stop()                                          {}
+func (s zeroBeat) Reset()                                         {}
+func (s zeroBeat) SetBPM(bpm float64)                             {}
+func (s zeroBeat) BPM() float64                                   { return 120.0 }
+func (s zeroBeat) SetBIAB(biab int)                               {}
+func (s zeroBeat) BIAB() int                                      { return 4 }
 func (s zeroBeat) BeatsAndBars() (int64, int64)                   { return 0, 0 }
 func (s zeroBeat) Plan(bars int64, beats int64, seq Sequenceable) {}

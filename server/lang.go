@@ -112,7 +112,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		if query.Get("action") == "begin" {
 			if lp, ok := returnValue.(*core.Loop); ok {
 				if !lp.IsRunning() {
-					l.context.Control().Begin(lp)
+					l.context.Control().StartLoop(lp)
 				}
 			}
 			// ignore if not Loop
