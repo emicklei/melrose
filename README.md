@@ -19,7 +19,7 @@ Until `v1.0.0` both language syntax and package api may change.
 ### Sponsor me
 
 You can either sponsor Melrōse via [Github Sponsors](https://github.com/sponsors/emicklei) or 
-<a href="https://www.patreon.com/bePatron?u=33376146" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
+<a href="https://www.patreon.com/bePatron?u=33376146" data-patreon-widget-type="become-patron-button">Become a Patron!</a>
 
 Software is licensed under [Apache 2.0 license](LICENSE).
 (c) 2014-2020 [ernestmicklei.com](http://ernestmicklei.com)
