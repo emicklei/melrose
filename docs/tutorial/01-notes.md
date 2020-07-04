@@ -14,13 +14,24 @@ The argument `c` represents the quarter note middle C, octave 4.
 
     n = note('c#')
 
-Using `#` or `♯` make the note shape. Using `_` or `♭` makes the note flat.
+Using `#` or `♯` makes the note sharp. Using `_` or `♭` makes the note flat.
 
 ## duration
 
     n = note('2c#')
 
-Change the duration of the note by adding a number.
+Change the duration of the note by prefixing a number.
 The number `2` or `½` means set the duration to 0.5.
 No number, or `4` or `¼` means set the duration to 0.25.
 Valid numbers are 1,2,4,8,16.
+
+## dynamic
+
+    n = note('2c#++')
+
+By changing the dynamic of a note can make it sound softer,quieter or harder,louder.
+The symbol `-` is used to silence the note.
+The symbol `+` is used to emphasize the note.
+You can use up to 4 such symbols.
+
+See [Notation](notations.html) for a complete description of the syntax to create notes.

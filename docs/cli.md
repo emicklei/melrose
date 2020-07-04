@@ -21,11 +21,12 @@ You can start the program `melrōse` without any flags. You can use the followin
     -http string
         address on which to listen for HTTP requests (default ":8118")
     -i  string
-        read expressions from a file
+        read a program from a file
     -v  boolean
         verbose logging
 
 ### control
+
 Commands to control the program itself are prefix with a colon `:`.
 With `:h` you get the list of known commands.
 
@@ -59,58 +60,8 @@ Ctrl-N, Down | Next match from history
 Ctrl-R       | Reverse Search history (Ctrl-S forward, Ctrl-G cancel)
 Ctrl-Y       | Paste from Yank buffer (Alt-Y to paste next yank instead)
 
+### HTTP API
 
-## API server
-
-Melrōse starts a HTTP server on port 8118 and evaluates programs on `POST /v1/statements` providing the source as the payload (HTTP Body).
-This server is used by the [Melrōse Plugin for Visual Studio Code](https://github.com/emicklei/melrōse-for-vscode).
-
-### HTTP response
-
-#### 200 OK
-
-If the request was successful processed then the response looks like:
-
-  {
-    "type": "melrose.Sequence",
-    "object: { ... }
-  }
-
-#### 500 Internal Server Error
-
-If the request could not be processed then the response looks like:
-
-  {
-    "type": "errors.Error",
-    "message": "unknown function",
-    "line": 1,
-    "column": 1
-  }
-
-#### 400 Bad Request
-
-If the request is malformed then the response will have the error message.
-
-### HTTP port
-
-The port can be changed to e.g. 8000 with the program option `-http :8000`.
-
-### tracing
-
-If the HTTP URL has the query parameter `trace=true` then `melrōse` will produce extra logging.
-
-### play
-
-If the HTTP URL has the query parameter `action=play` then `melrōse` will try to play the result of the selected expression(s).
-
-### begin
-
-If the HTTP URL has the query parameter `action=begin` then `melrōse` will try to `begin` the loop of the selected expression.
-
-### end
-
-If the HTTP URL has the query parameter `action=end` then `melrōse` will try to `end` the loop of the selected expression.
-
-### inspecting
-
-If the HTTP URL has the query parameter `action=inspect` then `melrōse` will print inspection details of the selected expression.
+Melrōse starts a HTTP server that can evaluate programs,statements and expressions.
+You can create your own tools using [HTTP API](http.html).
+This API is used by the Visual Studio Code [Melrose Plugin](vsc.html).
