@@ -7,16 +7,22 @@
 
 ## Usage
 
-This software can be used both as a library (Go package) or as part of the command line tool called `melrōse` for live music coding.
+`melrōse` is a tool to create music by programming melodies in a language to composes MIDI notes.
+Using the command line interface or its HTTP Server,`melrōse` can play your programmed music directly.
+Note sequences in your program can be changed while playing which makes it possible to even use it for live performance.
 
-See [documentation](https://emicklei.github.io/melrose/) how to install and use `melrōse` for live performance.
+See [documentation](https://emicklei.github.io/melrose/) how to install and use `melrōse`.
 
 ### Status
 
 Until `v1.0.0` both language syntax and package api may change.
 
 
-### Sponsor me
+### Contributions
+
+Fixes, suggestions, documentation improvements are all welcome. Fork this project and submit Pull requests.
+
+### Sponsor
 
 You can either sponsor Melrōse via [Github Sponsors](https://github.com/sponsors/emicklei) or 
 <a href="https://www.patreon.com/bePatron?u=33376146" data-patreon-widget-type="become-patron-button">Become a Patron!</a>
