@@ -24,8 +24,7 @@ Fixes, suggestions, documentation improvements are all welcome. Fork this projec
 
 ### Sponsor
 
-You can either sponsor Melrōse via [Github Sponsors](https://github.com/sponsors/emicklei) or 
-<a href="https://www.patreon.com/bePatron?u=33376146" data-patreon-widget-type="become-patron-button">Become a Patron!</a>
+You can either sponsor Melrōse via [Github Sponsors](https://github.com/sponsors/emicklei) or [Become a Patron](https://www.patreon.com/emicklei_melrose).
 
 Software is licensed under [Apache 2.0 license](LICENSE).
 (c) 2014-2020 [ernestmicklei.com](http://ernestmicklei.com)
