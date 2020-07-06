@@ -32,14 +32,22 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 - <a href="#J">J</a>
 - <a href="#at">at</a>
 - <a href="#duration">duration</a>
+- <a href="#export">export</a>
 - <a href="#flatten">flatten</a>
 - <a href="#interval">interval</a>
 - <a href="#join">join</a>
+- <a href="#joinmap">joinmap</a>
+- <a href="#next">next</a>
+- <a href="#notemap">notemap</a>
+- <a href="#notemerge">notemerge</a>
 - <a href="#octave">octave</a>
 - <a href="#octavemap">octavemap</a>
 - <a href="#parallel">parallel</a>
 - <a href="#pitch">pitch</a>
+- <a href="#put">put</a>
+- <a href="#random">random</a>
 - <a href="#repeat">repeat</a>
+- <a href="#replace">replace</a>
 - <a href="#reverse">reverse</a>
 - <a href="#sequencemap">sequencemap</a>
 - <a href="#serial">serial</a>
@@ -79,11 +87,11 @@ Create an index getter (1-based) to select a musical object.
 ### begin<a name="begin"></a>
 Begin loop(s). Ignore if it was running.
 
-	l1 = loop(sequence('C D E F G A B'))
+	lp_cb = loop(sequence('C D E F G A B'))
 
-	end(l1)
+	end(lp_cb)
 
-	begin(l1)
+	begin(lp_cb)
 
 ### biab<a name="biab"></a>
 Set the Beats in a Bar [1..6]; default is 4.
@@ -96,7 +104,7 @@ Set the Beats Per Minute [1..300]; default is 120.
 	
 
 ### channel<a name="channel"></a>
-Select a MIDI channel, must be in [1..15].
+Select a MIDI channel, must be in [1..16]; must be a top-level operator.
 
 	channel(2,sequence('C2 E3') // plays on instrument connected to MIDI channel 2
 
@@ -119,9 +127,9 @@ If the parameter is less than 1 then the note duration is scaled with a value, e
 	duration(0.5,sequence('8C 8G')) // => C G , factor change
 
 ### echo<a name="echo"></a>
-Echo the notes being played; default is true.
+Echo the notes being played; default is false.
 
-	echo(false)
+	echo(true)
 
 ### end<a name="end"></a>
 End running loop(s). Ignore if it was stopped.
@@ -130,13 +138,18 @@ End running loop(s). Ignore if it was stopped.
 
 	end(l1)
 
+### export<a name="export"></a>
+.
+
+	
+
 ### flatten<a name="flatten"></a>
 Flatten all operations on a musical object to a new sequence.
 
 	flatten(sequence('(C E G) B')) // => C E G B
 
 ### go<a name="go"></a>
-Play all musical objects in parallel.
+Play all musical objects together in the background (do not wait for completion).
 
 	go(s1,s1,s3) // play s1 and s2 and s3 simultaneously
 
@@ -156,8 +169,13 @@ When played, each musical object is played in sequence.
 
 	ab = join(a,b)
 
+### joinmap<a name="joinmap"></a>
+.
+
+	
+
 ### loop<a name="loop"></a>
-Create a new loop from one or more objects.
+Create a new loop from one or more objects; must be assigned to a variable.
 
 	cb = sequence('C D E F G A B')
 
@@ -179,12 +197,27 @@ The third parameter is the velocity (~ loudness) and must be one of [0..127].
 
 	
 
+### next<a name="next"></a>
+.
+
+	
+
 ### note<a name="note"></a>
 Create a Note using this <a href="/melrose/notations.html#note-not">format</a>.
 
-	note('E')
+	note('e')
 
-	note('2E#.--')
+	note('2e#.--')
+
+### notemap<a name="notemap"></a>
+.
+
+	
+
+### notemerge<a name="notemerge"></a>
+.
+
+	
 
 ### octave<a name="octave"></a>
 Changes the pitch of notes by steps of 12 semitones.
@@ -197,7 +230,7 @@ Create a sequence with notes for which order and the octaves are changed.
 	octavemap('1:-1,2:0,3:1',chord('C')) // => (C3 E G5)
 
 ### parallel<a name="parallel"></a>
-Create a new sequence in which all notes of a musical object are synched in time.
+Create a new sequence in which all notes of a musical object are played simultaneously.
 
 	parallel(sequence('C D E')) // => (C D E)
 
@@ -211,16 +244,26 @@ Change the pitch with a delta of semitones.
 	pitch(p,note('C'))
 
 ### play<a name="play"></a>
-Play musical objects such as Note,Chord,Sequence,...
+Play all musical objects.
 
 	play(s1,s2,s3) // play s3 after s2 after s1
 
 ### progression<a name="progression"></a>
-.
+Create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>.
 
 	progression('E F') // => (E A♭ B) (F A C5)
 
 	progression('(C D)') // => (C E G D G♭ A)
+
+### put<a name="put"></a>
+.
+
+	
+
+### random<a name="random"></a>
+Create a random integer generator. Use next() to get a new integer.
+
+	random(1,10)
 
 ### record<a name="record"></a>
 Creates a recorded sequence of notes from a MIDI device.
@@ -233,6 +276,11 @@ Creates a recorded sequence of notes from a MIDI device.
 Repeat the musical object a number of times.
 
 	repeat(4,sequence('C D E'))
+
+### replace<a name="replace"></a>
+.
+
+	
 
 ### reverse<a name="reverse"></a>
 Reverse the (groups of) notes in a sequence.

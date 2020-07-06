@@ -46,7 +46,7 @@ func EvalFunctions(ctx core.Context) map[string]Function {
 	eval := map[string]Function{}
 
 	eval["duration"] = Function{
-		Title: "Note duration modifier",
+		Title: "Duration operator",
 		Description: `Creates a new modified musical object for which the duration of all notes are changed.
 The first parameter controls the length (duration) of the note.
 If the parameter is greater than 0 then the note duration is set to a fixed value, e.g. 4=quarter,1=whole.
@@ -75,10 +75,11 @@ duration(0.5,sequence('8C 8G')) // => C G , factor change`,
 		}}
 
 	eval["progression"] = Function{
-		Title:    `create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>`,
-		Prefix:   "pro",
-		IsCore:   true,
-		Template: `progression('${1:chords}')`,
+		Title:       "Progress creator",
+		Description: `create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>`,
+		Prefix:      "pro",
+		IsCore:      true,
+		Template:    `progression('${1:chords}')`,
 		Samples: `progression('E F') // => (E A♭ B) (F A C5)
 progression('(C D)') // => (C E G D G♭ A)`,
 		Func: func(chords string) interface{} {
@@ -90,6 +91,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 
 	eval["joinmap"] = Function{
+		Title:      "Join Map creator",
 		Prefix:     "joinm",
 		IsComposer: true,
 		Template:   `joinmap('${1:indices}',${2:join})`,
@@ -128,26 +130,8 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			return len(s.S().Notes)
 		}}
 
-	// eval["onbar"] = Function{
-	// 	//Title:         "Schedule to play a musical object on a bar (starts with 1)",
-	// 	Prefix:        "onb",
-	// 	Template:      `onbar('${1:bar},${2:object}')`,
-	// 	ControlsAudio: true,
-	// 	Samples:       `onbar(1,sequence('C D E')) // => immediately play C D E`,
-	// 	Func: func(bars int, seq interface{}) interface{} {
-	// 		if bars <= 0 {
-	// 			return notify.Panic(fmt.Errorf("cannot start on bar [%d], bars start at 1", bars))
-	// 		}
-	// 		s, ok := getSequenceable(getValue(seq)) // unwrap var
-	// 		if !ok {
-	// 			return notify.Panic(fmt.Errorf("cannot onbar (%T) %v", seq, seq))
-	// 		}
-	// 		ctx.Control().Plan(int64(bars-1), int64(0), s)
-	// 		return nil
-	// 	}}
-
 	eval["track"] = Function{
-		Title:    "Create a new Track",
+		Title:    "Track creator",
 		Prefix:   "tr",
 		Template: `track('${1:title},${2:channel}')`,
 		Samples:  `track("lullaby",1,sequence('C D E')) // => a new track on MIDI channel 1`,
@@ -170,7 +154,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 
 	eval["multi"] = Function{
-		Title:         "Create a new multi track",
+		Title:         "Multi track creator",
 		Prefix:        "mtr",
 		Template:      `multi()`,
 		ControlsAudio: true,
@@ -231,7 +215,7 @@ chord('G/M/2')`,
 		}}
 
 	eval["octavemap"] = Function{
-		Title:       "Octave Mapper modifier",
+		Title:       "Octave Map operator",
 		Description: "create a sequence with notes for which order and the octaves are changed",
 		Prefix:      "octavem",
 		Template:    `octavemap('${1:int2int}',${2:object})`,
@@ -246,7 +230,7 @@ chord('G/M/2')`,
 		}}
 
 	eval["pitch"] = Function{
-		Title:       "Pitch modifier",
+		Title:       "Pitch operator",
 		Description: "change the pitch with a delta of semitones",
 		Prefix:      "pit",
 		Alias:       "Pi",
@@ -264,7 +248,7 @@ pitch(p,note('C'))`,
 		}}
 
 	eval["reverse"] = Function{
-		Title:       "Reverse modifier",
+		Title:       "Reverse operator",
 		Description: "reverse the (groups of) notes in a sequence",
 		Prefix:      "rev",
 		Alias:       "Rv",
@@ -280,7 +264,7 @@ pitch(p,note('C'))`,
 		}}
 
 	eval["repeat"] = Function{
-		Title:       "Repeat modifier",
+		Title:       "Repeat operator",
 		Description: "repeat the musical object a number of times",
 		Prefix:      "rep",
 		Alias:       "Rp",
@@ -300,7 +284,7 @@ pitch(p,note('C'))`,
 		}}
 
 	registerFunction(eval, "join", Function{
-		Title:       "Create a Join from two or more musical objects",
+		Title:       "Join operator",
 		Description: "When played, each musical object is played in sequence",
 		Prefix:      "joi",
 		Alias:       "J",
@@ -329,7 +313,7 @@ ab = join(a,b)`,
 		Template:      `bpm(${1:beats-per-minute})`,
 		Func: func(f float64) interface{} {
 			if f < 1 || f > 300 {
-				return notify.Panic(fmt.Errorf("invalid beats-per-minute [1..399], %f = ", f))
+				return notify.Panic(fmt.Errorf("invalid beats-per-minute [1..300], %f = ", f))
 			}
 			ctx.Control().SetBPM(f)
 			return nil
@@ -351,11 +335,11 @@ ab = join(a,b)`,
 
 	eval["echo"] = Function{
 		Title:         "the notes being played",
-		Description:   "echo the notes being played; default is true",
+		Description:   "echo the notes being played; default is false",
 		ControlsAudio: true,
 		Prefix:        "ech",
 		Template:      `echo(${0:true|false})`,
-		Samples:       `echo(false)`,
+		Samples:       `echo(true)`,
 		Func: func(on bool) interface{} {
 			ctx.Device().SetEchoNotes(on)
 			return nil
@@ -384,8 +368,8 @@ sequence('(C D E)')`,
 		Prefix:      "no",
 		Alias:       "N",
 		Template:    `note('${1:letter}')`,
-		Samples: `note('E')
-note('2E#.--')`,
+		Samples: `note('e')
+note('2e#.--')`,
 		IsCore: true,
 		Func: func(s string) interface{} {
 			n, err := core.ParseNote(s)
@@ -430,7 +414,7 @@ note('2E#.--')`,
 		}}
 
 	eval["put"] = Function{
-		//Title:       "Index getter",
+		Title: "Track modifier",
 		//Description: "create an index getter (1-based) to select a musical object",
 		//Prefix:      "at",
 		//Template:    `at(${1:index},${2:object})`,
@@ -444,9 +428,9 @@ note('2E#.--')`,
 		}}
 
 	eval["random"] = Function{
-		//Title:       "Random generator",
+		Title:       "Random generator",
 		Description: "create a random integer generator. Use next() to get a new integer",
-		Prefix:      "at",
+		Prefix:      "ra",
 		Template:    `random(${1:from},${2:to})`,
 		Samples:     `random(1,10)`,
 		Func: func(from interface{}, to interface{}) interface{} {
@@ -456,8 +440,8 @@ note('2E#.--')`,
 		}}
 
 	eval["play"] = Function{
-		Title:         "Player (foreground)",
-		Description:   "play musical objects such as Note,Chord,Sequence,...",
+		Title:         "Play musical objects in the foreground",
+		Description:   "play all musical objects",
 		ControlsAudio: true,
 		Prefix:        "pla",
 		Template:      `play(${1:sequenceable})`,
@@ -478,8 +462,8 @@ note('2E#.--')`,
 		}}
 
 	eval["go"] = Function{
-		Title:         "Player (background)",
-		Description:   "play all musical objects in parallel",
+		Title:         "Play musical objects in the background",
+		Description:   "play all musical objects together in the background (do not wait for completion)",
 		ControlsAudio: true,
 		Prefix:        "go",
 		Template:      `go(${1:sequenceable})`,
@@ -497,7 +481,7 @@ note('2E#.--')`,
 		}}
 
 	eval["serial"] = Function{
-		Title:       "Serial modifier",
+		Title:       "Serial operator",
 		Description: "serialise any grouping of notes in one or more musical objects",
 		Prefix:      "ser",
 		Template:    `serial(${1:sequenceable})`,
@@ -518,7 +502,7 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 		}}
 
 	eval["octave"] = Function{
-		Title:       "Octave modifier",
+		Title:       "Octave operator",
 		Description: "changes the pitch of notes by steps of 12 semitones",
 		Prefix:      "oct",
 		Template:    `octave(${1:offet},${2:sequenceable})`,
@@ -538,7 +522,7 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 		}}
 
 	eval["record"] = Function{
-		Title:         "Recorder",
+		Title:         "Recording creator",
 		Description:   "creates a recorded sequence of notes from a MIDI device",
 		ControlsAudio: true,
 		Prefix:        "rec",
@@ -552,8 +536,9 @@ s = r.Sequence()`,
 			}
 			return seq
 		}}
+
 	eval["undynamic"] = Function{
-		Title:       "Undo dynamic modifier",
+		Title:       "Undo dynamic operator",
 		Description: "undynamic all the notes in a musical object",
 		Prefix:      "und",
 		Template:    `undynamic(${1:sequenceable})`,
@@ -568,7 +553,7 @@ s = r.Sequence()`,
 		}}
 
 	eval["flatten"] = Function{
-		Title:       "Flatten modifier",
+		Title:       "Flatten operator",
 		Description: "flatten all operations on a musical object to a new sequence",
 		Prefix:      "flat",
 		Alias:       "F",
@@ -584,8 +569,8 @@ s = r.Sequence()`,
 		}}
 
 	eval["parallel"] = Function{
-		Title:       "Parallel modifier",
-		Description: "create a new sequence in which all notes of a musical object are synched in time",
+		Title:       "Parallel operator",
+		Description: "create a new sequence in which all notes of a musical object are played simultaneously",
 		Prefix:      "par",
 		Alias:       "Pa",
 		Template:    `parallel(${1:sequenceable})`,
@@ -600,8 +585,8 @@ s = r.Sequence()`,
 		}}
 	// BEGIN Loop and control
 	eval["loop"] = Function{
-		Title:         "Loop creator ; must be assigned to a variable",
-		Description:   "create a new loop from one or more objects",
+		Title:         "Loop creator",
+		Description:   "create a new loop from one or more objects; must be assigned to a variable",
 		ControlsAudio: true,
 		Prefix:        "loo",
 		Alias:         "L",
@@ -623,15 +608,16 @@ lp_cb = loop(cb,reverse(cb))`,
 			}
 			return core.NewLoop(ctx, op.Join{Target: joined})
 		}}
+
 	eval["begin"] = Function{
-		Title:         "Loop runner",
+		Title:         "Begin loop command",
 		Description:   "begin loop(s). Ignore if it was running.",
 		ControlsAudio: true,
 		Prefix:        "beg",
 		Template:      `begin(${1:loop})`,
-		Samples: `l1 = loop(sequence('C D E F G A B'))
-end(l1)
-begin(l1)`,
+		Samples: `lp_cb = loop(sequence('C D E F G A B'))
+end(lp_cb)
+begin(lp_cb)`,
 		Func: func(vars ...variable) interface{} {
 			for _, each := range vars {
 				l, ok := each.Value().(*core.Loop)
@@ -644,8 +630,9 @@ begin(l1)`,
 			}
 			return nil
 		}}
+
 	eval["end"] = Function{
-		Title:         "Loop terminator",
+		Title:         "End loop command",
 		Description:   "end running loop(s). Ignore if it was stopped.",
 		ControlsAudio: true,
 		Template:      `end(${1:loop-or-empty})`,
@@ -669,8 +656,8 @@ end(l1)`,
 		}}
 	// END Loop and control
 	eval["channel"] = Function{
-		Title:         "MIDI channel modifier ; must be a top-level modifier",
-		Description:   "select a MIDI channel, must be in [1..15]",
+		Title:         "MIDI channel operator",
+		Description:   "select a MIDI channel, must be in [1..16]; must be a top-level operator",
 		ControlsAudio: true,
 		Prefix:        "chan",
 		Alias:         "Ch",
@@ -684,7 +671,7 @@ end(l1)`,
 			return core.ChannelSelector{Target: s, Number: getValueable(midiChannel)}
 		}}
 	eval["interval"] = Function{
-		Title:       "Integer interval creator",
+		Title:       "Interval creator",
 		Description: "create an integer repeating interval (from,to,by,method). Default method is 'repeat', Use next() to get a new integer",
 		Prefix:      "int",
 		Alias:       "I",
@@ -695,8 +682,9 @@ lp_cdef = loop(pitch(int1,sequence('C D E F')), next(int1))`,
 		Func: func(from, to, by interface{}) *core.Interval {
 			return core.NewInterval(core.ToValueable(from), core.ToValueable(to), core.ToValueable(by), core.RepeatFromTo)
 		}}
+
 	eval["sequencemap"] = Function{
-		Title:       "Integer Sequence Map modifier",
+		Title:       "Sequence Map creator",
 		Description: "create a Mapper of sequence notes by index (1-based)",
 		Prefix:      "ind",
 		Alias:       "Im",
@@ -713,6 +701,7 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		}}
 
 	eval["notemap"] = Function{
+		Title:      "Note Map creator",
 		Template:   `notemap('${1:space-separated-1-based-indices}',${2:note})`,
 		IsComposer: true,
 		Func: func(indices string, note interface{}) interface{} {
@@ -724,6 +713,7 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		}}
 
 	eval["notemerge"] = Function{
+		Title:      "Note Merge creator",
 		Template:   `notemerge(${1:count},${2:notemap})`,
 		IsComposer: true,
 		Func: func(count int, maps ...interface{}) interface{} {
@@ -735,11 +725,13 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		}}
 
 	eval["next"] = Function{
+		Title: "Next operator",
 		Func: func(v interface{}) interface{} {
 			return core.Nexter{Target: getValueable(v)}
 		}}
 
 	eval["export"] = Function{
+		Title: "Export command",
 		Func: func(filename string, m interface{}) interface{} {
 			if len(filename) == 0 {
 				return notify.Panic(fmt.Errorf("missing filename to export MIDI %v", m))
@@ -755,6 +747,7 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		}}
 
 	eval["replace"] = Function{
+		Title: "Replace operator",
 		Func: func(target interface{}, from, to interface{}) interface{} {
 			targetS, ok := getSequenceable(target)
 			if !ok {
