@@ -98,7 +98,11 @@ func (n NoteMap) formattedIndices() string {
 }
 
 func (n NoteMap) Storex() string {
-	if st, ok := n.Target.Value().(core.Storable); ok {
+	st, ok := n.Target.(core.Storable)
+	if !ok {
+		st, ok = n.Target.Value().(core.Storable)
+	}
+	if ok {
 		return fmt.Sprintf("notemap('%s',%s)", n.formattedIndices(), st.Storex())
 	}
 	return ""
