@@ -52,6 +52,9 @@ func (l *Loop) Start(d AudioDevice) *Loop {
 
 func (l *Loop) Inspect(i Inspection) {
 	i.Properties["running"] = l.isRunning
+	if st, ok := l.target.(Storable); ok {
+		i.Properties["sequence"] = st.Storex()
+	}
 }
 
 func (l *Loop) reschedule(d AudioDevice, when time.Time) {
