@@ -24,7 +24,7 @@ func cmdFunctions() map[string]Command {
 		ctx.Device().Reset()
 		return nil
 	}}
-	cmds[":b"] = Command{Description: "Beat settings", Func: handleBeatSetting}
+	cmds[":b"] = Command{Description: "beat settings", Func: handleBeatSetting}
 	cmds[":m"] = Command{Description: "MIDI settings", Func: handleMIDISetting}
 	cmds[":q"] = Command{Description: "quit"} // no Func because it is handled in the main loop
 	cmds[":d"] = Command{Description: "toggle debug lines", Func: handleToggleDebug}
