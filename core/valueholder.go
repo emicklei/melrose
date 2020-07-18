@@ -81,6 +81,9 @@ func (h *ValueHolder) SetValue(newAny interface{}) {
 }
 
 func (h ValueHolder) Storex() string {
+	if st, ok := h.Any.(Storable); ok {
+		return st.Storex()
+	}
 	return fmt.Sprintf("%v", h.Any)
 }
 
