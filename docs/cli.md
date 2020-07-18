@@ -12,11 +12,13 @@ title: Melrōse Command Line Interface (CLI)
 
 The program `melrōse` is a Read–Eval–Print Loop (REPL) that produces or consumes MIDI. 
 By entering statements using the [language](dsl.html), `melrōse` will send out MIDI messages to any connected [DAW](daw.html).
-Although it is possible to program directly using the command line interface of `melrōse`, it is much more convenient to use the Visual Studio Code editor with the [Melrose Plugin](vsc.html).
+
+Although it is possible to program directly using the command line interface of `melrōse`, it is much more convenient to use the Visual Studio Code editor with the [Melrose Plugin](vsc.html) which uses the [HTTP API](http.html) of the same running program.
 
 ### program flags
 
-You can start the program `melrōse` without any flags. You can use the following flag to change its behavior.
+You can start the program `melrōse` without any flags. 
+You can use the following flags to change its behavior.
 
     -http string
         address on which to listen for HTTP requests (default ":8118")
@@ -59,9 +61,3 @@ Ctrl-P, Up   | Previous match from history
 Ctrl-N, Down | Next match from history
 Ctrl-R       | Reverse Search history (Ctrl-S forward, Ctrl-G cancel)
 Ctrl-Y       | Paste from Yank buffer (Alt-Y to paste next yank instead)
-
-### HTTP API
-
-Melrōse starts a HTTP server that can evaluate programs,statements and expressions.
-You can create your own tools using [HTTP API](http.html).
-This API is used by the Visual Studio Code [Melrose Plugin](vsc.html).

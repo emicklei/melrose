@@ -2,14 +2,25 @@
 title: Melrōse HTTP server
 ---
 
+[Home](index.html)
+[Usage](cli.html)
+[Language](dsl.html)
+[DAW](daw.html)
+[Install](install.html)
+
 # HTTP API server
 
-Melrōse starts a HTTP server on port 8118 and evaluates programs on `POST /v1/statements` providing the source as the payload (HTTP Body).
+Melrōse starts a HTTP server on port 8118 and evaluates expressions or programs providing the source as the payload (HTTP Body).
 This server is used by the [Melrōse Plugin for Visual Studio Code](https://github.com/emicklei/melrose-for-vscode).
 
-### HTTP response
 
-#### 200 OK
+## HTTP Request
+
+    POST http://localhost:8118/v1/statements?action={action}
+
+## HTTP response
+
+### 200 OK
 
 If the request was successful processed then the response looks like:
 
@@ -19,11 +30,10 @@ If the request was successful processed then the response looks like:
         "message": "note('C')",
         "file": "",
         "line": 0,
-        "column": 0,
-        "object": null
+        "column": 0
     }
 
-#### 500 Internal Server Error
+### 500 Internal Server Error
 
 If the request could not be processed then the response looks like:
 
@@ -33,22 +43,14 @@ If the request could not be processed then the response looks like:
         "message": "literal not terminated (1:9)\n | note(C\")\n | ........^",
         "file": "yours.mel",
         "line": 1,
-        "column": 0,
-        "object": {
-            "Line": 1,
-            "Column": 8,
-            "Message": "literal not terminated",
-            "Snippet": "\n | note(C\")\n | ........^"
-        }
+        "column": 8
     }
 
-#### 400 Bad Request
+### 400 Bad Request
 
 If the request is malformed then the response will have the error message.
 
-### HTTP port
-
-The port can be changed to e.g. 8000 with the program option `-http :8000`.
+## HTTP Request parameters
 
 ### tracing
 

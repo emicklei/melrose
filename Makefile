@@ -1,6 +1,6 @@
 LATEST_TAG := $(shell git describe --abbrev=0)
 
-refresh: test install snippets grammar dslmd
+refresh: test install snippets grammar dslmd menu
 
 run: refresh
 	melrose
@@ -25,6 +25,9 @@ grammar:
 
 dslmd:
 	cd cmd/vsc && go run *.go dslmd
+
+menu:
+	cd cmd/vsc && go run *.go menu
 
 vsc: snippets grammar
 	cd ../melrose-for-vscode && vsce package

@@ -506,7 +506,7 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 		Title:       "Octave operator",
 		Description: "changes the pitch of notes by steps of 12 semitones",
 		Prefix:      "oct",
-		Template:    `octave(${1:offet},${2:sequenceable})`,
+		Template:    `octave(${1:offset},${2:sequenceable})`,
 		IsComposer:  true,
 		Samples:     `octave(1,sequence('C D')) // => C5 D5`,
 		Func: func(scalarOrVar interface{}, playables ...interface{}) interface{} {
@@ -524,10 +524,10 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 
 	eval["record"] = Function{
 		Title:         "Recording creator",
-		Description:   "creates a recorded sequence of notes from a MIDI input device",
+		Description:   "creates a recorded sequence of notes from the current MIDI input device",
 		ControlsAudio: true,
 		Prefix:        "rec",
-		Template:      `record(${1:input-device-id},${2:seconds-inactivity})`,
+		Template:      `record()`,
 		Samples: `r = record() // record notes played on the default input device and stop recording after 5 seconds
 s = r.S()`,
 		Func: func() interface{} {
@@ -587,7 +587,7 @@ s = r.S()`,
 	// BEGIN Loop and control
 	eval["loop"] = Function{
 		Title:         "Loop creator",
-		Description:   "create a new loop from one or more objects; must be assigned to a variable",
+		Description:   "create a new loop from one or more musical objects; must be assigned to a variable",
 		ControlsAudio: true,
 		Prefix:        "loo",
 		Alias:         "L",
@@ -617,8 +617,8 @@ lp_cb = loop(cb,reverse(cb))`,
 		Prefix:        "beg",
 		Template:      `begin(${1:loop})`,
 		Samples: `lp_cb = loop(sequence('C D E F G A B'))
-end(lp_cb)
-begin(lp_cb)`,
+begin(lp_cb)
+end(lp_cb)`,
 		Func: func(vars ...variable) interface{} {
 			for _, each := range vars {
 				l, ok := each.Value().(*core.Loop)
@@ -638,6 +638,7 @@ begin(lp_cb)`,
 		ControlsAudio: true,
 		Template:      `end(${1:loop-or-empty})`,
 		Samples: `l1 = loop(sequence('C E G))
+begin(l1)
 end(l1)`,
 		Func: func(vars ...variable) interface{} {
 			if len(vars) == 0 {
@@ -663,7 +664,7 @@ end(l1)`,
 		Prefix:        "chan",
 		Alias:         "Ch",
 		Template:      `channel(${1:number},${2:sequenceable})`,
-		Samples:       `channel(2,sequence('C2 E3') // plays on instrument connected to MIDI channel 2`,
+		Samples:       `channel(2,sequence('C2 E3')) // plays on instrument connected to MIDI channel 2`,
 		Func: func(midiChannel, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -686,7 +687,7 @@ lp_cdef = loop(pitch(int1,sequence('C D E F')), next(int1))`,
 
 	eval["sequencemap"] = Function{
 		Title:       "Sequence Map creator",
-		Description: "create a Mapper of sequence notes by index (1-based)",
+		Description: "creates a mapper of sequence notes by index (1-based)",
 		Prefix:      "ind",
 		Alias:       "Im",
 		Template:    `sequencemap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
@@ -702,9 +703,10 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		}}
 
 	eval["notemap"] = Function{
-		Title:      "Note Map creator",
-		Template:   `notemap('${1:space-separated-1-based-indices}',${2:note})`,
-		IsComposer: true,
+		Title:       "Note Map creator",
+		Description: "creates a mapper of notes by index (1-based) or using dots (.) and bangs (!)",
+		Template:    `notemap('${1:space-separated-1-based-indices-or-dots-and-bangs}',${2:note})`,
+		IsComposer:  true,
 		Func: func(indices string, note interface{}) interface{} {
 			m, err := op.NewNoteMap(indices, getValueable(note))
 			if err != nil {
@@ -714,9 +716,10 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		}}
 
 	eval["notemerge"] = Function{
-		Title:      "Note Merge creator",
-		Template:   `notemerge(${1:count},${2:notemap})`,
-		IsComposer: true,
+		Title:       "Note Merge creator",
+		Description: `merges multiple notemaps into one sequenc`,
+		Template:    `notemerge(${1:count},${2:notemap})`,
+		IsComposer:  true,
 		Func: func(count int, maps ...interface{}) interface{} {
 			noteMaps := []core.Valueable{}
 			for _, each := range maps {
@@ -726,13 +729,23 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		}}
 
 	eval["next"] = Function{
-		Title: "Next operator",
+		Title:       "Next operator",
+		Description: `is used to seed the next value in a generator such as random and interval`,
+		Samples: `
+i = interval(-4,4,2)
+pi = pitch(i,sequence('C D E F G A B'))
+lp_pi = loop(pi,next(i))
+begin(lp_pi)
+`,
 		Func: func(v interface{}) interface{} {
 			return core.Nexter{Target: getValueable(v)}
 		}}
 
 	eval["export"] = Function{
-		Title: "Export command",
+		Title:       "Export command",
+		Description: `writes a multi-track MIDI file`,
+		Template:    `export(${1:filename},${2:sequenceable})`,
+		Samples:     `export("myMelody-v1",myObject)`,
 		Func: func(filename string, m interface{}) interface{} {
 			if len(filename) == 0 {
 				return notify.Panic(fmt.Errorf("missing filename to export MIDI %v", m))
@@ -749,6 +762,9 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 
 	eval["replace"] = Function{
 		Title: "Replace operator",
+		Description: `
+		replaces all occurrences of one musical object with another object for a given composed musial object
+		`,
 		Func: func(target interface{}, from, to interface{}) interface{} {
 			targetS, ok := getSequenceable(target)
 			if !ok {

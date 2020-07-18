@@ -15,6 +15,8 @@ func main() {
 		snippets()
 	case "dslmd":
 		dslmarkdown()
+	case "menu":
+		postProcessMenus()
 	default:
 		fmt.Println("unknown cmd")
 	}

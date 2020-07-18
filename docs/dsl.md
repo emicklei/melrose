@@ -3,7 +3,7 @@ title: Melrōse Language
 ---
 
 [Home](index.html)
-[Usage](cli.html)
+[Tool](cli.html)
 [Language](dsl.html)
 [DAW](daw.html)
 [Install](install.html)
@@ -31,9 +31,13 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 
 - <a href="#at">at</a>
 - <a href="#duration">duration</a>
+- <a href="#export">export</a>
 - <a href="#flatten">flatten</a>
 - <a href="#interval">interval</a>
 - <a href="#join">join</a>
+- <a href="#next">next</a>
+- <a href="#notemap">notemap</a>
+- <a href="#notemerge">notemerge</a>
 - <a href="#octave">octave</a>
 - <a href="#octavemap">octavemap</a>
 - <a href="#parallel">parallel</a>
@@ -41,6 +45,7 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 - <a href="#put">put</a>
 - <a href="#random">random</a>
 - <a href="#repeat">repeat</a>
+- <a href="#replace">replace</a>
 - <a href="#reverse">reverse</a>
 - <a href="#sequencemap">sequencemap</a>
 - <a href="#serial">serial</a>
@@ -74,9 +79,9 @@ Begin loop(s). Ignore if it was running.
 ```javascript
 lp_cb = loop(sequence('C D E F G A B'))
 
-end(lp_cb)
-
 begin(lp_cb)
+
+end(lp_cb)
 ```
 
 ### biab<a name="biab"></a>
@@ -97,7 +102,7 @@ Set the Beats Per Minute [1..300]; default is 120.
 Select a MIDI channel, must be in [1..16]; must be a top-level operator.
 
 ```javascript
-channel(2,sequence('C2 E3') // plays on instrument connected to MIDI channel 2
+channel(2,sequence('C2 E3')) // plays on instrument connected to MIDI channel 2
 ```
 
 ### chord<a name="chord"></a>
@@ -135,7 +140,16 @@ End running loop(s). Ignore if it was stopped.
 ```javascript
 l1 = loop(sequence('C E G))
 
+begin(l1)
+
 end(l1)
+```
+
+### export<a name="export"></a>
+Writes a multi-track MIDI file.
+
+```javascript
+export("myMelody-v1",myObject)
 ```
 
 ### flatten<a name="flatten"></a>
@@ -173,7 +187,7 @@ ab = join(a,b)
 ```
 
 ### loop<a name="loop"></a>
-Create a new loop from one or more objects; must be assigned to a variable.
+Create a new loop from one or more musical objects; must be assigned to a variable.
 
 ```javascript
 cb = sequence('C D E F G A B')
@@ -194,6 +208,23 @@ midi(0.25,52,80) // => E3+
 midi(16,36,70) // => 16C2 (kick)
 ```
 
+### next<a name="next"></a>
+Is used to seed the next value in a generator such as random and interval.
+
+```javascript
+
+
+i = interval(-4,4,2)
+
+pi = pitch(i,sequence('C D E F G A B'))
+
+lp_pi = loop(pi,next(i))
+
+begin(lp_pi)
+
+
+```
+
 ### note<a name="note"></a>
 Create a Note using this <a href="/melrose/notations.html#note-not">format</a>.
 
@@ -201,6 +232,20 @@ Create a Note using this <a href="/melrose/notations.html#note-not">format</a>.
 note('e')
 
 note('2e#.--')
+```
+
+### notemap<a name="notemap"></a>
+Creates a mapper of notes by index (1-based) or using dots (.) and bangs (!).
+
+```javascript
+
+```
+
+### notemerge<a name="notemerge"></a>
+Merges multiple notemaps into one sequenc.
+
+```javascript
+
 ```
 
 ### octave<a name="octave"></a>
@@ -268,7 +313,7 @@ next(num)
 ```
 
 ### record<a name="record"></a>
-Creates a recorded sequence of notes from a MIDI input device.
+Creates a recorded sequence of notes from the current MIDI input device.
 
 ```javascript
 r = record() // record notes played on the default input device and stop recording after 5 seconds
@@ -281,6 +326,15 @@ Repeat the musical object a number of times.
 
 ```javascript
 repeat(4,sequence('C D E'))
+```
+
+### replace<a name="replace"></a>
+
+		replaces all occurrences of one musical object with another object for a given composed musial object
+		.
+
+```javascript
+
 ```
 
 ### reverse<a name="reverse"></a>
@@ -307,7 +361,7 @@ sequence('(C D E)')
 ```
 
 ### sequencemap<a name="sequencemap"></a>
-Create a Mapper of sequence notes by index (1-based).
+Creates a mapper of sequence notes by index (1-based).
 
 ```javascript
 s1 = sequence('C D E F G A B')

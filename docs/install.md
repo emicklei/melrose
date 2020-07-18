@@ -8,10 +8,9 @@ title: Melrōse installation guide
 [DAW](daw.html)
 [Install](install.html)
 
-
 # Download
 
-Due to increased restrictions and costs of releasing non-commercial packages for the Apple OSX and Microsoft Window plaform, I can no longer provide pre-build binaries. Contact me if you want a commercial, supported version.
+Due to increased restrictions and costs of releasing non-commercial packages for the Apple Mac OSX and Microsoft Windows plaform, I can no longer provide pre-build binaries. Contact me if you want a commercial, supported version.
 
 # Install from source
 
@@ -40,6 +39,12 @@ On Ubuntu / Debian
 	apt-get install libportmidi-dev
 	
 Proceed with [install melrōse](install.md#install-melrōse)
+
+
+
+
+
+
 
 ## Install Melrōse<a name="install-melrōse"></a> 
 

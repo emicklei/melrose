@@ -18,11 +18,7 @@ var tmplSource = `---
 title: Melrōse Language
 ---
 
-[Home](index.html)
-[Usage](cli.html)
-[Language](dsl.html)
-[DAW](daw.html)
-[Install](install.html)
+$$menu
 
 ### variables
 
