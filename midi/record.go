@@ -10,7 +10,13 @@ import (
 )
 
 // Record is part of melrose.AudioDevice
-func (m *Midi) Record(deviceID int, stopAfterInactivity time.Duration) (*core.Recording, error) {
+func (m *Midi) Record(ctx core.Context) (*core.Recording, error) {
+	stopAfterInactivity := time.Duration(5) * time.Second // TODO config 5
+	deviceID := m.currentInputDeviceID
+	return m.record(ctx, deviceID, stopAfterInactivity)
+}
+
+func (m *Midi) record(ctx core.Context, deviceID int, stopAfterInactivity time.Duration) (*core.Recording, error) {
 	rec := core.NewRecording()
 	in, err := portmidi.NewInputStream(portmidi.DeviceID(deviceID), 1024) // buffer
 	if err != nil {
@@ -53,7 +59,8 @@ func (m *Midi) Record(deviceID int, stopAfterInactivity time.Duration) (*core.Re
 		}
 	}
 done:
-	info(fmt.Sprintf("\nstopped after %v of inactivity\n", stopAfterInactivity))
+	info(fmt.Sprintf("\nstopped after %v of silence\n", stopAfterInactivity))
+	core.PrintValue(ctx, rec)
 	return rec, nil
 }
 
