@@ -414,8 +414,8 @@ note('2e#.--')`,
 		}}
 
 	eval["put"] = Function{
-		Title: "Track modifier",
-		//Description: "create an index getter (1-based) to select a musical object",
+		Title:       "Track modifier",
+		Description: "puts a musical object on a track at a specific bar",
 		//Prefix:      "at",
 		//Template:    `at(${1:index},${2:object})`,
 		//Samples:     `at(1,scale('E/m')) // => E`,
@@ -429,10 +429,11 @@ note('2e#.--')`,
 
 	eval["random"] = Function{
 		Title:       "Random generator",
-		Description: "create a random integer generator. Use next() to get a new integer",
+		Description: "create a random integer generator. Use next() to seed a new integer",
 		Prefix:      "ra",
 		Template:    `random(${1:from},${2:to})`,
-		Samples:     `random(1,10)`,
+		Samples: `num = random(1,10)
+next(num)`,
 		Func: func(from interface{}, to interface{}) interface{} {
 			fromVal := getValueable(from)
 			toVal := getValueable(to)
@@ -523,14 +524,14 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 
 	eval["record"] = Function{
 		Title:         "Recording creator",
-		Description:   "creates a recorded sequence of notes from a MIDI device",
+		Description:   "creates a recorded sequence of notes from a MIDI input device",
 		ControlsAudio: true,
 		Prefix:        "rec",
 		Template:      `record(${1:input-device-id},${2:seconds-inactivity})`,
-		Samples: `r = record(1,5) // record notes played on device ID=1 and stop recording after 5 seconds
-s = r.Sequence()`,
-		Func: func(deviceID int, secondsInactivity int) interface{} {
-			seq, err := ctx.Device().Record(deviceID, time.Duration(secondsInactivity)*time.Second)
+		Samples: `r = record() // record notes played on the default input device and stop recording after 5 seconds
+s = r.S()`,
+		Func: func() interface{} {
+			seq, err := ctx.Device().Record(ctx)
 			if err != nil {
 				return notify.Panic(err)
 			}

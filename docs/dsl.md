@@ -29,17 +29,11 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 
 ## Composition functions
 
-- <a href="#J">J</a>
 - <a href="#at">at</a>
 - <a href="#duration">duration</a>
-- <a href="#export">export</a>
 - <a href="#flatten">flatten</a>
 - <a href="#interval">interval</a>
 - <a href="#join">join</a>
-- <a href="#joinmap">joinmap</a>
-- <a href="#next">next</a>
-- <a href="#notemap">notemap</a>
-- <a href="#notemerge">notemerge</a>
 - <a href="#octave">octave</a>
 - <a href="#octavemap">octavemap</a>
 - <a href="#parallel">parallel</a>
@@ -47,11 +41,9 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 - <a href="#put">put</a>
 - <a href="#random">random</a>
 - <a href="#repeat">repeat</a>
-- <a href="#replace">replace</a>
 - <a href="#reverse">reverse</a>
 - <a href="#sequencemap">sequencemap</a>
 - <a href="#serial">serial</a>
-- <a href="#track">track</a>
 - <a href="#undynamic">undynamic</a>
 - <a href="#watch">watch</a>
 
@@ -65,55 +57,57 @@ Use "//" to add comment, either on a new line or and the end of a statement.
 - <a href="#end">end</a>
 - <a href="#go">go</a>
 - <a href="#loop">loop</a>
-- <a href="#multi">multi</a>
 - <a href="#play">play</a>
 - <a href="#record">record</a>
 
 
-### J<a name="J"></a>
-When played, each musical object is played in sequence.
-
-	a = chord('A')
-
-	b = sequence('(C E G))
-
-	ab = join(a,b)
-
 ### at<a name="at"></a>
 Create an index getter (1-based) to select a musical object.
 
-	at(1,scale('E/m')) // => E
+```javascript
+at(1,scale('E/m')) // => E
+```
 
 ### begin<a name="begin"></a>
 Begin loop(s). Ignore if it was running.
 
-	lp_cb = loop(sequence('C D E F G A B'))
+```javascript
+lp_cb = loop(sequence('C D E F G A B'))
 
-	end(lp_cb)
+end(lp_cb)
 
-	begin(lp_cb)
+begin(lp_cb)
+```
 
 ### biab<a name="biab"></a>
 Set the Beats in a Bar [1..6]; default is 4.
 
-	
+```javascript
+
+```
 
 ### bpm<a name="bpm"></a>
 Set the Beats Per Minute [1..300]; default is 120.
 
-	
+```javascript
+
+```
 
 ### channel<a name="channel"></a>
 Select a MIDI channel, must be in [1..16]; must be a top-level operator.
 
-	channel(2,sequence('C2 E3') // plays on instrument connected to MIDI channel 2
+```javascript
+channel(2,sequence('C2 E3') // plays on instrument connected to MIDI channel 2
+```
 
 ### chord<a name="chord"></a>
 Create a Chord from its string <a href="/melrose/melrose/notations.html#chord-not">notation</a>.
 
-	chord('C#5/m/1')
+```javascript
+chord('C#5/m/1')
 
-	chord('G/M/2')
+chord('G/M/2')
+```
 
 ### duration<a name="duration"></a>
 Creates a new modified musical object for which the duration of all notes are changed.
@@ -122,64 +116,70 @@ If the parameter is greater than 0 then the note duration is set to a fixed valu
 If the parameter is less than 1 then the note duration is scaled with a value, e.g. 0.5 will make a quarter ¼ into an eight ⅛
 .
 
-	duration(8,sequence('E F')) // => ⅛E ⅛F , absolute change
+```javascript
+duration(8,sequence('E F')) // => ⅛E ⅛F , absolute change
 
-	duration(0.5,sequence('8C 8G')) // => C G , factor change
+duration(0.5,sequence('8C 8G')) // => C G , factor change
+```
 
 ### echo<a name="echo"></a>
 Echo the notes being played; default is false.
 
-	echo(true)
+```javascript
+echo(true)
+```
 
 ### end<a name="end"></a>
 End running loop(s). Ignore if it was stopped.
 
-	l1 = loop(sequence('C E G))
+```javascript
+l1 = loop(sequence('C E G))
 
-	end(l1)
-
-### export<a name="export"></a>
-.
-
-	
+end(l1)
+```
 
 ### flatten<a name="flatten"></a>
 Flatten all operations on a musical object to a new sequence.
 
-	flatten(sequence('(C E G) B')) // => C E G B
+```javascript
+flatten(sequence('(C E G) B')) // => C E G B
+```
 
 ### go<a name="go"></a>
 Play all musical objects together in the background (do not wait for completion).
 
-	go(s1,s1,s3) // play s1 and s2 and s3 simultaneously
+```javascript
+go(s1,s1,s3) // play s1 and s2 and s3 simultaneously
+```
 
 ### interval<a name="interval"></a>
 Create an integer repeating interval (from,to,by,method). Default method is 'repeat', Use next() to get a new integer.
 
-	int1 = interval(-2,4,1)
+```javascript
+int1 = interval(-2,4,1)
 
-	lp_cdef = loop(pitch(int1,sequence('C D E F')), next(int1))
+lp_cdef = loop(pitch(int1,sequence('C D E F')), next(int1))
+```
 
 ### join<a name="join"></a>
 When played, each musical object is played in sequence.
 
-	a = chord('A')
+```javascript
+a = chord('A')
 
-	b = sequence('(C E G))
+b = sequence('(C E G))
 
-	ab = join(a,b)
-
-### joinmap<a name="joinmap"></a>
-.
-
-	
+ab = join(a,b)
+```
 
 ### loop<a name="loop"></a>
 Create a new loop from one or more objects; must be assigned to a variable.
 
-	cb = sequence('C D E F G A B')
+```javascript
+cb = sequence('C D E F G A B')
 
-	lp_cb = loop(cb,reverse(cb))
+lp_cb = loop(cb,reverse(cb))
+```
 
 ### midi<a name="midi"></a>
 Create a Note from MIDI information and is typically used for drum sets.
@@ -188,145 +188,155 @@ A duration of 0.25 or 4 means create a quarter note.
 Second parameter is the MIDI number and must be one of [0..127].
 The third parameter is the velocity (~ loudness) and must be one of [0..127].
 
-	midi(0.25,52,80) // => E3+
+```javascript
+midi(0.25,52,80) // => E3+
 
-	midi(16,36,70) // => 16C2 (kick)
-
-### multi<a name="multi"></a>
-.
-
-	
-
-### next<a name="next"></a>
-.
-
-	
+midi(16,36,70) // => 16C2 (kick)
+```
 
 ### note<a name="note"></a>
 Create a Note using this <a href="/melrose/notations.html#note-not">format</a>.
 
-	note('e')
+```javascript
+note('e')
 
-	note('2e#.--')
-
-### notemap<a name="notemap"></a>
-.
-
-	
-
-### notemerge<a name="notemerge"></a>
-.
-
-	
+note('2e#.--')
+```
 
 ### octave<a name="octave"></a>
 Changes the pitch of notes by steps of 12 semitones.
 
-	octave(1,sequence('C D')) // => C5 D5
+```javascript
+octave(1,sequence('C D')) // => C5 D5
+```
 
 ### octavemap<a name="octavemap"></a>
 Create a sequence with notes for which order and the octaves are changed.
 
-	octavemap('1:-1,2:0,3:1',chord('C')) // => (C3 E G5)
+```javascript
+octavemap('1:-1,2:0,3:1',chord('C')) // => (C3 E G5)
+```
 
 ### parallel<a name="parallel"></a>
 Create a new sequence in which all notes of a musical object are played simultaneously.
 
-	parallel(sequence('C D E')) // => (C D E)
+```javascript
+parallel(sequence('C D E')) // => (C D E)
+```
 
 ### pitch<a name="pitch"></a>
 Change the pitch with a delta of semitones.
 
-	pitch(-1,sequence('C D E'))
+```javascript
+pitch(-1,sequence('C D E'))
 
-	p = interval(-4,4,1)
+p = interval(-4,4,1)
 
-	pitch(p,note('C'))
+pitch(p,note('C'))
+```
 
 ### play<a name="play"></a>
 Play all musical objects.
 
-	play(s1,s2,s3) // play s3 after s2 after s1
+```javascript
+play(s1,s2,s3) // play s3 after s2 after s1
+```
 
 ### progression<a name="progression"></a>
 Create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>.
 
-	progression('E F') // => (E A♭ B) (F A C5)
+```javascript
+progression('E F') // => (E A♭ B) (F A C5)
 
-	progression('(C D)') // => (C E G D G♭ A)
+progression('(C D)') // => (C E G D G♭ A)
+```
 
 ### put<a name="put"></a>
-.
+Puts a musical object on a track at a specific bar.
 
-	
+```javascript
+
+```
 
 ### random<a name="random"></a>
-Create a random integer generator. Use next() to get a new integer.
+Create a random integer generator. Use next() to seed a new integer.
 
-	random(1,10)
+```javascript
+num = random(1,10)
+
+next(num)
+```
 
 ### record<a name="record"></a>
-Creates a recorded sequence of notes from a MIDI device.
+Creates a recorded sequence of notes from a MIDI input device.
 
-	r = record(1,5) // record notes played on device ID=1 and stop recording after 5 seconds
+```javascript
+r = record() // record notes played on the default input device and stop recording after 5 seconds
 
-	s = r.Sequence()
+s = r.S()
+```
 
 ### repeat<a name="repeat"></a>
 Repeat the musical object a number of times.
 
-	repeat(4,sequence('C D E'))
-
-### replace<a name="replace"></a>
-.
-
-	
+```javascript
+repeat(4,sequence('C D E'))
+```
 
 ### reverse<a name="reverse"></a>
 Reverse the (groups of) notes in a sequence.
 
-	reverse(chord('A'))
+```javascript
+reverse(chord('A'))
+```
 
 ### scale<a name="scale"></a>
 Create a Scale using this <a href="/melrose/notations.html#scale-not">format</a>.
 
-	scale(1,'E/m') // => E F G A B C5 D5
+```javascript
+scale(1,'E/m') // => E F G A B C5 D5
+```
 
 ### sequence<a name="sequence"></a>
 Create a Sequence using this <a href="/melrose/notations.html#sequence-not">format</a>.
 
-	sequence('C D E')
+```javascript
+sequence('C D E')
 
-	sequence('(C D E)')
+sequence('(C D E)')
+```
 
 ### sequencemap<a name="sequencemap"></a>
 Create a Mapper of sequence notes by index (1-based).
 
-	s1 = sequence('C D E F G A B')
+```javascript
+s1 = sequence('C D E F G A B')
 
-	i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D
+i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D
+```
 
 ### serial<a name="serial"></a>
 Serialise any grouping of notes in one or more musical objects.
 
-	serial(chord('E')) // => E G B
+```javascript
+serial(chord('E')) // => E G B
 
-	serial(sequence('(C D)'),note('E')) // => C D E
-
-### track<a name="track"></a>
-.
-
-	track("lullaby",1,sequence('C D E')) // => a new track on MIDI channel 1
+serial(sequence('(C D)'),note('E')) // => C D E
+```
 
 ### undynamic<a name="undynamic"></a>
 Undynamic all the notes in a musical object.
 
-	undynamic('A+ B++ C-- D-') // =>  A B C D
+```javascript
+undynamic('A+ B++ C-- D-') // =>  A B C D
+```
 
 ### watch<a name="watch"></a>
 Create a Note.
 
-	
+```javascript
+
+```
 
 
 
