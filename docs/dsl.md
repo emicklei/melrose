@@ -153,7 +153,7 @@ export("myMelody-v1",myObject)
 ```
 
 ### flatten<a name="flatten"></a>
-Flatten all operations on a musical object to a new sequence.
+Flatten (ungroup) all operations on a musical object to a new sequence.
 
 ```javascript
 flatten(sequence('(C E G) B')) // => C E G B
@@ -193,6 +193,8 @@ Create a new loop from one or more musical objects; must be assigned to a variab
 cb = sequence('C D E F G A B')
 
 lp_cb = loop(cb,reverse(cb))
+
+begin(lp_cb)
 ```
 
 ### midi<a name="midi"></a>
@@ -263,7 +265,7 @@ octavemap('1:-1,2:0,3:1',chord('C')) // => (C3 E G5)
 ```
 
 ### parallel<a name="parallel"></a>
-Create a new sequence in which all notes of a musical object are played simultaneously.
+Create a new sequence in which all notes of a musical object are grouped.
 
 ```javascript
 parallel(sequence('C D E')) // => (C D E)
@@ -316,9 +318,9 @@ next(num)
 Creates a recorded sequence of notes from the current MIDI input device.
 
 ```javascript
-r = record() // record notes played on the default input device and stop recording after 5 seconds
+r = record() // record notes played on the current input device and stop recording after 5 seconds
 
-s = r.S()
+s = r.S() // returns the sequence of notes from the recording
 ```
 
 ### repeat<a name="repeat"></a>
@@ -379,7 +381,7 @@ serial(sequence('(C D)'),note('E')) // => C D E
 ```
 
 ### undynamic<a name="undynamic"></a>
-Undynamic all the notes in a musical object.
+Set the dymamic to normal for all notes in a musical object.
 
 ```javascript
 undynamic('A+ B++ C-- D-') // =>  A B C D

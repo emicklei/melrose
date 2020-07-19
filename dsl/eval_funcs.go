@@ -528,8 +528,8 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 		ControlsAudio: true,
 		Prefix:        "rec",
 		Template:      `record()`,
-		Samples: `r = record() // record notes played on the default input device and stop recording after 5 seconds
-s = r.S()`,
+		Samples: `r = record() // record notes played on the current input device and stop recording after 5 seconds
+s = r.S() // returns the sequence of notes from the recording`,
 		Func: func() interface{} {
 			seq, err := ctx.Device().Record(ctx)
 			if err != nil {
@@ -540,7 +540,7 @@ s = r.S()`,
 
 	eval["undynamic"] = Function{
 		Title:       "Undo dynamic operator",
-		Description: "undynamic all the notes in a musical object",
+		Description: "set the dymamic to normal for all notes in a musical object",
 		Prefix:      "und",
 		Template:    `undynamic(${1:sequenceable})`,
 		IsComposer:  true,
@@ -555,7 +555,7 @@ s = r.S()`,
 
 	eval["flatten"] = Function{
 		Title:       "Flatten operator",
-		Description: "flatten all operations on a musical object to a new sequence",
+		Description: "flatten (ungroup) all operations on a musical object to a new sequence",
 		Prefix:      "flat",
 		Alias:       "F",
 		Template:    `flatten(${1:sequenceable})`,
@@ -571,7 +571,7 @@ s = r.S()`,
 
 	eval["parallel"] = Function{
 		Title:       "Parallel operator",
-		Description: "create a new sequence in which all notes of a musical object are played simultaneously",
+		Description: "create a new sequence in which all notes of a musical object are grouped",
 		Prefix:      "par",
 		Alias:       "Pa",
 		Template:    `parallel(${1:sequenceable})`,
@@ -593,7 +593,8 @@ s = r.S()`,
 		Alias:         "L",
 		Template:      `lp_${1:object} = loop(${1:object})`,
 		Samples: `cb = sequence('C D E F G A B')
-lp_cb = loop(cb,reverse(cb))`,
+lp_cb = loop(cb,reverse(cb))
+begin(lp_cb)`,
 		Func: func(playables ...interface{}) interface{} {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
