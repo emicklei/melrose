@@ -2,11 +2,13 @@
 title: Melrōse musical object notation
 ---
 
-[Home](index.html)
-[Usage](cli.html)
+[Home](https://emicklei.github.io/melrose)
+[Tool](cli.html)
 [Language](dsl.html)
+[Notations](notations.html)
 [DAW](daw.html)
 [Install](install.html)
+
 
 ## Note
 
