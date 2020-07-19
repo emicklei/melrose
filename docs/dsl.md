@@ -9,15 +9,23 @@ title: Melrōse Language
 [DAW](daw.html)
 [Install](install.html)
 
+# Language
+
+## expressions
+
+Musical objects are created, composed and played using the <strong>melrõse</strong> tool by evaluating expressions.
+Expression use any of the predefined functions (creation,composition,audio control).
+By assigning an expresions to a variable name, you can use expressions to composed other objects.
+
 ### variables
 
 Variable names must start with a non-digit character and can have zero or more characters in [a-z A-Z _ 0-9].
-An assigment "=" is used to create a variable.
+An assignment "=" is used to create a variable.
 To delete a variable, assign it to the special value "nil".
 
 ### comment
 
-Use "//" to add comment, either on a new line or and the end of a statement.
+Use "//" to add comment, either on a new line or and the end of an expression.
 
 ## Creation functions
 
@@ -300,7 +308,7 @@ progression('(C D)') // => (C E G D G♭ A)
 ```
 
 ### put<a name="put"></a>
-Puts a musical object on a track at a specific bar.
+Puts a musical object on a track to start at a specific bar.
 
 ```javascript
 
@@ -373,7 +381,7 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D
 ```
 
 ### serial<a name="serial"></a>
-Serialise any grouping of notes in one or more musical objects.
+Serialise any grouping of notes from one or more musical objects.
 
 ```javascript
 serial(chord('E')) // => E G B

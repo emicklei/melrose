@@ -415,7 +415,7 @@ note('2e#.--')`,
 
 	eval["put"] = Function{
 		Title:       "Track modifier",
-		Description: "puts a musical object on a track at a specific bar",
+		Description: "puts a musical object on a track to start at a specific bar",
 		//Prefix:      "at",
 		//Template:    `at(${1:index},${2:object})`,
 		//Samples:     `at(1,scale('E/m')) // => E`,
@@ -483,7 +483,7 @@ next(num)`,
 
 	eval["serial"] = Function{
 		Title:       "Serial operator",
-		Description: "serialise any grouping of notes in one or more musical objects",
+		Description: "serialise any grouping of notes from one or more musical objects",
 		Prefix:      "ser",
 		Template:    `serial(${1:sequenceable})`,
 		IsComposer:  true,
