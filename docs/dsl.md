@@ -2,22 +2,17 @@
 title: Melrōse Language
 ---
 
-[Home](https://emicklei.github.io/melrose)
-[Tool](cli.html)
-[Language](dsl.html)
-[Notations](notations.html)
-[DAW](daw.html)
-[Install](install.html)
+$$menu
 
 # Language
 
-## expressions
+### expressions
 
 Musical objects are created, composed and played using the <strong>melrõse</strong> tool by evaluating expressions.
-Expression use any of the predefined functions (creation,composition,audio control).
-By assigning an expresions to a variable name, you can use expressions to composed other objects.
+Expressions use any of the predefined functions (creation,composition,audio control).
+By assigning an expression to a variable name, you can use that expression by its name to compose other objects.
 
-### variables
+###variables
 
 Variable names must start with a non-digit character and can have zero or more characters in [a-z A-Z _ 0-9].
 An assignment "=" is used to create a variable.
@@ -49,9 +44,9 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#notemerge">notemerge</a>
 - <a href="#octave">octave</a>
 - <a href="#octavemap">octavemap</a>
+- <a href="#on">on</a>
 - <a href="#parallel">parallel</a>
 - <a href="#pitch">pitch</a>
-- <a href="#put">put</a>
 - <a href="#random">random</a>
 - <a href="#repeat">repeat</a>
 - <a href="#replace">replace</a>
@@ -67,7 +62,6 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#biab">biab</a>
 - <a href="#bpm">bpm</a>
 - <a href="#channel">channel</a>
-- <a href="#echo">echo</a>
 - <a href="#end">end</a>
 - <a href="#go">go</a>
 - <a href="#loop">loop</a>
@@ -88,9 +82,7 @@ Begin loop(s). Ignore if it was running.
 ```javascript
 lp_cb = loop(sequence('C D E F G A B'))
 
-begin(lp_cb)
-
-end(lp_cb)
+begin(lp_cb) // end(lp_cb)
 ```
 
 ### biab<a name="biab"></a>
@@ -136,22 +128,13 @@ duration(8,sequence('E F')) // => ⅛E ⅛F , absolute change
 duration(0.5,sequence('8C 8G')) // => C G , factor change
 ```
 
-### echo<a name="echo"></a>
-Echo the notes being played; default is false.
-
-```javascript
-echo(true)
-```
-
 ### end<a name="end"></a>
 End running loop(s). Ignore if it was stopped.
 
 ```javascript
 l1 = loop(sequence('C E G))
 
-begin(l1)
-
-end(l1)
+begin(l1) // end(l1)
 ```
 
 ### export<a name="export"></a>
@@ -202,8 +185,6 @@ Create a new loop from one or more musical objects; must be assigned to a variab
 cb = sequence('C D E F G A B')
 
 lp_cb = loop(cb,reverse(cb))
-
-begin(lp_cb)
 ```
 
 ### midi<a name="midi"></a>
@@ -260,7 +241,7 @@ Merges multiple notemaps into one sequenc.
 ```
 
 ### octave<a name="octave"></a>
-Changes the pitch of notes by steps of 12 semitones.
+Changes the pitch of notes by steps of 12 semitones for one or more musical objects.
 
 ```javascript
 octave(1,sequence('C D')) // => C5 D5
@@ -271,6 +252,13 @@ Create a sequence with notes for which order and the octaves are changed.
 
 ```javascript
 octavemap('1:-1,2:0,3:1',chord('C')) // => (C3 E G5)
+```
+
+### on<a name="on"></a>
+Puts a musical object on a track to start at a specific bar.
+
+```javascript
+
 ```
 
 ### parallel<a name="parallel"></a>
@@ -307,13 +295,6 @@ progression('E F') // => (E A♭ B) (F A C5)
 progression('(C D)') // => (C E G D G♭ A)
 ```
 
-### put<a name="put"></a>
-Puts a musical object on a track to start at a specific bar.
-
-```javascript
-
-```
-
 ### random<a name="random"></a>
 Create a random integer generator. Use next() to seed a new integer.
 
@@ -340,12 +321,14 @@ repeat(4,sequence('C D E'))
 ```
 
 ### replace<a name="replace"></a>
-
-		replaces all occurrences of one musical object with another object for a given composed musial object
-		.
+Replaces all occurrences of one musical object with another object for a given composed musical object.
 
 ```javascript
+c = note('c')
 
+pitchA = pitch(1,c)
+
+pitchD = replace(pitchA, c, note('d'))
 ```
 
 ### reverse<a name="reverse"></a>

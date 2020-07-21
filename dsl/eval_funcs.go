@@ -333,18 +333,6 @@ ab = join(a,b)`,
 			return nil
 		}}
 
-	eval["echo"] = Function{
-		Title:         "the notes being played",
-		Description:   "echo the notes being played; default is false",
-		ControlsAudio: true,
-		Prefix:        "ech",
-		Template:      `echo(${0:true|false})`,
-		Samples:       `echo(true)`,
-		Func: func(on bool) interface{} {
-			ctx.Device().SetEchoNotes(on)
-			return nil
-		}}
-
 	eval["sequence"] = Function{
 		Title:       "Sequence creator",
 		Description: `create a Sequence using this <a href="/melrose/notations.html#sequence-not">format</a>`,
@@ -413,12 +401,11 @@ note('2e#.--')`,
 			return op.NewAtIndex(indexVal, objectSeq)
 		}}
 
-	eval["put"] = Function{
+	eval["on"] = Function{
 		Title:       "Track modifier",
 		Description: "puts a musical object on a track to start at a specific bar",
-		//Prefix:      "at",
-		//Template:    `at(${1:index},${2:object})`,
-		//Samples:     `at(1,scale('E/m')) // => E`,
+		Prefix:      "on",
+		Template:    `on(${1:bar},${2:object})`,
 		Func: func(bar interface{}, seq interface{}) interface{} {
 			s, ok := getSequenceable(seq)
 			if !ok {
@@ -504,22 +491,22 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 
 	eval["octave"] = Function{
 		Title:       "Octave operator",
-		Description: "changes the pitch of notes by steps of 12 semitones",
+		Description: "changes the pitch of notes by steps of 12 semitones for one or more musical objects",
 		Prefix:      "oct",
 		Template:    `octave(${1:offset},${2:sequenceable})`,
 		IsComposer:  true,
 		Samples:     `octave(1,sequence('C D')) // => C5 D5`,
 		Func: func(scalarOrVar interface{}, playables ...interface{}) interface{} {
-			joined := []core.Sequenceable{}
+			list := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
 					notify.Print(notify.Warningf("cannot octave (%T) %v", p, p))
 					return nil
 				} else {
-					joined = append(joined, s)
+					list = append(list, s)
 				}
 			}
-			return op.Octave{Target: joined, Offset: core.ToValueable(scalarOrVar)}
+			return op.Octave{Target: list, Offset: core.ToValueable(scalarOrVar)}
 		}}
 
 	eval["record"] = Function{
@@ -593,8 +580,7 @@ s = r.S() // returns the sequence of notes from the recording`,
 		Alias:         "L",
 		Template:      `lp_${1:object} = loop(${1:object})`,
 		Samples: `cb = sequence('C D E F G A B')
-lp_cb = loop(cb,reverse(cb))
-begin(lp_cb)`,
+lp_cb = loop(cb,reverse(cb))`,
 		Func: func(playables ...interface{}) interface{} {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
@@ -618,8 +604,7 @@ begin(lp_cb)`,
 		Prefix:        "beg",
 		Template:      `begin(${1:loop})`,
 		Samples: `lp_cb = loop(sequence('C D E F G A B'))
-begin(lp_cb)
-end(lp_cb)`,
+begin(lp_cb) // end(lp_cb)`,
 		Func: func(vars ...variable) interface{} {
 			for _, each := range vars {
 				l, ok := each.Value().(*core.Loop)
@@ -639,8 +624,7 @@ end(lp_cb)`,
 		ControlsAudio: true,
 		Template:      `end(${1:loop-or-empty})`,
 		Samples: `l1 = loop(sequence('C E G))
-begin(l1)
-end(l1)`,
+begin(l1) // end(l1)`,
 		Func: func(vars ...variable) interface{} {
 			if len(vars) == 0 {
 				StopAllLoops(ctx)
@@ -762,10 +746,12 @@ begin(lp_pi)
 		}}
 
 	eval["replace"] = Function{
-		Title: "Replace operator",
-		Description: `
-		replaces all occurrences of one musical object with another object for a given composed musial object
-		`,
+		Title:       "Replace operator",
+		Description: `replaces all occurrences of one musical object with another object for a given composed musical object`,
+		Template:    `replace(${1:target},${2:from},${3:to})`,
+		Samples: `c = note('c')
+pitchA = pitch(1,c)
+pitchD = replace(pitchA, c, note('d'))`,
 		Func: func(target interface{}, from, to interface{}) interface{} {
 			targetS, ok := getSequenceable(target)
 			if !ok {
