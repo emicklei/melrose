@@ -2,7 +2,12 @@
 title: Melrōse Language
 ---
 
-$$menu
+[Home](https://emicklei.github.io/melrose)
+[Tool](cli.html)
+[Language](dsl.html)
+[Notations](notations.html)
+[DAW](daw.html)
+[Install](install.html)
 
 # Language
 
@@ -12,7 +17,7 @@ Musical objects are created, composed and played using the <strong>melrõse</str
 Expressions use any of the predefined functions (creation,composition,audio control).
 By assigning an expression to a variable name, you can use that expression by its name to compose other objects.
 
-###variables
+### variables
 
 Variable names must start with a non-digit character and can have zero or more characters in [a-z A-Z _ 0-9].
 An assignment "=" is used to create a variable.
@@ -44,9 +49,10 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#notemerge">notemerge</a>
 - <a href="#octave">octave</a>
 - <a href="#octavemap">octavemap</a>
-- <a href="#on">on</a>
+- <a href="#onbar">onbar</a>
 - <a href="#parallel">parallel</a>
 - <a href="#pitch">pitch</a>
+- <a href="#print">print</a>
 - <a href="#random">random</a>
 - <a href="#repeat">repeat</a>
 - <a href="#replace">replace</a>
@@ -54,7 +60,6 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#sequencemap">sequencemap</a>
 - <a href="#serial">serial</a>
 - <a href="#undynamic">undynamic</a>
-- <a href="#watch">watch</a>
 
 ## Audio control functions
 
@@ -89,14 +94,14 @@ begin(lp_cb) // end(lp_cb)
 Set the Beats in a Bar [1..6]; default is 4.
 
 ```javascript
-
+biab(4)
 ```
 
 ### bpm<a name="bpm"></a>
 Set the Beats Per Minute [1..300]; default is 120.
 
 ```javascript
-
+bpm(90)
 ```
 
 ### channel<a name="channel"></a>
@@ -132,7 +137,7 @@ duration(0.5,sequence('8C 8G')) // => C G , factor change
 End running loop(s). Ignore if it was stopped.
 
 ```javascript
-l1 = loop(sequence('C E G))
+l1 = loop(sequence('C E G'))
 
 begin(l1) // end(l1)
 ```
@@ -141,7 +146,7 @@ begin(l1) // end(l1)
 Writes a multi-track MIDI file.
 
 ```javascript
-export("myMelody-v1",myObject)
+export('myMelody-v1',myObject)
 ```
 
 ### flatten<a name="flatten"></a>
@@ -173,7 +178,7 @@ When played, each musical object is played in sequence.
 ```javascript
 a = chord('A')
 
-b = sequence('(C E G))
+b = sequence('(C E G)')
 
 ab = join(a,b)
 ```
@@ -201,11 +206,9 @@ midi(16,36,70) // => 16C2 (kick)
 ```
 
 ### next<a name="next"></a>
-Is used to seed the next value in a generator such as random and interval.
+Is used to produce the next value in a generator such as random and interval.
 
 ```javascript
-
-
 i = interval(-4,4,2)
 
 pi = pitch(i,sequence('C D E F G A B'))
@@ -213,8 +216,6 @@ pi = pitch(i,sequence('C D E F G A B'))
 lp_pi = loop(pi,next(i))
 
 begin(lp_pi)
-
-
 ```
 
 ### note<a name="note"></a>
@@ -230,14 +231,20 @@ note('2e#.--')
 Creates a mapper of notes by index (1-based) or using dots (.) and bangs (!).
 
 ```javascript
+m1 = notemap('..!..!..!', note('c2'))
 
+m2 = notemap('3 6 9', note('d2'))
 ```
 
 ### notemerge<a name="notemerge"></a>
-Merges multiple notemaps into one sequenc.
+Merges multiple notemaps into one sequence.
 
 ```javascript
+m1 = notemap('..!..!..!', note('c2'))
 
+m2 = notemap('4 7 10', note('d2'))
+
+all = notemerge(12,m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =
 ```
 
 ### octave<a name="octave"></a>
@@ -254,11 +261,11 @@ Create a sequence with notes for which order and the octaves are changed.
 octavemap('1:-1,2:0,3:1',chord('C')) // => (C3 E G5)
 ```
 
-### on<a name="on"></a>
+### onbar<a name="onbar"></a>
 Puts a musical object on a track to start at a specific bar.
 
 ```javascript
-
+tr = track("solo",2, onbar(1,soloSequence)) // 2 = channel
 ```
 
 ### parallel<a name="parallel"></a>
@@ -286,6 +293,13 @@ Play all musical objects.
 play(s1,s2,s3) // play s3 after s2 after s1
 ```
 
+### print<a name="print"></a>
+Prints the musical object when evaluated (play,go,loop).
+
+```javascript
+
+```
+
 ### progression<a name="progression"></a>
 Create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>.
 
@@ -296,7 +310,7 @@ progression('(C D)') // => (C E G D G♭ A)
 ```
 
 ### random<a name="random"></a>
-Create a random integer generator. Use next() to seed a new integer.
+Create a random integer generator. Use next() to generate a new integer.
 
 ```javascript
 num = random(1,10)
@@ -377,13 +391,6 @@ Set the dymamic to normal for all notes in a musical object.
 
 ```javascript
 undynamic('A+ B++ C-- D-') // =>  A B C D
-```
-
-### watch<a name="watch"></a>
-Create a Note.
-
-```javascript
-
 ```
 
 

@@ -186,13 +186,13 @@ midi(16,36,70) // => 16C2 (kick)`,
 			return core.NewMIDI(durVal, nrVal, velVal)
 		}}
 
-	eval["watch"] = Function{
-		Title:       "Watch creator",
-		Description: "create a Note",
+	eval["print"] = Function{
+		Title:       "Printer creator",
+		Description: "prints the musical object when evaluated (play,go,loop)",
 		Func: func(m interface{}) interface{} {
 			s, ok := getSequenceable(getValue(m))
 			if !ok {
-				return notify.Panic(fmt.Errorf("cannot watch (%T) %v", m, m))
+				return notify.Panic(fmt.Errorf("cannot print (%T) %v", m, m))
 			}
 			return core.Watch{Target: s}
 		}}
@@ -290,7 +290,7 @@ pitch(p,note('C'))`,
 		Alias:       "J",
 		Template:    `join(${1:first},${2:second})`,
 		Samples: `a = chord('A')
-b = sequence('(C E G))
+b = sequence('(C E G)')
 ab = join(a,b)`,
 		IsComposer: true,
 		Func: func(playables ...interface{}) interface{} {
@@ -311,6 +311,7 @@ ab = join(a,b)`,
 		ControlsAudio: true,
 		Prefix:        "bpm",
 		Template:      `bpm(${1:beats-per-minute})`,
+		Samples:       `bpm(90)`,
 		Func: func(f float64) interface{} {
 			if f < 1 || f > 300 {
 				return notify.Panic(fmt.Errorf("invalid beats-per-minute [1..300], %f = ", f))
@@ -325,6 +326,7 @@ ab = join(a,b)`,
 		ControlsAudio: true,
 		Prefix:        "biab",
 		Template:      `biab(${1:beats-in-a-bar})`,
+		Samples:       `biab(4)`,
 		Func: func(i int) interface{} {
 			if i < 1 || i > 6 {
 				return notify.Panic(fmt.Errorf("invalid beats-in-a-bar [1..6], %d = ", i))
@@ -401,11 +403,12 @@ note('2e#.--')`,
 			return op.NewAtIndex(indexVal, objectSeq)
 		}}
 
-	eval["on"] = Function{
+	eval["onbar"] = Function{
 		Title:       "Track modifier",
 		Description: "puts a musical object on a track to start at a specific bar",
-		Prefix:      "on",
-		Template:    `on(${1:bar},${2:object})`,
+		Prefix:      "onbar",
+		Template:    `onbar(${1:bar},${2:object})`,
+		Samples:     `tr = track("solo",2, onbar(1,soloSequence)) // 2 = channel`,
 		Func: func(bar interface{}, seq interface{}) interface{} {
 			s, ok := getSequenceable(seq)
 			if !ok {
@@ -416,7 +419,7 @@ note('2e#.--')`,
 
 	eval["random"] = Function{
 		Title:       "Random generator",
-		Description: "create a random integer generator. Use next() to seed a new integer",
+		Description: "create a random integer generator. Use next() to generate a new integer",
 		Prefix:      "ra",
 		Template:    `random(${1:from},${2:to})`,
 		Samples: `num = random(1,10)
@@ -623,7 +626,7 @@ begin(lp_cb) // end(lp_cb)`,
 		Description:   "end running loop(s). Ignore if it was stopped.",
 		ControlsAudio: true,
 		Template:      `end(${1:loop-or-empty})`,
-		Samples: `l1 = loop(sequence('C E G))
+		Samples: `l1 = loop(sequence('C E G'))
 begin(l1) // end(l1)`,
 		Func: func(vars ...variable) interface{} {
 			if len(vars) == 0 {
@@ -692,6 +695,8 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 		Description: "creates a mapper of notes by index (1-based) or using dots (.) and bangs (!)",
 		Template:    `notemap('${1:space-separated-1-based-indices-or-dots-and-bangs}',${2:note})`,
 		IsComposer:  true,
+		Samples: `m1 = notemap('..!..!..!', note('c2'))
+m2 = notemap('3 6 9', note('d2'))`,
 		Func: func(indices string, note interface{}) interface{} {
 			m, err := op.NewNoteMap(indices, getValueable(note))
 			if err != nil {
@@ -702,9 +707,12 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 
 	eval["notemerge"] = Function{
 		Title:       "Note Merge creator",
-		Description: `merges multiple notemaps into one sequenc`,
+		Description: `merges multiple notemaps into one sequence`,
 		Template:    `notemerge(${1:count},${2:notemap})`,
-		IsComposer:  true,
+		Samples: `m1 = notemap('..!..!..!', note('c2'))
+m2 = notemap('4 7 10', note('d2'))
+all = notemerge(12,m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
+		IsComposer: true,
 		Func: func(count int, maps ...interface{}) interface{} {
 			noteMaps := []core.Valueable{}
 			for _, each := range maps {
@@ -715,13 +723,11 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
 
 	eval["next"] = Function{
 		Title:       "Next operator",
-		Description: `is used to seed the next value in a generator such as random and interval`,
-		Samples: `
-i = interval(-4,4,2)
+		Description: `is used to produce the next value in a generator such as random and interval`,
+		Samples: `i = interval(-4,4,2)
 pi = pitch(i,sequence('C D E F G A B'))
 lp_pi = loop(pi,next(i))
-begin(lp_pi)
-`,
+begin(lp_pi)`,
 		Func: func(v interface{}) interface{} {
 			return core.Nexter{Target: getValueable(v)}
 		}}
@@ -730,7 +736,7 @@ begin(lp_pi)
 		Title:       "Export command",
 		Description: `writes a multi-track MIDI file`,
 		Template:    `export(${1:filename},${2:sequenceable})`,
-		Samples:     `export("myMelody-v1",myObject)`,
+		Samples:     `export('myMelody-v1',myObject)`,
 		Func: func(filename string, m interface{}) interface{} {
 			if len(filename) == 0 {
 				return notify.Panic(fmt.Errorf("missing filename to export MIDI %v", m))

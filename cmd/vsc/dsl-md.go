@@ -28,7 +28,7 @@ Musical objects are created, composed and played using the <strong>melrõse</str
 Expressions use any of the predefined functions (creation,composition,audio control).
 By assigning an expression to a variable name, you can use that expression by its name to compose other objects.
 
-###variables
+### variables
 
 Variable names must start with a non-digit character and can have zero or more characters in [a-z A-Z _ 0-9].
 An assignment "=" is used to create a variable.
