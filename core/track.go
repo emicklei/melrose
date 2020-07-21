@@ -100,7 +100,7 @@ func (s SequenceOnTrack) S() Sequence {
 // Storex implements Storable
 func (s SequenceOnTrack) Storex() string {
 	if st, ok := s.Target.(Storable); ok {
-		return fmt.Sprintf("put(%v,%s)", s.Bar, st.Storex())
+		return fmt.Sprintf("onbar(%v,%s)", s.Bar, st.Storex())
 	}
 	return ""
 }
