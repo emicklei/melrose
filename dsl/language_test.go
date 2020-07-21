@@ -71,7 +71,7 @@ func TestPitch_Progression(t *testing.T) {
 
 func TestTrack(t *testing.T) {
 	r := eval(t, "track('test',1,note('c'))")
-	checkStorex(t, r, "track('test',1,put(1,note('C')))")
+	checkStorex(t, r, "track('test',1,onbar(1,note('C')))")
 }
 
 func TestBars(t *testing.T) {
