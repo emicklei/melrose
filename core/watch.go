@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -20,8 +22,14 @@ type Watch struct {
 	Target  Sequenceable
 }
 
+// S is part of Sequenceable
 func (w Watch) S() Sequence {
 	beats, bars := w.Context.Control().BeatsAndBars()
-	notify.Print(notify.Infof("on bars [%d] beats [%d] called sequence of [%v]", beats, bars, w.Target))
+	target := fmt.Sprintf("%v", w.Target)
+	st, ok := w.Target.(Storable)
+	if ok {
+		target = st.Storex()
+	}
+	notify.Print(notify.Infof("on bars [%d] beats [%d] called sequence of [%s]", beats, bars, target))
 	return w.Target.S()
 }

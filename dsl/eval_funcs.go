@@ -194,7 +194,7 @@ midi(16,36,70) // => 16C2 (kick)`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot print (%T) %v", m, m))
 			}
-			return core.Watch{Target: s}
+			return core.Watch{Context: ctx, Target: s}
 		}}
 
 	eval["chord"] = Function{
