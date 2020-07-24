@@ -3,6 +3,7 @@ title: Melrōse
 ---
 
 [Home](https://emicklei.github.io/melrose)
+[Tutorial](https://emicklei.github.io/melrose/tutorial)
 [Tool](cli.html)
 [Language](dsl.html)
 [Notations](notations.html)

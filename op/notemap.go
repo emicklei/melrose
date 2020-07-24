@@ -72,7 +72,7 @@ func convertDotsAndBangs(format string) string {
 func (n NoteMap) formattedIndices() string {
 	var b bytes.Buffer
 	if n.indicesFormat == formatDotAndBangs {
-		for i := 1; i < n.maxIndex; i++ {
+		for i := 1; i <= n.maxIndex; i++ {
 			found := false
 			for _, each := range n.Indices {
 				if each == i {

@@ -17,6 +17,10 @@ func String(h Valueable) string {
 	if v, ok := val.(string); ok {
 		return v
 	}
+	// maybe the value is a Valueable
+	if vv, ok := val.(Valueable); ok {
+		return String(vv)
+	}
 	return ""
 }
 
@@ -36,6 +40,10 @@ func Float(h Valueable) float32 {
 	}
 	if v, ok := val.(int); ok {
 		return float32(v)
+	}
+	// maybe the value is a Valueable
+	if vv, ok := val.(Valueable); ok {
+		return Float(vv)
 	}
 	return 0.0
 }
@@ -67,6 +75,10 @@ func ToValueable(v interface{}) Valueable {
 	return &ValueHolder{Any: v}
 }
 
+func On(v interface{}) Valueable {
+	return ToValueable(v)
+}
+
 // ValueHolder is decorate any object to become a Valueable.
 type ValueHolder struct {
 	Any interface{}
@@ -74,10 +86,6 @@ type ValueHolder struct {
 
 func (h ValueHolder) Value() interface{} {
 	return h.Any
-}
-
-func (h *ValueHolder) SetValue(newAny interface{}) {
-	h.Any = newAny
 }
 
 func (h ValueHolder) Storex() string {
@@ -89,8 +97,4 @@ func (h ValueHolder) Storex() string {
 
 func (h ValueHolder) String() string {
 	return h.Storex()
-}
-
-func On(v interface{}) *ValueHolder {
-	return &ValueHolder{Any: v}
 }

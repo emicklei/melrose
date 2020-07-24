@@ -43,6 +43,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#export">export</a>
 - <a href="#flatten">flatten</a>
 - <a href="#interval">interval</a>
+- <a href="#iterator">iterator</a>
 - <a href="#join">join</a>
 - <a href="#next">next</a>
 - <a href="#notemap">notemap</a>
@@ -170,6 +171,13 @@ Create an integer repeating interval (from,to,by,method). Default method is 'rep
 int1 = interval(-2,4,1)
 
 lp_cdef = loop(pitch(int1,sequence('C D E F')), next(int1))
+```
+
+### iterator<a name="iterator"></a>
+Iterator that has an array of constant values and evaluates to one. Use next() to increase and rotate the value.
+
+```javascript
+iterator('1','2')
 ```
 
 ### join<a name="join"></a>

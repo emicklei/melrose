@@ -10,6 +10,10 @@ This is a statement with a variable `n` and expression `note('c')`.
 The expression uses the function `note` and takes the string argument `'c'`.
 The argument `c` represents the quarter note middle C, octave 4.
 
+    note('=')
+
+This is a quarter rest note.
+
 ## sharp or flat
 
     n = note('c#')
@@ -29,8 +33,8 @@ Valid numbers are 1,2,4,8,16.
 
     n = note('2c#++')
 
-By changing the dynamic of a note can make it sound softer,quieter or harder,louder.
-The symbol `-` is used to silence the note.
+Changing the dynamic of a note can make it sound softer,quieter or harder,louder.
+The symbol `-` is used to soften the note.
 The symbol `+` is used to emphasize the note.
 You can use up to 4 such symbols.
 

@@ -21,7 +21,7 @@ func TestNewNoteMapper_Dots(t *testing.T) {
 	if got, want := storex(m.S()), "sequence('C = C =')"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
-	if got, want := storex(m), "notemap('!.!',note('C'))"; got != want {
+	if got, want := storex(m), "notemap('!.!.',note('C'))"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }

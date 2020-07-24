@@ -1,9 +1,10 @@
 package dsl
 
 import (
-	"github.com/emicklei/melrose/core"
 	"strings"
 	"testing"
+
+	"github.com/emicklei/melrose/core"
 )
 
 func newTestEvaluator() *Evaluator {
@@ -25,7 +26,7 @@ func eval(t *testing.T, expression string) interface{} {
 		VariableStorage: NewVariableStore(),
 		LoopControl:     lp,
 	}
-	r, err := NewEvaluator(ctx).EvaluateExpression(expression)
+	r, err := NewEvaluator(ctx).EvaluateProgram(expression)
 	checkError(t, err)
 	return r
 }

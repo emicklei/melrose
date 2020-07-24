@@ -2,6 +2,7 @@ package op
 
 import (
 	"fmt"
+
 	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/notify"
@@ -45,6 +46,9 @@ func NewSequenceMapper(s core.Sequenceable, pattern core.Valueable) SequenceMapp
 
 func (p SequenceMapper) Storex() string {
 	if s, ok := p.Target.(core.Storable); ok {
+		if ps, ok := p.Pattern.(core.Storable); ok {
+			return fmt.Sprintf("sequencemap(%s,%s)", ps.Storex(), s.Storex())
+		}
 		return fmt.Sprintf("sequencemap(%v,%s)", p.Pattern, s.Storex())
 	}
 	return ""

@@ -559,6 +559,19 @@ s = r.S() // returns the sequence of notes from the recording`,
 			}
 		}}
 
+	registerFunction(eval, "iterator", Function{
+		Title:       "Iterator creator",
+		Description: "iterator that has an array of constant values and evaluates to one. Use next() to increase and rotate the value.",
+		Prefix:      "it",
+		Alias:       "I",
+		Template:    `iterator(${1:array-element})`,
+		Samples:     `iterator('1','2')`,
+		Func: func(values ...interface{}) *core.Iterator {
+			return &core.Iterator{
+				Target: values,
+			}
+		}})
+
 	eval["parallel"] = Function{
 		Title:       "Parallel operator",
 		Description: "create a new sequence in which all notes of a musical object are grouped",
