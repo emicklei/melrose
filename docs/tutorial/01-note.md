@@ -4,7 +4,7 @@ title: Melrōse Tutorial 01 Note
 
 ## create a note
 
-    n = note('c')
+    note('c')
 
 This is a statement with a variable `n` and expression `note('c')`.
 The expression uses the function `note` and takes the string argument `'c'`.

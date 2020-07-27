@@ -92,6 +92,9 @@ func (h ValueHolder) Storex() string {
 	if st, ok := h.Any.(Storable); ok {
 		return st.Storex()
 	}
+	if s, ok := h.Any.(string); ok {
+		return fmt.Sprintf("'%s'", s)
+	}
 	return fmt.Sprintf("%v", h.Any)
 }
 

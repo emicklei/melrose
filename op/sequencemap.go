@@ -49,9 +49,9 @@ func (p SequenceMapper) Storex() string {
 		if ps, ok := p.Pattern.(core.Storable); ok {
 			return fmt.Sprintf("sequencemap(%s,%s)", ps.Storex(), s.Storex())
 		}
-		return fmt.Sprintf("sequencemap(%v,%s)", p.Pattern, s.Storex())
+		return "?"
 	}
-	return ""
+	return "?"
 }
 
 // Replaced is part of Replaceable

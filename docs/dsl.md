@@ -41,7 +41,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#at">at</a>
 - <a href="#duration">duration</a>
 - <a href="#export">export</a>
-- <a href="#flatten">flatten</a>
+- <a href="#flat">flat</a>
 - <a href="#interval">interval</a>
 - <a href="#iterator">iterator</a>
 - <a href="#join">join</a>
@@ -150,11 +150,11 @@ Writes a multi-track MIDI file.
 export('myMelody-v1',myObject)
 ```
 
-### flatten<a name="flatten"></a>
-Flatten (ungroup) all operations on a musical object to a new sequence.
+### flat<a name="flat"></a>
+Flat (ungroup) all operations on a musical object to a new sequence.
 
 ```javascript
-flatten(sequence('(C E G) B')) // => C E G B
+flat(sequence('(C E G) B')) // => C E G B
 ```
 
 ### go<a name="go"></a>
@@ -206,9 +206,9 @@ Merges multiple sequences into one sequence.
 ```javascript
 m1 = notemap('..!..!..!', note('c2'))
 
-	m2 = notemap('4 7 10', note('d2'))
+m2 = notemap('4 7 10', note('d2'))
 
-	all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =
+all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =
 ```
 
 ### midi<a name="midi"></a>
@@ -383,6 +383,8 @@ Creates a mapper of sequence notes by index (1-based).
 s1 = sequence('C D E F G A B')
 
 i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D
+
+i2 = sequencemap('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)
 ```
 
 ### serial<a name="serial"></a>

@@ -543,19 +543,19 @@ s = r.S() // returns the sequence of notes from the recording`,
 			}
 		}}
 
-	eval["flatten"] = Function{
-		Title:       "Flatten operator",
-		Description: "flatten (ungroup) all operations on a musical object to a new sequence",
+	eval["flat"] = Function{
+		Title:       "Flat operator",
+		Description: "flat (ungroup) all operations on a musical object to a new sequence",
 		Prefix:      "flat",
 		Alias:       "F",
-		Template:    `flatten(${1:sequenceable})`,
-		Samples:     `flatten(sequence('(C E G) B')) // => C E G B`,
+		Template:    `flat(${1:sequenceable})`,
+		Samples:     `flat(sequence('(C E G) B')) // => C E G B`,
 		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
 				return notify.Panic(fmt.Errorf("cannot flatten (%T) %v", value, value))
 			} else {
-				return s.S()
+				return op.Flattener{Target: s}
 			}
 		}}
 
@@ -693,7 +693,8 @@ lp_cdef = loop(pitch(int1,sequence('C D E F')), next(int1))`,
 		Alias:       "Im",
 		Template:    `sequencemap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
 		Samples: `s1 = sequence('C D E F G A B')
-i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D`,
+i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D
+i2 = sequencemap('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)`,
 		IsComposer: true,
 		Func: func(pattern, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
@@ -723,8 +724,8 @@ m2 = notemap('3 6 9', note('d2'))`,
 		Description: `merges multiple sequences into one sequence`,
 		Template:    `merge(${1:sequenceable})`,
 		Samples: `m1 = notemap('..!..!..!', note('c2'))
-	m2 = notemap('4 7 10', note('d2'))
-	all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
+m2 = notemap('4 7 10', note('d2'))
+all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 		IsComposer: true,
 		Func: func(seqs ...interface{}) op.Merge {
 			s := []core.Sequenceable{}
