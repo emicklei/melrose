@@ -16,13 +16,13 @@ This is a quarter rest note.
 
 ## sharp or flat
 
-    n = note('c#')
+    note('c#')
 
 Using `#` or `♯` makes the note sharp. Using `_` or `♭` makes the note flat.
 
 ## duration
 
-    n = note('2c#')
+    note('2c#')
 
 Change the duration of the note by prefixing a number.
 The number `2` or `½` means set the duration to 0.5.
@@ -31,7 +31,7 @@ Valid numbers are 1,2,4,8,16.
 
 ## dynamic
 
-    n = note('2c#++')
+    note('2c#++')
 
 Changing the dynamic of a note can make it sound softer,quieter or harder,louder.
 The symbol `-` is used to soften the note.

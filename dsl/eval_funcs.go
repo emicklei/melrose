@@ -718,20 +718,25 @@ m2 = notemap('3 6 9', note('d2'))`,
 			return m
 		}}
 
-	eval["notemerge"] = Function{
-		Title:       "Note Merge creator",
-		Description: `merges multiple notemaps into one sequence`,
-		Template:    `notemerge(${1:count},${2:notemap})`,
+	eval["merge"] = Function{
+		Title:       "Merge creator",
+		Description: `merges multiple sequences into one sequence`,
+		Template:    `merge(${1:sequenceable})`,
 		Samples: `m1 = notemap('..!..!..!', note('c2'))
-m2 = notemap('4 7 10', note('d2'))
-all = notemerge(12,m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
+	m2 = notemap('4 7 10', note('d2'))
+	all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 		IsComposer: true,
-		Func: func(count int, maps ...interface{}) interface{} {
-			noteMaps := []core.Valueable{}
-			for _, each := range maps {
-				noteMaps = append(noteMaps, getValueable(each))
+		Func: func(seqs ...interface{}) op.Merge {
+			s := []core.Sequenceable{}
+			for _, each := range seqs {
+				seq, ok := getSequenceable(each)
+				if ok {
+					s = append(s, seq)
+				} else {
+					notify.Panic(fmt.Errorf("cannot merge (%T) %v", each, each))
+				}
 			}
-			return op.NewNoteMerge(count, noteMaps)
+			return op.Merge{Target: s}
 		}}
 
 	eval["next"] = Function{

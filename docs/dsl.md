@@ -45,9 +45,9 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#interval">interval</a>
 - <a href="#iterator">iterator</a>
 - <a href="#join">join</a>
+- <a href="#merge">merge</a>
 - <a href="#next">next</a>
 - <a href="#notemap">notemap</a>
-- <a href="#notemerge">notemerge</a>
 - <a href="#octave">octave</a>
 - <a href="#octavemap">octavemap</a>
 - <a href="#onbar">onbar</a>
@@ -200,6 +200,17 @@ cb = sequence('C D E F G A B')
 lp_cb = loop(cb,reverse(cb))
 ```
 
+### merge<a name="merge"></a>
+Merges multiple sequences into one sequence.
+
+```javascript
+m1 = notemap('..!..!..!', note('c2'))
+
+	m2 = notemap('4 7 10', note('d2'))
+
+	all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =
+```
+
 ### midi<a name="midi"></a>
 Create a Note from MIDI information and is typically used for drum sets.
 The first parameter is the duration and must be one of {0.0625,0.125,0.25,0.5,1,2,4,8,16}.
@@ -242,17 +253,6 @@ Creates a mapper of notes by index (1-based) or using dots (.) and bangs (!).
 m1 = notemap('..!..!..!', note('c2'))
 
 m2 = notemap('3 6 9', note('d2'))
-```
-
-### notemerge<a name="notemerge"></a>
-Merges multiple notemaps into one sequence.
-
-```javascript
-m1 = notemap('..!..!..!', note('c2'))
-
-m2 = notemap('4 7 10', note('d2'))
-
-all = notemerge(12,m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =
 ```
 
 ### octave<a name="octave"></a>

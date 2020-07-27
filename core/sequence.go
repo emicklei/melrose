@@ -14,6 +14,7 @@ type Sequence struct {
 	Notes [][]Note
 }
 
+// Length returns how many note(groups).
 func (s Sequence) Length() int {
 	return len(s.Notes)
 }
@@ -122,8 +123,10 @@ func (s Sequence) S() Sequence {
 func (s Sequence) NoteLength() float64 {
 	dur := float32(0.0)
 	for _, each := range s.Notes {
-		lead := each[0]
-		dur += lead.Length()
+		if len(each) > 0 {
+			lead := each[0]
+			dur += lead.Length()
+		}
 	}
 	return float64(dur)
 }
