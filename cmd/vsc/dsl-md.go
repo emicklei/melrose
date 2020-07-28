@@ -18,7 +18,7 @@ var tmplSource = `---
 title: Melrōse Language
 ---
 
-$$menu
+[Home](https://emicklei.github.io/melrose)
 
 # Language
 
