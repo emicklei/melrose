@@ -2,6 +2,8 @@
 title: Melrōse Tutorial 03 Chord
 ---
 
+[Home](https://emicklei.github.io/melrose)
+
 ## create a chord
 
     chord('C#/m')
