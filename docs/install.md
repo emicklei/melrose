@@ -4,11 +4,13 @@ title: Melrōse installation guide
 
 [Home](https://emicklei.github.io/melrose)
 
-# Download
+## Download
 
-Due to increased restrictions and costs of releasing non-commercial packages for the Apple Mac OSX and Microsoft Windows plaform, I can no longer provide pre-build binaries. Contact me if you want a commercial, supported version.
+Due to increased restrictions and costs of releasing non-commercial packages for the Apple Mac OSX and Microsoft Windows plaform, I can only provide unsigned pre-build binaries for Apple Mac OSX.
+You can download a version from the published [releases](https://github.com/emicklei/melrose/releases).
+Contact me if you want a commercial, signed and supported version.
 
-# Install from source
+## Install from source
 
 In order to work with `melrōse` on your operating system, the following components need to be installed:
 
@@ -33,26 +35,19 @@ Proceed with [install melrōse](install.md#install-melrōse)
 On Ubuntu / Debian
 
 	apt-get install libportmidi-dev
-	
+
 Proceed with [install melrōse](install.md#install-melrōse)
-
-
-
-
-
-
 
 ## Install Melrōse<a name="install-melrōse"></a> 
 
-Currently, `melrōse` can only be installed from source.
 You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
 
 	go install github.com/emicklei/melrose/cmd/melrose
-	
+
 After installing both `portmidi` and `melrōse`, you can start the tool in a Terminal using:
 
 	$ melrose
-	
+
 If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH`.
 
 ## Melrōse plugin for Visual Studio Code<a name="plugin"></a>
