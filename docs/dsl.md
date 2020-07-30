@@ -36,7 +36,6 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#at">at</a>
 - <a href="#duration">duration</a>
 - <a href="#export">export</a>
-- <a href="#flat">flat</a>
 - <a href="#interval">interval</a>
 - <a href="#iterator">iterator</a>
 - <a href="#join">join</a>
@@ -143,13 +142,6 @@ Writes a multi-track MIDI file.
 
 ```javascript
 export('myMelody-v1',myObject)
-```
-
-### flat<a name="flat"></a>
-Flat (ungroup) all operations on a musical object to a new sequence.
-
-```javascript
-flat(sequence('(C E G) B')) // => C E G B
 ```
 
 ### go<a name="go"></a>
