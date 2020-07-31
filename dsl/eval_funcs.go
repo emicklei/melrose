@@ -543,22 +543,6 @@ s = r.S() // returns the sequence of notes from the recording`,
 			}
 		}}
 
-	eval["flat"] = Function{
-		Title:       "Flat operator",
-		Description: "flat (ungroup) all operations on a musical object to a new sequence",
-		Prefix:      "flat",
-		Alias:       "F",
-		Template:    `flat(${1:sequenceable})`,
-		Samples:     `flat(sequence('(C E G) B')) // => C E G B`,
-		IsComposer:  true,
-		Func: func(value interface{}) interface{} {
-			if s, ok := getSequenceable(value); !ok {
-				return notify.Panic(fmt.Errorf("cannot flatten (%T) %v", value, value))
-			} else {
-				return op.Flattener{Target: s}
-			}
-		}}
-
 	registerFunction(eval, "iterator", Function{
 		Title:       "Iterator creator",
 		Description: "iterator that has an array of constant values and evaluates to one. Use next() to increase and rotate the value.",

@@ -2,9 +2,11 @@
 title: Melrōse Tutorial 01 Note
 ---
 
+[Home](https://emicklei.github.io/melrose)
+
 ## create a note
 
-    note('c')
+    n = note('c')
 
 This is a statement with a variable `n` and expression `note('c')`.
 The expression uses the function `note` and takes the string argument `'c'`.
@@ -39,9 +41,5 @@ The symbol `+` is used to emphasize the note.
 You can use up to 4 such symbols.
 
 See [Notation](notations.html) for a complete description of the syntax to create notes.
-
-
-
-
 
 [Next: 02 Sequence](02-sequence.html)

@@ -2,6 +2,8 @@
 title: Melrōse Tutorial 02 Sequence
 ---
 
+[Home](https://emicklei.github.io/melrose)
+
 ## create a sequence
 
     sequence('c d (e f)')
