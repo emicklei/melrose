@@ -3,8 +3,9 @@ package midi
 import (
 	"errors"
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"strconv"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/notify"
 	"github.com/rakyll/portmidi"
@@ -68,6 +69,9 @@ func (m *Midi) Command(args []string) notify.Message {
 		return nil
 	}
 	switch args[0] {
+	case "echo":
+		m.echo = !m.echo
+		return nil
 	case "input":
 		if len(args) != 2 {
 			return notify.Warningf("missing device number")
@@ -97,6 +101,7 @@ func (m *Midi) Command(args []string) notify.Message {
 
 func (m *Midi) printInfo() {
 	fmt.Println("Usage:")
+	fmt.Println(":m eacho              --- toggle printing the notes that play")
 	fmt.Println(":m input  <device-id> --- change the current MIDI input device id")
 	fmt.Println(":m output <device-id> --- change the current MIDI output device id")
 	fmt.Println()
