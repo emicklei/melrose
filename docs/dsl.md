@@ -117,15 +117,11 @@ chord('G/M/2')
 
 ### duration<a name="duration"></a>
 Creates a new modified musical object for which the duration of all notes are changed.
-The first parameter controls the length (duration) of the note.
-If the parameter is greater than 0 then the note duration is set to a fixed value, e.g. 4=quarter,1=whole.
-If the parameter is less than 1 then the note duration is scaled with a value, e.g. 0.5 will make a quarter ¼ into an eight ⅛
+The first parameter controls the length (duration) of the note, e.g. 1=whole, 0.5 or 2 = half, 0.25 or 4 = quarter, 0.125 or 8 = eight, 0.0625 or 16 = sixteenth.
 .
 
 ```javascript
-duration(8,sequence('E F')) // => ⅛E ⅛F , absolute change
-
-duration(0.5,sequence('8C 8G')) // => C G , factor change
+duration(8,sequence('E F')) // => ⅛E ⅛F , shorten the notes from quarter to eigth
 ```
 
 ### end<a name="end"></a>

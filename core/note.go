@@ -109,7 +109,7 @@ func (n Note) ModifiedVelocity(velo int) Note {
 	return nn
 }
 
-func (n Note) WithDuration(dur float64) Note {
+func (n Note) WithDuration(dur float64, dotted bool) Note {
 	var duration float32
 	switch dur {
 	case 16:
@@ -122,14 +122,8 @@ func (n Note) WithDuration(dur float64) Note {
 		duration = 0.5
 	case 1:
 		duration = 1
-	case 0.5:
-		duration = n.duration / 2.0
-	case 0.25:
-		duration = n.duration / 4.0
-	case 0.125:
-		duration = n.duration / 8.0
-	case 0.0625:
-		duration = n.duration / 16.0
+	case 0.5, 0.25, 0.125, 0.0625:
+		duration = float32(dur)
 	default:
 		notify.Panic(fmt.Errorf("cannot create note with duration [%f]", dur))
 	}
@@ -137,7 +131,7 @@ func (n Note) WithDuration(dur float64) Note {
 	if duration < 0.0625 {
 		duration = 0.0625
 	}
-	nn, err := NewNote(n.Name, n.Octave, duration, n.Accidental, n.Dotted, n.Velocity)
+	nn, err := NewNote(n.Name, n.Octave, duration, n.Accidental, dotted, n.Velocity)
 	if err != nil {
 		notify.Panic(fmt.Errorf("cannot create note with duration [%f] because:%v", dur, err))
 	}

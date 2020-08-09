@@ -48,15 +48,12 @@ func EvalFunctions(ctx core.Context) map[string]Function {
 	eval["duration"] = Function{
 		Title: "Duration operator",
 		Description: `Creates a new modified musical object for which the duration of all notes are changed.
-The first parameter controls the length (duration) of the note.
-If the parameter is greater than 0 then the note duration is set to a fixed value, e.g. 4=quarter,1=whole.
-If the parameter is less than 1 then the note duration is scaled with a value, e.g. 0.5 will make a quarter ¼ into an eight ⅛
+The first parameter controls the length (duration) of the note, e.g. 1=whole, 0.5 or 2 = half, 0.25 or 4 = quarter, 0.125 or 8 = eight, 0.0625 or 16 = sixteenth.
 `,
 		Prefix:     "dur",
 		IsComposer: true,
 		Template:   `duration(${1:object},${2:object})`,
-		Samples: `duration(8,sequence('E F')) // => ⅛E ⅛F , absolute change
-duration(0.5,sequence('8C 8G')) // => C G , factor change`,
+		Samples:    `duration(8,sequence('E F')) // => ⅛E ⅛F , shorten the notes from quarter to eigth`,
 		Func: func(param float64, playables ...interface{}) interface{} {
 			if err := op.CheckDuration(param); err != nil {
 				notify.Print(notify.Error(err))
@@ -342,7 +339,8 @@ ab = join(a,b)`,
 		Alias:       "S",
 		Template:    `sequence('${1:space-separated-notes}')`,
 		Samples: `sequence('C D E')
-sequence('(C D E)')`,
+sequence('(8C D E)') => (⅛C ⅛D ⅛E)
+sequence('c (d e f) a =')`,
 		IsCore: true,
 		Func: func(s string) interface{} {
 			sq, err := core.ParseSequence(s)

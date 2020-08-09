@@ -43,8 +43,8 @@ Format: `(duration)(pitch)(accidental)(dynamic)`
 | Notation    | Description
 |-------------|---
 | C D E F       | 4 quarter tones
-| (C E) (d5 f5) | 2 doublets
-| (1C 1E 1G)    | C Chord
+| (8C E) (d5 f5) | 2 doublets; first doublet has an eight length, second is a quarter
+| (1C E G)    | C Chord; whole length
 
     doremi = sequence('c d e')
 

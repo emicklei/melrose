@@ -34,7 +34,7 @@ func (d Duration) S() core.Sequence {
 	for _, eachGroup := range source {
 		mappedGroup := []core.Note{}
 		for _, eachNote := range eachGroup {
-			mappedGroup = append(mappedGroup, eachNote.WithDuration(d.Parameter))
+			mappedGroup = append(mappedGroup, eachNote.WithDuration(d.Parameter, eachNote.Dotted))
 		}
 		target = append(target, mappedGroup)
 	}
@@ -57,7 +57,8 @@ func (d Duration) ToNote() core.Note {
 	if !ok {
 		notify.Panic(fmt.Errorf("cannot take note from [%v]", one))
 	}
-	return one.ToNote().WithDuration(d.Parameter)
+	not := one.ToNote()
+	return not.WithDuration(d.Parameter, not.Dotted)
 }
 
 var validDurationParameterValues = []float64{0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16}

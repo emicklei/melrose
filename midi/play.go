@@ -2,8 +2,9 @@ package midi
 
 import (
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"time"
+
+	"github.com/emicklei/melrose/core"
 )
 
 // Play is part of melrose.AudioDevice
@@ -30,7 +31,7 @@ func (m *Midi) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.
 		var actualDuration time.Duration
 		var event midiEvent
 		if canCombineMidiEvents(eachGroup) {
-			// combined
+			// combined, first note makes duration
 			actualDuration = time.Duration(float32(wholeNoteDuration) * eachGroup[0].Length())
 			event = m.combinedMidiEvent(channel, eachGroup)
 			if m.echo {

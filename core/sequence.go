@@ -100,7 +100,15 @@ func ParseSequence(input string) (Sequence, error) {
 			group = []Note{}
 		} else if groupClose == each {
 			ingroup = false
-			m.Notes = append(m.Notes, group)
+			// first note in group makes duration
+			if len(group) > 0 {
+				first := group[0]
+				// apply to rest
+				for i := 1; i < len(group); i++ {
+					group[i] = group[i].WithDuration(float64(first.duration), first.Dotted)
+				}
+				m.Notes = append(m.Notes, group)
+			}
 		} else {
 			next, err := ParseNote(each)
 			if err != nil {
