@@ -7,9 +7,9 @@
 
 ## Usage
 
-`melrōse` is a tool to create music by programming melodies in a language to composes MIDI notes.
-Using the command line interface or its HTTP Server,`melrōse` can play your programmed music directly.
+`melrōse` is a tool to create music by programming melodies and uses a custom language to composes notes that are played with MIDI.
 Note sequences in your program can be changed while playing which makes it possible to even use it for live performance.
+For the best experience, use the `melrōse` together with the Visual Studio Code Plugin for Melrōse.
 
 See [documentation](https://emicklei.github.io/melrose/) how to install and use `melrōse`.
 
