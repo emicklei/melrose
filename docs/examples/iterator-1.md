@@ -1,8 +1,6 @@
 [Home](https://emicklei.github.io/melrose)
 
-# Examples
-
-## Iterator
+## Example: iterator
 
 ```javascript
 bpm(90)

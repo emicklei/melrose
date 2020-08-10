@@ -4,7 +4,7 @@ title: Melrōse
 
 [Home](https://emicklei.github.io/melrose)
 [Tutorial](https://emicklei.github.io/melrose/tutorial)
-[Examples](examples.html)
+[Examples](https://emicklei.github.io/melrose/examples)
 [Tool](cli.html)
 [Language](dsl.html)
 [Notations](notations.html)
