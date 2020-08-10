@@ -21,10 +21,7 @@ Until `v1.0.0` both language syntax and package api may change.
 ### Contributions
 
 Fixes, suggestions, documentation improvements are all welcome. Fork this project and submit Pull requests.
-
-### Sponsor
-
-You can either sponsor Melrōse via [Github Sponsors](https://github.com/sponsors/emicklei) or [Become a Patron](https://www.patreon.com/emicklei_melrose).
+You can also sponsor Melrōse via [Github Sponsors](https://github.com/sponsors/emicklei).
 
 Software is licensed under [Apache 2.0 license](LICENSE).
 (c) 2014-2020 [ernestmicklei.com](http://ernestmicklei.com)
