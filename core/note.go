@@ -71,7 +71,7 @@ func NewNote(name string, octave int, duration float32, accidental int, dot bool
 		return rest, fmt.Errorf("invalid note name [ABCDEFG=]:" + name)
 	}
 	if octave < 0 || octave > 9 {
-		return rest, fmt.Errorf("invalid octave [0..9]:" + string(octave))
+		return rest, fmt.Errorf("invalid octave [0..9]: %d", octave)
 	}
 	switch duration {
 	case 0.0625:
@@ -84,7 +84,7 @@ func NewNote(name string, octave int, duration float32, accidental int, dot bool
 	}
 
 	if accidental != 0 && accidental != -1 && accidental != 1 {
-		return rest, fmt.Errorf("invalid accidental :" + string(accidental))
+		return rest, fmt.Errorf("invalid accidental: %d", accidental)
 	}
 
 	return Note{Name: name, Octave: octave, duration: duration, Accidental: accidental, Dotted: dot, Velocity: velocity}, nil
