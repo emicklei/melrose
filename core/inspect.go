@@ -35,12 +35,29 @@ func NewInspect(ctx Context, value interface{}) Inspection {
 	return i
 }
 
+// Markdown returns a markdown formatted string with inspection details
+func (i Inspection) Markdown() string {
+	var b bytes.Buffer
+	fmt.Fprintf(&b, "`%s`\n", i.Text)
+	// sort keys
+	keys := []string{}
+	for k := range i.Properties {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		v := i.Properties[k]
+		fmt.Fprintf(&b, "- %v %s\n", v, k)
+	}
+	return b.String()
+}
+
 func (i Inspection) String() string {
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "%s ", i.Text)
 	// sort keys
 	keys := []string{}
-	for k, _ := range i.Properties {
+	for k := range i.Properties {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
