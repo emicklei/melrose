@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/emicklei/melrose/core"
-	"github.com/emicklei/melrose/notify"
 )
 
 func (l *LanguageServer) inspectHandler(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +29,7 @@ func (l *LanguageServer) inspectHandler(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("content-type", "application/json")
 	enc := json.NewEncoder(w)
 	err := enc.Encode(markdownHolder{MarkdownString: l.markdownOnInspecting(th.Token)})
-	notify.Debugf("inspected:%s", th.Token)
+	//notify.Debugf("inspected:%s", th.Token)
 	if err != nil {
 		log.Printf("[melrose.error] %#v\n", err)
 	}

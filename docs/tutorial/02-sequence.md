@@ -13,6 +13,6 @@ This argument uses the notation for a note.
 The notes inside brackets, here E and F, will be played as the same time.
 Another, more complex example is:
 
-    sequence('(8c 8e 8g) = (2c++ 2e++ 2g++)')
+    sequence('(8c e g) = (2c++ e++ g++)')
 
 [Next: 03 Chord](03-chord.html)
