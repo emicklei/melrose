@@ -3,12 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"io/ioutil"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
@@ -34,6 +35,7 @@ func main() {
 	defer currentDevice.Close()
 
 	ctx := new(core.PlayContext)
+	ctx.EnvironmentVars = map[string]string{}
 	ctx.AudioDevice = currentDevice
 	ctx.VariableStorage = dsl.NewVariableStore()
 	ctx.LoopControl = core.NewBeatmaster(ctx, 120)
