@@ -36,6 +36,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#at">at</a>
 - <a href="#duration">duration</a>
 - <a href="#export">export</a>
+- <a href="#import">import</a>
 - <a href="#interval">interval</a>
 - <a href="#iterator">iterator</a>
 - <a href="#join">join</a>
@@ -145,6 +146,13 @@ Play all musical objects together in the background (do not wait for completion)
 
 ```javascript
 go(s1,s1,s3) // play s1 and s2 and s3 simultaneously
+```
+
+### import<a name="import"></a>
+Evaluate all the statements from another file.
+
+```javascript
+import('drumpatterns.mel')
 ```
 
 ### interval<a name="interval"></a>
