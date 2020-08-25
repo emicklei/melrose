@@ -91,4 +91,8 @@ type Context interface {
 	Control() LoopController
 	Device() AudioDevice
 	Variables() VariableStorage
+	Environment() map[string]string
 }
+
+// WorkingDirectory is a key in a context environment.
+const WorkingDirectory = "pwd"

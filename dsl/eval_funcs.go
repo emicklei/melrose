@@ -332,6 +332,21 @@ ab = join(a,b)`,
 			return nil
 		}}
 
+	registerFunction(eval, "import", Function{
+		Title:         "Import script",
+		Description:   "evaluate all the statements from another file",
+		ControlsAudio: false,
+		Template:      `import(${1:filename})`,
+		Samples:       `import('drumpatterns.mel')`,
+		Func: func(f string) interface{} {
+			err := ImportProgram(ctx, f)
+			if err != nil {
+				return notify.Panic(fmt.Errorf("failed to import [%s], %v", f, err))
+			}
+			return nil
+		},
+	})
+
 	eval["sequence"] = Function{
 		Title:       "Sequence creator",
 		Description: `create a Sequence using this <a href="/melrose/notations.html#sequence-not">format</a>`,
