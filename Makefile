@@ -29,12 +29,12 @@ dslmd:
 menu:
 	cd cmd/vsc && go run *.go menu
 
-vsc: snippets grammar
-	cd ../melrose-for-vscode && vsce package
-
 clean:
 	rm -rf target
 	mkdir target
+
+vsc: snippets grammar dslmd
+	cd ../melrose-for-vscode && vsce package
 
 package: clean build vsc
 	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target

@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"time"
@@ -22,6 +23,8 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 	query := r.URL.Query()
+	l.context.Environment()[core.WorkingDirectory] = filepath.Dir(query.Get("file"))
+
 	trace := query.Get("trace") == "true"
 	if trace && !core.IsDebug() {
 		core.ToggleDebug()
