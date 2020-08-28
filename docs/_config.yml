@@ -1,1 +1,5 @@
 theme: jekyll-theme-modernist
+description: melrōse is a tool to create music by programming melodies and uses a custom language to composes notes that are played with MIDI. Note sequences in your program can be changed while playing which makes it possible to even use it for live performance. For the best experience, use the melrōse together with the Visual Studio Code Plugin for Melrōse.
+
+show_downloads: true
+google_analytics: UA-2987987-18
