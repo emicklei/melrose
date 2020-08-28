@@ -38,7 +38,7 @@ You can also evaluate the function `end(...)`.
 
 ### inspect
 
-To inspect the value of an expression, use `cmd+2`.
+To inspect a variable or a function, just hover with your mouse pointer above its name. To explicitly inspect the value of an expression, use `cmd+2`.
 
 ### stop all sound
 

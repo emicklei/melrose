@@ -6,24 +6,30 @@ title: Melrōse Tutorial 04 Loop
 
 ## create a loop
 
-    bpm(120)
-    s = sequence('c d e f g a b')
-    lp = loop(a)
+```javascript
+bpm(120)
+s = sequence('c d e f g a b')
+lp = loop(a)
+```
 
 A loop plays one or more musical objects repeatedly.
 The tempo at which the notes of the objects are played is set using the `bpm` function.
 The loop object must be assigned a the variable, here `lp` because the program needs a reference in order to `begin` or `end` the loop.
 
-    begin(lp)
-    end(lp)
+```javascript
+begin(lp)
+end(lp)
+```
 
-Using the editor, you can also begin a loop using `cmd+4` or `cmd+3` and end it with `cmd+5`.
+Using the editor with the plugin, it is much easier to begin a loop using `cmd+4` or `cmd+3` and end it with `cmd+5`.
 
 ## pitch loop
 
-    i = interval(0,4,1)
-    p = pitch(i,sequence('c d e f g a b'))
-    l = loop(p,next(i))
+```javascript
+i = interval(0,4,1)
+p = pitch(i,sequence('c d e f g a b'))
+l = loop(p,next(i))
+```
 
 An interval is a non-musical object that can generate integer numbers.
 In this example, it will generate the numbers `0 1 2 3 4` and will repeat them in this order.

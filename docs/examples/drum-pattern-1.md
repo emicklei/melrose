@@ -21,8 +21,10 @@ The indices in this example were found using [Ableton learning music](https://le
 
 An alternative way to describe the indices in a `notemap` is using dots (.) and bangs (!).
 
-	d1 = notemap('..!......!!.....') // 16 characters
-	
+```javascript
+d1 = notemap('..!......!!.....') // 16 characters
+```
+
 Which gives a better visual feedback of the pattern.
 
 ### line 14
