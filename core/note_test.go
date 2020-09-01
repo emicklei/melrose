@@ -32,6 +32,8 @@ var parsetests = []struct {
 	{"E-", "E", 4, 0.25, 0, false, MezzoPiano},
 	{"E--", "E", 4, 0.25, 0, false, Piano},
 	{"E---", "E", 4, 0.25, 0, false, Pianissimo},
+	{"~", "~", 0, 0, 0, false, 0},
+	{"^", "^", 0, 0, 0, false, 0},
 }
 
 func TestParseNote(t *testing.T) {

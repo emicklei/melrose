@@ -6,7 +6,7 @@ title: Melrōse musical object notation
 
 ## Note
 
-Format: `(duration)(pitch)(accidental)(dynamic)`
+Format: `(duration)(pitch)(=~^)(accidental)(dynamic)`
 
 | Notation | Alternative | Description
 |----------|-------|-------------
@@ -21,6 +21,8 @@ Format: `(duration)(pitch)(accidental)(dynamic)`
 | 1=       | 1=    | full rest
 | D+       | d+    | quarter D octave 4 MezzoForte
 | 16.E#--  | 16.e♯-- | sixteenth E sharp duration x 1.5 Piano
+| ~        |       | change sustain pedal position (`up` -> `down` or `down` -> `up`)
+| ^        |       | sustain pedal up and down
 
     n = note('c#5')
 
@@ -29,11 +31,11 @@ Format: `(duration)(pitch)(accidental)(dynamic)`
 | Notation    | Description
 |-------------|---
 | \-\-\-      |Pianissimo (pp)
-| \-\-	      |Piano (p)
-| \-	      |MezzoPiano (mp)
+| \-\-        |Piano (p)
+| \-          |MezzoPiano (mp)
 | 0           |Normal (optional)
-| +	          |MezzoForte (mf)
-| ++	      |Forte (f)
+| +           |MezzoForte (mf)
+| ++          |Forte (f)
 | +++         |Fortissimo (ff)
 
     n = note('E++')
@@ -46,7 +48,9 @@ Format: `(duration)(pitch)(accidental)(dynamic)`
 | (8C E) (d5 f5) | 2 doublets; first doublet has an eight length, second is a quarter
 | (1C E G)    | C Chord; whole length
 
-    doremi = sequence('c d e')
+```javascript
+doremi = sequence('c d e')
+```
 
 ## Chord<a name="chord-not"></a>
 
@@ -74,7 +78,7 @@ Format: `(duration)(pitch)(accidental)(dynamic)`
 
 | Notation    | Description
 |-------------|---
-| C/m D/m     | C minor followed by a D minor 
+| C/m D/m     | C minor followed by a D minor
 | (C3 C5)     | C major, Octave 3 together with a C major, Octave 5
 | E =         | E major followed by a quarter rest note
 

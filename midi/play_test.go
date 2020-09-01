@@ -1,10 +1,11 @@
 package midi
 
 import (
-	"github.com/emicklei/melrose/core"
 	"math"
 	"testing"
 	"time"
+
+	"github.com/emicklei/melrose/core"
 )
 
 func TestDurations(t *testing.T) {
@@ -34,6 +35,7 @@ func TestEventNoteOff(t *testing.T) {
 
 func TestPlay(t *testing.T) {
 	m := new(Midi)
+	m.sustainPedal = NewSustainPedal()
 	m.enabled = true
 	m.timeline = core.NewTimeline()
 	now := time.Now()
