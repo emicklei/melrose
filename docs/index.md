@@ -15,7 +15,16 @@ title: Melrōse
 
 ## Introduction
 
-`melrōse` is a tool to create music by programming melodies and uses a custom language to compose notes that are played with MIDI. Note sequences in your program can be changed while playing which makes it possible to even use it for live performance. For the best experience, use the tool together with the Visual Studio Code Plugin for Melrōse.
+`melrōse` is a tool to create and play music by programming melodies.
+It uses a custom language to compose notes and create loops and tracks to play.
+This is an example of a simple scale.
+
+```javascript
+sequence('C D E F G A B C5')
+```
+
+Note sequences in your program can be changed while playing giving you direct audible feedback. 
+For the best experience, use the `melrōse` tool together with the Visual Studio Code Plugin for Melrōse.
 
 Basic musical objects in Melrōse are:
 
