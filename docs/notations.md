@@ -21,10 +21,10 @@ Format: `(duration)(pitch)(=~^)(accidental)(dynamic)`
 | 1=       | 1=    | full rest
 | D+       | d+    | quarter D octave 4 MezzoForte
 | 16.E#--  | 16.e♯-- | sixteenth E sharp duration x 1.5 Piano
-| ~        |       | change sustain pedal position (`up` -> `down` or `down` -> `up`)
-| ^        |       | sustain pedal up and down
 
-    n = note('c#5')
+```javascript
+n = note('c#5')
+```
 
 ## Note dynamics<a name="note-not"></a>
 
@@ -38,7 +38,9 @@ Format: `(duration)(pitch)(=~^)(accidental)(dynamic)`
 | ++          |Forte (f)
 | +++         |Fortissimo (ff)
 
-    n = note('E++')
+```javascript
+n = note('E++')
+```
 
 ## Sequence<a name="sequence-not"></a>
 
@@ -52,6 +54,16 @@ Format: `(duration)(pitch)(=~^)(accidental)(dynamic)`
 doremi = sequence('c d e')
 ```
 
+## Pedal control
+
+Usable in `sequence` only.
+
+| Notation | Description
+|----------|-------------
+| ~        | change sustain pedal position (`up` -> `down` or `down` -> `up`)
+| ^        | sustain pedal `up` and immediately `down`
+
+
 ## Chord<a name="chord-not"></a>
 
 | Notation    | Description
@@ -62,7 +74,9 @@ doremi = sequence('c d e')
 | G/m7        | G minor seventh chord
 | 1=          | No chord, a whole rest note
 
-    b7 = chord('b/7')
+```javascript
+b7 = chord('b/7')
+```
 
 ## Scale<a name="scale-not"></a>
 
@@ -72,7 +86,9 @@ doremi = sequence('c d e')
 | E/m         | E natural minor scale, Octave 4
 | G/M7        | G major 7 scale, Octave 4
 
-    sf = scale(2,'f')
+```javascript
+sf = scale(2,'f')
+```
 
 ## Progression<a name="progression-not"></a>
 
@@ -82,4 +98,6 @@ doremi = sequence('c d e')
 | (C3 C5)     | C major, Octave 3 together with a C major, Octave 5
 | E =         | E major followed by a quarter rest note
 
-    p = progression('C F G')
+```javascript
+p = progression('C F G')
+```
