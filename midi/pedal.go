@@ -46,15 +46,17 @@ func (s *SustainPedal) TakeInstruction(timeline *core.Timeline, moment time.Time
 	}
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	if group[0] == core.PedalUpDown {
+	switch group[0] {
+	case core.PedalUp:
 		s.scheduleNoteOff(timeline, moment)
+		s.Down = false
 		return true
-	}
-	if group[0] == core.PedalToggle {
-		if s.Down {
-			s.scheduleNoteOff(timeline, moment)
-		}
-		s.Down = !s.Down
+	case core.PedalDown:
+		s.Down = true
+		return true
+	case core.PedalUpDown:
+		s.Down = true
+		s.scheduleNoteOff(timeline, moment)
 		return true
 	}
 	return false

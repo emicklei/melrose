@@ -60,7 +60,8 @@ func (n Note) Replaced(from, to Sequenceable) Sequenceable {
 var (
 	Rest4       = Note{Name: "=", duration: 0.25}
 	PedalUpDown = Note{Name: "^", duration: 0}
-	PedalToggle = Note{Name: "~", duration: 0}
+	PedalDown   = Note{Name: ">", duration: 0}
+	PedalUp     = Note{Name: "<", duration: 0}
 )
 
 var rest = Note{Name: "="}
@@ -93,7 +94,8 @@ func NewNote(name string, octave int, duration float32, accidental int, dot bool
 }
 
 func (n Note) IsRest() bool        { return Rest4.Name == n.Name }
-func (n Note) IsPedalUp() bool     { return PedalToggle.Name == n.Name }
+func (n Note) IsPedalUp() bool     { return PedalUp.Name == n.Name }
+func (n Note) IsPedalDown() bool   { return PedalDown.Name == n.Name }
 func (n Note) IsPedalUpDown() bool { return PedalUpDown.Name == n.Name }
 
 // Length is the actual duration time factor
@@ -145,7 +147,7 @@ func (n Note) WithDuration(dur float64, dotted bool) Note {
 
 // Conversion
 
-var noteRegexp = regexp.MustCompile("([1]?[½¼⅛12468]?)(\\.?)([CDEFGAB=^~])([#♯_♭]?)([0-9]?)([-+]?[-+]?[-+]?)")
+var noteRegexp = regexp.MustCompile("([1]?[½¼⅛12468]?)(\\.?)([CDEFGAB=<^>])([#♯_♭]?)([0-9]?)([-+]?[-+]?[-+]?)")
 
 // MustParseNote returns a Note by parsing the input. Panic if it fails.
 func MustParseNote(input string) Note {
@@ -158,7 +160,7 @@ func MustParseNote(input string) Note {
 
 var N = MustParseNote
 
-// ParseNote reads the format  <(inverse-)duration?>[CDEFGA=]<accidental?><dot?><octave?>
+// ParseNote reads the format  <(inverse-)duration?>[CDEFGA=<^>]<accidental?><dot?><octave?>
 func ParseNote(input string) (Note, error) {
 	matches := noteRegexp.FindStringSubmatch(strings.ToUpper(input))
 	if matches == nil {
@@ -187,8 +189,10 @@ func ParseNote(input string) (Note, error) {
 	switch matches[3] {
 	case "^":
 		return PedalUpDown, nil
-	case "~":
-		return PedalToggle, nil
+	case "<":
+		return PedalUp, nil
+	case ">":
+		return PedalDown, nil
 	}
 
 	var accidental int
@@ -312,7 +316,11 @@ func (n Note) PrintString(sharpOrFlatKey int) string {
 
 func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 	if n.IsPedalUp() {
-		buf.WriteString(PedalToggle.Name)
+		buf.WriteString(PedalUp.Name)
+		return
+	}
+	if n.IsPedalDown() {
+		buf.WriteString(PedalDown.Name)
 		return
 	}
 	if n.IsPedalUpDown() {

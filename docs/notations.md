@@ -60,7 +60,8 @@ Usable in `sequence` only.
 
 | Notation | Description
 |----------|-------------
-| ~        | change sustain pedal position (`up` -> `down` or `down` -> `up`)
+| >        | sustain pedal `down`
+| <        | sustain pedal `up`
 | ^        | sustain pedal `up` and immediately `down`
 
 
