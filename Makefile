@@ -33,7 +33,7 @@ clean:
 	rm -rf target
 	mkdir target
 
-vsc: snippets grammar dslmd
+vsc:
 	cd ../melrose-for-vscode && vsce package
 
 package: clean build vsc
