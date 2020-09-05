@@ -5,14 +5,7 @@ import (
 	"testing"
 )
 
-func ExampleSequenceParse() {
-	m, _ := ParseSequence("C C4 4C4")
-	fmt.Println(m)
-	// Output:
-	// C C C
-}
-
-func ExampleSequenceParseGroups() {
+func ExampleParseSequence() {
 	m, _ := ParseSequence("C (E G)")
 	m2, _ := ParseSequence("C ( A )")
 	m3, _ := ParseSequence("2C# (8D_ E_ F#)")

@@ -213,7 +213,7 @@ chord('G/M/2')`,
 
 	eval["octavemap"] = Function{
 		Title:       "Octave Map operator",
-		Description: "create a sequence with notes for which order and the octaves are changed",
+		Description: "create a sequence with notes for which the order and the octaves are changed",
 		Prefix:      "octavem",
 		Template:    `octavemap('${1:int2int}',${2:object})`,
 		IsComposer:  true,
@@ -232,9 +232,9 @@ chord('G/M/2')`,
 		Prefix:      "pit",
 		Alias:       "Pi",
 		Template:    `pitch(${1:semitones},${2:sequenceable})`,
-		Samples: `pitch(-1,sequence('C D E'))
+		Samples: `pitch(-1,sequence('c d e'))
 p = interval(-4,4,1)
-pitch(p,note('C'))`,
+pitch(p,note('c'))`,
 		IsComposer: true,
 		Func: func(semitones, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
@@ -282,7 +282,7 @@ pitch(p,note('C'))`,
 
 	registerFunction(eval, "join", Function{
 		Title:       "Join operator",
-		Description: "When played, each musical object is played in sequence",
+		Description: "joins two or more musical objects as one",
 		Prefix:      "joi",
 		Alias:       "J",
 		Template:    `join(${1:first},${2:second})`,
@@ -304,7 +304,7 @@ ab = join(a,b)`,
 
 	eval["bpm"] = Function{
 		Title:         "Beats Per Minute",
-		Description:   "set the Beats Per Minute [1..300]; default is 120",
+		Description:   "set the Beats Per Minute (BPM) [1..300]; default is 120",
 		ControlsAudio: true,
 		Prefix:        "bpm",
 		Template:      `bpm(${1:beats-per-minute})`,

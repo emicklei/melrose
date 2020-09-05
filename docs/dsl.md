@@ -94,7 +94,7 @@ biab(4)
 ```
 
 ### bpm<a name="bpm"></a>
-Set the Beats Per Minute [1..300]; default is 120.
+Set the Beats Per Minute (BPM) [1..300]; default is 120.
 
 ```javascript
 bpm(90)
@@ -172,7 +172,7 @@ iterator('1','2')
 ```
 
 ### join<a name="join"></a>
-When played, each musical object is played in sequence.
+Joins two or more musical objects as one.
 
 ```javascript
 a = chord('A')
@@ -254,7 +254,7 @@ octave(1,sequence('C D')) // => C5 D5
 ```
 
 ### octavemap<a name="octavemap"></a>
-Create a sequence with notes for which order and the octaves are changed.
+Create a sequence with notes for which the order and the octaves are changed.
 
 ```javascript
 octavemap('1:-1,2:0,3:1',chord('C')) // => (C3 E G5)
@@ -278,11 +278,11 @@ parallel(sequence('C D E')) // => (C D E)
 Change the pitch with a delta of semitones.
 
 ```javascript
-pitch(-1,sequence('C D E'))
+pitch(-1,sequence('c d e'))
 
 p = interval(-4,4,1)
 
-pitch(p,note('C'))
+pitch(p,note('c'))
 ```
 
 ### play<a name="play"></a>
