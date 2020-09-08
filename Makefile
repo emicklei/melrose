@@ -37,6 +37,8 @@ vsc:
 	cd ../melrose-for-vscode && vsce package
 
 package: clean build vsc
+	mkdir target/demos
+	cp docs/examples/*.mel target/demos
 	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target
 	cp run.sh target
 	cp ../melrose-for-vscode/*vsix target
