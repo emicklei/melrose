@@ -1,0 +1,3 @@
+// a sequence with quarter notes 
+// put the cursor is on line 3 and you press: cmd+3 
+sequence('c e d f e g f a g b a c5 b d5 c5')
