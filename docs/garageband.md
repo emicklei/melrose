@@ -4,7 +4,7 @@ title: Using Melrōse with Garageband
 
 [Home](https://emicklei.github.io/melrose)
 
-<img src="https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/garageband.png" width="200">
+![](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/garageband.png)
 ###### GarageBand is a registered trademark of Apple Inc.
 
 ## Goal
@@ -16,7 +16,7 @@ This article describes the steps to get Melrōse working with GarageBand such th
 ### Install melrōse
 [Download](https://github.com/emicklei/melrose/releases) the latest release of melrōse and unzip it into your preferred folder. Your Finder should look like this:
 
-<img src="https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/melrose_finder.png" width="400">
+![](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/melrose_finder.png)
 
 ### Configure Audio MIDI Setup
 In order to make melrōse communicate with GarageBand, you need to enable an IAC Driver which is part of standard Mac OSX.
@@ -24,11 +24,11 @@ Open the Audio MIDI Setup program.
 Then choose `Window -> Show MIDI Studio`.
 Make sure you have an IAC Driver listed.
 
-<img src="https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/iacdriver.png" width="400">
+![](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/iacdriver.png)
 
 Open the settings of this IAC Driver and make sure the device is online.
 
-<img src="https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/iac_online.png" width="400">
+![](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/iac_online.png)
 
 
 ### Install extension for Visual Studio Code
@@ -53,7 +53,7 @@ You can verify this by looking at the bottom right of the editor window where th
 Open the GarageBand application and create a new Empty Project.
 Then choose Software Instrument.
 
-<img src="https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/gb_software_instrument.png" width="200">
+![](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/gb_software_instrument.png)
 
 This opens a window with a Classic Electic Piano instrument.
 
