@@ -2,6 +2,8 @@
 title: Using Melrōse with Garageband
 ---
 
+# Using Melrōse with Garageband
+
 [Home](https://emicklei.github.io/melrose)
 
 ![garageband](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/garageband.png)
