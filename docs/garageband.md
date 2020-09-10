@@ -26,8 +26,9 @@ This article describes the steps to get Melrōse working with GarageBand such th
 ### Configure Audio MIDI Setup
 
 In order to make melrōse communicate with GarageBand, you need to enable an IAC Driver which is part of standard Mac OSX.
-Open the Audio MIDI Setup program.
-Then choose `Window -> Show MIDI Studio`.
+Open the separate Audio MIDI Setup program, next to GarageBand.
+Use Spotlight Search to find this program.
+Once started, then from the menu choose `Window -> Show MIDI Studio`.
 Make sure you have an IAC Driver listed.
 
 ![iac](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/iacdriver.png)
