@@ -116,6 +116,11 @@ func (n Note) ModifiedVelocity(velo int) Note {
 	return nn
 }
 
+func (n Note) WithDynamic(emphasis string) Note {
+	nn, _ := NewNote(n.Name, n.Octave, n.duration, n.Accidental, n.Dotted, ParseVelocity(emphasis))
+	return nn
+}
+
 func (n Note) WithDuration(dur float64, dotted bool) Note {
 	var duration float32
 	switch dur {

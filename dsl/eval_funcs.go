@@ -71,6 +71,32 @@ The first parameter controls the length (duration) of the note, e.g. 1=whole, 0.
 			return op.NewDuration(param, joined)
 		}}
 
+	eval["dynamic"] = Function{
+		Title: "Dynamic operator",
+		Description: `Creates a new modified musical object for which the dynamics of all notes are changed.
+	The first parameter controls the emphasis the note, e.g. + (mezzoforte,mf), -- (piano,p).
+	`,
+		Prefix:     "dy",
+		IsComposer: true,
+		Template:   `dynamic(${1:emphasis},${2:object})`,
+		Samples:    `dynamic('++',sequence('E F')) // => E++ F++`,
+		Func: func(emphasis string, playables ...interface{}) interface{} {
+			if err := op.CheckDynamic(emphasis); err != nil {
+				notify.Print(notify.Error(err))
+				return nil
+			}
+			joined := []core.Sequenceable{}
+			for _, p := range playables {
+				if s, ok := getSequenceable(p); !ok {
+					notify.Print(notify.Warningf("cannot dynamic (%T) %v", p, p))
+					return nil
+				} else {
+					joined = append(joined, s)
+				}
+			}
+			return op.Dynamic{Target: joined, Emphasis: emphasis}
+		}}
+
 	eval["progression"] = Function{
 		Title:       "Progress creator",
 		Description: `create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>`,

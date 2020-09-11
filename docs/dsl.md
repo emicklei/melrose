@@ -35,6 +35,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 
 - <a href="#at">at</a>
 - <a href="#duration">duration</a>
+- <a href="#dynamic">dynamic</a>
 - <a href="#export">export</a>
 - <a href="#import">import</a>
 - <a href="#interval">interval</a>
@@ -123,6 +124,15 @@ The first parameter controls the length (duration) of the note, e.g. 1=whole, 0.
 
 ```javascript
 duration(8,sequence('E F')) // => ⅛E ⅛F , shorten the notes from quarter to eigth
+```
+
+### dynamic<a name="dynamic"></a>
+Creates a new modified musical object for which the dynamics of all notes are changed.
+	The first parameter controls the emphasis the note, e.g. + (mezzoforte,mf), -- (piano,p).
+	.
+
+```javascript
+dynamic('++',sequence('E F')) // => E++ F++
 ```
 
 ### end<a name="end"></a>
