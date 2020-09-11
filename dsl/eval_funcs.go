@@ -222,7 +222,7 @@ midi(16,36,70) // => 16C2 (kick)`,
 
 	eval["chord"] = Function{
 		Title:       "Chord creator",
-		Description: `create a Chord from its string <a href="/melrose/melrose/notations.html#chord-not">notation</a>`,
+		Description: `create a Chord from its string <a href="/melrose/notations.html#chord-not">notation</a>`,
 		Prefix:      "cho",
 		Alias:       "C",
 		Template:    `chord('${1:note}')`,

@@ -1,5 +1,5 @@
 ---
-title: Using Melrōse with Garageband
+title: Using Melrōse with Logic Pro
 ---
 
 # Using Melrōse with Logic Pro X
@@ -8,7 +8,7 @@ title: Using Melrōse with Garageband
 
 .image
 
-###### Logic Pro is a product of Apple Inc. 
+###### Logic Pro is a product of Apple Inc.
 
 ## Goal
 
@@ -19,7 +19,9 @@ This article describes the steps to get Melrōse working with Logic Pro such tha
 
 ### Installation
 
-The installation steps are exactly the same as described for [GarageBand](https://emicklei.github.io/melrose/garageband). Follow this article and close the GarageBand application are completing it. Keep the editor and the `demo.mel` file open.
+The installation steps are mostly the same as described for [GarageBand](https://emicklei.github.io/melrose/garageband). Follow this article and close the GarageBand application after completing it. 
+
+Keep the editor and the `demo.mel` file open.
 
 ### Create project
 

@@ -22,6 +22,10 @@ func zeroChord() Chord {
 	return Chord{start: N("C"), inversion: Ground, quality: Major, interval: Triad}
 }
 
+func (c Chord) Inspect(i Inspection) {
+	i.Properties["S"] = c.S().Storex()
+}
+
 func (c Chord) String() string {
 	if c.start.IsRest() {
 		return c.start.String()
