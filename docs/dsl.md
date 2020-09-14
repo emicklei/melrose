@@ -37,6 +37,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#duration">duration</a>
 - <a href="#dynamic">dynamic</a>
 - <a href="#export">export</a>
+- <a href="#group">group</a>
 - <a href="#import">import</a>
 - <a href="#interval">interval</a>
 - <a href="#iterator">iterator</a>
@@ -48,7 +49,6 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#octave">octave</a>
 - <a href="#octavemap">octavemap</a>
 - <a href="#onbar">onbar</a>
-- <a href="#parallel">parallel</a>
 - <a href="#pitch">pitch</a>
 - <a href="#print">print</a>
 - <a href="#random">random</a>
@@ -56,9 +56,9 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#replace">replace</a>
 - <a href="#reverse">reverse</a>
 - <a href="#sequencemap">sequencemap</a>
-- <a href="#serial">serial</a>
 - <a href="#track">track</a>
 - <a href="#undynamic">undynamic</a>
+- <a href="#ungroup">ungroup</a>
 
 ## Audio control functions
 
@@ -161,6 +161,13 @@ Play all musical objects together in the background (do not wait for completion)
 go(s1,s1,s3) // play s1 and s2 and s3 simultaneously
 ```
 
+### group<a name="group"></a>
+Create a new sequence in which all notes of a musical object are grouped.
+
+```javascript
+group(sequence('C D E')) // => (C D E)
+```
+
 ### import<a name="import"></a>
 Evaluate all the statements from another file.
 
@@ -245,7 +252,7 @@ midi(16,36,70) // => 16C2 (kick)
 Create a multi-track object from zero or more tracks.
 
 ```javascript
-
+multi(track1,track2,track3) // one or more tracks in one multi-track object
 ```
 
 ### next<a name="next"></a>
@@ -298,13 +305,6 @@ Puts a musical object on a track to start at a specific bar.
 
 ```javascript
 tr = track("solo",2, onbar(1,soloSequence)) // 2 = channel
-```
-
-### parallel<a name="parallel"></a>
-Create a new sequence in which all notes of a musical object are grouped.
-
-```javascript
-parallel(sequence('C D E')) // => (C D E)
 ```
 
 ### pitch<a name="pitch"></a>
@@ -415,15 +415,6 @@ i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D
 i2 = sequencemap('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)
 ```
 
-### serial<a name="serial"></a>
-Serialise any grouping of notes from one or more musical objects.
-
-```javascript
-serial(chord('E')) // => E G B
-
-serial(sequence('(C D)'),note('E')) // => C D E
-```
-
 ### track<a name="track"></a>
 Create a named track for a given MIDI channel with a musical object.
 
@@ -436,6 +427,15 @@ Set the dymamic to normal for all notes in a musical object.
 
 ```javascript
 undynamic('A+ B++ C-- D-') // =>  A B C D
+```
+
+### ungroup<a name="ungroup"></a>
+Undo any grouping of notes from one or more musical objects.
+
+```javascript
+ungroup(chord('E')) // => E G B
+
+ungroup(sequence('(C D)'),note('E')) // => C D E
 ```
 
 
