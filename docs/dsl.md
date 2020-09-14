@@ -41,6 +41,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#interval">interval</a>
 - <a href="#iterator">iterator</a>
 - <a href="#join">join</a>
+- <a href="#joinmap">joinmap</a>
 - <a href="#merge">merge</a>
 - <a href="#next">next</a>
 - <a href="#notemap">notemap</a>
@@ -56,6 +57,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#reverse">reverse</a>
 - <a href="#sequencemap">sequencemap</a>
 - <a href="#serial">serial</a>
+- <a href="#track">track</a>
 - <a href="#undynamic">undynamic</a>
 
 ## Audio control functions
@@ -67,6 +69,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#end">end</a>
 - <a href="#go">go</a>
 - <a href="#loop">loop</a>
+- <a href="#multi">multi</a>
 - <a href="#play">play</a>
 - <a href="#record">record</a>
 
@@ -109,7 +112,7 @@ channel(2,sequence('C2 E3')) // plays on instrument connected to MIDI channel 2
 ```
 
 ### chord<a name="chord"></a>
-Create a Chord from its string <a href="/melrose/melrose/notations.html#chord-not">notation</a>.
+Create a Chord from its string <a href="/melrose/notations.html#chord-not">notation</a>.
 
 ```javascript
 chord('C#5/m/1')
@@ -178,7 +181,13 @@ lp_cdef = loop(pitch(int1,sequence('C D E F')), next(int1))
 Iterator that has an array of constant values and evaluates to one. Use next() to increase and rotate the value.
 
 ```javascript
-iterator('1','2')
+i = iterator(1,3,5,7,9)
+
+		p = pitch(i,note('c'))
+
+		lp = loop(p,next(i))
+
+		
 ```
 
 ### join<a name="join"></a>
@@ -190,6 +199,13 @@ a = chord('A')
 b = sequence('(C E G)')
 
 ab = join(a,b)
+```
+
+### joinmap<a name="joinmap"></a>
+Creates a new join by mapping elements based on an index (1-based).
+
+```javascript
+
 ```
 
 ### loop<a name="loop"></a>
@@ -225,6 +241,13 @@ midi(0.25,52,80) // => E3+
 midi(16,36,70) // => 16C2 (kick)
 ```
 
+### multi<a name="multi"></a>
+Create a multi-track object from zero or more tracks.
+
+```javascript
+
+```
+
 ### next<a name="next"></a>
 Is used to produce the next value in a generator such as random and interval.
 
@@ -244,7 +267,7 @@ Create a Note using this <a href="/melrose/notations.html#note-not">format</a>.
 ```javascript
 note('e')
 
-note('2e#.--')
+note('2.e#--')
 ```
 
 ### notemap<a name="notemap"></a>
@@ -257,7 +280,7 @@ m2 = notemap('3 6 9', note('d2'))
 ```
 
 ### octave<a name="octave"></a>
-Changes the pitch of notes by steps of 12 semitones for one or more musical objects.
+Change the pitch of notes by steps of 12 semitones for one or more musical objects.
 
 ```javascript
 octave(1,sequence('C D')) // => C5 D5
@@ -328,7 +351,7 @@ next(num)
 ```
 
 ### record<a name="record"></a>
-Creates a recorded sequence of notes from the current MIDI input device.
+Create a recorded sequence of notes from the current MIDI input device.
 
 ```javascript
 r = record() // record notes played on the current input device and stop recording after 5 seconds
@@ -349,9 +372,11 @@ Replaces all occurrences of one musical object with another object for a given c
 ```javascript
 c = note('c')
 
+d = note('d')
+
 pitchA = pitch(1,c)
 
-pitchD = replace(pitchA, c, note('d'))
+pitchD = replace(pitchA, c, d) // c -> d in pitchA
 ```
 
 ### reverse<a name="reverse"></a>
@@ -397,6 +422,13 @@ Serialise any grouping of notes from one or more musical objects.
 serial(chord('E')) // => E G B
 
 serial(sequence('(C D)'),note('E')) // => C D E
+```
+
+### track<a name="track"></a>
+Create a named track for a given MIDI channel with a musical object.
+
+```javascript
+track("lullaby",1,sequence('C D E')) // => a new track on MIDI channel 1
 ```
 
 ### undynamic<a name="undynamic"></a>

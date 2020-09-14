@@ -403,7 +403,7 @@ sequence('c (d e f) a =')`,
 		Alias:       "N",
 		Template:    `note('${1:letter}')`,
 		Samples: `note('e')
-note('2e#.--')`,
+note('2.e#--')`,
 		IsCore: true,
 		Func: func(s string) interface{} {
 			n, err := core.ParseNote(s)

@@ -13,6 +13,8 @@ On this operating system, you have to pass 3 steps of security checks:
 
 1. When downloading the release (.zip archive) from Github, your computer will detect that it contains an application. It will ask you to proceed.
 
-2. When starting the application melrōse using the script (`run.sh`), your computer will detect that the developer of the application is not verified. It will ask you to accept (only once).
+2. When starting the application melrōse using the script (`run.sh`), your computer will detect that the developer of the application is not verified. It will ask you to accept.
 
-3. When the application melrōse is loading an extra library for MIDI access, your comnputer will detect that the developer of the application is not verified. It will ask you to accept (only once).
+.image
+
+3. When the application melrōse is loading an extra library for MIDI access, your comnputer will detect that the developer of the application is not verified. It will ask you to accept.
