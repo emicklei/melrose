@@ -23,7 +23,7 @@ func zeroChord() Chord {
 }
 
 func (c Chord) Inspect(i Inspection) {
-	i.Properties["S"] = c.S().Storex()
+	i.Properties[""] = c.S().String()
 }
 
 func (c Chord) String() string {

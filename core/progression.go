@@ -96,3 +96,7 @@ func (p Progression) Storex() string {
 	fmt.Fprint(&b, "')")
 	return b.String()
 }
+
+func (p Progression) Inspect(i Inspection) {
+	i.Properties[""] = p.S().String()
+}

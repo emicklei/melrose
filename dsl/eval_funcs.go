@@ -114,10 +114,11 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 
 	eval["joinmap"] = Function{
-		Title:      "Join Map creator",
-		Prefix:     "joinm",
-		IsComposer: true,
-		Template:   `joinmap('${1:indices}',${2:join})`,
+		Title:       "Join Map creator",
+		Description: "creates a new join by mapping elements based on an index (1-based)",
+		Prefix:      "joinm",
+		IsComposer:  true,
+		Template:    `joinmap('${1:indices}',${2:join})`,
 		Func: func(indices string, join interface{}) interface{} { // allow multiple seq?
 			v := getValueable(join)
 			vNow := v.Value()
@@ -128,9 +129,10 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 
 	eval["bars"] = Function{
-		Prefix:     "ba",
-		IsComposer: true,
-		Template:   `bars(${1:object})`,
+		Prefix:      "ba",
+		Description: "compute the number of bars that is taken when playing a musical object",
+		IsComposer:  true,
+		Template:    `bars(${1:object})`,
 		Func: func(seq interface{}) interface{} {
 			s, ok := getSequenceable(seq)
 			if !ok {
@@ -142,9 +144,10 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 
 	eval["beats"] = Function{
-		Prefix:     "be",
-		IsComposer: true,
-		Template:   `beats(${1:object})`,
+		Prefix:      "be",
+		Description: "compute the number of beats that is taken when playing a musical object",
+		IsComposer:  true,
+		Template:    `beats(${1:object})`,
 		Func: func(seq interface{}) interface{} {
 			s, ok := getSequenceable(seq)
 			if !ok {
@@ -154,10 +157,11 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		}}
 
 	eval["track"] = Function{
-		Title:    "Track creator",
-		Prefix:   "tr",
-		Template: `track('${1:title},${2:channel}')`,
-		Samples:  `track("lullaby",1,sequence('C D E')) // => a new track on MIDI channel 1`,
+		Title:       "Track creator",
+		Description: "create a named track for a given MIDI channel with a musical object",
+		Prefix:      "tr",
+		Template:    `track('${1:title},${2:channel}')`,
+		Samples:     `track("lullaby",1,sequence('C D E')) // => a new track on MIDI channel 1`,
 		Func: func(title string, channel int, playables ...interface{}) interface{} {
 			if len(title) == 0 {
 				return notify.Panic(fmt.Errorf("cannot have a track without title"))
@@ -178,6 +182,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 
 	eval["multi"] = Function{
 		Title:         "Multi track creator",
+		Description:   "create a multi-track object from zero or more tracks",
 		Prefix:        "mtr",
 		Template:      `multi()`,
 		ControlsAudio: true,
@@ -533,7 +538,7 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 
 	eval["octave"] = Function{
 		Title:       "Octave operator",
-		Description: "changes the pitch of notes by steps of 12 semitones for one or more musical objects",
+		Description: "change the pitch of notes by steps of 12 semitones for one or more musical objects",
 		Prefix:      "oct",
 		Template:    `octave(${1:offset},${2:sequenceable})`,
 		IsComposer:  true,
@@ -553,7 +558,7 @@ serial(sequence('(C D)'),note('E')) // => C D E`,
 
 	eval["record"] = Function{
 		Title:         "Recording creator",
-		Description:   "creates a recorded sequence of notes from the current MIDI input device",
+		Description:   "create a recorded sequence of notes from the current MIDI input device",
 		ControlsAudio: true,
 		Prefix:        "rec",
 		Template:      `record()`,
@@ -588,13 +593,17 @@ s = r.S() // returns the sequence of notes from the recording`,
 		Prefix:      "it",
 		Alias:       "I",
 		Template:    `iterator(${1:array-element})`,
-		Samples:     `iterator('1','2')`,
+		Samples: `i = iterator(1,3,5,7,9)
+		p = pitch(i,note('c'))
+		lp = loop(p,next(i))
+		`,
 		Func: func(values ...interface{}) *core.Iterator {
 			return &core.Iterator{
 				Target: values,
 			}
 		}})
 
+	// TODO parallel,serial => group, ungroup
 	eval["parallel"] = Function{
 		Title:       "Parallel operator",
 		Description: "create a new sequence in which all notes of a musical object are grouped",
@@ -798,8 +807,9 @@ begin(lp_pi)`,
 		Description: `replaces all occurrences of one musical object with another object for a given composed musical object`,
 		Template:    `replace(${1:target},${2:from},${3:to})`,
 		Samples: `c = note('c')
+d = note('d')
 pitchA = pitch(1,c)
-pitchD = replace(pitchA, c, note('d'))`,
+pitchD = replace(pitchA, c, d) // c -> d in pitchA`,
 		Func: func(target interface{}, from, to interface{}) interface{} {
 			targetS, ok := getSequenceable(target)
 			if !ok {

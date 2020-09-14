@@ -141,7 +141,7 @@ func (s Sequence) NoteLength() float64 {
 
 func (s Sequence) Inspect(i Inspection) {
 	i.Properties["duration"] = s.NoteLength()
-	i.Properties["notes"] = len(s.Notes)
+	i.Properties["note(s) | groups"] = len(s.Notes)
 	i.Properties["bars"] = float64(s.NoteLength()) * 4 / float64(i.Context.Control().BIAB()) // 4 because signature
 }
 
