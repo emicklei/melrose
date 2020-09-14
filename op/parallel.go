@@ -2,6 +2,7 @@ package op
 
 import (
 	"fmt"
+
 	"github.com/emicklei/melrose/core"
 )
 
@@ -19,7 +20,7 @@ func (p Parallel) S() core.Sequence {
 
 func (p Parallel) Storex() string {
 	if s, ok := p.Target.(core.Storable); ok {
-		return fmt.Sprintf("parallel(%s)", s.Storex())
+		return fmt.Sprintf("group(%s)", s.Storex())
 	}
 	return ""
 }

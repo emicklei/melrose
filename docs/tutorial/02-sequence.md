@@ -24,9 +24,9 @@ Only the first note should set the duration of the group.
 
 ### sustain pedal
 
-In a sequence, you can control the postion of the sustain pedal.
-To press the pedal down, you use the character `>`.
-To release the pedal up, you use the character `<`.
+In a sequence, you can control the position of the sustain pedal.
+To push the pedal, you use the character `>`.
+To release the pedal, you use the character `<`.
 The character `^` is short for up and down.
 
 ```javascript

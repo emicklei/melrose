@@ -3,8 +3,9 @@ package op
 import (
 	"bytes"
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"io"
+
+	"github.com/emicklei/melrose/core"
 )
 
 type Serial struct {
@@ -24,7 +25,7 @@ func (a Serial) S() core.Sequence {
 // Storex is part of Storable
 func (a Serial) Storex() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "serial(")
+	fmt.Fprintf(&b, "ungroup(")
 	for i, each := range a.Target {
 		s, ok := each.(core.Storable)
 		if !ok {

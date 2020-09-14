@@ -184,7 +184,8 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		Title:         "Multi track creator",
 		Description:   "create a multi-track object from zero or more tracks",
 		Prefix:        "mtr",
-		Template:      `multi()`,
+		Template:      `multi(${1:track})`,
+		Samples:       `multi(track1,track2,track3) // one or more tracks in one multi-track object`,
 		ControlsAudio: true,
 		Func: func(varOrTrack ...interface{}) interface{} {
 			tracks := []core.Valueable{}
@@ -515,19 +516,19 @@ next(num)`,
 			return nil
 		}}
 
-	eval["serial"] = Function{
-		Title:       "Serial operator",
-		Description: "serialise any grouping of notes from one or more musical objects",
-		Prefix:      "ser",
-		Template:    `serial(${1:sequenceable})`,
+	eval["ungroup"] = Function{
+		Title:       "Ungroup operator",
+		Description: "undo any grouping of notes from one or more musical objects",
+		Prefix:      "ung",
+		Template:    `ungroup(${1:sequenceable})`,
 		IsComposer:  true,
-		Samples: `serial(chord('E')) // => E G B
-serial(sequence('(C D)'),note('E')) // => C D E`,
+		Samples: `ungroup(chord('E')) // => E G B
+ungroup(sequence('(C D)'),note('E')) // => C D E`,
 		Func: func(playables ...interface{}) interface{} {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
-					notify.Print(notify.Warningf("cannot serial (%T) %v", p, p))
+					notify.Print(notify.Warningf("cannot ungroup (%T) %v", p, p))
 					return nil
 				} else {
 					joined = append(joined, s)
@@ -603,18 +604,17 @@ s = r.S() // returns the sequence of notes from the recording`,
 			}
 		}})
 
-	// TODO parallel,serial => group, ungroup
-	eval["parallel"] = Function{
-		Title:       "Parallel operator",
+	eval["group"] = Function{
+		Title:       "Group operator",
 		Description: "create a new sequence in which all notes of a musical object are grouped",
 		Prefix:      "par",
 		Alias:       "Pa",
-		Template:    `parallel(${1:sequenceable})`,
-		Samples:     `parallel(sequence('C D E')) // => (C D E)`,
+		Template:    `group(${1:sequenceable})`,
+		Samples:     `group(sequence('C D E')) // => (C D E)`,
 		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
-				return notify.Panic(fmt.Errorf("cannot parallel (%T) %v", value, value))
+				return notify.Panic(fmt.Errorf("cannot group (%T) %v", value, value))
 			} else {
 				return op.Parallel{Target: s}
 			}
