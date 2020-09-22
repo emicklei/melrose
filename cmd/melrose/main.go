@@ -22,8 +22,6 @@ var (
 	verbose   = flag.Bool("v", false, "verbose logging")
 	inputFile = flag.String("i", "", "read expressions from a file")
 	httpPort  = flag.String("http", ":8118", "address on which to listen for HTTP requests")
-
-	history = ".melrose.history"
 )
 
 func main() {
@@ -68,27 +66,14 @@ func welcome() {
 }
 
 func tearDown(line *liner.State, ctx core.Context) {
-	//dsl.StopAllLoops(store)
-	//control.Stop()
-
 	ctx.Control().Reset()
 	ctx.Device().Reset()
-	if f, err := os.Create(history); err != nil {
-		notify.Print(notify.Errorf("error writing history file:%v", err))
-	} else {
-		line.WriteHistory(f)
-		f.Close()
-	}
 	fmt.Println("\033[1;34mmelrose\033[0m" + " sings bye!")
 }
 
 func setup(line *liner.State) {
 	line.SetCtrlCAborts(true)
 	line.SetWordCompleter(completeMe)
-	if f, err := os.Open(history); err == nil {
-		line.ReadHistory(f)
-		f.Close()
-	}
 }
 
 func repl(line *liner.State, ctx core.Context) {
@@ -122,7 +107,6 @@ func repl(line *liner.State, ctx core.Context) {
 				core.PrintValue(ctx, result)
 			}
 		}
-		line.AppendHistory(entry)
 	}
 exit:
 }

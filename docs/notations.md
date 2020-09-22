@@ -56,7 +56,7 @@ doremi = sequence('c d e')
 
 ## Pedal control
 
-Usable in `sequence` only.
+Usable in `sequence` or `note`.
 
 | Notation | Description
 |----------|-------------

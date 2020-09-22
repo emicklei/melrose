@@ -17,10 +17,10 @@ title: Melrōse
 
 `melrōse` is a tool to create and play music by programming melodies.
 It uses a custom language to compose notes and create loops and tracks to play.
-This is an example of a simple scale.
+This is an example of a simple major scale C.
 
 ```javascript
-sequence('C D E F G A B C5')
+sequence('c d e f g a b c5')
 ```
 
 Note sequences in your program can be changed while playing giving you direct audible feedback. 
