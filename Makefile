@@ -40,9 +40,10 @@ package: clean build vsc
 	mkdir target/demos
 	cp docs/examples/*.mel target/demos
 	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target
-	cp run.sh target
+	cp ./packaging/macosx/*.sh target
+	echo "$(LATEST_TAG)" > target/version.txt
 	cp ../melrose-for-vscode/*vsix target
-	cd target && zip -mr macosx-melrose-$(LATEST_TAG).zip . && md5 macosx-melrose-$(LATEST_TAG).zip > macosx-melrose-$(LATEST_TAG).zip.md5
+	cp LICENSE target
 
 
 # go get -u -v github.com/aktau/github-release
