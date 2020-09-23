@@ -16,7 +16,7 @@ import (
 )
 
 // Syntax tells what language version this package is supporting.
-const Syntax = "1.0" // major,minor
+const Syntax = "1.0-rc" // major,minor
 
 func IsCompatibleSyntax(s string) bool {
 	if len(s) == 0 {

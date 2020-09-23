@@ -3,10 +3,11 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"io"
 	"sort"
 	"strings"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
@@ -15,21 +16,23 @@ import (
 func showHelp(ctx core.Context, args []string) notify.Message {
 	var b bytes.Buffer
 
-	fmt.Fprintf(&b, "\nversion %s, syntax: %s\n", version, dsl.Syntax)
-	fmt.Fprintf(&b, "https://emicklei.github.io/melrose \n")
+	if len(args) == 0 {
+		fmt.Fprintf(&b, "\nversion %s, syntax: %s\n", version, dsl.Syntax)
+		fmt.Fprintf(&b, "https://emicklei.github.io/melrose \n")
+	}
 
 	// detect help for a command or function
 	if len(args) > 0 {
 		cmdfunc := strings.TrimSpace(args[0])
 		if cmd, ok := cmdFunctions()[cmdfunc]; ok {
-			fmt.Fprintf(&b, "%s\n", cmdfunc)
-			fmt.Fprintf(&b, "%s\n", cmd.Description)
+			fmt.Fprintf(&b, "%s\n----------\n", cmdfunc)
+			fmt.Fprintf(&b, "%s\n\n", cmd.Description)
 			fmt.Fprintf(&b, "%s\n", cmd.Sample)
 			return notify.Infof("%s", b.String())
 		}
 		if fun, ok := dsl.EvalFunctions(ctx)[cmdfunc]; ok {
-			fmt.Fprintf(&b, "%s\n", cmdfunc)
-			fmt.Fprintf(&b, "%s\n", fun.Description)
+			fmt.Fprintf(&b, "%s\n----------\n", cmdfunc)
+			fmt.Fprintf(&b, "%s\n\n", fun.Description)
 			fmt.Fprintf(&b, "%s\n", fun.Template)
 			return notify.Infof("%s", b.String())
 		}

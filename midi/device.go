@@ -74,6 +74,19 @@ func (m *Midi) Command(args []string) notify.Message {
 	case "echo":
 		m.echo = !m.echo
 		return nil
+	case "channel":
+		if len(args) != 2 {
+			return notify.Warningf("missing channel number")
+		}
+		nr, err := strconv.Atoi(args[1])
+		if err != nil {
+			return notify.Errorf("bad channel number:%v", err)
+		}
+		if nr < 1 || nr > 16 {
+			return notify.Errorf("bad channel number; must be in [1..16]")
+		}
+		m.defaultOutputChannel = nr
+		return nil
 	case "input":
 		if len(args) != 2 {
 			return notify.Warningf("missing device number")
@@ -103,33 +116,38 @@ func (m *Midi) Command(args []string) notify.Message {
 
 func (m *Midi) printInfo() {
 	fmt.Println("Usage:")
-	fmt.Println(":m eacho              --- toggle printing the notes that play")
-	fmt.Println(":m input  <device-id> --- change the current MIDI input device id")
-	fmt.Println(":m output <device-id> --- change the current MIDI output device id")
+	fmt.Println(":m echo                --- toggle printing the notes that play")
+	fmt.Println(":m input   <device-id> --- change the current MIDI input device id")
+	fmt.Println(":m output  <device-id> --- change the current MIDI output device id")
+	fmt.Println(":m channel <1..16>     --- change the default MIDI output channel")
 	fmt.Println()
-	fmt.Printf("[midi] echo notes: %v\n", m.echo)
-	fmt.Println("[midi] default output channel:", m.defaultOutputChannel)
+
 	var midiDeviceInfo *portmidi.DeviceInfo
 	defaultOut := portmidi.DefaultOutputDeviceID()
-	fmt.Println("[midi] default output device id:", defaultOut)
-	fmt.Println("[midi] current output device id:", m.currentOutputDeviceID)
-
 	defaultIn := portmidi.DefaultInputDeviceID()
-	fmt.Println("[midi] default input device id:", defaultIn)
-	fmt.Println("[midi] current input device id:", m.currentInputDeviceID)
 
 	for i := 0; i < portmidi.CountDevices(); i++ {
 		midiDeviceInfo = portmidi.Info(portmidi.DeviceID(i)) // returns info about a MIDI device
-		fmt.Printf("[midi] device id %d: ", i)
+		fmt.Printf("[midi] device id = %d: ", i)
 		usage := "output"
 		if midiDeviceInfo.IsInputAvailable {
 			usage = "input"
 		}
+		oc := "open"
+		if !midiDeviceInfo.IsOpened {
+			oc = "closed"
+		}
 		fmt.Print("\"", midiDeviceInfo.Interface, "/", midiDeviceInfo.Name, "\"",
-			", open=", midiDeviceInfo.IsOpened,
-			", usage=", usage)
+			", is ", oc,
+			", use for ", usage)
 		fmt.Println()
 	}
+
+	fmt.Println()
+	fmt.Printf("[midi] %v = echo notes\n", m.echo)
+	fmt.Printf("[midi] %d = input  device id (default = %d)\n", m.currentInputDeviceID, defaultIn)
+	fmt.Printf("[midi] %d = output device id (default = %d)\n", m.currentOutputDeviceID, defaultOut)
+	fmt.Printf("[midi] %d = default output channel\n", m.defaultOutputChannel)
 }
 
 func Open() (*Midi, error) {
