@@ -96,6 +96,7 @@ func repl(line *liner.State, ctx core.Context) {
 				if msg := cmd.Func(ctx, args[1:]); msg != nil {
 					notify.Print(msg)
 				}
+				line.AppendHistory(entry)
 				continue
 			}
 		}
@@ -107,6 +108,7 @@ func repl(line *liner.State, ctx core.Context) {
 				core.PrintValue(ctx, result)
 			}
 		}
+		line.AppendHistory(entry)
 	}
 exit:
 }

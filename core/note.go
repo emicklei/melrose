@@ -62,16 +62,27 @@ var (
 	PedalUpDown = Note{Name: "^", duration: 0}
 	PedalDown   = Note{Name: ">", duration: 0}
 	PedalUp     = Note{Name: "<", duration: 0}
+	rest        = Note{Name: "="}
 )
 
-var rest = Note{Name: "="}
+const validNoteNames = "ABCDEFG=<^>"
 
 func NewNote(name string, octave int, duration float32, accidental int, dot bool, velocity int) (Note, error) {
 	if len(name) != 1 {
 		return rest, fmt.Errorf("note must be one character, got [%s]", name)
 	}
-	if !strings.Contains("ABCDEFG=", name) {
-		return rest, fmt.Errorf("invalid note name [ABCDEFG=]:" + name)
+	// pedal check
+	switch name {
+	case "^":
+		return PedalUpDown, nil
+	case ">":
+		return PedalDown, nil
+	case "<":
+		return PedalUp, nil
+	}
+
+	if !strings.Contains(validNoteNames, name) {
+		return rest, fmt.Errorf("invalid note name [%s]:%s", validNoteNames, name)
 	}
 	if octave < 0 || octave > 9 {
 		return rest, fmt.Errorf("invalid octave [0..9]: %d", octave)

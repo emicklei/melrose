@@ -2,11 +2,14 @@ package midi
 
 import (
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"time"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/rakyll/portmidi"
 )
+
+var echoMIDISent bool
 
 type midiEvent struct {
 	echoString string
@@ -26,7 +29,7 @@ func (m midiEvent) String() string {
 }
 
 func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
-	if len(m.echoString) > 0 {
+	if echoMIDISent && len(m.echoString) > 0 {
 		print(m.echoString)
 	}
 	for _, each := range m.which {

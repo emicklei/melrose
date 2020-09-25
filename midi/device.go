@@ -16,7 +16,7 @@ type Midi struct {
 	enabled      bool
 	stream       *portmidi.Stream
 	deviceID     int
-	echo         bool
+	echo         bool // TODO remove
 	sustainPedal *SustainPedal
 
 	defaultOutputChannel  int
@@ -72,8 +72,8 @@ func (m *Midi) Command(args []string) notify.Message {
 	}
 	switch args[0] {
 	case "echo":
-		m.echo = !m.echo
-		return nil
+		echoMIDISent = !echoMIDISent
+		return notify.Infof("printing notes enabled:%v", echoMIDISent)
 	case "channel":
 		if len(args) != 2 {
 			return notify.Warningf("missing channel number")
@@ -87,7 +87,7 @@ func (m *Midi) Command(args []string) notify.Message {
 		}
 		m.defaultOutputChannel = nr
 		return nil
-	case "input":
+	case "in":
 		if len(args) != 2 {
 			return notify.Warningf("missing device number")
 		}
@@ -97,7 +97,7 @@ func (m *Midi) Command(args []string) notify.Message {
 		}
 		m.currentInputDeviceID = nr
 		return notify.Infof("Current input device id:%v", m.currentInputDeviceID)
-	case "output":
+	case "out":
 		if len(args) != 2 {
 			return notify.Warningf("missing device number")
 		}
@@ -116,9 +116,9 @@ func (m *Midi) Command(args []string) notify.Message {
 
 func (m *Midi) printInfo() {
 	fmt.Println("Usage:")
-	fmt.Println(":m echo                --- toggle printing the notes that play")
-	fmt.Println(":m input   <device-id> --- change the current MIDI input device id")
-	fmt.Println(":m output  <device-id> --- change the current MIDI output device id")
+	fmt.Println(":m echo                --- toggle printing the notes that are send")
+	fmt.Println(":m inp     <device-id> --- change the current MIDI input device id")
+	fmt.Println(":m out     <device-id> --- change the current MIDI output device id")
 	fmt.Println(":m channel <1..16>     --- change the default MIDI output channel")
 	fmt.Println()
 
