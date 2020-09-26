@@ -91,6 +91,9 @@ func ParseSequence(input string) (Sequence, error) {
 	// hack to keep scanning simple, TODO
 	splitable := strings.Replace(input, groupOpen, " "+groupOpen+" ", -1)
 	splitable = strings.Replace(splitable, groupClose, " "+groupClose+" ", -1)
+	splitable = strings.Replace(splitable, PedalDown.Name, " "+PedalDown.Name+" ", -1)
+	splitable = strings.Replace(splitable, PedalUp.Name, " "+PedalUp.Name+" ", -1)
+	splitable = strings.Replace(splitable, PedalUpDown.Name, " "+PedalUpDown.Name+" ", -1)
 	parts := strings.Fields(splitable)
 	ingroup := false
 	var group []Note
