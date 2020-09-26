@@ -117,7 +117,7 @@ func (m *Midi) Command(args []string) notify.Message {
 func (m *Midi) printInfo() {
 	fmt.Println("Usage:")
 	fmt.Println(":m echo                --- toggle printing the notes that are send")
-	fmt.Println(":m inp     <device-id> --- change the current MIDI input device id")
+	fmt.Println(":m in      <device-id> --- change the current MIDI input device id")
 	fmt.Println(":m out     <device-id> --- change the current MIDI output device id")
 	fmt.Println(":m channel <1..16>     --- change the default MIDI output channel")
 	fmt.Println()
@@ -138,8 +138,7 @@ func (m *Midi) printInfo() {
 			oc = "closed"
 		}
 		fmt.Print("\"", midiDeviceInfo.Interface, "/", midiDeviceInfo.Name, "\"",
-			", is ", oc,
-			", use for ", usage)
+			", is ", oc, " for ", usage)
 		fmt.Println()
 	}
 
@@ -206,6 +205,8 @@ func (m *Midi) Close() {
 	}
 	portmidi.Terminate()
 }
+
+// echo -e "\033[93mred\033[m" # Prints “red” in red.
 
 // 93 is bright yellow
 func print(arg interface{}) {

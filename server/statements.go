@@ -25,8 +25,8 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	query := r.URL.Query()
 	l.context.Environment()[core.WorkingDirectory] = filepath.Dir(query.Get("file"))
 
-	trace := query.Get("trace") == "true"
-	if trace && !core.IsDebug() {
+	debug := query.Get("trace") == "true"
+	if debug && !core.IsDebug() {
 		core.ToggleDebug()
 		defer core.ToggleDebug()
 	}
@@ -122,13 +122,13 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	} else {
 		core.PrintValue(l.context, response.Object)
 	}
-	if trace {
+	if debug {
 		// doit again
 		buf := bytes.Buffer{}
 		enc := json.NewEncoder(&buf)
 		enc.SetIndent("", "\t")
 		err = enc.Encode(response)
-		log.Printf("[melrose.trace] %#v, error:%v\n", buf.String(), err)
+		notify.Debugf("%s, error:%v\n", buf.String(), err)
 	}
 }
 

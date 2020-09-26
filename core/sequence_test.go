@@ -12,12 +12,14 @@ func ExampleParseSequence() {
 	m4, _ := ParseSequence("(C E)(.D F)(E G)")
 	canto, _ := ParseSequence("B_ 8F 8D_5 8B_5 8F A_ 8E_ 8C5 8A_5 8E_")
 	pedal, _ := ParseSequence("> c d e ^ ( c d e ) <")
+	pedalRest, _ := ParseSequence("=^ ^= ^=^")
 	fmt.Println(m)
 	fmt.Println(m2)
 	fmt.Println(m3)
 	fmt.Println(m4)
 	fmt.Println(canto)
 	fmt.Println(pedal)
+	fmt.Println(pedalRest)
 	// Output:
 	// C (E G)
 	// C A

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 
 	"github.com/rakyll/portmidi"
 )
@@ -25,12 +26,15 @@ func (m midiEvent) String() string {
 	if m.onoff == noteOff {
 		onoff = "off"
 	}
-	return fmt.Sprintf("ch=%d nrs=%v notes=%s %s", m.channel, m.which, m.echoString, onoff)
+	return fmt.Sprintf("ch=%d nrs=%v notes=%s state=%s", m.channel, m.which, m.echoString, onoff)
 }
 
 func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
 	if echoMIDISent && len(m.echoString) > 0 {
 		print(m.echoString)
+	}
+	if core.IsDebug() {
+		notify.Debugf("%s", m.String())
 	}
 	for _, each := range m.which {
 		m.out.WriteShort(m.onoff|int64(m.channel-1), each, m.velocity)
