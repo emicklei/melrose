@@ -35,7 +35,6 @@ func TestEventNoteOff(t *testing.T) {
 
 func TestPlay(t *testing.T) {
 	m := new(Midi)
-	m.sustainPedal = NewSustainPedal()
 	m.enabled = true
 	m.timeline = core.NewTimeline()
 	now := time.Now()

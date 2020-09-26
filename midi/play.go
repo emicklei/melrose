@@ -28,7 +28,7 @@ func (m *Midi) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.
 		if len(eachGroup) == 0 {
 			continue
 		}
-		if m.sustainPedal.TakeInstruction(m.timeline, moment, eachGroup) {
+		if m.handledPedalChange(channel, m.timeline, moment, eachGroup) {
 			continue
 		}
 		var actualDuration time.Duration
@@ -52,13 +52,7 @@ func (m *Midi) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.
 		}
 		m.timeline.Schedule(event, moment)
 		moment = moment.Add(actualDuration)
-
-		// note off is not echoed
-		if m.sustainPedal.Down {
-			m.sustainPedal.Record(event)
-		} else {
-			m.timeline.Schedule(event.asNoteoff(), moment)
-		}
+		m.timeline.Schedule(event.asNoteoff(), moment)
 	}
 	return moment
 }

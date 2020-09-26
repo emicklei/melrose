@@ -1,7 +1,6 @@
 package midi
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/emicklei/melrose/core"
@@ -21,23 +20,21 @@ type midiEvent struct {
 	out        *portmidi.Stream
 }
 
-func (m midiEvent) String() string {
-	onoff := "on"
-	if m.onoff == noteOff {
-		onoff = "off"
-	}
-	return fmt.Sprintf("ch=%d nrs=%v notes=%s state=%s", m.channel, m.which, m.echoString, onoff)
-}
-
 func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
 	if echoMIDISent && len(m.echoString) > 0 {
 		print(m.echoString)
 	}
-	if core.IsDebug() {
-		notify.Debugf("%s", m.String())
-	}
+	status := m.onoff | int64(m.channel-1)
 	for _, each := range m.which {
-		m.out.WriteShort(m.onoff|int64(m.channel-1), each, m.velocity)
+		m.out.WriteShort(status, each, m.velocity)
+	}
+	if core.IsDebug() {
+		onoff := "on"
+		if m.onoff == noteOff {
+			onoff = "off"
+		}
+		notify.Debugf("ch=%d notes=%s state=%s bytes=[%b(%d),%v,%b(%d)]",
+			m.channel, m.echoString, onoff, status, status, m.which, m.velocity, m.velocity)
 	}
 }
 

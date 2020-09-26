@@ -13,11 +13,10 @@ import (
 
 // Midi is an melrose.AudioDevice
 type Midi struct {
-	enabled      bool
-	stream       *portmidi.Stream
-	deviceID     int
-	echo         bool // TODO remove
-	sustainPedal *SustainPedal
+	enabled  bool
+	stream   *portmidi.Stream
+	deviceID int
+	echo     bool // TODO remove
 
 	defaultOutputChannel  int
 	currentOutputDeviceID int
@@ -36,8 +35,9 @@ type MIDIWriter interface {
 const (
 	noteOn        int64 = 0x90 // 10010000 , 144
 	noteOff       int64 = 0x80 // 10000000 , 128
-	controlChange int64 = 176  // 10110000 , 176
-	noteAllOff    int64 = 123  // 01111011 , 123
+	controlChange int64 = 0xB0 // 10110000 , 176
+	noteAllOff    int64 = 0x78 // 01111000 , 120  (not 123 because sustain)
+	sustainPedal  int64 = 0x40
 )
 
 var (
@@ -54,7 +54,6 @@ func (m *Midi) Reset() {
 			}
 		}
 	}
-	m.sustainPedal.Reset()
 }
 
 func (m *Midi) Timeline() *core.Timeline { return m.timeline }
@@ -151,7 +150,6 @@ func (m *Midi) printInfo() {
 
 func Open() (*Midi, error) {
 	m := new(Midi)
-	m.sustainPedal = NewSustainPedal()
 	portmidi.Initialize()
 	deviceID := portmidi.DefaultOutputDeviceID()
 	if deviceID == -1 {

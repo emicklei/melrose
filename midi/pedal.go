@@ -1,71 +1,65 @@
 package midi
 
 import (
-	"sync"
 	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
+	"github.com/rakyll/portmidi"
 )
 
-// SustainPedal models the state of a pedal.
-type SustainPedal struct {
-	mutex     sync.Mutex
-	Down      bool
-	OpenNotes []midiEvent
+type pedalEvent struct {
+	goingDown bool
+	channel   int
+	out       *portmidi.Stream
 }
 
-// NewSustainPedal returns a new.
-func NewSustainPedal() *SustainPedal {
-	s := &SustainPedal{
-		Down:      false,
-		OpenNotes: []midiEvent{},
+func (p pedalEvent) Handle(tim *core.Timeline, when time.Time) {
+	// 0 to 63 = Off, 64 to 127 = On
+	var onoff int64 = 0
+	if p.goingDown {
+		onoff = 127
 	}
-	return s
+	// MIDI CC 64	Damper Pedal /Sustain Pedal
+	status := controlChange | int64(p.channel-1)
+	p.out.WriteShort(status, sustainPedal, onoff)
+	if core.IsDebug() {
+		msg := "down"
+		if !p.goingDown {
+			msg = "up"
+		}
+		notify.Debugf("ch=%d bytes=[%b(%d),%b(%d),%b(%d)] sustain=%s",
+			p.channel, status, status, sustainPedal, sustainPedal, onoff, onoff, msg)
+	}
 }
 
-// Reset forgets about pending events and pedal state.
-func (s *SustainPedal) Reset() {
-	s.mutex.Lock()
-	s.Down = false
-	s.OpenNotes = []midiEvent{}
-	s.mutex.Unlock()
-}
-
-// Record is storing the note event to handle it on pedal up.
-func (s *SustainPedal) Record(event midiEvent) {
-	s.mutex.Lock()
-	s.OpenNotes = append(s.OpenNotes, event)
-	s.mutex.Unlock()
-}
-
-// TakeInstruction processes a pedal instruction iff the group has a pedal change.
-// Returns true if it was processed.
-func (s *SustainPedal) TakeInstruction(timeline *core.Timeline, moment time.Time, group []core.Note) bool {
+func (m *Midi) handledPedalChange(channel int, timeline *core.Timeline, moment time.Time, group []core.Note) bool {
 	if len(group) == 0 || len(group) > 1 {
 		return false
 	}
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
-	switch group[0] {
-	case core.PedalUp:
-		s.scheduleNoteOff(timeline, moment)
-		s.Down = false
+	note := group[0]
+	switch {
+	case note.IsPedalUp():
+		timeline.Schedule(pedalEvent{
+			goingDown: false,
+			channel:   channel,
+			out:       m.stream}, moment)
 		return true
-	case core.PedalDown:
-		s.Down = true
+	case note.IsPedalUpDown():
+		timeline.Schedule(pedalEvent{
+			goingDown: false,
+			channel:   channel,
+			out:       m.stream}, moment)
+		timeline.Schedule(pedalEvent{
+			goingDown: true,
+			channel:   channel,
+			out:       m.stream}, moment)
 		return true
-	case core.PedalUpDown:
-		s.Down = true
-		s.scheduleNoteOff(timeline, moment)
-		return true
+	case note.IsPedalDown():
+		timeline.Schedule(pedalEvent{
+			goingDown: true,
+			channel:   channel,
+			out:       m.stream}, moment)
 	}
 	return false
-}
-
-// scheduleNoteOff is run in mutex protection
-func (s *SustainPedal) scheduleNoteOff(timeline *core.Timeline, moment time.Time) {
-	for _, event := range s.OpenNotes {
-		timeline.Schedule(event.asNoteoff(), moment)
-	}
-	s.OpenNotes = []midiEvent{}
 }
