@@ -158,7 +158,7 @@ func (n Note) WithFraction(f float64, dotted bool) Note {
 
 // Conversion
 // https://regoio.herokuapp.com/
-var noteRegexp = regexp.MustCompile("([\\d+\\*]?)([1]?[½¼⅛12468]?)(\\.?)([CDEFGAB=<^>])([#♯_♭]?)([0-9]?)([-+]?[-+]?[-+]?)")
+var noteRegexp = regexp.MustCompile("([1]?[½¼⅛12468]?)(\\.?)([CDEFGAB=<^>])([#♯_♭]?)([0-9]?)([-+]?[-+]?[-+]?)")
 
 // MustParseNote returns a Note by parsing the input. Panic if it fails.
 func MustParseNote(input string) Note {
