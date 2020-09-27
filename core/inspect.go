@@ -13,6 +13,8 @@ type Inspection struct {
 	Properties map[string]interface{}
 }
 
+const maxTextLength = 40
+
 func NewInspect(ctx Context, value interface{}) Inspection {
 	i := Inspection{
 		Context:    ctx,
@@ -38,7 +40,11 @@ func NewInspect(ctx Context, value interface{}) Inspection {
 // Markdown returns a markdown formatted string with inspection details
 func (i Inspection) Markdown() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "`%s`\n", i.Text)
+	title := i.Text
+	if len(title) > maxTextLength {
+		title = title[:maxTextLength] + "..."
+	}
+	fmt.Fprintf(&b, "`%s`\n", title)
 	// sort keys
 	keys := []string{}
 	for k := range i.Properties {
@@ -54,7 +60,8 @@ func (i Inspection) Markdown() string {
 
 func (i Inspection) String() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "%s ", i.Text)
+	title := i.Text
+	fmt.Fprintf(&b, "%s ", title)
 	// sort keys
 	keys := []string{}
 	for k := range i.Properties {
