@@ -66,7 +66,7 @@ func (t *Track) Add(seq interface{}) {
 				t.Content[here] = s
 				return
 			}
-			here += int(math.Round((x.S().NoteLength())))
+			here += int(math.Round((x.S().DurationFactor())))
 		}
 	}
 }
@@ -77,7 +77,7 @@ func (t *Track) Storex() string {
 	fmt.Fprintf(&buf, "track('%s',%d", t.Title, t.Channel)
 	for k, v := range t.Content {
 		fmt.Fprintf(&buf, ",")
-		sont := NewSequenceOnTrack(On(k), v)
+		sont := NewSequenceOnTrack(On(k), On(0), v) // TODO
 		fmt.Fprintf(&buf, sont.Storex())
 	}
 	fmt.Fprintf(&buf, ")")
@@ -86,11 +86,12 @@ func (t *Track) Storex() string {
 
 type SequenceOnTrack struct {
 	Bar    Valueable
+	Beat   Valueable
 	Target Sequenceable
 }
 
-func NewSequenceOnTrack(bar Valueable, seq Sequenceable) SequenceOnTrack {
-	return SequenceOnTrack{Bar: bar, Target: seq}
+func NewSequenceOnTrack(bar Valueable, beat Valueable, seq Sequenceable) SequenceOnTrack {
+	return SequenceOnTrack{Bar: bar, Beat: beat, Target: seq}
 }
 
 func (s SequenceOnTrack) S() Sequence {

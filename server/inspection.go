@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -43,7 +44,7 @@ func (l *LanguageServer) markdownOnInspecting(token string) string {
 	}
 	fun, ok := l.evaluator.LookupFunction(token)
 	if ok {
-		return fun.Description
+		return fmt.Sprintf("%s\n\n%s", fun.Description, fun.Template)
 	}
 	return ""
 }

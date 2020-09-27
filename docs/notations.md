@@ -10,17 +10,17 @@ Format: `(duration)(pitch)(=~^)(accidental)(dynamic)`
 
 | Notation | Alternative | Description
 |----------|-------|-------------
-| C4       | ¼C,C,c  | quarter C octave 4
-| 2E5      | ½E5,½e5 | Halftone (2 x ¼) E octave 5
-| 1C       |        | Full tone C octave 4
+| C4       | ¼C,C,c  | quarter C, octave 4
+| 2E5      | ½E5,½e5 | Halftone (2 x ¼), E octave 5
+| 1C       |        | Full tone C, octave 4
 | F#       | F♯,f♯  | F sharp
 | G_       | G♭    | G flat
-| .G       |       | duration x 1.5 = 3/8
+| .G       |       | duration fraction x 1.5 = 3/8
 | =        | =     | quarter rest
 | 2=       | ½=    | half rest
 | 1=       | 1=    | full rest
-| D+       | d+    | quarter D octave 4 MezzoForte
-| 16.E#--  | 16.e♯-- | sixteenth E sharp duration x 1.5 Piano
+| D+       | d+    | quarter D, octave 4, MezzoForte
+| 16.E#--  | 16.e♯-- | sixteenth, E sharp, fraction x 1.5, Piano
 
 ```javascript
 n = note('c#5')

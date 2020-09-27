@@ -9,7 +9,7 @@ func (n Note) Pitched(howManySemitones int) Note {
 		return n
 	}
 	simple := MIDItoNote(1.0, n.MIDI()+howManySemitones, 1.0)
-	nn, _ := NewNote(simple.Name, simple.Octave, n.duration, simple.Accidental, n.Dotted, n.Velocity)
+	nn, _ := NewNote(simple.Name, simple.Octave, n.fraction, simple.Accidental, n.Dotted, n.Velocity)
 	return nn
 }
 
@@ -17,6 +17,6 @@ func (n Note) Octaved(howmuch int) Note {
 	if howmuch == 0 {
 		return n
 	}
-	nn, _ := NewNote(n.Name, n.Octave+howmuch, n.duration, n.Accidental, n.Dotted, n.Velocity)
+	nn, _ := NewNote(n.Name, n.Octave+howmuch, n.fraction, n.Accidental, n.Dotted, n.Velocity)
 	return nn
 }

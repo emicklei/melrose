@@ -20,13 +20,13 @@ import (
 //      -/+   = velocity number
 // http://en.wikipedia.org/wiki/Musical_Note
 type Note struct {
-	Name       string // {C D E F G A B = }
+	Name       string // {C D E F G A B = ^ < >}
 	Octave     int    // [0 .. 9]
 	Accidental int    // -1 Flat, +1 Sharp, 0 Normal
-	Dotted     bool   // if true then reported duration is increased by half
+	Dotted     bool   // if true then fraction is increased by half
 	Velocity   int    // 1..127
 
-	duration float32 // {0.0625,0.125,0.25,0.5,1}
+	fraction float32 // {0.0625,0.125,0.25,0.5,1}
 }
 
 func (n Note) Storex() string {
@@ -45,7 +45,7 @@ func (n Note) ToRest() Note {
 		Accidental: n.Accidental,
 		Dotted:     n.Dotted,
 		Velocity:   n.Velocity,
-		duration:   n.duration,
+		fraction:   n.fraction,
 	}
 }
 
@@ -58,18 +58,17 @@ func (n Note) Replaced(from, to Sequenceable) Sequenceable {
 }
 
 var (
-	Rest4       = Note{Name: "=", duration: 0.25}
-	PedalUpDown = Note{Name: "^", duration: 0}
-	PedalDown   = Note{Name: ">", duration: 0}
-	PedalUp     = Note{Name: "<", duration: 0}
-	rest        = Note{Name: "="}
+	Rest4       = Note{Name: "=", fraction: 0.25}
+	PedalUpDown = Note{Name: "^", fraction: 0}
+	PedalDown   = Note{Name: ">", fraction: 0}
+	PedalUp     = Note{Name: "<", fraction: 0}
 )
 
 const validNoteNames = "ABCDEFG=<^>"
 
 func NewNote(name string, octave int, duration float32, accidental int, dot bool, velocity int) (Note, error) {
 	if len(name) != 1 {
-		return rest, fmt.Errorf("note must be one character, got [%s]", name)
+		return Rest4, fmt.Errorf("note must be one character, got [%s]", name)
 	}
 	// pedal check
 	switch name {
@@ -82,10 +81,10 @@ func NewNote(name string, octave int, duration float32, accidental int, dot bool
 	}
 
 	if !strings.Contains(validNoteNames, name) {
-		return rest, fmt.Errorf("invalid note name [%s]:%s", validNoteNames, name)
+		return Rest4, fmt.Errorf("invalid note name [%s]:%s", validNoteNames, name)
 	}
 	if octave < 0 || octave > 9 {
-		return rest, fmt.Errorf("invalid octave [0..9]: %d", octave)
+		return Rest4, fmt.Errorf("invalid octave [0..9]: %d", octave)
 	}
 	switch duration {
 	case 0.0625:
@@ -94,14 +93,14 @@ func NewNote(name string, octave int, duration float32, accidental int, dot bool
 	case 0.5:
 	case 1:
 	default:
-		return rest, fmt.Errorf("invalid duration [1,0.5,0.25,0.125,0.0625]:%v", duration)
+		return Rest4, fmt.Errorf("invalid fraction [1,0.5,0.25,0.125,0.0625]:%v", duration)
 	}
 
 	if accidental != 0 && accidental != -1 && accidental != 1 {
-		return rest, fmt.Errorf("invalid accidental: %d", accidental)
+		return Rest4, fmt.Errorf("invalid accidental: %d", accidental)
 	}
 
-	return Note{Name: name, Octave: octave, duration: duration, Accidental: accidental, Dotted: dot, Velocity: velocity}, nil
+	return Note{Name: name, Octave: octave, fraction: duration, Accidental: accidental, Dotted: dot, Velocity: velocity}, nil
 }
 
 func (n Note) IsRest() bool        { return Rest4.Name == n.Name }
@@ -109,56 +108,52 @@ func (n Note) IsPedalUp() bool     { return PedalUp.Name == n.Name }
 func (n Note) IsPedalDown() bool   { return PedalDown.Name == n.Name }
 func (n Note) IsPedalUpDown() bool { return PedalUpDown.Name == n.Name }
 
-// Length is the actual duration time factor
-func (n Note) Length() float32 {
+// DurationFactor is the actual duration time factor
+func (n Note) DurationFactor() float32 {
 	if n.Dotted {
-		return n.duration * 1.5
+		return n.fraction * 1.5
 	}
-	return n.duration
+	return n.fraction
 }
 
 func (n Note) S() Sequence {
 	return BuildSequence([]Note{n})
 }
 
-// TODO rename
-func (n Note) ModifiedVelocity(velo int) Note {
-	nn, _ := NewNote(n.Name, n.Octave, n.duration, n.Accidental, n.Dotted, velo)
-	return nn
-}
-
 func (n Note) WithDynamic(emphasis string) Note {
-	nn, _ := NewNote(n.Name, n.Octave, n.duration, n.Accidental, n.Dotted, ParseVelocity(emphasis))
-	return nn
+	n.Velocity = ParseVelocity(emphasis)
+	return n
 }
 
-func (n Note) WithDuration(dur float64, dotted bool) Note {
-	var duration float32
-	switch dur {
+func (n Note) WithVelocity(v int) Note {
+	n.Velocity = v
+	return n
+}
+
+func (n Note) WithFraction(f float64, dotted bool) Note {
+	var fraction float32
+	switch f {
 	case 16:
-		duration = 0.0625
+		fraction = 0.0625
 	case 8:
-		duration = 0.125
+		fraction = 0.125
 	case 4:
-		duration = 0.25
+		fraction = 0.25
 	case 2:
-		duration = 0.5
+		fraction = 0.5
 	case 1:
-		duration = 1
+		fraction = 1
 	case 0.5, 0.25, 0.125, 0.0625:
-		duration = float32(dur)
+		fraction = float32(f)
 	default:
-		notify.Panic(fmt.Errorf("cannot create note with duration [%f]", dur))
+		notify.Panic(fmt.Errorf("cannot create note with fraction [%f]", f))
 	}
 	// shortest
-	if duration < 0.0625 {
-		duration = 0.0625
+	if fraction < 0.0625 {
+		fraction = 0.0625
 	}
-	nn, err := NewNote(n.Name, n.Octave, duration, n.Accidental, dotted, n.Velocity)
-	if err != nil {
-		notify.Panic(fmt.Errorf("cannot create note with duration [%f] because:%v", dur, err))
-	}
-	return nn
+	n.fraction = fraction
+	return n
 }
 
 // Conversion
@@ -287,7 +282,7 @@ func (n Note) accidentalf(encoded bool) string {
 }
 
 func (n Note) durationf(encoded bool) string {
-	switch n.duration {
+	switch n.fraction {
 	case 0.0625:
 		return "16"
 	case 0.125:
@@ -315,7 +310,7 @@ func (n Note) durationf(encoded bool) string {
 }
 
 func (n Note) Inspect(i Inspection) {
-	i.Properties["length"] = n.Length()
+	i.Properties["length"] = n.DurationFactor()
 	i.Properties["midi"] = n.MIDI()
 	i.Properties["velocity"] = n.Velocity
 }
@@ -344,7 +339,7 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 		return
 	}
 
-	if n.duration != 0.25 {
+	if n.fraction != 0.25 {
 		buf.WriteString(n.durationf(false))
 	}
 

@@ -12,7 +12,7 @@ func TestImplements(t *testing.T) {
 		notSequenceable bool
 		notStorable     bool
 	}{
-		{source: Duration{}},
+		{source: Fraction{}},
 		{source: Join{}},
 		{source: JoinMap{}},
 		{source: NoteMap{}},

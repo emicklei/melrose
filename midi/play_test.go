@@ -15,7 +15,7 @@ func TestDurations(t *testing.T) {
 		t.Log("whole", wholeNoteDuration)
 		s := core.S("1C 2C 4C 8C 16C")
 		s.NotesDo(func(each core.Note) {
-			actualDuration := time.Duration(float32(wholeNoteDuration) * each.Length())
+			actualDuration := time.Duration(float32(wholeNoteDuration) * each.DurationFactor())
 			t.Log(each.String(), actualDuration)
 		})
 		t.Log("-----")

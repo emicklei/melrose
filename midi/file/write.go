@@ -59,7 +59,7 @@ func createMidiTrack(t *core.Track, bpm float64) (*smf.Track, error) {
 			continue
 		}
 		channel := uint8(0x00)
-		actualDuration := time.Duration(float32(wholeNoteDuration) * group[0].Length())
+		actualDuration := time.Duration(float32(wholeNoteDuration) * group[0].DurationFactor())
 		if group[0].IsRest() {
 			//log.Println("rest", moment)
 			moment = moment + actualDuration

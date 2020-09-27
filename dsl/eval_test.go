@@ -1,8 +1,9 @@
 package dsl
 
 import (
-	"github.com/emicklei/melrose/core"
 	"testing"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/op"
 )
@@ -141,7 +142,7 @@ func TestEvaluateProgram_BrokenSequence(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if got, want := r, 1; got.(core.Sequence).Length() != want {
+	if got, want := r, 1; len(got.(core.Sequence).Notes) != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
@@ -160,7 +161,7 @@ func TestEvaluateProgram_AllBrokenSequence(t *testing.T) {
 	if r == nil {
 		t.Fatal()
 	}
-	if got, want := r, 1; got.(core.Sequence).Length() != want {
+	if got, want := r, 1; len(got.(core.Sequence).Notes) != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }

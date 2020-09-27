@@ -36,6 +36,6 @@ func (m MIDI) Storex() string {
 func (m MIDI) Inspect(i Inspection) {
 	n := m.ToNote()
 	i.Properties["note"] = n.Storex()
-	i.Properties["duration"] = n.duration
+	i.Properties["fraction"] = n.fraction
 	i.Properties["velocity"] = n.Velocity
 }

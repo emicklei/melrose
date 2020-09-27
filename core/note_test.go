@@ -48,8 +48,8 @@ func TestParseNote(t *testing.T) {
 		if n.Octave != each.octave {
 			t.Fatal("oct: line,exp,act", i, each.octave, n.Octave)
 		}
-		if n.duration != each.dura {
-			t.Fatal("dur: line,exp,act", i, each.dura, n.duration)
+		if n.fraction != each.dura {
+			t.Fatal("dur: line,exp,act", i, each.dura, n.fraction)
 		}
 		if n.Accidental != each.acc {
 			t.Fatal("acc: line,exp,act", i, each.acc, n.Accidental)
@@ -191,7 +191,7 @@ func TestNote_Storex(t *testing.T) {
 	}
 }
 
-func TestNoteLength(t *testing.T) {
+func TestNoteDurationFactor(t *testing.T) {
 	for _, each := range []struct {
 		note   string
 		length float32
@@ -208,10 +208,35 @@ func TestNoteLength(t *testing.T) {
 		{"4.c", 0.375},
 		{"8c", 0.125},
 		{"16c", 0.0625},
+		{">", 0},
+		{"^", 0},
+		{"<", 0},
 	} {
 		n := MustParseNote(each.note)
-		if got, want := n.Length(), each.length; got != want {
+		if got, want := n.DurationFactor(), each.length; got != want {
 			t.Errorf("got [%s] [%v:%T] want [%v:%T]", each.note, got, got, want, want)
+		}
+	}
+}
+
+func TestNoteWithDynamic(t *testing.T) {
+	for _, each := range []struct {
+		in      string
+		dynamic string
+		out     string
+	}{
+		{"c", "-", "note('C-')"},
+		{"2.c#2", "--", "note('½.C♯2--')"},
+	} {
+		nin := MustParseNote(each.in)
+		before := nin.Storex()
+		nout := nin.WithDynamic(each.dynamic)
+		after := nin.Storex()
+		if got, want := after, before; got != want {
+			t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+		}
+		if got, want := nout.Storex(), each.out; got != want {
+			t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 		}
 	}
 }

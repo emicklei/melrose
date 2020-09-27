@@ -26,9 +26,9 @@ Using `#` or `♯` makes the note sharp. Using `_` or `♭` makes the note flat.
 
     note('2c#')
 
-Change the duration of the note by prefixing a number.
-The number `2` or `½` means set the duration to 0.5.
-No number, or `4` or `¼` means set the duration to 0.25.
+Change the fraction of the note by prefixing a number.
+The number `2` or `½` means set the fraction to 0.5.
+No number, or `4` or `¼` means set the fraction to 0.25.
 Valid numbers are 1,2,4,8,16.
 
 ## dynamic
@@ -38,7 +38,7 @@ Valid numbers are 1,2,4,8,16.
 Changing the dynamic of a note can make it sound softer,quieter or harder,louder.
 The symbol `-` is used to soften the note.
 The symbol `+` is used to emphasize the note.
-You can use up to 4 such symbols.
+You can use up to 3 such symbols.
 
 See [Notation](notations.html) for a complete description of the syntax to create notes.
 

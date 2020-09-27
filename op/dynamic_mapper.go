@@ -2,8 +2,9 @@ package op
 
 import (
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"strings"
+
+	"github.com/emicklei/melrose/core"
 )
 
 type DynamicMapper struct {
@@ -25,7 +26,7 @@ func (d DynamicMapper) S() core.Sequence {
 		} else {
 			mappedGroup := []core.Note{}
 			for _, eachNote := range eachGroup {
-				mappedGroup = append(mappedGroup, eachNote.ModifiedVelocity(core.ParseVelocity(d.NoteDynamics[i])))
+				mappedGroup = append(mappedGroup, eachNote.WithVelocity(core.ParseVelocity(d.NoteDynamics[i])))
 			}
 			target = append(target, mappedGroup)
 		}

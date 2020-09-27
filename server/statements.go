@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"path/filepath"
 	"reflect"
@@ -25,7 +24,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	query := r.URL.Query()
 	l.context.Environment()[core.WorkingDirectory] = filepath.Dir(query.Get("file"))
 
-	debug := query.Get("trace") == "true"
+	debug := query.Get("debug") == "true"
 	if debug && !core.IsDebug() {
 		core.ToggleDebug()
 		defer core.ToggleDebug()
@@ -115,7 +114,8 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	enc.SetIndent("", "\t")
 	err = enc.Encode(response)
 	if err != nil {
-		log.Printf("[melrose.error] %#v\n", err)
+		notify.Errorf("error:%v\n", err)
+		return
 	}
 	if response.IsError {
 		notify.Print(notify.Error(response.Object.(error)))

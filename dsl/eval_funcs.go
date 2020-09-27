@@ -45,30 +45,30 @@ type Function struct {
 func EvalFunctions(ctx core.Context) map[string]Function {
 	eval := map[string]Function{}
 
-	eval["duration"] = Function{
-		Title: "Duration operator",
-		Description: `Creates a new modified musical object for which the duration of all notes are changed.
-The first parameter controls the length (duration) of the note, e.g. 1=whole, 0.5 or 2 = half, 0.25 or 4 = quarter, 0.125 or 8 = eight, 0.0625 or 16 = sixteenth.
+	eval["fraction"] = Function{
+		Title: "Duration fraction operator",
+		Description: `Creates a new object for which the fraction of duration of all notes are changed.
+The first parameter controls the fraction of the note, e.g. 1=whole, 0.5 or 2 = half, 0.25 or 4 = quarter, 0.125 or 8 = eight, 0.0625 or 16 = sixteenth.
 `,
-		Prefix:     "dur",
+		Prefix:     "fra",
 		IsComposer: true,
-		Template:   `duration(${1:object},${2:object})`,
-		Samples:    `duration(8,sequence('E F')) // => ⅛E ⅛F , shorten the notes from quarter to eigth`,
+		Template:   `fraction(${1:object},${2:object})`,
+		Samples:    `fraction(8,sequence('e f')) // => ⅛E ⅛F , shorten the notes from quarter to eigth`,
 		Func: func(param float64, playables ...interface{}) interface{} {
-			if err := op.CheckDuration(param); err != nil {
+			if err := op.CheckFraction(param); err != nil {
 				notify.Print(notify.Error(err))
 				return nil
 			}
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
-					notify.Print(notify.Warningf("cannot duration (%T) %v", p, p))
+					notify.Print(notify.Warningf("cannot fraction (%T) %v", p, p))
 					return nil
 				} else {
 					joined = append(joined, s)
 				}
 			}
-			return op.NewDuration(param, joined)
+			return op.NewFraction(param, joined)
 		}}
 
 	eval["dynamic"] = Function{
@@ -140,7 +140,7 @@ progression('(C D)') // => (C E G D G♭ A)`,
 			}
 			// TODO handle loop
 			biab := ctx.Control().BIAB()
-			return int(math.Round((s.S().NoteLength() * 4) / float64(biab)))
+			return int(math.Round((s.S().DurationFactor() * 4) / float64(biab)))
 		}}
 
 	eval["beats"] = Function{
@@ -160,8 +160,8 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		Title:       "Track creator",
 		Description: "create a named track for a given MIDI channel with a musical object",
 		Prefix:      "tr",
-		Template:    `track('${1:title},${2:channel}')`,
-		Samples:     `track("lullaby",1,sequence('C D E')) // => a new track on MIDI channel 1`,
+		Template:    `track('${1:title}',${2:channel})`,
+		Samples:     `track("lullaby",1,sequence('c d e')) // => a new track on MIDI channel 1`,
 		Func: func(title string, channel int, playables ...interface{}) interface{} {
 			if len(title) == 0 {
 				return notify.Panic(fmt.Errorf("cannot have a track without title"))
@@ -459,7 +459,7 @@ note('2.e#--')`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot put on track (%T) %v", seq, seq))
 			}
-			return core.NewSequenceOnTrack(getValueable(bar), s)
+			return core.NewSequenceOnTrack(getValueable(bar), getValueable(0), s)
 		}}
 
 	eval["random"] = Function{

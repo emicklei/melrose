@@ -17,8 +17,8 @@ func (m Merge) S() core.Sequence {
 	for _, each := range m.Target {
 		seq := each.S()
 		seqs = append(seqs, seq)
-		if seq.Length() > length {
-			length = seq.Length()
+		if l := len(seq.Notes); l > length {
+			length = l
 		}
 	}
 	merged := [][]core.Note{}
@@ -26,7 +26,7 @@ func (m Merge) S() core.Sequence {
 		group := []core.Note{}
 		groupRest := core.Rest4
 		for _, each := range seqs {
-			if i < each.Length() {
+			if i < len(each.Notes) {
 				for _, other := range each.At(i) {
 					if !other.IsRest() {
 						group = append(group, other)

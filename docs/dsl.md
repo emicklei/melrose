@@ -34,9 +34,9 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 ## Composition functions
 
 - <a href="#at">at</a>
-- <a href="#duration">duration</a>
 - <a href="#dynamic">dynamic</a>
 - <a href="#export">export</a>
+- <a href="#fraction">fraction</a>
 - <a href="#group">group</a>
 - <a href="#import">import</a>
 - <a href="#interval">interval</a>
@@ -120,15 +120,6 @@ chord('C#5/m/1')
 chord('G/M/2')
 ```
 
-### duration<a name="duration"></a>
-Creates a new modified musical object for which the duration of all notes are changed.
-The first parameter controls the length (duration) of the note, e.g. 1=whole, 0.5 or 2 = half, 0.25 or 4 = quarter, 0.125 or 8 = eight, 0.0625 or 16 = sixteenth.
-.
-
-```javascript
-duration(8,sequence('E F')) // => ⅛E ⅛F , shorten the notes from quarter to eigth
-```
-
 ### dynamic<a name="dynamic"></a>
 Creates a new modified musical object for which the dynamics of all notes are changed.
 	The first parameter controls the emphasis the note, e.g. + (mezzoforte,mf), -- (piano,p).
@@ -152,6 +143,15 @@ Writes a multi-track MIDI file.
 
 ```javascript
 export('myMelody-v1',myObject)
+```
+
+### fraction<a name="fraction"></a>
+Creates a new object for which the fraction of duration of all notes are changed.
+The first parameter controls the fraction of the note, e.g. 1=whole, 0.5 or 2 = half, 0.25 or 4 = quarter, 0.125 or 8 = eight, 0.0625 or 16 = sixteenth.
+.
+
+```javascript
+fraction(8,sequence('e f')) // => ⅛E ⅛F , shorten the notes from quarter to eigth
 ```
 
 ### go<a name="go"></a>
@@ -419,7 +419,7 @@ i2 = sequencemap('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)
 Create a named track for a given MIDI channel with a musical object.
 
 ```javascript
-track("lullaby",1,sequence('C D E')) // => a new track on MIDI channel 1
+track("lullaby",1,sequence('c d e')) // => a new track on MIDI channel 1
 ```
 
 ### undynamic<a name="undynamic"></a>

@@ -6,17 +6,13 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var EmptySequence = Sequence{}
 
 type Sequence struct {
 	Notes [][]Note
-}
-
-// Length returns how many note(groups).
-func (s Sequence) Length() int {
-	return len(s.Notes)
 }
 
 func (s Sequence) At(i int) []Note {
@@ -108,7 +104,7 @@ func ParseSequence(input string) (Sequence, error) {
 				first := group[0]
 				// apply to rest
 				for i := 1; i < len(group); i++ {
-					group[i] = group[i].WithDuration(float64(first.duration), first.Dotted)
+					group[i] = group[i].WithFraction(float64(first.fraction), first.Dotted)
 				}
 				m.Notes = append(m.Notes, group)
 			}
@@ -131,21 +127,22 @@ func (s Sequence) S() Sequence {
 	return s
 }
 
-func (s Sequence) NoteLength() float64 {
+func (s Sequence) DurationFactor() float64 {
 	dur := float32(0.0)
 	for _, each := range s.Notes {
 		if len(each) > 0 {
 			lead := each[0]
-			dur += lead.Length()
+			dur += lead.DurationFactor()
 		}
 	}
 	return float64(dur)
 }
 
 func (s Sequence) Inspect(i Inspection) {
-	i.Properties["duration"] = s.NoteLength()
+	i.Properties["fraction"] = s.DurationFactor()
+	i.Properties["duration"] = s.Duration(i.Context.Control().BPM())
 	i.Properties["note(s) | groups"] = len(s.Notes)
-	i.Properties["bars"] = float64(s.NoteLength()) * 4 / float64(i.Context.Control().BIAB()) // 4 because signature
+	i.Properties["bars"] = float64(s.DurationFactor()) * 4 / float64(i.Context.Control().BIAB()) // 4 because signature
 }
 
 // Conversion
@@ -200,4 +197,15 @@ func StringFromNoteGroup(notes []Note) string {
 	}
 	buf.WriteString(groupClose)
 	return buf.String()
+}
+
+func (s Sequence) Duration(bpm float64) time.Duration {
+	w := WholeNoteDuration(bpm)
+	l := time.Duration(0)
+	for _, group := range s.Notes {
+		if len(group) > 0 {
+			l += time.Duration(float32(w) * group[0].DurationFactor())
+		}
+	}
+	return l
 }
