@@ -44,7 +44,6 @@ func (t *Track) Play(ctx Context) error {
 }
 
 func (t *Track) Inspect(i Inspection) {
-	i.Properties["title"] = t.Title
 	i.Properties["channel"] = t.Channel
 	i.Properties["pieces"] = len(t.Content)
 }
