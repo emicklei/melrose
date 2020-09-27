@@ -13,7 +13,7 @@ import (
 
 // Note represents a musical note.
 // Notations:
-// 		½C♯.3 = half duration, pitch C, sharp, octave 3, velocity default (70)
+// 		½.C♯3 = half duration, pitch C, sharp, octave 3, velocity default (70)
 //		D     = quarter duration, pitch D, octave 4, no accidental
 //      ⅛B♭  = eigth duration, pitch B, octave 4, flat
 //		=     = quarter rest
@@ -157,8 +157,8 @@ func (n Note) WithFraction(f float64, dotted bool) Note {
 }
 
 // Conversion
-
-var noteRegexp = regexp.MustCompile("([1]?[½¼⅛12468]?)(\\.?)([CDEFGAB=<^>])([#♯_♭]?)([0-9]?)([-+]?[-+]?[-+]?)")
+// https://regoio.herokuapp.com/
+var noteRegexp = regexp.MustCompile("([\\d+\\*]?)([1]?[½¼⅛12468]?)(\\.?)([CDEFGAB=<^>])([#♯_♭]?)([0-9]?)([-+]?[-+]?[-+]?)")
 
 // MustParseNote returns a Note by parsing the input. Panic if it fails.
 func MustParseNote(input string) Note {
