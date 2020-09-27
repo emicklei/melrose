@@ -108,6 +108,11 @@ func (m *Midi) Command(args []string) notify.Message {
 			return err
 		}
 		return notify.Infof("Current output device id:%v", m.currentOutputDeviceID)
+	case "init":
+		m.Close()
+		m.init()
+		m.printInfo()
+		return notify.Infof("MIDI re-initialized")
 	default:
 		return notify.Warningf("unknown midi command: %s", args[0])
 	}
@@ -119,6 +124,7 @@ func (m *Midi) printInfo() {
 	fmt.Println(":m in      <device-id> --- change the current MIDI input device id")
 	fmt.Println(":m out     <device-id> --- change the current MIDI output device id")
 	fmt.Println(":m channel <1..16>     --- change the default MIDI output channel")
+	fmt.Println(":m init                --- initialize MIDI and device list")
 	fmt.Println()
 
 	var midiDeviceInfo *portmidi.DeviceInfo
@@ -150,22 +156,27 @@ func (m *Midi) printInfo() {
 
 func Open() (*Midi, error) {
 	m := new(Midi)
-	portmidi.Initialize()
-	deviceID := portmidi.DefaultOutputDeviceID()
-	if deviceID == -1 {
-		return nil, errors.New("no default output MIDI device available")
+	if err := m.init(); err != nil {
+		return nil, err
 	}
-	m.enabled = true
 	m.echo = false
 	// for output
 	m.defaultOutputChannel = DefaultChannel
-	m.changeOutputDeviceID(int(portmidi.DefaultOutputDeviceID()))
-
 	// start timeline
 	m.timeline = core.NewTimeline()
 	go m.timeline.Play()
-
 	return m, nil
+}
+
+func (m *Midi) init() error {
+	portmidi.Initialize()
+	deviceID := portmidi.DefaultOutputDeviceID()
+	if deviceID == -1 {
+		return errors.New("no default output MIDI device available")
+	}
+	m.enabled = true
+	m.changeOutputDeviceID(int(portmidi.DefaultOutputDeviceID()))
+	return nil
 }
 
 func (m *Midi) changeOutputDeviceID(id int) notify.Message {
@@ -189,7 +200,7 @@ func (m *Midi) changeOutputDeviceID(id int) notify.Message {
 	}
 	m.stream = out
 	m.currentOutputDeviceID = id
-	return nil
+	return notify.Infof("MIDI device output id:%d", id)
 }
 
 // Close is part of melrose.AudioDevice
@@ -202,6 +213,7 @@ func (m *Midi) Close() {
 		m.stream.Close()
 	}
 	portmidi.Terminate()
+	m.enabled = false
 }
 
 // echo -e "\033[93mred\033[m" # Prints “red” in red.
