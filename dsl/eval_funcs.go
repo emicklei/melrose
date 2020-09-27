@@ -48,13 +48,13 @@ func EvalFunctions(ctx core.Context) map[string]Function {
 	eval["fraction"] = Function{
 		Title: "Duration fraction operator",
 		Description: `Creates a new object for which the fraction of duration of all notes are changed.
-The first parameter controls the fraction of the note, e.g. 1=whole, 0.5 or 2 = half, 0.25 or 4 = quarter, 0.125 or 8 = eight, 0.0625 or 16 = sixteenth.
+The first parameter controls the fraction of the note, e.g. 1 = whole, 2 = half, 4 = quarter, 8 = eight, 16 = sixteenth.
 `,
 		Prefix:     "fra",
 		IsComposer: true,
 		Template:   `fraction(${1:object},${2:object})`,
-		Samples:    `fraction(8,sequence('e f')) // => ⅛E ⅛F , shorten the notes from quarter to eigth`,
-		Func: func(param float64, playables ...interface{}) interface{} {
+		Samples:    `fraction(8,sequence('e f')) // => ⅛E ⅛F , shorten the notes from quarter to eight`,
+		Func: func(param int, playables ...interface{}) interface{} {
 			if err := op.CheckFraction(param); err != nil {
 				notify.Print(notify.Error(err))
 				return nil
@@ -198,12 +198,11 @@ progression('(C D)') // => (C E G D G♭ A)`,
 	eval["midi"] = Function{
 		Title: "Note creator",
 		Description: `create a Note from MIDI information and is typically used for drum sets.
-The first parameter is the duration and must be one of {0.0625,0.125,0.25,0.5,1,2,4,8,16}.
-A duration of 0.25 or 4 means create a quarter note.
+The first parameter is the fraction and must be one of {1,2,4,8,16}.
+A fraction of 4 means create a quarter note.
 Second parameter is the MIDI number and must be one of [0..127].
 The third parameter is the velocity (~ loudness) and must be one of [0..127]`,
 		Prefix:   "mid",
-		Alias:    "M",
 		Template: `midi(${1:number},${2:number},${3:number})`,
 		Samples: `midi(0.25,52,80) // => E3+
 midi(16,36,70) // => 16C2 (kick)`,
@@ -230,7 +229,6 @@ midi(16,36,70) // => 16C2 (kick)`,
 		Title:       "Chord creator",
 		Description: `create a Chord from its string <a href="/melrose/notations.html#chord-not">notation</a>`,
 		Prefix:      "cho",
-		Alias:       "C",
 		Template:    `chord('${1:note}')`,
 		Samples: `chord('C#5/m/1')
 chord('G/M/2')`,
@@ -262,7 +260,6 @@ chord('G/M/2')`,
 		Title:       "Pitch operator",
 		Description: "change the pitch with a delta of semitones",
 		Prefix:      "pit",
-		Alias:       "Pi",
 		Template:    `pitch(${1:semitones},${2:sequenceable})`,
 		Samples: `pitch(-1,sequence('c d e'))
 p = interval(-4,4,1)
@@ -280,7 +277,6 @@ pitch(p,note('c'))`,
 		Title:       "Reverse operator",
 		Description: "reverse the (groups of) notes in a sequence",
 		Prefix:      "rev",
-		Alias:       "Rv",
 		Template:    `reverse(${1:sequenceable})`,
 		Samples:     `reverse(chord('A'))`,
 		IsComposer:  true,
@@ -296,7 +292,6 @@ pitch(p,note('c'))`,
 		Title:       "Repeat operator",
 		Description: "repeat the musical object a number of times",
 		Prefix:      "rep",
-		Alias:       "Rp",
 		Template:    `repeat(${1:times},${2:sequenceable})`,
 		Samples:     `repeat(4,sequence('C D E'))`,
 		IsComposer:  true,
@@ -316,7 +311,6 @@ pitch(p,note('c'))`,
 		Title:       "Join operator",
 		Description: "joins two or more musical objects as one",
 		Prefix:      "joi",
-		Alias:       "J",
 		Template:    `join(${1:first},${2:second})`,
 		Samples: `a = chord('A')
 b = sequence('(C E G)')
@@ -383,7 +377,6 @@ ab = join(a,b)`,
 		Title:       "Sequence creator",
 		Description: `create a Sequence using this <a href="/melrose/notations.html#sequence-not">format</a>`,
 		Prefix:      "seq",
-		Alias:       "S",
 		Template:    `sequence('${1:space-separated-notes}')`,
 		Samples: `sequence('C D E')
 sequence('(8C D E)') => (⅛C ⅛D ⅛E)
@@ -401,7 +394,6 @@ sequence('c (d e f) a =')`,
 		Title:       "Note creator",
 		Description: `create a Note using this <a href="/melrose/notations.html#note-not">format</a>`,
 		Prefix:      "no",
-		Alias:       "N",
 		Template:    `note('${1:letter}')`,
 		Samples: `note('e')
 note('2.e#--')`,
@@ -592,7 +584,6 @@ s = r.S() // returns the sequence of notes from the recording`,
 		Title:       "Iterator creator",
 		Description: "iterator that has an array of constant values and evaluates to one. Use next() to increase and rotate the value.",
 		Prefix:      "it",
-		Alias:       "I",
 		Template:    `iterator(${1:array-element})`,
 		Samples: `i = iterator(1,3,5,7,9)
 		p = pitch(i,note('c'))
@@ -608,7 +599,6 @@ s = r.S() // returns the sequence of notes from the recording`,
 		Title:       "Group operator",
 		Description: "create a new sequence in which all notes of a musical object are grouped",
 		Prefix:      "par",
-		Alias:       "Pa",
 		Template:    `group(${1:sequenceable})`,
 		Samples:     `group(sequence('C D E')) // => (C D E)`,
 		IsComposer:  true,
@@ -625,7 +615,6 @@ s = r.S() // returns the sequence of notes from the recording`,
 		Description:   "create a new loop from one or more musical objects; must be assigned to a variable",
 		ControlsAudio: true,
 		Prefix:        "loo",
-		Alias:         "L",
 		Template:      `lp_${1:object} = loop(${1:object})`,
 		Samples: `cb = sequence('C D E F G A B')
 lp_cb = loop(cb,reverse(cb))`,
@@ -695,7 +684,6 @@ begin(l1) // end(l1)`,
 		Description:   "select a MIDI channel, must be in [1..16]; must be a top-level operator",
 		ControlsAudio: true,
 		Prefix:        "chan",
-		Alias:         "Ch",
 		Template:      `channel(${1:number},${2:sequenceable})`,
 		Samples:       `channel(2,sequence('C2 E3')) // plays on instrument connected to MIDI channel 2`,
 		Func: func(midiChannel, m interface{}) interface{} {
@@ -709,7 +697,6 @@ begin(l1) // end(l1)`,
 		Title:       "Interval creator",
 		Description: "create an integer repeating interval (from,to,by,method). Default method is 'repeat', Use next() to get a new integer",
 		Prefix:      "int",
-		Alias:       "I",
 		Template:    `interval(${1:from},${2:to},${3:by})`,
 		Samples: `int1 = interval(-2,4,1)
 lp_cdef = loop(pitch(int1,sequence('C D E F')), next(int1))`,

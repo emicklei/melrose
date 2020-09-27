@@ -34,7 +34,7 @@ func (m *Midi) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.
 		var actualDuration time.Duration
 		var event midiEvent
 		if canCombineMidiEvents(eachGroup) {
-			// combined, first note makes duration and velocity
+			// combined, first note makes fraction and velocity
 			actualDuration = time.Duration(float32(wholeNoteDuration) * eachGroup[0].DurationFactor())
 			event = m.combinedMidiEvent(channel, eachGroup)
 			event.echoString = core.StringFromNoteGroup(eachGroup)
@@ -59,7 +59,7 @@ func (m *Midi) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.
 
 // Pre: notes not empty
 func (m *Midi) combinedMidiEvent(channel int, notes []core.Note) midiEvent {
-	// first note makes duration and velocity
+	// first note makes fraction and velocity
 	velocity := notes[0].Velocity
 	if velocity > 127 {
 		velocity = 127

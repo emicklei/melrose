@@ -66,7 +66,7 @@ var (
 
 const validNoteNames = "ABCDEFG=<^>"
 
-func NewNote(name string, octave int, duration float32, accidental int, dot bool, velocity int) (Note, error) {
+func NewNote(name string, octave int, frac float32, accidental int, dot bool, velocity int) (Note, error) {
 	if len(name) != 1 {
 		return Rest4, fmt.Errorf("note must be one character, got [%s]", name)
 	}
@@ -86,21 +86,21 @@ func NewNote(name string, octave int, duration float32, accidental int, dot bool
 	if octave < 0 || octave > 9 {
 		return Rest4, fmt.Errorf("invalid octave [0..9]: %d", octave)
 	}
-	switch duration {
+	switch frac {
 	case 0.0625:
 	case 0.125:
 	case 0.25:
 	case 0.5:
 	case 1:
 	default:
-		return Rest4, fmt.Errorf("invalid fraction [1,0.5,0.25,0.125,0.0625]:%v", duration)
+		return Rest4, fmt.Errorf("invalid fraction [1,0.5,0.25,0.125,0.0625]:%v", frac)
 	}
 
 	if accidental != 0 && accidental != -1 && accidental != 1 {
 		return Rest4, fmt.Errorf("invalid accidental: %d", accidental)
 	}
 
-	return Note{Name: name, Octave: octave, fraction: duration, Accidental: accidental, Dotted: dot, Velocity: velocity}, nil
+	return Note{Name: name, Octave: octave, fraction: frac, Accidental: accidental, Dotted: dot, Velocity: velocity}, nil
 }
 
 func (n Note) IsRest() bool        { return Rest4.Name == n.Name }
@@ -130,7 +130,13 @@ func (n Note) WithVelocity(v int) Note {
 	return n
 }
 
-func (n Note) WithFraction(f float64, dotted bool) Note {
+func (n Note) WithFraction(f float32, dotted bool) Note {
+	n.fraction = f
+	n.Dotted = dotted
+	return n
+}
+
+func (n Note) FromFraction(f int, dotted bool) Note {
 	var fraction float32
 	switch f {
 	case 16:
@@ -143,14 +149,8 @@ func (n Note) WithFraction(f float64, dotted bool) Note {
 		fraction = 0.5
 	case 1:
 		fraction = 1
-	case 0.5, 0.25, 0.125, 0.0625:
-		fraction = float32(f)
 	default:
-		notify.Panic(fmt.Errorf("cannot create note with fraction [%f]", f))
-	}
-	// shortest
-	if fraction < 0.0625 {
-		fraction = 0.0625
+		notify.Panic(fmt.Errorf("cannot create note with fraction [%d]", f))
 	}
 	n.fraction = fraction
 	return n
@@ -178,20 +178,20 @@ func ParseNote(input string) (Note, error) {
 		return Note{}, fmt.Errorf("illegal note: [%s]", input)
 	}
 
-	var duration float32
+	var fraction float32
 	switch matches[1] {
 	case "16":
-		duration = 0.0625
+		fraction = 0.0625
 	case "⅛", "8":
-		duration = 0.125
+		fraction = 0.125
 	case "¼", "4":
-		duration = 0.25
+		fraction = 0.25
 	case "½", "2":
-		duration = 0.5
+		fraction = 0.5
 	case "1":
-		duration = 1
+		fraction = 1
 	default:
-		duration = 0.25 // quarter
+		fraction = 0.25 // quarter
 	}
 
 	dotted := matches[2] == "."
@@ -233,7 +233,7 @@ func ParseNote(input string) (Note, error) {
 	if len(matches[6]) > 0 {
 		velocity = ParseVelocity(matches[6])
 	}
-	return NewNote(matches[3], octave, duration, accidental, dotted, velocity)
+	return NewNote(matches[3], octave, fraction, accidental, dotted, velocity)
 }
 
 func ParseVelocity(plusmin string) (velocity int) {

@@ -51,7 +51,7 @@ If the request is malformed then the response will have the error message.
 
 ### tracing
 
-If the HTTP URL has the query parameter `trace=true` then `melrōse` will produce extra logging.
+If the HTTP URL has the query parameter `debug=true` then `melrōse` will produce extra logging.
 
 ### play
 

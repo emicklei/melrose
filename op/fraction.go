@@ -10,10 +10,10 @@ import (
 
 type Fraction struct {
 	Target    []core.Sequenceable
-	Parameter float64
+	Parameter int
 }
 
-func NewFraction(checkedParameter float64, target []core.Sequenceable) Fraction {
+func NewFraction(checkedParameter int, target []core.Sequenceable) Fraction {
 	return Fraction{
 		Target:    target,
 		Parameter: checkedParameter,
@@ -34,7 +34,7 @@ func (d Fraction) S() core.Sequence {
 	for _, eachGroup := range source {
 		mappedGroup := []core.Note{}
 		for _, eachNote := range eachGroup {
-			mappedGroup = append(mappedGroup, eachNote.WithFraction(d.Parameter, eachNote.Dotted))
+			mappedGroup = append(mappedGroup, eachNote.WithFraction(1.0/float32(d.Parameter), eachNote.Dotted))
 		}
 		target = append(target, mappedGroup)
 	}
@@ -43,7 +43,7 @@ func (d Fraction) S() core.Sequence {
 
 func (d Fraction) Storex() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "fraction(%f", d.Parameter)
+	fmt.Fprintf(&b, "fraction(%d", d.Parameter)
 	appendStorexList(&b, false, d.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
@@ -58,12 +58,12 @@ func (d Fraction) ToNote() core.Note {
 		notify.Panic(fmt.Errorf("cannot take note from [%v]", one))
 	}
 	not := one.ToNote()
-	return not.WithFraction(d.Parameter, not.Dotted)
+	return not.WithFraction(1.0/float32(d.Parameter), not.Dotted)
 }
 
-var validFractionParameterValues = []float64{0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16}
+var validFractionParameterValues = []int{1, 2, 4, 8, 16}
 
-func CheckFraction(param float64) error {
+func CheckFraction(param int) error {
 	match := false
 	for _, each := range validFractionParameterValues {
 		if each == param {

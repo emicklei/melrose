@@ -147,11 +147,11 @@ export('myMelody-v1',myObject)
 
 ### fraction<a name="fraction"></a>
 Creates a new object for which the fraction of duration of all notes are changed.
-The first parameter controls the fraction of the note, e.g. 1=whole, 0.5 or 2 = half, 0.25 or 4 = quarter, 0.125 or 8 = eight, 0.0625 or 16 = sixteenth.
+The first parameter controls the fraction of the note, e.g. 1 = whole, 2 = half, 4 = quarter, 8 = eight, 16 = sixteenth.
 .
 
 ```javascript
-fraction(8,sequence('e f')) // => ⅛E ⅛F , shorten the notes from quarter to eigth
+fraction(8,sequence('e f')) // => ⅛E ⅛F , shorten the notes from quarter to eight
 ```
 
 ### go<a name="go"></a>
@@ -237,8 +237,8 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =
 
 ### midi<a name="midi"></a>
 Create a Note from MIDI information and is typically used for drum sets.
-The first parameter is the duration and must be one of {0.0625,0.125,0.25,0.5,1,2,4,8,16}.
-A duration of 0.25 or 4 means create a quarter note.
+The first parameter is the fraction and must be one of {1,2,4,8,16}.
+A fraction of 4 means create a quarter note.
 Second parameter is the MIDI number and must be one of [0..127].
 The third parameter is the velocity (~ loudness) and must be one of [0..127].
 

@@ -5,7 +5,7 @@ import (
 )
 
 type MIDI struct {
-	fraction Valueable // 0.0625,0.125,0.25,0.5,1,2,4,8,16
+	fraction Valueable // 1,2,4,8,16
 	number   Valueable
 	velocity Valueable
 }

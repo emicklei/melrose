@@ -19,8 +19,8 @@ Another, more complex example is:
 sequence('(8c e g) = (2c++ e++ g++)')
 ```
 
-The first group `(8c e g)` has duration 1/8 the second 1/2. 
-Only the first note should set the duration of the group.
+The first group `(8c e g)` has fraction 1/8 the second 1/2. 
+Only the first note should set the fraction of the group.
 
 ### sustain pedal
 

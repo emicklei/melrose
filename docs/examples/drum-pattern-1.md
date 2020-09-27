@@ -11,7 +11,7 @@ Line by line, I will explain how it is composed.
 Using the bpm function you change the default from 120 beats-per-minute to 85.
 
 ### line 5 .. 8
-Using the General MIDI mapping (see url on line 3),  4 variables with notes are created with the midi function.  Parameter 16 refers to the duration of the note,  1/16. The second parameter is the MIDI number, the kick is 36. The third parameter is the velocity (loudness) and is set a bit lower than the default (72).
+Using the General MIDI mapping (see url on line 3),  4 variables with notes are created with the midi function.  Parameter 16 refers to the fraction of the note,  1/16. The second parameter is the MIDI number, the kick is 36. The third parameter is the velocity (loudness) and is set a bit lower than the default (72).
 
 ### line 10 .. 13
 Using the notemap function we create a sequence of notes in which for each number the note is placed. On index 3 , 10 and 11 (sequences start at 1), the open note is placed. On all other indices (1,2,...) a rest note ( '=' ) is placed. 

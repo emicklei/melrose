@@ -6,7 +6,7 @@ title: Melrōse musical object notation
 
 ## Note
 
-Format: `(duration)(pitch)(=~^)(accidental)(dynamic)`
+Format: `(fraction)(pitch)(=~^)(accidental)(dynamic)`
 
 | Notation | Alternative | Description
 |----------|-------|-------------

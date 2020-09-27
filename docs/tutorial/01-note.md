@@ -22,7 +22,7 @@ This is a quarter rest note.
 
 Using `#` or `♯` makes the note sharp. Using `_` or `♭` makes the note flat.
 
-## duration
+## fraction of duration
 
     note('2c#')
 

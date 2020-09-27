@@ -91,7 +91,7 @@ func ParseSequence(input string) (Sequence, error) {
 				first := group[0]
 				// apply to rest
 				for i := 1; i < len(group); i++ {
-					group[i] = group[i].WithFraction(float64(first.fraction), first.Dotted)
+					group[i] = group[i].WithFraction(first.fraction, first.Dotted)
 				}
 				m.Notes = append(m.Notes, group)
 			}
