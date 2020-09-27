@@ -35,19 +35,6 @@ func (s Sequence) SequenceJoin(t Sequence) Sequence {
 	return Sequence{append(s.Notes, t.Notes...)}
 }
 
-func (s Sequence) NotesCollect(transform func(Note) Note) Sequence {
-	notes := make([][]Note, len(s.Notes))
-	for i, eachGroup := range s.Notes {
-		group := make([]Note, len(eachGroup))
-		for j, eachNote := range eachGroup {
-			note := transform(eachNote)
-			group[j] = note
-		}
-		notes[i] = group
-	}
-	return Sequence{Notes: notes}
-}
-
 func (s Sequence) NotesDo(block func(Note)) {
 	for _, eachGroup := range s.Notes {
 		for _, eachNote := range eachGroup {
@@ -139,9 +126,8 @@ func (s Sequence) DurationFactor() float64 {
 }
 
 func (s Sequence) Inspect(i Inspection) {
-	i.Properties["fraction"] = s.DurationFactor()
 	i.Properties["duration"] = s.Duration(i.Context.Control().BPM())
-	i.Properties["note(s) | groups"] = len(s.Notes)
+	i.Properties["note(s)|groups"] = len(s.Notes)
 	i.Properties["bars"] = float64(s.DurationFactor()) * 4 / float64(i.Context.Control().BIAB()) // 4 because signature
 }
 
