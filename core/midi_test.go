@@ -35,7 +35,7 @@ func TestMIDI_ToNote(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := MIDI{
-				duration: tt.fields.duration,
+				fraction: tt.fields.duration,
 				number:   tt.fields.number,
 				velocity: tt.fields.velocity,
 			}
