@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/emicklei/melrose/notify"
 )
@@ -48,8 +49,33 @@ func Float(h Valueable) float32 {
 	return 0.0
 }
 
+func Duration(h Valueable) time.Duration {
+	if h == nil {
+		return time.Duration(0)
+	}
+	val := h.Value()
+	if val == nil {
+		return time.Duration(0)
+	}
+	if v, ok := val.(int); ok {
+		return time.Duration(v) * time.Millisecond
+	}
+	if v, ok := val.(time.Duration); ok {
+		return v
+	}
+	// maybe the value is a Valueable
+	if vv, ok := val.(Valueable); ok {
+		return Duration(vv)
+	}
+	notify.Print(notify.Warningf("Duration() expected [time.Duration|int] but got [%T], return 0", h.Value()))
+	return time.Duration(0)
+}
+
 func Int(h Valueable) int {
-	// TODO notify somehow
+	return getInt(h, false)
+}
+
+func getInt(h Valueable, silent bool) int {
 	if h == nil {
 		return 0
 	}
@@ -62,9 +88,11 @@ func Int(h Valueable) int {
 	}
 	// maybe the value is a Valueable
 	if vv, ok := val.(Valueable); ok {
-		return Int(vv)
+		return getInt(vv, silent)
 	}
-	notify.Print(notify.Warningf("Int() expected [int] but got [%T], return 0", h.Value()))
+	if !silent {
+		notify.Print(notify.Warningf("Int() expected [int] but got [%T], return 0", h.Value()))
+	}
 	return 0
 }
 

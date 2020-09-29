@@ -44,3 +44,13 @@ func (m midiEvent) asNoteoff() midiEvent {
 	m.echoString = ""
 	return m
 }
+
+type restEvent struct {
+	echoString string
+}
+
+func (r restEvent) Handle(tim *core.Timeline, when time.Time) {
+	if echoMIDISent && len(r.echoString) > 0 {
+		print(r.echoString)
+	}
+}

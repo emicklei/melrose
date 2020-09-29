@@ -1,7 +1,10 @@
 package core
 
 import (
+	"errors"
 	"fmt"
+
+	"github.com/emicklei/melrose/notify"
 )
 
 // noteMidiOffsets maps a tone index (C=0) to the number of semitones on the scale
@@ -32,8 +35,16 @@ func (n Note) MIDI() int {
 	return ((1 + n.Octave) * 12) + nameOffset + n.Accidental
 }
 
-// TODO handle duration
-func MIDItoNote(duration float32, nr int, vel int) Note {
+func MIDItoNote(fraction float32, nr int, vel int) Note {
+	if fraction < 0 {
+		notify.Panic(errors.New("MIDI fraction cannot be < 0"))
+	}
+	if nr < 0 || nr > 127 {
+		notify.Panic(errors.New("MIDI number must be in [0..127]"))
+	}
+	if vel < 0 || vel > 127 {
+		notify.Panic(errors.New("MIDI velocity must be in [0..127]"))
+	}
 	octave := (nr / 12) - 1
 	nrIndex := nr - ((octave + 1) * 12)
 	var offsetIndex, offset int
@@ -48,7 +59,10 @@ func MIDItoNote(duration float32, nr int, vel int) Note {
 	if nrIndex != offset {
 		accidental = -1
 	}
-	nn, _ := NewNote(string(nonRestNoteNames[offsetIndex]), octave, duration, accidental, false, vel)
+	nn, err := NewNote(string(nonRestNoteNames[offsetIndex]), octave, fraction, accidental, false, vel)
+	if err != nil {
+		notify.Panic(err)
+	}
 	return nn
 }
 

@@ -198,14 +198,13 @@ progression('(C D)') // => (C E G D G♭ A)`,
 	eval["midi"] = Function{
 		Title: "Note creator",
 		Description: `create a Note from MIDI information and is typically used for drum sets.
-The first parameter is the fraction and must be one of {1,2,4,8,16}.
-A fraction of 4 means create a quarter note.
+The first parameter is a fraction {1,2,4,8,16}, a duration in milliseconds or a time.Duration.
 Second parameter is the MIDI number and must be one of [0..127].
 The third parameter is the velocity (~ loudness) and must be one of [0..127]`,
 		Prefix:   "mid",
-		Template: `midi(${1:number},${2:number},${3:number})`,
-		Samples: `midi(0.25,52,80) // => E3+
-midi(16,36,70) // => 16C2 (kick)`,
+		Template: `midi(${1:numberOrDuration},${2:number},${3:number})`,
+		Samples: `midi(500,52,80) // => E3+
+midi(500,36,70) // => 16C2 (kick)`,
 		IsCore: true,
 		Func: func(dur, nr, velocity interface{}) interface{} {
 			durVal := getValueable(dur)
@@ -341,6 +340,19 @@ ab = join(a,b)`,
 			}
 			ctx.Control().SetBPM(f)
 			return nil
+		}}
+
+	eval["duration"] = Function{
+		Title:       "Duration calculator",
+		Description: "computes the duration of the object",
+		Prefix:      "dur",
+		Template:    `duration(${1:object})`,
+		Samples:     `duration(note('C'))`,
+		Func: func(m interface{}) time.Duration {
+			if s, ok := getSequenceable(m); ok {
+				return s.S().Duration(ctx.Control().BPM())
+			}
+			return time.Duration(0)
 		}}
 
 	eval["biab"] = Function{

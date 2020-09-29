@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/emicklei/melrose/notify"
 )
@@ -26,7 +27,8 @@ type Note struct {
 	Dotted     bool   // if true then fraction is increased by half
 	Velocity   int    // 1..127
 
-	fraction float32 // {0.0625,0.125,0.25,0.5,1}
+	fraction float32       // {0.0625,0.125,0.25,0.5,1}
+	duration time.Duration // if set then this overrides Dotted and fraction
 }
 
 func (n Note) Storex() string {
@@ -46,6 +48,7 @@ func (n Note) ToRest() Note {
 		Dotted:     n.Dotted,
 		Velocity:   n.Velocity,
 		fraction:   n.fraction,
+		duration:   n.duration,
 	}
 }
 
@@ -58,10 +61,11 @@ func (n Note) Replaced(from, to Sequenceable) Sequenceable {
 }
 
 var (
-	Rest4       = Note{Name: "=", fraction: 0.25}
-	PedalUpDown = Note{Name: "^", fraction: 0}
-	PedalDown   = Note{Name: ">", fraction: 0}
-	PedalUp     = Note{Name: "<", fraction: 0}
+	Rest4        = Note{Name: "=", fraction: 0.25}
+	PedalUpDown  = Note{Name: "^", fraction: 0}
+	PedalDown    = Note{Name: ">", fraction: 0}
+	PedalUp      = Note{Name: "<", fraction: 0}
+	ZeroDuration = time.Duration(0)
 )
 
 const validNoteNames = "ABCDEFG=<^>"
@@ -281,6 +285,13 @@ func (n Note) accidentalf(encoded bool) string {
 	return ""
 }
 
+func (n Note) NonFractionBasedDuration() (time.Duration, bool) {
+	if n.duration > 0 {
+		return n.duration, true
+	}
+	return ZeroDuration, false
+}
+
 func (n Note) durationf(encoded bool) string {
 	switch n.fraction {
 	case 0.0625:
@@ -313,6 +324,8 @@ func (n Note) Inspect(i Inspection) {
 	i.Properties["length"] = n.DurationFactor()
 	i.Properties["midi"] = n.MIDI()
 	i.Properties["velocity"] = n.Velocity
+	wholeNoteDuration := WholeNoteDuration(i.Context.Control().BPM())
+	i.Properties["duration"] = time.Duration(float32(wholeNoteDuration) * n.DurationFactor())
 }
 
 func (n Note) String() string {

@@ -22,34 +22,37 @@ func (m *Midi) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.
 	if sel, ok := seq.(core.ChannelSelector); ok {
 		channel = sel.Channel()
 	}
-	actualSequence := seq.S()
 	wholeNoteDuration := core.WholeNoteDuration(bpm)
-	for _, eachGroup := range actualSequence.Notes {
+	for _, eachGroup := range seq.S().Notes {
 		if len(eachGroup) == 0 {
 			continue
 		}
 		if m.handledPedalChange(channel, m.timeline, moment, eachGroup) {
 			continue
 		}
-		var actualDuration time.Duration
+		var actualDuration = time.Duration(float32(wholeNoteDuration) * eachGroup[0].DurationFactor())
 		var event midiEvent
-		if canCombineMidiEvents(eachGroup) {
+		if len(eachGroup) > 1 {
 			// combined, first note makes fraction and velocity
-			actualDuration = time.Duration(float32(wholeNoteDuration) * eachGroup[0].DurationFactor())
 			event = m.combinedMidiEvent(channel, eachGroup)
 			event.echoString = core.StringFromNoteGroup(eachGroup)
 		} else {
-			// one-by-one
-			for i, eachNote := range eachGroup {
-				actualDuration = time.Duration(float32(wholeNoteDuration) * eachNote.DurationFactor())
-				if eachNote.IsRest() {
-					event.echoString = eachNote.String()
-					continue
-				}
-				event = m.combinedMidiEvent(channel, eachGroup[i:i+1])
-				event.echoString = eachNote.String()
+			// solo note
+			// rest?
+			if eachGroup[0].IsRest() {
+				m.timeline.Schedule(restEvent{echoString: eachGroup[0].String()}, moment)
+				moment = moment.Add(actualDuration)
+				continue
 			}
+			// midi variable length note?
+			if fixed, ok := eachGroup[0].NonFractionBasedDuration(); ok {
+				actualDuration = fixed
+			}
+			// non-rest
+			event = m.combinedMidiEvent(channel, eachGroup)
+			event.echoString = eachGroup[0].String()
 		}
+		// solo or group
 		m.timeline.Schedule(event, moment)
 		moment = moment.Add(actualDuration)
 		m.timeline.Schedule(event.asNoteoff(), moment)
@@ -78,9 +81,4 @@ func (m *Midi) combinedMidiEvent(channel int, notes []core.Note) midiEvent {
 		velocity: int64(velocity),
 		out:      m.stream,
 	}
-}
-
-func canCombineMidiEvents(notes []core.Note) bool {
-	// assumes group of notes does not have =<>^
-	return len(notes) >= 2
 }

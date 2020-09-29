@@ -6,10 +6,6 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-type Transformer interface {
-	Transform(Sequence) Sequence
-}
-
 type Sequenceable interface {
 	S() Sequence
 }

@@ -34,6 +34,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 ## Composition functions
 
 - <a href="#at">at</a>
+- <a href="#duration">duration</a>
 - <a href="#dynamic">dynamic</a>
 - <a href="#export">export</a>
 - <a href="#fraction">fraction</a>
@@ -118,6 +119,13 @@ Create a Chord from its string <a href="/melrose/notations.html#chord-not">notat
 chord('C#5/m/1')
 
 chord('G/M/2')
+```
+
+### duration<a name="duration"></a>
+Computes the duration of the object.
+
+```javascript
+duration(note('C'))
 ```
 
 ### dynamic<a name="dynamic"></a>
@@ -237,15 +245,14 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =
 
 ### midi<a name="midi"></a>
 Create a Note from MIDI information and is typically used for drum sets.
-The first parameter is the fraction and must be one of {1,2,4,8,16}.
-A fraction of 4 means create a quarter note.
+The first parameter is a fraction {1,2,4,8,16}, a duration in milliseconds or a time.Duration.
 Second parameter is the MIDI number and must be one of [0..127].
 The third parameter is the velocity (~ loudness) and must be one of [0..127].
 
 ```javascript
-midi(0.25,52,80) // => E3+
+midi(500,52,80) // => E3+
 
-midi(16,36,70) // => 16C2 (kick)
+midi(500,36,70) // => 16C2 (kick)
 ```
 
 ### multi<a name="multi"></a>

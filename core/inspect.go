@@ -26,9 +26,10 @@ func NewInspect(ctx Context, value interface{}) Inspection {
 	}
 	if p, ok := value.(Inspectable); ok {
 		p.Inspect(i)
-	}
-	if s, ok := value.(Sequenceable); ok {
-		s.S().Inspect(i) // show props as sequence
+	} else {
+		if s, ok := value.(Sequenceable); ok {
+			s.S().Inspect(i) // show props as sequence
+		}
 	}
 	// default
 	if len(i.Text) == 0 {
