@@ -46,6 +46,17 @@ package: clean build vsc
 	cp LICENSE target
 
 
+zip: clean build vsc
+	mkdir target/demos
+	cp docs/examples/*.mel target/demos
+	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target
+	cp packaging/old/run.sh target
+	cp ../melrose-for-vscode/*vsix target
+	echo "$(LATEST_TAG)" > target/version.txt
+	cp LICENSE target
+	cd target && zip -mr macosx-melrose-$(LATEST_TAG).zip . && md5 macosx-melrose-$(LATEST_TAG).zip > macosx-melrose-$(LATEST_TAG).zip.md5
+
+
 # go get -u -v github.com/aktau/github-release
 # export GITHUB_TOKEN=$(kiya me get github/emicklei/macbookhub)
 .PHONY: createrelease
