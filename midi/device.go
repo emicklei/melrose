@@ -13,16 +13,20 @@ import (
 
 // Midi is an melrose.AudioDevice
 type Midi struct {
-	enabled  bool
-	stream   *portmidi.Stream
-	deviceID int
-	echo     bool // TODO remove
+	enabled      bool
+	isHumanizing bool
+	stream       *portmidi.Stream
+	deviceID     int
+	echo         bool // TODO remove
 
 	defaultOutputChannel  int
 	currentOutputDeviceID int
 	currentInputDeviceID  int
 
 	timeline *core.Timeline
+	//humanize
+	timingModifier   TimingModifier
+	velocityModifier VelocityModifier
 }
 
 type MIDIWriter interface {
@@ -70,6 +74,10 @@ func (m *Midi) Command(args []string) notify.Message {
 		return nil
 	}
 	switch args[0] {
+	case "humanize":
+		m.isHumanizing = !m.isHumanizing
+		m.setupHumanizing()
+		return notify.Infof("humanizing notes enabled:%v", m.isHumanizing)
 	case "echo":
 		echoMIDISent = !echoMIDISent
 		return notify.Infof("printing notes enabled:%v", echoMIDISent)
@@ -121,6 +129,7 @@ func (m *Midi) Command(args []string) notify.Message {
 func (m *Midi) printInfo() {
 	fmt.Println("Usage:")
 	fmt.Println(":m echo                --- toggle printing the notes that are send")
+	fmt.Println(":m humanize            --- toggle humanizing the notes")
 	fmt.Println(":m in      <device-id> --- change the current MIDI input device id")
 	fmt.Println(":m out     <device-id> --- change the current MIDI output device id")
 	fmt.Println(":m channel <1..16>     --- change the default MIDI output channel")
@@ -149,6 +158,7 @@ func (m *Midi) printInfo() {
 
 	fmt.Println()
 	fmt.Printf("[midi] %v = echo notes\n", m.echo)
+	fmt.Printf("[midi] %v = humanizing\n", m.isHumanizing)
 	fmt.Printf("[midi] %d = input  device id (default = %d)\n", m.currentInputDeviceID, defaultIn)
 	fmt.Printf("[midi] %d = output device id (default = %d)\n", m.currentOutputDeviceID, defaultOut)
 	fmt.Printf("[midi] %d = default output channel\n", m.defaultOutputChannel)
@@ -164,6 +174,7 @@ func Open() (*Midi, error) {
 	m.defaultOutputChannel = DefaultChannel
 	// start timeline
 	m.timeline = core.NewTimeline()
+	m.setupHumanizing()
 	go m.timeline.Play()
 	return m, nil
 }
@@ -177,6 +188,17 @@ func (m *Midi) init() error {
 	m.enabled = true
 	m.changeOutputDeviceID(int(portmidi.DefaultOutputDeviceID()))
 	return nil
+}
+
+func (m *Midi) setupHumanizing() {
+	if m.isHumanizing {
+		// TODO make this configurable
+		m.velocityModifier = newVelocityOffset(-5, 5)
+		m.timingModifier = newTimingOffset(-20, 20, -20, 20)
+	} else {
+		m.timingModifier = NoOffset{}
+		m.velocityModifier = NoOffset{}
+	}
 }
 
 func (m *Midi) changeOutputDeviceID(id int) notify.Message {
