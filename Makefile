@@ -36,17 +36,16 @@ clean:
 vsc:
 	cd ../melrose-for-vscode && vsce package
 
-package: clean build vsc
-	mkdir target/demos
-	cp docs/examples/*.mel target/demos
-	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target
-	cp ./packaging/macosx/*.sh target
-	echo "$(LATEST_TAG)" > target/version.txt
-	cp ../melrose-for-vscode/*vsix target
-	cp LICENSE target
+APP := /Applications/Melrose
+package:
+	rm -rf $(APP)
+	mkdir -p $(APP)
+	cp target/melrose $(APP)
+	cp target/*vsix $(APP)
+	cp packaging/macosx/*.sh $(APP) 
+	cp -r target/demos $(APP)
 
-
-zip: clean build vsc
+prezip: clean build vsc
 	mkdir target/demos
 	cp docs/examples/*.mel target/demos
 	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target
@@ -54,6 +53,8 @@ zip: clean build vsc
 	cp ../melrose-for-vscode/*vsix target
 	echo "$(LATEST_TAG)" > target/version.txt
 	cp LICENSE target
+
+zip: prezip
 	cd target && zip -mr macosx-melrose-$(LATEST_TAG).zip . && md5 macosx-melrose-$(LATEST_TAG).zip > macosx-melrose-$(LATEST_TAG).zip.md5
 
 

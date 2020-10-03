@@ -6,3 +6,4 @@ backup_melrose.json
 target
 *.mid
 coverage.txt
+*.pkg
