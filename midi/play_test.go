@@ -35,6 +35,7 @@ func TestEventNoteOff(t *testing.T) {
 
 func TestPlay(t *testing.T) {
 	m := new(Midi)
+	m.setupHumanizing()
 	m.enabled = true
 	m.timeline = core.NewTimeline()
 	now := time.Now()
