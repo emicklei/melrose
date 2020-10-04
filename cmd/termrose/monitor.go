@@ -11,6 +11,7 @@ type Monitor struct {
 	Sent             *StringHolder
 	InputDeviceList  *StringListSelectionHolder
 	OutputDeviceList *StringListSelectionHolder
+	Console          *StringHolder
 }
 
 func NewMonitor() *Monitor {
@@ -20,6 +21,7 @@ func NewMonitor() *Monitor {
 		Sent:             new(StringHolder),
 		InputDeviceList:  new(StringListSelectionHolder),
 		OutputDeviceList: new(StringListSelectionHolder),
+		Console:          new(StringHolder),
 	}
 }
 
@@ -49,4 +51,9 @@ func (m *Monitor) SetInputDevices(list []string) {
 
 func (m *Monitor) SetOutputDevices(list []string) {
 	m.OutputDeviceList.Set(list)
+}
+
+func (m *Monitor) AppendConsole(text string) {
+	// TODO keep at most X chars
+	m.Sent.Set(m.Console.Value + text)
 }

@@ -32,6 +32,10 @@ func NewInputView(app *tview.Application, h *StringHolder) *tview.InputField {
 
 func NewDropDownView(app *tview.Application, h *StringListSelectionHolder) *tview.DropDown {
 	w := tview.NewDropDown()
+	// w.SetSelectedFunc(func(text string, index int) {
+	// 	h.Selection = text
+	// 	h.SelectionIndex = index
+	// })
 	h.AddDependent(func(old, new []string) {
 		app.QueueUpdate(func() {
 			w.SetOptions(new, func(text string, index int) {
