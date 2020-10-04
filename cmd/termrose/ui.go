@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
+	"github.com/emicklei/melrose/notify"
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 )
@@ -65,7 +67,7 @@ func startUI(mon *Monitor) {
 		mon.SetInputDevices([]string{"abc", "def"})
 		mon.SetOutputDevices([]string{"abfdsafdsaf fd f ds f dsa fd saf dsa fds a fdsc", "defdsafdsafdsafdsafdsafdsafdsafdsafdsafdsafdsf"})
 		for i := 0; i < 100; i++ {
-			mon.AppendSent("(D E F)")
+			fmt.Fprint(notify.Console.DeviceOut, "(D E F)")
 		}
 	}()
 

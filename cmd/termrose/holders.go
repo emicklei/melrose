@@ -52,3 +52,12 @@ func (s *StringListSelectionHolder) Set(newValue []string) {
 func (s *StringListSelectionHolder) AddDependent(h StringListChangeHandler) {
 	s.dependents = append(s.dependents, h)
 }
+
+type WriterStringHolderAdaptor struct {
+	target *StringHolder
+}
+
+func (w WriterStringHolderAdaptor) Write(data []byte) (int, error) {
+	w.target.Set(w.target.Value + string(data))
+	return len(data), nil
+}

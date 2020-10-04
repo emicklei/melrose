@@ -9,6 +9,7 @@ type Monitor struct {
 	BPM              *StringHolder
 	Beat             *StringHolder
 	Sent             *StringHolder
+	Received         *StringHolder
 	InputDeviceList  *StringListSelectionHolder
 	OutputDeviceList *StringListSelectionHolder
 	Console          *StringHolder
@@ -19,6 +20,7 @@ func NewMonitor() *Monitor {
 		BPM:              new(StringHolder),
 		Beat:             new(StringHolder),
 		Sent:             new(StringHolder),
+		Received:         new(StringHolder),
 		InputDeviceList:  new(StringListSelectionHolder),
 		OutputDeviceList: new(StringListSelectionHolder),
 		Console:          new(StringHolder),
