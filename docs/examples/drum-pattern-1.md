@@ -6,12 +6,13 @@ This script is an example that uses the Melrōse language to create your own dru
 Line by line, I will explain how it is composed.
  
 ![drum pattern 1](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/melrose-drum-pattern-1.png "Melrōse source file")
+*Update: notemerge is renamed to merge*
 
 ### line 1
 Using the bpm function you change the default from 120 beats-per-minute to 85.
 
 ### line 5 .. 8
-Using the General MIDI mapping (see url on line 3),  4 variables with notes are created with the midi function.  Parameter 16 refers to the fraction of the note,  1/16. The second parameter is the MIDI number, the kick is 36. The third parameter is the velocity (loudness) and is set a bit lower than the default (72).
+Using the General MIDI mapping (see url on line 3),  4 variables with notes are created with the `midi` function.  Parameter 16 refers to the fraction of the note,  1/16. The second parameter is the MIDI number, the kick is 36. The third parameter is the velocity (loudness) and is set a bit lower than the default (72).
 
 ### line 10 .. 13
 Using the notemap function we create a sequence of notes in which for each number the note is placed. On index 3 , 10 and 11 (sequences start at 1), the open note is placed. On all other indices (1,2,...) a rest note ( '=' ) is placed. 
@@ -32,7 +33,9 @@ The drum set is created by merging all the notemaps into one sequence. The first
 
 ### line 15
 Finally, on this line we create a loop using the set as its parameter. You can play this loop by using cmd+3 in the Editor (*)
-Modify while play
+
+### Modify while play
+
 While playing the loop, you can change the notes and the notemap in the Editor and evaluate each line to hear the effect.
 Below is a snapshot of a piano roll created from playing this loop using a DAW (e.g. Logic).
  

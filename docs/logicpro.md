@@ -19,14 +19,14 @@ This article describes the steps to get Melrōse working with Logic Pro such tha
 
 ### Installation
 
-The installation steps are mostly the same as described for [GarageBand](https://emicklei.github.io/melrose/garageband). Follow this article and close the GarageBand application after completing it. 
+The installation steps are mostly the same as described for [GarageBand](https://emicklei.github.io/melrose/garageband). Follow this article and open Logic instead of GarageBand. 
 
 Keep the editor and the `demo.mel` file open.
 
 ### Create project
 
 Open the application Logic Pro and create a new project.
-Go to the project settings and enable de-multiplexing of MIDI messages.
+Go to the project settings and enable de-mixing of MIDI messages for recording.
 
 
 ### Add Instruments
