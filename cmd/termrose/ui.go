@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"time"
 
-	"github.com/emicklei/melrose/notify"
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 )
@@ -14,8 +11,17 @@ import (
 func startUI(mon *Monitor) {
 	app := tview.NewApplication()
 
-	bpm := NewInputView(app, mon.BPM)
-	bpm.SetLabel("BPM:")
+	foc := NewFocusGroup(app)
+
+	bpm := NewTextView(app, mon.BPM)
+
+	inputDevice := NewDropDownView(foc, mon.InputDeviceList)
+	inputDevice.SetLabel("Input:")
+	inputDevice.SetFieldWidth(40)
+
+	outputDevice := NewDropDownView(foc, mon.OutputDeviceList)
+	outputDevice.SetLabel("Output:")
+	outputDevice.SetFieldWidth(40)
 
 	beat := NewTextView(app, mon.Beat)
 	beat.SetTextColor(tcell.ColorLightCyan)
@@ -27,60 +33,38 @@ func startUI(mon *Monitor) {
 	received := NewTextView(app, mon.Sent)
 	received.SetBackgroundColor(tcell.NewRGBColor(25, 28, 32))
 
-	inputDevice := NewDropDownView(app, mon.InputDeviceList)
-	inputDevice.SetLabel("Input:")
-	inputDevice.SetFieldWidth(40)
-
-	outputDevice := NewDropDownView(app, mon.OutputDeviceList)
-	outputDevice.SetLabel("Output:")
-	outputDevice.SetFieldWidth(40)
-
 	console := NewTextView(app, mon.Console)
-	console.SetBackgroundColor(tcell.ColorBlack)
+	console.SetBackgroundColor(tcell.NewRGBColor(25, 28, 32))
 
 	settings := tview.NewFlex().SetDirection(tview.FlexColumn).
-		AddItem(beat, 4, 1, true).
-		// spacer left
+		AddItem(NewStaticLabel(" Melrōse "), 0, 1, false).
+		AddItem(beat, 4, 1, false).
 		AddItem(tview.NewBox().SetBorderPadding(0, 0, 1, 0), 1, 1, false).
-		AddItem(bpm, 0, 1, true).
-		AddItem(inputDevice, 0, 1, true).
-		AddItem(outputDevice, 0, 1, true)
+		AddItem(bpm, 3, 0, false).
+		// spacer right
+		AddItem(tview.NewBox().SetBorderPadding(0, 0, 1, 0), 1, 1, false).
+		AddItem(inputDevice, 0, 1, false).
+		AddItem(outputDevice, 0, 1, false)
 
 	flex := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(settings, 1, 1, true).
-		// spacer
+
+		// sent
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
+		AddItem(NewStaticLabel(" [yellow]sent"), 1, 1, false).
 		AddItem(sent, 0, 2, false).
-		// spacer
+
+		// received
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
+		AddItem(NewStaticLabel(" [yellow]received"), 1, 1, false).
 		AddItem(received, 0, 2, false).
-		// spacer
+
+		// console
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
-		AddItem(console, 0, 2, false)
+		AddItem(NewStaticLabel(" [yellow]console"), 1, 1, false).
+		AddItem(console, 0, 4, false)
 
-	go func() {
-		mon.SetBPM(120)
-		mon.SetBeat(1)
-		mon.AppendSent("A B C")
-		time.Sleep(1 * time.Second)
-		mon.SetBPM(140)
-		mon.SetInputDevices([]string{"abc", "def"})
-		mon.SetOutputDevices([]string{"abfdsafdsaf fd f ds f dsa fd saf dsa fds a fdsc", "defdsafdsafdsafdsafdsafdsafdsafdsafdsafdsafdsf"})
-		for i := 0; i < 100; i++ {
-			fmt.Fprint(notify.Console.DeviceOut, "(D E F)")
-		}
-	}()
-
-	go func() {
-		for {
-			for i := 1; i < 5; i++ {
-				mon.SetBeat(i)
-				time.Sleep(500 * time.Millisecond)
-			}
-		}
-	}()
-
-	if err := app.SetRoot(flex, true).SetFocus(flex).EnableMouse(true).Run(); err != nil {
+	if err := app.SetRoot(flex, true).SetFocus(foc.GetFocus()).EnableMouse(true).Run(); err != nil {
 		log.Println(err)
 	}
 }
