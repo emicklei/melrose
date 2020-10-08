@@ -1,6 +1,7 @@
 package midi
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/emicklei/melrose/core"
@@ -21,8 +22,9 @@ type midiEvent struct {
 }
 
 func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
-	if echoMIDISent && len(m.echoString) > 0 {
-		print(m.echoString)
+	// if echoMIDISent && len(m.echoString) > 0 {
+	if len(m.echoString) > 0 {
+		fmt.Fprintf(notify.Console.DeviceOut, m.echoString)
 	}
 	status := m.onoff | int64(m.channel-1)
 	for _, each := range m.which {
@@ -33,7 +35,7 @@ func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
 		if m.onoff == noteOff {
 			onoff = "off"
 		}
-		notify.Debugf("ch=%d notes=%s state=%s bytes=[%b(%d),%v,%b(%d)]",
+		fmt.Fprintf(notify.Console.StandardOut, "ch=%d notes=%s state=%s bytes=[%b(%d),%v,%b(%d)]\n",
 			m.channel, m.echoString, onoff, status, status, m.which, m.velocity, m.velocity)
 	}
 }
@@ -51,6 +53,6 @@ type restEvent struct {
 
 func (r restEvent) Handle(tim *core.Timeline, when time.Time) {
 	if echoMIDISent && len(r.echoString) > 0 {
-		print(r.echoString)
+		fmt.Fprintf(notify.Console.DeviceOut, r.echoString)
 	}
 }
