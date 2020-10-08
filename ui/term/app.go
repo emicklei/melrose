@@ -1,21 +1,14 @@
-package main
+package term
 
 import (
-	"log"
-
+	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
-	"github.com/emicklei/melrose/system"
 )
 
-func main() {
-	ctx, err := system.Setup()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer system.TearDown(ctx)
-	mon := NewMonitor()
-	setupConsole(mon)
-	startUI(mon)
+func (m *Monitor) Open(ctx core.Context) {
+	ctx.Device().SetEchoNotes(true)
+	setupConsole(m)
+	startUI(m)
 }
 
 func setupConsole(mon *Monitor) {

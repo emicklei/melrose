@@ -1,4 +1,4 @@
-package main
+package term
 
 type StringChangeHandler func(old, new string)
 type StringListChangeHandler func(old, new []string)

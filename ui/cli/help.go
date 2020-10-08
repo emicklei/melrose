@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"bytes"
@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/system"
 
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
@@ -17,7 +18,7 @@ func showHelp(ctx core.Context, args []string) notify.Message {
 	var b bytes.Buffer
 
 	if len(args) == 0 {
-		fmt.Fprintf(&b, "\nversion %s, syntax: %s\n", version, dsl.Syntax)
+		fmt.Fprintf(&b, "\nversion %s, syntax: %s\n", system.Version, dsl.Syntax)
 		fmt.Fprintf(&b, "https://emicklei.github.io/melrose \n")
 	}
 

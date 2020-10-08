@@ -71,8 +71,8 @@ func (m *Midi) Command(args []string) notify.Message {
 	}
 	switch args[0] {
 	case "echo":
-		echoMIDISent = !echoMIDISent
-		return notify.Infof("printing notes enabled:%v", echoMIDISent)
+		m.echo = !m.echo
+		return notify.Infof("printing notes enabled:%v", m.echo)
 	case "channel":
 		if len(args) != 2 {
 			return notify.Warningf("missing channel number")

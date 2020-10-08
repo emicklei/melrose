@@ -1,11 +1,12 @@
-package main
+package cli
 
 import (
 	"bytes"
-	"github.com/emicklei/melrose/core"
 	"sort"
 	"strings"
 	"unicode"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/dsl"
 )

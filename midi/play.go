@@ -35,7 +35,9 @@ func (m *Midi) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.
 		if len(eachGroup) > 1 {
 			// combined, first note makes fraction and velocity
 			event = m.combinedMidiEvent(channel, eachGroup)
-			event.echoString = core.StringFromNoteGroup(eachGroup)
+			if m.echo {
+				event.echoString = core.StringFromNoteGroup(eachGroup)
+			}
 		} else {
 			// solo note
 			// rest?
@@ -50,7 +52,9 @@ func (m *Midi) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.
 			}
 			// non-rest
 			event = m.combinedMidiEvent(channel, eachGroup)
-			event.echoString = eachGroup[0].String()
+			if m.echo {
+				event.echoString = eachGroup[0].String()
+			}
 		}
 		// solo or group
 		m.timeline.Schedule(event, moment)

@@ -1,4 +1,4 @@
-package main
+package term
 
 import (
 	"log"
@@ -30,7 +30,7 @@ func startUI(mon *Monitor) {
 	sent := NewTextView(app, mon.Sent)
 	sent.SetBackgroundColor(tcell.NewRGBColor(33, 37, 46))
 
-	received := NewTextView(app, mon.Sent)
+	received := NewTextView(app, mon.Received)
 	received.SetBackgroundColor(tcell.NewRGBColor(25, 28, 32))
 
 	console := NewTextView(app, mon.Console)

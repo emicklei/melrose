@@ -11,11 +11,9 @@ import (
 )
 
 var (
-	version   = "dev"
-	verbose   = flag.Bool("v", false, "verbose logging")
-	inputFile = flag.String("i", "", "read expressions from a file")
-	httpPort  = flag.String("http", ":8118", "address on which to listen for HTTP requests")
-	history   = ".melrose.history"
+	Version  = "dev"
+	verbose  = flag.Bool("v", false, "verbose logging")
+	httpPort = flag.String("http", ":8118", "address on which to listen for HTTP requests")
 )
 
 func Setup() (core.Context, error) {

@@ -1,8 +1,9 @@
-package main
+package cli
 
 import (
-	"github.com/emicklei/melrose/core"
 	"log"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/midi"
 )

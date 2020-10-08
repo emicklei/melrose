@@ -18,17 +18,17 @@ You can use the following flags to change its behavior.
 
     -http string
         address on which to listen for HTTP requests (default ":8118")
-    -i  string
-        read a program from a file
+    -cli
+        use the command line interface
     -v  boolean
         verbose logging
 
-### control
+### CLI control
 
 Commands to control the program itself are prefix with a colon `:`.
 With `:h` you get the list of known commands.
 
-### line editing
+### CLI line editing
 
 The following line editing commands are supported on platforms and terminals
 that `melrōse` supports:
