@@ -11,26 +11,6 @@ import (
 	"github.com/rakyll/portmidi"
 )
 
-// Midi is an melrose.AudioDevice
-type Midi struct {
-	enabled  bool
-	stream   *portmidi.Stream
-	deviceID int
-	echo     bool // TODO remove
-
-	defaultOutputChannel  int
-	currentOutputDeviceID int
-	currentInputDeviceID  int
-
-	timeline *core.Timeline
-}
-
-type MIDIWriter interface {
-	WriteShort(int64, int64, int64) error
-	Close() error
-	Abort() error
-}
-
 // https://www.midi.org/specifications-old/item/table-1-summary-of-midi-message
 const (
 	noteOn        int64 = 0x90 // 10010000 , 144
@@ -44,16 +24,25 @@ var (
 	DefaultChannel = 1
 )
 
-func (m *Midi) Reset() {
-	m.timeline.Reset()
-	if m.stream != nil {
-		// send note off all to all channels for current device
-		for c := 1; c <= 16; c++ {
-			if err := m.stream.WriteShort(controlChange|int64(c-1), noteAllOff, 0); err != nil {
-				fmt.Println("portmidi write error:", err)
-			}
-		}
-	}
+// Midi is an melrose.AudioDevice
+type Midi struct {
+	enabled      bool
+	outputStream *portmidi.Stream
+	inputStream  *portmidi.Stream
+	echo         bool
+
+	defaultOutputChannel  int
+	currentOutputDeviceID int
+	currentInputDeviceID  int
+
+	timeline *core.Timeline
+	listener *listener
+}
+
+type MIDIWriter interface {
+	WriteShort(int64, int64, int64) error
+	Close() error
+	Abort() error
 }
 
 func (m *Midi) Timeline() *core.Timeline { return m.timeline }
@@ -61,6 +50,18 @@ func (m *Midi) Timeline() *core.Timeline { return m.timeline }
 // SetEchoNotes is part of melrose.AudioDevice
 func (m *Midi) SetEchoNotes(echo bool) {
 	m.echo = echo
+}
+
+func (m *Midi) Reset() {
+	m.timeline.Reset()
+	if m.outputStream != nil {
+		// send note off all to all channels for current device
+		for c := 1; c <= 16; c++ {
+			if err := m.outputStream.WriteShort(controlChange|int64(c-1), noteAllOff, 0); err != nil {
+				fmt.Println("portmidi write error:", err)
+			}
+		}
+	}
 }
 
 // Command is part of melrose.AudioDevice
@@ -94,7 +95,9 @@ func (m *Midi) Command(args []string) notify.Message {
 		if err != nil {
 			return notify.Errorf("bad device number:%v", err)
 		}
-		m.currentInputDeviceID = nr
+		if err := m.changeInputDeviceID(nr); err != nil {
+			return notify.Error(err)
+		}
 		return notify.Infof("Current input device id:%v", m.currentInputDeviceID)
 	case "out":
 		if len(args) != 2 {
@@ -105,7 +108,7 @@ func (m *Midi) Command(args []string) notify.Message {
 			return notify.Errorf("bad device number:%v", err)
 		}
 		if err := m.changeOutputDeviceID(nr); err != nil {
-			return err
+			return notify.Error(err)
 		}
 		return notify.Infof("Current output device id:%v", m.currentOutputDeviceID)
 	case "init":
@@ -154,53 +157,91 @@ func (m *Midi) printInfo() {
 	fmt.Printf("[midi] %d = default output channel\n", m.defaultOutputChannel)
 }
 
-func Open() (*Midi, error) {
+func Open(ctx core.Context) (*Midi, error) {
 	m := new(Midi)
+	m.timeline = core.NewTimeline()
+	m.listener = newListener(ctx)
 	if err := m.init(); err != nil {
+		m.Close()
 		return nil, err
 	}
 	m.echo = false
-	// for output
 	m.defaultOutputChannel = DefaultChannel
-	// start timeline
-	m.timeline = core.NewTimeline()
+	// continuously send output
 	go m.timeline.Play()
 	return m, nil
 }
 
 func (m *Midi) init() error {
 	portmidi.Initialize()
-	deviceID := portmidi.DefaultOutputDeviceID()
-	if deviceID == -1 {
+	outputID := portmidi.DefaultOutputDeviceID()
+	if outputID == -1 {
 		return errors.New("no default output MIDI device available")
 	}
+	inputID := portmidi.DefaultInputDeviceID()
+	if inputID == -1 {
+		return errors.New("no default input MIDI device available")
+	}
 	m.enabled = true
-	m.changeOutputDeviceID(int(portmidi.DefaultOutputDeviceID()))
+	if err := m.changeInputDeviceID(int(inputID)); err != nil {
+		return err
+	}
+	if err := m.changeOutputDeviceID(int(outputID)); err != nil {
+		return err
+	}
 	return nil
 }
 
-func (m *Midi) changeOutputDeviceID(id int) notify.Message {
+func (m *Midi) changeInputDeviceID(id int) error {
 	if !m.enabled {
-		return notify.Warningf("MIDI is not enabled")
+		return errors.New("MIDI is not enabled")
+	}
+	if m.currentInputDeviceID == id {
+		// check stream
+		if m.inputStream != nil {
+			return nil
+		}
+	}
+	// open new
+	in, err := portmidi.NewInputStream(portmidi.DeviceID(id), 1024)
+	if err != nil {
+		return err
+	}
+	if m.inputStream != nil {
+		// stop listener
+		m.listener.stop()
+		_ = m.inputStream.Close()
+	}
+	m.inputStream = in
+	m.currentInputDeviceID = id
+	// start listener with new stream
+	m.listener.stream = m.inputStream
+	go m.listener.listen()
+
+	return nil
+}
+
+func (m *Midi) changeOutputDeviceID(id int) error {
+	if !m.enabled {
+		return errors.New("MIDI is not enabled")
 	}
 	if m.currentOutputDeviceID == id {
 		// check stream
-		if m.stream != nil {
+		if m.outputStream != nil {
 			return nil
 		}
 	}
 	// open new
 	out, err := portmidi.NewOutputStream(portmidi.DeviceID(id), 1024, 0)
 	if err != nil {
-		return notify.Error(err)
+		return err
 	}
-	if m.stream != nil {
-		// close old stream
-		m.stream.Close()
+	if m.outputStream != nil {
+		_ = m.outputStream.Close()
 	}
-	m.stream = out
+	m.outputStream = out
 	m.currentOutputDeviceID = id
-	return notify.Infof("MIDI device output id:%d", id)
+	return nil
 }
 
 // Close is part of melrose.AudioDevice
@@ -208,21 +249,14 @@ func (m *Midi) Close() {
 	if m.timeline != nil {
 		m.timeline.Reset()
 	}
-	if m.enabled {
-		m.stream.Abort()
-		m.stream.Close()
+	if m.outputStream != nil {
+		m.outputStream.Abort()
+		m.outputStream.Close()
+	}
+	if m.inputStream != nil {
+		m.inputStream.Abort()
+		m.inputStream.Close()
 	}
 	portmidi.Terminate()
 	m.enabled = false
-}
-
-// echo -e "\033[93mred\033[m" # Prints “red” in red.
-
-// 93 is bright yellow
-func print(arg interface{}) {
-	fmt.Printf("\033[2;93m" + fmt.Sprintf("%v ", arg) + "\033[0m")
-}
-
-func info(arg interface{}) {
-	fmt.Printf("\033[2;33m" + fmt.Sprintf("%v ", arg) + "\033[0m")
 }

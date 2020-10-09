@@ -1,7 +1,6 @@
 package midi
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/emicklei/melrose/core"
@@ -14,9 +13,6 @@ func (m *Midi) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.
 	moment := beginAt
 	if !m.enabled {
 		return moment
-	}
-	if m.echo {
-		fmt.Println() // start new line
 	}
 	channel := m.defaultOutputChannel
 	if sel, ok := seq.(core.ChannelSelector); ok {
@@ -42,7 +38,11 @@ func (m *Midi) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.
 			// solo note
 			// rest?
 			if eachGroup[0].IsRest() {
-				m.timeline.Schedule(restEvent{echoString: eachGroup[0].String()}, moment)
+				event := restEvent{}
+				if m.echo {
+					event.echoString = eachGroup[0].String()
+				}
+				m.timeline.Schedule(event, moment)
 				moment = moment.Add(actualDuration)
 				continue
 			}
@@ -83,6 +83,6 @@ func (m *Midi) combinedMidiEvent(channel int, notes []core.Note) midiEvent {
 		onoff:    noteOn,
 		channel:  channel,
 		velocity: int64(velocity),
-		out:      m.stream,
+		out:      m.outputStream,
 	}
 }

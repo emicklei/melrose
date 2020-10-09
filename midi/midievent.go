@@ -50,6 +50,6 @@ type restEvent struct {
 
 func (r restEvent) Handle(tim *core.Timeline, when time.Time) {
 	if len(r.echoString) > 0 {
-		fmt.Fprintf(notify.Console.DeviceOut, r.echoString)
+		fmt.Fprintf(notify.Console.DeviceOut, " %s", r.echoString)
 	}
 }

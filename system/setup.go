@@ -19,16 +19,16 @@ var (
 func Setup() (core.Context, error) {
 	flag.Parse()
 
-	device, err := midi.Open()
+	ctx := new(core.PlayContext)
+	ctx.EnvironmentVars = map[string]string{}
+	ctx.VariableStorage = dsl.NewVariableStore()
+	ctx.LoopControl = core.NewBeatmaster(ctx, 120)
+
+	device, err := midi.Open(ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	ctx := new(core.PlayContext)
-	ctx.EnvironmentVars = map[string]string{}
 	ctx.AudioDevice = device
-	ctx.VariableStorage = dsl.NewVariableStore()
-	ctx.LoopControl = core.NewBeatmaster(ctx, 120)
 
 	if len(*httpPort) > 0 {
 		// start DSL server

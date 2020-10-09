@@ -43,23 +43,23 @@ func (m *Midi) handledPedalChange(channel int, timeline *core.Timeline, moment t
 		timeline.Schedule(pedalEvent{
 			goingDown: false,
 			channel:   channel,
-			out:       m.stream}, moment)
+			out:       m.outputStream}, moment)
 		return true
 	case note.IsPedalUpDown():
 		timeline.Schedule(pedalEvent{
 			goingDown: false,
 			channel:   channel,
-			out:       m.stream}, moment)
+			out:       m.outputStream}, moment)
 		timeline.Schedule(pedalEvent{
 			goingDown: true,
 			channel:   channel,
-			out:       m.stream}, moment)
+			out:       m.outputStream}, moment)
 		return true
 	case note.IsPedalDown():
 		timeline.Schedule(pedalEvent{
 			goingDown: true,
 			channel:   channel,
-			out:       m.stream}, moment)
+			out:       m.outputStream}, moment)
 	}
 	return false
 }

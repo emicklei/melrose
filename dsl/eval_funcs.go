@@ -45,6 +45,7 @@ type Function struct {
 func EvalFunctions(ctx core.Context) map[string]Function {
 	eval := map[string]Function{}
 
+	// TODO allow fractions:  0.5, 0.25, 0.0125
 	eval["fraction"] = Function{
 		Title: "Duration fraction operator",
 		Description: `Creates a new object for which the fraction of duration of all notes are changed.

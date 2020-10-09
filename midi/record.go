@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 
 	"github.com/rakyll/portmidi"
 )
@@ -25,7 +26,7 @@ func (m *Midi) record(ctx core.Context, deviceID int, stopAfterInactivity time.D
 	defer in.Close()
 
 	midiDeviceInfo := portmidi.Info(portmidi.DeviceID(deviceID))
-	info(fmt.Sprintf("recording from %s/%s ... [until %v silence]\n", midiDeviceInfo.Interface, midiDeviceInfo.Name, stopAfterInactivity))
+	fmt.Fprintf(notify.Console.StandardOut, "recording from %s/%s ... [until %v silence]\n", midiDeviceInfo.Interface, midiDeviceInfo.Name, stopAfterInactivity)
 
 	ch := in.Listen()
 	timeout := time.NewTimer(stopAfterInactivity)
@@ -40,7 +41,6 @@ func (m *Midi) record(ctx core.Context, deviceID int, stopAfterInactivity time.D
 		case each := <-ch: // depending on the device, this may not block and other events are received
 			when := now.Add(time.Duration(each.Timestamp) * time.Millisecond)
 			if each.Status == noteOn {
-				print(core.MIDItoNote(0.25, int(each.Data1), 1.0)) // TODO
 				rec.Add(core.NewNoteChange(true, each.Data1, each.Data2), when)
 				needsReset = true
 				continue
@@ -59,7 +59,7 @@ func (m *Midi) record(ctx core.Context, deviceID int, stopAfterInactivity time.D
 		}
 	}
 done:
-	info(fmt.Sprintf("\nstopped after %v of silence\n", stopAfterInactivity))
+	fmt.Fprintf(notify.Console.StandardOut, "\nstopped after %v of silence\n", stopAfterInactivity)
 	core.PrintValue(ctx, rec)
 	return rec, nil
 }
