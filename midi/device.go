@@ -111,11 +111,6 @@ func (m *Midi) Command(args []string) notify.Message {
 			return notify.Error(err)
 		}
 		return notify.Infof("Current output device id:%v", m.currentOutputDeviceID)
-	case "init":
-		m.Close()
-		m.init()
-		m.printInfo()
-		return notify.Infof("MIDI re-initialized")
 	default:
 		return notify.Warningf("unknown midi command: %s", args[0])
 	}
@@ -127,7 +122,6 @@ func (m *Midi) printInfo() {
 	fmt.Println(":m in      <device-id> --- change the current MIDI input device id")
 	fmt.Println(":m out     <device-id> --- change the current MIDI output device id")
 	fmt.Println(":m channel <1..16>     --- change the default MIDI output channel")
-	fmt.Println(":m init                --- initialize MIDI and device list")
 	fmt.Println()
 
 	var midiDeviceInfo *portmidi.DeviceInfo

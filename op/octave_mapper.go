@@ -3,9 +3,8 @@ package op
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/emicklei/melrose/core"
-	"strconv"
-	"strings"
 )
 
 type OctaveMapper struct {
@@ -50,24 +49,6 @@ func (o OctaveMapper) Notes() [][]core.Note {
 		target = append(target, newGroup)
 	}
 	return target
-}
-
-// 1:-1,3:-1,1:0,2:0,3:0,1:1,2:1
-func parseIndexOffsets(s string) (m []int2int) {
-	entries := strings.Split(s, ",")
-	for _, each := range entries {
-		kv := strings.Split(each, ":")
-		ik, err := strconv.Atoi(kv[0])
-		if err != nil {
-			continue
-		}
-		iv, err := strconv.Atoi(kv[1])
-		if err != nil {
-			continue
-		}
-		m = append(m, int2int{from: ik, to: iv})
-	}
-	return
 }
 
 func (o OctaveMapper) Storex() string {

@@ -30,6 +30,7 @@ n = note('c#5')
 
 | Notation    | Description
 |-------------|---
+| \-\-\-\-    |Pianississimo (ppp)
 | \-\-\-      |Pianissimo (pp)
 | \-\-        |Piano (p)
 | \-          |MezzoPiano (mp)
@@ -37,9 +38,10 @@ n = note('c#5')
 | +           |MezzoForte (mf)
 | ++          |Forte (f)
 | +++         |Fortissimo (ff)
+| ++++        |Fortississimo (fff)
 
 ```javascript
-n = note('E++')
+n = note('e++')
 ```
 
 ## Sequence<a name="sequence-not"></a>
@@ -100,5 +102,5 @@ sf = scale(2,'f')
 | E =         | E major followed by a quarter rest note
 
 ```javascript
-p = progression('C F G')
+p = progression('c f g')
 ```
