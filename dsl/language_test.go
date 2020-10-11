@@ -109,3 +109,11 @@ sm = sequencemap(ar,sequence('c d'))`)
 	checkStorex(t, r.(core.Sequenceable).S(),
 		"sequence('C')")
 }
+
+func TestDynamicMapWithTwoSequenceables(t *testing.T) {
+	r := eval(t, `s = sequence('c e g')
+dm = dynamicmap(' 1:+ , 2:-- ,3:0',s)`)
+	checkStorex(t, r, "dynamicmap('1:+,2:--,3:0',s)")
+	checkStorex(t, r.(core.Sequenceable).S(),
+		"sequence('C+ E-- G')")
+}

@@ -3,7 +3,6 @@ package op
 import (
 	"bytes"
 	"fmt"
-	"regexp"
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
@@ -35,11 +34,9 @@ func (d Dynamic) S() core.Sequence {
 	return core.Sequence{Notes: target}
 }
 
-var validDynamics = regexp.MustCompile("[+{0,3}]|[-{0,3}]|[0?]")
-
 func CheckDynamic(emphasis string) error {
-	if !validDynamics.Match([]byte(emphasis)) {
-		return fmt.Errorf("dynamic parameter [%v] must in %v", emphasis, "{+,++,+++,-,--,---,0}")
+	if core.ParseVelocity(emphasis) == -1 {
+		return fmt.Errorf("dynamic parameter [%v] must in %v", emphasis, "{+,++,+++,++++,-,--,---,----,0}")
 	}
 	return nil
 }

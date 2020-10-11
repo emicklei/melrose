@@ -19,8 +19,13 @@ type index2dynamic struct {
 	dynamic string
 }
 
-func NewDynamicMapper(slist []core.Sequenceable, dynamics string) DynamicMapper {
-	return DynamicMapper{Target: slist, IndexDynamics: parseIndex2Dynamics(dynamics)}
+func NewDynamicMapper(slist []core.Sequenceable, dynamics string) (DynamicMapper, error) {
+	id, err := parseIndex2Dynamics(dynamics)
+	dm := DynamicMapper{Target: slist, IndexDynamics: id}
+	if err != nil {
+		return dm, err
+	}
+	return dm, nil
 }
 
 func (d DynamicMapper) S() core.Sequence {
@@ -43,25 +48,29 @@ func (d DynamicMapper) S() core.Sequence {
 
 func (d DynamicMapper) Storex() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "dynamic('%s'", formatIndex2Dynamics(d.IndexDynamics))
+	fmt.Fprintf(&b, "dynamicmap('%s'", formatIndex2Dynamics(d.IndexDynamics))
 	appendStorexList(&b, false, d.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
 }
 
 // "1:++,2:--"
-func parseIndex2Dynamics(s string) (list []index2dynamic) {
+func parseIndex2Dynamics(s string) (list []index2dynamic, err error) {
 	entries := strings.Split(s, ",")
 	for _, each := range entries {
-		kv := strings.Split(each, ":")
-		if len(kv) != 2 { // silent ignore error
-			continue
+		kv := strings.Split(strings.TrimSpace(each), ":")
+		if len(kv) != 2 {
+			return list, fmt.Errorf("bad pair syntax [%s], expected [<positive int>:<dynamic>]", each)
 		}
 		ik, err := strconv.Atoi(kv[0])
-		if err != nil { // silent ignore error TODO
-			continue
+		if err != nil || ik < 1 { // silent ignore error TODO
+			return list, fmt.Errorf("bad number syntax [%s], expected [<positive int>:<dynamic>]", each)
 		}
-		list = append(list, index2dynamic{at: ik, dynamic: strings.TrimSpace(kv[1])})
+		dynamic := strings.TrimSpace(kv[1])
+		if core.ParseVelocity(dynamic) == -1 {
+			return list, fmt.Errorf("bad dynamic syntax [%s], expected [<positive int>:<dynamic>]", each)
+		}
+		list = append(list, index2dynamic{at: ik, dynamic: dynamic})
 	}
 	return
 }

@@ -1,7 +1,5 @@
 LATEST_TAG := $(shell git describe --abbrev=0)
 
-refresh: test install snippets grammar dslmd
-
 run: install
 	melrose
 
@@ -12,7 +10,7 @@ build:
 	export LATEST_TAG=$(shell git describe --abbrev=0)
 	cd cmd/melrose && go build -ldflags "-s -w -X main.version=$(LATEST_TAG)" -o ../../target/melrose
 	
-install:
+install: test snippets grammar dslmd
 	go install github.com/emicklei/melrose/cmd/melrose
 
 snippets:

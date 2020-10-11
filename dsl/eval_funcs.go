@@ -98,6 +98,31 @@ The first parameter controls the fraction of the note, e.g. 1 = whole, 2 = half,
 			return op.Dynamic{Target: joined, Emphasis: emphasis}
 		}}
 
+	eval["dynamicmap"] = Function{
+		Title:       "Dynamic Map creator",
+		Description: `changes the dynamic of notes from a musical object using an 1-index-based mapping`,
+		Prefix:      "dyna",
+		IsComposer:  true,
+		Template:    `dynamicmap('${1:mapping}',${2:object})`,
+		Samples: `dynamicmap('1:++,2:--',sequence('e f')) // => E++ F--
+dynamicmap('2:0,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
+		Func: func(mapping string, playables ...interface{}) interface{} {
+			joined := []core.Sequenceable{}
+			for _, p := range playables {
+				if s, ok := getSequenceable(p); !ok {
+					return notify.Panic(fmt.Errorf("cannot dynamicmap (%T) %v", p, p))
+				} else {
+					joined = append(joined, s)
+				}
+			}
+			mapper, err := op.NewDynamicMapper(joined, mapping)
+			if err != nil {
+				notify.Print(notify.Warningf("cannot create dynamic mapping %v", err))
+				return nil
+			}
+			return mapper
+		}}
+
 	eval["progression"] = Function{
 		Title:       "Progress creator",
 		Description: `create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>`,

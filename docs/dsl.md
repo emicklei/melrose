@@ -36,6 +36,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#at">at</a>
 - <a href="#duration">duration</a>
 - <a href="#dynamic">dynamic</a>
+- <a href="#dynamicmap">dynamicmap</a>
 - <a href="#export">export</a>
 - <a href="#fraction">fraction</a>
 - <a href="#group">group</a>
@@ -135,6 +136,15 @@ Creates a new modified musical object for which the dynamics of all notes are ch
 
 ```javascript
 dynamic('++',sequence('E F')) // => E++ F++
+```
+
+### dynamicmap<a name="dynamicmap"></a>
+Changes the dynamic of notes from a musical object using an 1-index-based mapping.
+
+```javascript
+dynamicmap('1:++,2:--',sequence('e f')) // => E++ F--
+
+dynamicmap('2:0,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++
 ```
 
 ### end<a name="end"></a>
