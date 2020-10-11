@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/emicklei/melrose/core"
-	"github.com/emicklei/melrose/notify"
 )
 
 type Dynamic struct {
@@ -49,14 +48,17 @@ func (d Dynamic) Storex() string {
 	return b.String()
 }
 
-func (d Dynamic) ToNote() core.Note {
+func (d Dynamic) ToNote() (core.Note, error) {
 	if len(d.Target) == 0 {
-		notify.Panic(fmt.Errorf("cannot take note from [%s]", d.Storex()))
+		return core.Rest4, fmt.Errorf("cannot take note from [%s]", d.Storex())
 	}
 	one, ok := d.Target[0].(core.NoteConvertable)
 	if !ok {
-		notify.Panic(fmt.Errorf("cannot take note from [%v]", one))
+		return core.Rest4, fmt.Errorf("cannot take note from [%v]", one)
 	}
-	not := one.ToNote()
-	return not.WithDynamic(d.Emphasis)
+	not, err := one.ToNote()
+	if err != nil {
+		return not, err
+	}
+	return not.WithDynamic(d.Emphasis), nil
 }

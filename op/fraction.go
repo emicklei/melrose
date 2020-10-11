@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/emicklei/melrose/core"
-	"github.com/emicklei/melrose/notify"
 )
 
 type Fraction struct {
@@ -49,16 +48,19 @@ func (d Fraction) Storex() string {
 	return b.String()
 }
 
-func (d Fraction) ToNote() core.Note {
+func (d Fraction) ToNote() (core.Note, error) {
 	if len(d.Target) == 0 {
-		notify.Panic(fmt.Errorf("cannot take note from [%s]", d.Storex()))
+		return core.Rest4, fmt.Errorf("cannot take note from [%s]", d.Storex())
 	}
 	one, ok := d.Target[0].(core.NoteConvertable)
 	if !ok {
-		notify.Panic(fmt.Errorf("cannot take note from [%v]", one))
+		return core.Rest4, fmt.Errorf("cannot take note from [%v]", one)
 	}
-	not := one.ToNote()
-	return not.WithFraction(1.0/float32(d.Parameter), not.Dotted)
+	not, err := one.ToNote()
+	if err != nil {
+		return not, err
+	}
+	return not.WithFraction(1.0/float32(d.Parameter), not.Dotted), nil
 }
 
 var validFractionParameterValues = []int{1, 2, 4, 8, 16}

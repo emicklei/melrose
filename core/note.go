@@ -36,8 +36,8 @@ func (n Note) Storex() string {
 }
 
 // ToNote() is part of NoteConvertable
-func (n Note) ToNote() Note {
-	return n
+func (n Note) ToNote() (Note, error) {
+	return n, nil
 }
 
 func (n Note) ToRest() Note {

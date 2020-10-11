@@ -11,7 +11,7 @@ type Sequenceable interface {
 }
 
 type NoteConvertable interface {
-	ToNote() Note
+	ToNote() (Note, error)
 }
 
 type Storable interface {

@@ -125,7 +125,11 @@ func (n NoteMap) S() core.Sequence {
 		return core.EmptySequence
 	}
 	notes := make([]core.Note, n.maxIndex)
-	note := notelike.ToNote()
+	note, err := notelike.ToNote()
+	if err != nil {
+		notify.Panic(err)
+		return core.EmptySequence
+	}
 	for i := range notes {
 		notes[i] = note.ToRest()
 	}
