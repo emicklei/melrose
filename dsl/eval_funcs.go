@@ -506,7 +506,7 @@ next(num)`,
 		}}
 
 	eval["play"] = Function{
-		Title:         "Play musical objects in the foreground",
+		Title:         "Play musical objects in the background",
 		Description:   "play all musical objects",
 		ControlsAudio: true,
 		Prefix:        "pla",
@@ -519,28 +519,6 @@ next(num)`,
 					moment = ctx.Device().Play(s, ctx.Control().BPM(), moment)
 				} else {
 					notify.Print(notify.Warningf("cannot play (%T) %v", p, p))
-				}
-			}
-			// wait until the play is completed before allowing a new one to.
-			// add a bit of time to allow the previous play to finish all its notes.
-			// time.Sleep(moment.Sub(time.Now()) + (50 * time.Millisecond))
-			return nil
-		}}
-
-	eval["go"] = Function{
-		Title:         "Play musical objects in the background",
-		Description:   "play all musical objects together in the background (do not wait for completion)",
-		ControlsAudio: true,
-		Prefix:        "go",
-		Template:      `go(${1:sequenceable})`,
-		Samples:       `go(s1,s1,s3) // play s1 and s2 and s3 simultaneously`,
-		Func: func(playables ...interface{}) interface{} {
-			moment := time.Now()
-			for _, p := range playables {
-				if s, ok := getSequenceable(getValue(p)); ok { // unwrap var
-					ctx.Device().Play(s, ctx.Control().BPM(), moment)
-				} else {
-					notify.Print(notify.Warningf("cannot go (%T) %v", p, p))
 				}
 			}
 			return nil
