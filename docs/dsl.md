@@ -69,7 +69,6 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#bpm">bpm</a>
 - <a href="#channel">channel</a>
 - <a href="#end">end</a>
-- <a href="#go">go</a>
 - <a href="#loop">loop</a>
 - <a href="#multi">multi</a>
 - <a href="#play">play</a>
@@ -170,13 +169,6 @@ The first parameter controls the fraction of the note, e.g. 1 = whole, 2 = half,
 
 ```javascript
 fraction(8,sequence('e f')) // => ⅛E ⅛F , shorten the notes from quarter to eight
-```
-
-### go<a name="go"></a>
-Play all musical objects together in the background (do not wait for completion).
-
-```javascript
-go(s1,s1,s3) // play s1 and s2 and s3 simultaneously
 ```
 
 ### group<a name="group"></a>
