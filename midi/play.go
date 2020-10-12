@@ -9,7 +9,7 @@ import (
 // Play is part of melrose.AudioDevice
 // It schedules all the notes on the timeline beginning at a give time (now or in the future).
 // Returns the end time of the last played Note.
-func (m *Midi) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
+func (m *Device) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
 	moment := beginAt
 	if !m.enabled {
 		return moment
@@ -65,7 +65,7 @@ func (m *Midi) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.
 }
 
 // Pre: notes not empty
-func (m *Midi) combinedMidiEvent(channel int, notes []core.Note) midiEvent {
+func (m *Device) combinedMidiEvent(channel int, notes []core.Note) midiEvent {
 	// first note makes fraction and velocity
 	velocity := notes[0].Velocity
 	if velocity > 127 {

@@ -33,7 +33,7 @@ func (p pedalEvent) Handle(tim *core.Timeline, when time.Time) {
 	}
 }
 
-func (m *Midi) handledPedalChange(channel int, timeline *core.Timeline, moment time.Time, group []core.Note) bool {
+func (m *Device) handledPedalChange(channel int, timeline *core.Timeline, moment time.Time, group []core.Note) bool {
 	if len(group) == 0 || len(group) > 1 {
 		return false
 	}

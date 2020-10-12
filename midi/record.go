@@ -11,13 +11,13 @@ import (
 )
 
 // Record is part of melrose.AudioDevice
-func (m *Midi) Record(ctx core.Context) (*core.Recording, error) {
+func (m *Device) Record(ctx core.Context) (*core.Recording, error) {
 	stopAfterInactivity := time.Duration(5) * time.Second // TODO config 5
 	deviceID := m.currentInputDeviceID
 	return m.record(ctx, deviceID, stopAfterInactivity)
 }
 
-func (m *Midi) record(ctx core.Context, deviceID int, stopAfterInactivity time.Duration) (*core.Recording, error) {
+func (m *Device) record(ctx core.Context, deviceID int, stopAfterInactivity time.Duration) (*core.Recording, error) {
 	rec := core.NewRecording()
 	in, err := portmidi.NewInputStream(portmidi.DeviceID(deviceID), 1024) // buffer
 	if err != nil {
@@ -65,6 +65,6 @@ done:
 }
 
 // TODO compute duration
-func (m *Midi) eventToNote(start, end portmidi.Event) core.Note {
+func (m *Device) eventToNote(start, end portmidi.Event) core.Note {
 	return core.MIDItoNote(0.25, int(start.Data1), int(start.Data2)) // TODO
 }

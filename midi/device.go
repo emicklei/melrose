@@ -24,8 +24,8 @@ var (
 	DefaultChannel = 1
 )
 
-// Midi is an melrose.AudioDevice
-type Midi struct {
+// Device is an melrose.AudioDevice
+type Device struct {
 	enabled      bool
 	outputStream *portmidi.Stream
 	inputStream  *portmidi.Stream
@@ -45,14 +45,14 @@ type MIDIWriter interface {
 	Abort() error
 }
 
-func (m *Midi) Timeline() *core.Timeline { return m.timeline }
+func (m *Device) Timeline() *core.Timeline { return m.timeline }
 
 // SetEchoNotes is part of melrose.AudioDevice
-func (m *Midi) SetEchoNotes(echo bool) {
+func (m *Device) SetEchoNotes(echo bool) {
 	m.echo = echo
 }
 
-func (m *Midi) Reset() {
+func (m *Device) Reset() {
 	m.timeline.Reset()
 	if m.outputStream != nil {
 		// send note off all to all channels for current device
@@ -65,7 +65,7 @@ func (m *Midi) Reset() {
 }
 
 // Command is part of melrose.AudioDevice
-func (m *Midi) Command(args []string) notify.Message {
+func (m *Device) Command(args []string) notify.Message {
 	if len(args) == 0 {
 		m.printInfo()
 		return nil
@@ -116,7 +116,7 @@ func (m *Midi) Command(args []string) notify.Message {
 	}
 }
 
-func (m *Midi) printInfo() {
+func (m *Device) printInfo() {
 	fmt.Println("Usage:")
 	fmt.Println(":m echo                --- toggle printing the notes that are send")
 	fmt.Println(":m in      <device-id> --- change the current MIDI input device id")
@@ -151,8 +151,8 @@ func (m *Midi) printInfo() {
 	fmt.Printf("[midi] %d = default output channel\n", m.defaultOutputChannel)
 }
 
-func Open(ctx core.Context) (*Midi, error) {
-	m := new(Midi)
+func Open(ctx core.Context) (*Device, error) {
+	m := new(Device)
 	m.timeline = core.NewTimeline()
 	m.listener = newListener(ctx)
 	if err := m.init(); err != nil {
@@ -166,7 +166,7 @@ func Open(ctx core.Context) (*Midi, error) {
 	return m, nil
 }
 
-func (m *Midi) init() error {
+func (m *Device) init() error {
 	portmidi.Initialize()
 	outputID := portmidi.DefaultOutputDeviceID()
 	if outputID == -1 {
@@ -186,7 +186,7 @@ func (m *Midi) init() error {
 	return nil
 }
 
-func (m *Midi) changeInputDeviceID(id int) error {
+func (m *Device) changeInputDeviceID(id int) error {
 	if !m.enabled {
 		return errors.New("MIDI is not enabled")
 	}
@@ -215,7 +215,7 @@ func (m *Midi) changeInputDeviceID(id int) error {
 	return nil
 }
 
-func (m *Midi) changeOutputDeviceID(id int) error {
+func (m *Device) changeOutputDeviceID(id int) error {
 	if !m.enabled {
 		return errors.New("MIDI is not enabled")
 	}
@@ -239,7 +239,7 @@ func (m *Midi) changeOutputDeviceID(id int) error {
 }
 
 // Close is part of melrose.AudioDevice
-func (m *Midi) Close() {
+func (m *Device) Close() {
 	if m.timeline != nil {
 		m.timeline.Reset()
 	}

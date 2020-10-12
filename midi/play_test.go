@@ -34,7 +34,7 @@ func TestEventNoteOff(t *testing.T) {
 }
 
 func TestPlay(t *testing.T) {
-	m := new(Midi)
+	m := new(Device)
 	m.enabled = true
 	m.timeline = core.NewTimeline()
 	now := time.Now()
