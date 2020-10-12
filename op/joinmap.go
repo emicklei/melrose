@@ -56,3 +56,15 @@ func (j JoinMap) check(index, subindex, value, length int) bool { // indices are
 func NewJoinMapper(v core.Valueable, indices string) JoinMap {
 	return JoinMap{Target: v, Indices: parseIndices(indices)}
 }
+
+// Replaced is part of Replaceable
+func (j JoinMap) Replaced(from, to core.Sequenceable) core.Sequenceable {
+	if core.IsIdenticalTo(j, from) {
+		return to
+	}
+	join, ok := j.Target.Value().(Join)
+	if !ok {
+		return j
+	}
+	return JoinMap{Target: core.On(join.Replaced(from, to)), Indices: j.Indices}
+}

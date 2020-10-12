@@ -138,3 +138,23 @@ func (n NoteMap) S() core.Sequence {
 	}
 	return core.BuildSequence(notes)
 }
+
+// Replaced is part of Replaceable
+func (n NoteMap) Replaced(from, to core.Sequenceable) core.Sequenceable {
+	if core.IsIdenticalTo(n, from) {
+		return to
+	}
+	notelike, ok := n.Target.Value().(core.NoteConvertable)
+	if !ok {
+		return n
+	}
+	note, err := notelike.ToNote()
+	if err != nil {
+		return n
+	}
+	return NoteMap{
+		Target:        core.On(note.Replaced(from, to)),
+		Indices:       n.Indices,
+		indicesFormat: n.indicesFormat,
+		maxIndex:      n.maxIndex}
+}

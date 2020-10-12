@@ -11,12 +11,14 @@ func TestImplements(t *testing.T) {
 		source          interface{}
 		notSequenceable bool
 		notStorable     bool
+		notReplaceable  bool
 	}{
 		{source: Fraction{}},
 		{source: Join{}},
 		{source: JoinMap{}},
 		{source: NoteMap{}},
 		{source: Dynamic{}},
+		{source: DynamicMapper{}},
 	} {
 		if !each.notSequenceable {
 			if _, ok := each.source.(core.Sequenceable); !ok {
@@ -26,6 +28,11 @@ func TestImplements(t *testing.T) {
 		if !each.notStorable {
 			if _, ok := each.source.(core.Storable); !ok {
 				t.Errorf("%T does not implement Storable", each.source)
+			}
+		}
+		if !each.notReplaceable {
+			if _, ok := each.source.(core.Replaceable); !ok {
+				t.Errorf("%T does not implement Replaceable", each.source)
 			}
 		}
 	}

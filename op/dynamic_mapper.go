@@ -86,3 +86,11 @@ func formatIndex2Dynamics(list []index2dynamic) string {
 	}
 	return b.String()
 }
+
+// Replaced is part of Replaceable
+func (d DynamicMapper) Replaced(from, to core.Sequenceable) core.Sequenceable {
+	if core.IsIdenticalTo(d, from) {
+		return to
+	}
+	return DynamicMapper{Target: replacedAll(d.Target, from, to), IndexDynamics: d.IndexDynamics}
+}
