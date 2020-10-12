@@ -115,7 +115,7 @@ dynamicmap('2:0,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 					joined = append(joined, s)
 				}
 			}
-			mapper, err := op.NewDynamicMapper(joined, mapping)
+			mapper, err := op.NewDynamicMap(joined, mapping)
 			if err != nil {
 				notify.Print(notify.Warningf("cannot create dynamic mapping %v", err))
 				return nil
