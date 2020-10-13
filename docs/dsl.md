@@ -46,6 +46,8 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#join">join</a>
 - <a href="#joinmap">joinmap</a>
 - <a href="#merge">merge</a>
+- <a href="#midi_cc">midi_cc</a>
+- <a href="#midi_pc">midi_pc</a>
 - <a href="#next">next</a>
 - <a href="#notemap">notemap</a>
 - <a href="#octave">octave</a>
@@ -255,6 +257,20 @@ The third parameter is the velocity (~ loudness) and must be one of [0..127].
 midi(500,52,80) // => E3+
 
 midi(500,36,70) // => 16C2 (kick)
+```
+
+### midi_cc<a name="midi_cc"></a>
+Sends the MIDI message CC (Control Change).
+
+```javascript
+midi_cc(1,0x7B,0) // all notes off in channel 1
+```
+
+### midi_pc<a name="midi_pc"></a>
+Sends the MIDI message PC (Program Change).
+
+```javascript
+midi_pc(1,12) // 
 ```
 
 ### multi<a name="multi"></a>

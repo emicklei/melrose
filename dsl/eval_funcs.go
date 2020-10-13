@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/midi"
 
 	"github.com/emicklei/melrose/midi/file"
 
@@ -827,6 +828,38 @@ pitchD = replace(pitchA, c, d) // c -> d in pitchA`,
 				return notify.Panic(fmt.Errorf("cannot create replace with (%T) %v", to, to))
 			}
 			return op.Replace{Target: targetS, From: fromS, To: toS}
+		}}
+
+	eval["midi_pc"] = Function{
+		Title:       "MIDI program change (PC)",
+		Description: "Sends the MIDI message PC (Program Change)",
+		Template:    "midi_pc(${1:data1},${2:data1}",
+		Samples:     "midi_pc(1,12) // ",
+		Func: func(channel, data1 int) interface{} {
+			md, ok := ctx.Device().(*midi.Device)
+			if !ok {
+				return notify.Panic(fmt.Errorf("not a MIDI device"))
+			}
+			if err := md.SendPC(channel, data1); err != nil {
+				return notify.Error(err)
+			}
+			return nil
+		}}
+
+	eval["midi_cc"] = Function{
+		Title:       "MIDI control change (CC)",
+		Description: "Sends the MIDI message CC (Control Change)",
+		Template:    "midi_cc(${1:channel},${2:data1},${3:data2}",
+		Samples:     "midi_cc(1,0x7B,0) // all notes off in channel 1",
+		Func: func(channel, data1, data2 int) interface{} {
+			md, ok := ctx.Device().(*midi.Device)
+			if !ok {
+				return notify.Panic(fmt.Errorf("not a MIDI device"))
+			}
+			if err := md.SendCC(channel, data1, data2); err != nil {
+				return notify.Error(err)
+			}
+			return nil
 		}}
 
 	return eval
