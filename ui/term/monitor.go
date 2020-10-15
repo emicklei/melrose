@@ -3,27 +3,29 @@ package term
 import (
 	"bytes"
 	"fmt"
+
+	tvp "github.com/emicklei/tviewplus"
 )
 
 type Monitor struct {
-	BPM              *StringHolder
-	Beat             *StringHolder
-	Sent             *StringHolder
-	Received         *StringHolder
-	InputDeviceList  *StringListSelectionHolder
-	OutputDeviceList *StringListSelectionHolder
-	Console          *StringHolder
+	BPM              *tvp.StringHolder
+	Beat             *tvp.StringHolder
+	Sent             *tvp.StringHolder
+	Received         *tvp.StringHolder
+	InputDeviceList  *tvp.StringListSelectionHolder
+	OutputDeviceList *tvp.StringListSelectionHolder
+	Console          *tvp.StringHolder
 }
 
 func NewMonitor() *Monitor {
 	return &Monitor{
-		BPM:              new(StringHolder),
-		Beat:             new(StringHolder),
-		Sent:             new(StringHolder),
-		Received:         new(StringHolder),
-		InputDeviceList:  new(StringListSelectionHolder),
-		OutputDeviceList: new(StringListSelectionHolder),
-		Console:          new(StringHolder),
+		BPM:              new(tvp.StringHolder),
+		Beat:             new(tvp.StringHolder),
+		Sent:             new(tvp.StringHolder),
+		Received:         new(tvp.StringHolder),
+		InputDeviceList:  new(tvp.StringListSelectionHolder),
+		OutputDeviceList: new(tvp.StringListSelectionHolder),
+		Console:          new(tvp.StringHolder),
 	}
 }
 
@@ -44,7 +46,7 @@ func (m *Monitor) SetBeat(b int) {
 }
 
 func (m *Monitor) AppendSent(sent string) {
-	m.Sent.Set(m.Sent.Value + sent)
+	m.Sent.Append(sent)
 }
 
 func (m *Monitor) SetInputDevices(list []string) {
@@ -57,5 +59,5 @@ func (m *Monitor) SetOutputDevices(list []string) {
 
 func (m *Monitor) AppendConsole(text string) {
 	// TODO keep at most X chars
-	m.Sent.Set(m.Console.Value + text)
+	m.Sent.Append(text)
 }

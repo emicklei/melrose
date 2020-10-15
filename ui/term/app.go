@@ -24,16 +24,18 @@ func (m *Monitor) Open(ctx core.Context) {
 		}
 	}
 	m.InputDeviceList.Set(input)
+	m.InputDeviceList.Select(0) // TODO
 	m.OutputDeviceList.Set(output)
+	m.OutputDeviceList.Select(0)
 
 	startUI(m)
 }
 
 func setupConsole(mon *Monitor) {
 	notify.Console = notify.ConsoleWriter{
-		DeviceIn:      WriterStringHolderAdaptor{mon.Received},
-		DeviceOut:     WriterStringHolderAdaptor{mon.Sent},
-		StandardOut:   WriterStringHolderAdaptor{mon.Console},
-		StandardError: WriterStringHolderAdaptor{mon.Console},
+		DeviceIn:      mon.Received,
+		DeviceOut:     mon.Sent,
+		StandardOut:   mon.Console,
+		StandardError: mon.Console,
 	}
 }

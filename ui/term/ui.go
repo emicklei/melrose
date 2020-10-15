@@ -3,6 +3,7 @@ package term
 import (
 	"log"
 
+	tvp "github.com/emicklei/tviewplus"
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 )
@@ -11,33 +12,33 @@ import (
 func startUI(mon *Monitor) {
 	app := tview.NewApplication()
 
-	foc := NewFocusGroup(app)
+	foc := tvp.NewFocusGroup(app)
 
-	bpm := NewTextView(app, mon.BPM)
+	bpm := tvp.NewTextView(app, mon.BPM)
 
-	inputDevice := NewDropDownView(foc, mon.InputDeviceList)
+	inputDevice := tvp.NewDropDownView(foc, mon.InputDeviceList)
 	inputDevice.SetLabel("Input:")
 	inputDevice.SetFieldWidth(40)
 
-	outputDevice := NewDropDownView(foc, mon.OutputDeviceList)
+	outputDevice := tvp.NewDropDownView(foc, mon.OutputDeviceList)
 	outputDevice.SetLabel("Output:")
 	outputDevice.SetFieldWidth(40)
 
-	beat := NewTextView(app, mon.Beat)
+	beat := tvp.NewTextView(app, mon.Beat)
 	beat.SetTextColor(tcell.ColorLightCyan)
 	beat.SetBackgroundColor(tcell.NewRGBColor(33, 37, 46))
 
-	sent := NewTextView(app, mon.Sent)
+	sent := tvp.NewTextView(app, mon.Sent)
 	sent.SetBackgroundColor(tcell.NewRGBColor(33, 37, 46))
 
-	received := NewTextView(app, mon.Received)
+	received := tvp.NewTextView(app, mon.Received)
 	received.SetBackgroundColor(tcell.NewRGBColor(25, 28, 32))
 
-	console := NewTextView(app, mon.Console)
+	console := tvp.NewTextView(app, mon.Console)
 	console.SetBackgroundColor(tcell.NewRGBColor(25, 28, 32))
 
 	settings := tview.NewFlex().SetDirection(tview.FlexColumn).
-		AddItem(NewStaticLabel(" Melrōse "), 0, 1, false).
+		AddItem(tvp.NewStaticView(" Melrōse "), 0, 1, false).
 		AddItem(beat, 4, 1, false).
 		AddItem(tview.NewBox().SetBorderPadding(0, 0, 1, 0), 1, 1, false).
 		AddItem(bpm, 3, 0, false).
@@ -51,17 +52,17 @@ func startUI(mon *Monitor) {
 
 		// sent
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
-		AddItem(NewStaticLabel(" [yellow]sent"), 1, 1, false).
+		AddItem(tvp.NewStaticView(" [yellow]sent"), 1, 1, false).
 		AddItem(sent, 0, 2, false).
 
 		// received
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
-		AddItem(NewStaticLabel(" [yellow]received"), 1, 1, false).
+		AddItem(tvp.NewStaticView(" [yellow]received"), 1, 1, false).
 		AddItem(received, 0, 2, false).
 
 		// console
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
-		AddItem(NewStaticLabel(" [yellow]console"), 1, 1, false).
+		AddItem(tvp.NewStaticView(" [yellow]console"), 1, 1, false).
 		AddItem(console, 0, 4, false)
 
 	if err := app.SetRoot(flex, true).SetFocus(foc.GetFocus()).EnableMouse(true).Run(); err != nil {
