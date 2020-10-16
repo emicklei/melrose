@@ -28,6 +28,7 @@ func (m *Monitor) Open(ctx core.Context) {
 	m.OutputDeviceList.Set(output)
 	m.OutputDeviceList.Select(0)
 
+	ctx.Control().Start() // looper
 	startUI(m)
 }
 

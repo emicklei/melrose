@@ -44,6 +44,7 @@ func (l *listener) handle(event portmidi.Event) {
 		if _, ok := l.noteOn[nr]; ok {
 			return
 		}
+		// replace with now in nanos
 		event.Timestamp = portmidi.Timestamp(time.Now().UnixNano())
 		l.noteOn[nr] = event
 	} else if event.Status == noteOff {
@@ -52,10 +53,13 @@ func (l *listener) handle(event portmidi.Event) {
 			return
 		}
 		delete(l.noteOn, nr)
+		// replace with now in nanos
+		event.Timestamp = portmidi.Timestamp(time.Now().UnixNano())
+		// compute delta
 		ms := time.Duration(event.Timestamp-on.Timestamp) * time.Nanosecond
 		frac := core.DurationToFraction(l.ctx.Control().BPM(), ms)
-		fmt.Println(l.ctx.Control().BPM(), ms, frac)
 		note := core.MIDItoNote(frac, nr, int(on.Data2))
+		// echo note
 		fmt.Fprintf(notify.Console.DeviceIn, " %s", note)
 	}
 }

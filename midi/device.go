@@ -251,6 +251,7 @@ func (m *Device) Close() {
 		m.inputStream.Abort()
 		m.inputStream.Close()
 	}
+	m.listener.stop()
 	portmidi.Terminate()
 	m.enabled = false
 }
