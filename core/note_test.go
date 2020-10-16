@@ -85,7 +85,10 @@ func TestMIDI(t *testing.T) {
 
 func TestMIDIAll(t *testing.T) {
 	for i := 12; i < 127; i++ {
-		n := MIDItoNote(0.25, i, 1.0)
+		n, err := MIDItoNote(0.25, i, 1.0)
+		if err != nil {
+			t.Error(err)
+		}
 		m := n.MIDI()
 		if m != i {
 			t.Error("exp,act,note", i, m, n)

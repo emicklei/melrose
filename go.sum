@@ -16,6 +16,10 @@ github.com/emicklei/tviewplus v0.2.0 h1:UcHuiOGf9nmMPGnHbs9FVpBbaEn2F/N6jN7qdZyQ
 github.com/emicklei/tviewplus v0.2.0/go.mod h1:eXymGxvLsUbfRYu5V6OKUvTz27SZxV+1SgUAChbJlnY=
 github.com/emicklei/tviewplus v0.2.2 h1:4F57U/j7EDJ7+E3Fw/ah9u4bou4jjEXtL3FmIROBp30=
 github.com/emicklei/tviewplus v0.2.2/go.mod h1:eXymGxvLsUbfRYu5V6OKUvTz27SZxV+1SgUAChbJlnY=
+github.com/emicklei/tviewplus v0.3.0 h1:Cw0aDiA6hbVVA++NZFAzVjbwpRCNA5qHjERmhfvGaLc=
+github.com/emicklei/tviewplus v0.3.0/go.mod h1:eXymGxvLsUbfRYu5V6OKUvTz27SZxV+1SgUAChbJlnY=
+github.com/emicklei/tviewplus v0.3.1 h1:NW1uO4AJfA9rznE6uoceuXKjcet2v9x5JANBrrxrH6w=
+github.com/emicklei/tviewplus v0.3.1/go.mod h1:eXymGxvLsUbfRYu5V6OKUvTz27SZxV+1SgUAChbJlnY=
 github.com/gdamore/encoding v1.0.0 h1:+7OoQ1Bc6eTm5niUzBa0Ctsh6JbMW6Ra+YNuAtDBdko=
 github.com/gdamore/encoding v1.0.0/go.mod h1:alR0ol34c49FCSBLjhosxzcPHQbf2trDkoo5dl+VrEg=
 github.com/gdamore/tcell v1.3.0 h1:r35w0JBADPZCVQijYebl6YMWWtHRqVEGt7kL2eBADRM=

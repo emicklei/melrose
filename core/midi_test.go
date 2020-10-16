@@ -8,27 +8,21 @@ import (
 func TestMIDI_Failures(t *testing.T) {
 	{
 		m := MIDI{duration: On(-1), number: On(60), velocity: On(60)}
-		defer func() {
-			recover()
-		}()
-		m.ToNote()
-		t.Fail()
+		if _, err := m.ToNote(); err == nil {
+			t.Fail()
+		}
 	}
 	{
 		m := MIDI{duration: On(500), number: On(-1), velocity: On(60)}
-		defer func() {
-			recover()
-		}()
-		m.ToNote()
-		t.Fail()
+		if _, err := m.ToNote(); err == nil {
+			t.Fail()
+		}
 	}
 	{
 		m := MIDI{duration: On(500), number: On(60), velocity: On(-1)}
-		defer func() {
-			recover()
-		}()
-		m.ToNote()
-		t.Fail()
+		if _, err := m.ToNote(); err == nil {
+			t.Fail()
+		}
 	}
 }
 
@@ -82,7 +76,7 @@ func TestMIDI_ToNote(t *testing.T) {
 				number:   tt.fields.number,
 				velocity: tt.fields.velocity,
 			}
-			n := m.ToNote()
+			n, _ := m.ToNote()
 			// if got, want := n.duration, time.Duration(500)*time.Millisecond; got != want {
 			// 	t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 			// }

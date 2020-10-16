@@ -8,8 +8,14 @@ func (n Note) Pitched(howManySemitones int) Note {
 	if n.IsRest() || n.IsPedalUp() || n.IsPedalDown() || n.IsPedalUpDown() {
 		return n
 	}
-	simple := MIDItoNote(1.0, n.MIDI()+howManySemitones, 1.0)
-	nn, _ := NewNote(simple.Name, simple.Octave, n.fraction, simple.Accidental, n.Dotted, n.Velocity)
+	simple, err := MIDItoNote(1.0, n.MIDI()+howManySemitones, 1.0)
+	if err != nil {
+		panic(err)
+	}
+	nn, err := NewNote(simple.Name, simple.Octave, n.fraction, simple.Accidental, n.Dotted, n.Velocity)
+	if err != nil {
+		panic(err)
+	}
 	return nn
 }
 

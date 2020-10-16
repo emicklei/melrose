@@ -1,6 +1,7 @@
 package notify
 
 import (
+	"fmt"
 	"io"
 	"os"
 )
@@ -17,4 +18,8 @@ type ConsoleWriter struct {
 	DeviceOut     io.Writer
 	StandardOut   io.Writer
 	StandardError io.Writer
+}
+
+func (c ConsoleWriter) Errorf(format string, args ...interface{}) {
+	fmt.Fprintf(c.StandardError, format, args...)
 }

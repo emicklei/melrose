@@ -58,7 +58,10 @@ func (l *listener) handle(event portmidi.Event) {
 		// compute delta
 		ms := time.Duration(event.Timestamp-on.Timestamp) * time.Nanosecond
 		frac := core.DurationToFraction(l.ctx.Control().BPM(), ms)
-		note := core.MIDItoNote(frac, nr, int(on.Data2))
+		note, err := core.MIDItoNote(frac, nr, int(on.Data2))
+		if err != nil {
+			panic(err)
+		}
 		// echo note
 		fmt.Fprintf(notify.Console.DeviceIn, " %s", note)
 	}

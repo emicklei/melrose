@@ -25,3 +25,9 @@ func TestNewNoteMapper_Dots(t *testing.T) {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
+
+func TestNewNoteMapper_MIDI(t *testing.T) {
+	mid := core.NewMIDI(core.On(0.5), core.On(60), core.On(60))
+	m, _ := NewNoteMap("!.!.", core.On(mid))
+	t.Log(m.S())
+}

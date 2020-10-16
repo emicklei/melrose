@@ -15,7 +15,7 @@ type MIDI struct {
 }
 
 // ToNote() is part of NoteConvertable
-func (m MIDI) ToNote() Note {
+func (m MIDI) ToNote() (Note, error) {
 	nr := Int(m.number)
 	velocity := Int(m.velocity)
 	// check for fraction
@@ -29,17 +29,25 @@ func (m MIDI) ToNote() Note {
 		return MIDItoNote(fraction, nr, velocity)
 	}
 	// use as time.Duration or milliseconds
-	n := MIDItoNote(0.25, nr, velocity)
+	n, err := MIDItoNote(0.25, nr, velocity)
+	if err != nil {
+		return Rest4, err
+	}
 	// 0.25 will be discarded
 	n.duration = Duration(m.duration)
 	if n.duration < 0 {
-		notify.Panic(errors.New("MIDI duration cannot be < 0"))
+		return Rest4, errors.New("MIDI duration cannot be < 0")
 	}
-	return n
+	return n, nil
 }
 
 func (m MIDI) S() Sequence {
-	return m.ToNote().S()
+	n, err := m.ToNote()
+	if err != nil {
+		notify.Console.Errorf("MIDI to sequence failed:%v", err)
+		return EmptySequence
+	}
+	return n.S()
 }
 
 func NewMIDI(duration Valueable, number Valueable, velocity Valueable) MIDI {
@@ -54,7 +62,11 @@ func (m MIDI) Storex() string {
 }
 
 func (m MIDI) Inspect(i Inspection) {
-	n := m.ToNote()
+	n, err := m.ToNote()
+	if err != nil {
+		i.Properties["error"] = err.Error()
+		return
+	}
 	i.Properties["note"] = n.String()
 	if d, ok := n.NonFractionBasedDuration(); ok {
 		i.Properties["duration"] = d

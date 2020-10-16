@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"time"
-
-	"github.com/emicklei/melrose/notify"
 )
 
 // noteMidiOffsets maps a tone index (C=0) to the number of semitones on the scale
@@ -67,15 +65,15 @@ func DurationToFraction(bpm float64, d time.Duration) float32 {
 	return numbers[idx].fraction
 }
 
-func MIDItoNote(fraction float32, nr int, vel int) Note {
+func MIDItoNote(fraction float32, nr int, vel int) (Note, error) {
 	if fraction < 0 {
-		notify.Panic(errors.New("MIDI fraction cannot be < 0"))
+		return Rest4, errors.New("MIDI fraction cannot be < 0")
 	}
 	if nr < 0 || nr > 127 {
-		notify.Panic(errors.New("MIDI number must be in [0..127]"))
+		return Rest4, errors.New("MIDI number must be in [0..127]")
 	}
 	if vel < 0 || vel > 127 {
-		notify.Panic(errors.New("MIDI velocity must be in [0..127]"))
+		return Rest4, errors.New("MIDI velocity must be in [0..127]")
 	}
 	octave := (nr / 12) - 1
 	nrIndex := nr - ((octave + 1) * 12)
@@ -93,9 +91,9 @@ func MIDItoNote(fraction float32, nr int, vel int) Note {
 	}
 	nn, err := NewNote(string(nonRestNoteNames[offsetIndex]), octave, fraction, accidental, false, vel)
 	if err != nil {
-		notify.Panic(err)
+		return Rest4, err
 	}
-	return nn
+	return nn, nil
 }
 
 type ChannelSelector struct {

@@ -121,7 +121,7 @@ func sliceMax(indices []int) int {
 func (n NoteMap) S() core.Sequence {
 	notelike, ok := n.Target.Value().(core.NoteConvertable)
 	if !ok {
-		notify.Panic(fmt.Errorf("cannot map"))
+		notify.Console.Errorf("cannot map %v (%T)", n.Target.Value(), n.Target.Value())
 		return core.EmptySequence
 	}
 	notes := make([]core.Note, n.maxIndex)

@@ -66,5 +66,6 @@ done:
 
 // TODO compute duration
 func (m *Device) eventToNote(start, end portmidi.Event) core.Note {
-	return core.MIDItoNote(0.25, int(start.Data1), int(start.Data2)) // TODO
+	n, _ := core.MIDItoNote(0.25, int(start.Data1), int(start.Data2)) // TODO
+	return n
 }
