@@ -17,12 +17,10 @@ func startUI(mon *Monitor) {
 	bpm := tvp.NewTextView(app, mon.BPM)
 
 	inputDevice := tvp.NewDropDownView(foc, mon.InputDeviceList)
-	inputDevice.SetLabel("Input:")
-	inputDevice.SetFieldWidth(40)
+	inputDevice.SetLabel(" input ")
 
 	outputDevice := tvp.NewDropDownView(foc, mon.OutputDeviceList)
-	outputDevice.SetLabel("Output:")
-	outputDevice.SetFieldWidth(40)
+	outputDevice.SetLabel(" output ")
 
 	beat := tvp.NewTextView(app, mon.Beat)
 	beat.SetTextColor(tcell.ColorLightCyan)
@@ -38,14 +36,10 @@ func startUI(mon *Monitor) {
 	console.SetBackgroundColor(tcell.NewRGBColor(25, 28, 32))
 
 	settings := tview.NewFlex().SetDirection(tview.FlexColumn).
-		AddItem(tvp.NewStaticView(" Melrōse "), 0, 1, false).
+		AddItem(tvp.NewStaticView(" melrōse "), 0, 1, false).
 		AddItem(beat, 4, 1, false).
 		AddItem(tview.NewBox().SetBorderPadding(0, 0, 1, 0), 1, 1, false).
-		AddItem(bpm, 3, 0, false).
-		// spacer right
-		AddItem(tview.NewBox().SetBorderPadding(0, 0, 1, 0), 1, 1, false).
-		AddItem(inputDevice, 0, 1, false).
-		AddItem(outputDevice, 0, 1, false)
+		AddItem(bpm, 3, 0, false)
 
 	flex := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(settings, 1, 1, true).
@@ -65,7 +59,13 @@ func startUI(mon *Monitor) {
 		AddItem(tvp.NewStaticView(" [yellow]console"), 1, 1, false).
 		AddItem(console, 0, 4, false)
 
-	if err := app.SetRoot(flex, true).SetFocus(foc.GetFocus()).EnableMouse(true).Run(); err != nil {
+		// in & output devices
+	devices := tview.NewFlex().SetDirection(tview.FlexColumn).
+		AddItem(inputDevice, 0, 1, false).
+		AddItem(outputDevice, 0, 1, false)
+	flex.AddItem(devices, 0, 1, false)
+
+	if err := app.SetRoot(flex, true).EnableMouse(true).Run(); err != nil {
 		log.Println(err)
 	}
 }

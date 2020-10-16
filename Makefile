@@ -1,7 +1,8 @@
 LATEST_TAG := $(shell git describe --abbrev=0)
 
-run: install
-	melrose
+term:
+	go install github.com/emicklei/melrose/cmd/melrose
+	melrose -cli=false
 
 test:
 	go test -cover ./...
