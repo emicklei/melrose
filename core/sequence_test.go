@@ -4,6 +4,11 @@ import (
 	"testing"
 )
 
+func TestParseSequenceBlocks(t *testing.T) {
+	t.Skip()
+	ParseSequence(" 8.[C (C D)]#5++ ") // 8.C#5++ (8.C#5++ 8.D#5++)
+}
+
 func TestParseSequence(t *testing.T) {
 	for _, each := range []struct {
 		in  string

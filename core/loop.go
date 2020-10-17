@@ -13,7 +13,6 @@ type Loop struct {
 	target    Sequenceable
 	isRunning bool
 	mutex     sync.RWMutex
-	name      string
 }
 
 func NewLoop(ctx Context, target Sequenceable) *Loop {

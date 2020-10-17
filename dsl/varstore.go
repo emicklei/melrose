@@ -2,11 +2,12 @@ package dsl
 
 import (
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"reflect"
 	"sort"
 	"strings"
 	"sync"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/notify"
 )
@@ -80,7 +81,7 @@ func ListVariables(storage core.VariableStorage, args []string) notify.Message {
 	keys := []string{}
 	width := 0
 	variables := storage.Variables()
-	for k, _ := range variables {
+	for k := range variables {
 		// if filtering is wanted
 		if len(args) == 1 && !strings.HasPrefix(k, args[0]) {
 			continue

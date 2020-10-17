@@ -3,8 +3,6 @@ package core
 import (
 	"fmt"
 	"strings"
-
-	"log"
 )
 
 type Scale struct {
@@ -41,14 +39,6 @@ func ParseScale(s string) (Scale, error) {
 		v = Minor
 	}
 	return Scale{start: n, variant: v, octaves: 1}, err
-}
-
-func MustParseScale(s string) Scale {
-	sc, err := ParseScale(s)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return sc
 }
 
 var (

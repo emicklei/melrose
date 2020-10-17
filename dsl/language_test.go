@@ -1,6 +1,7 @@
 package dsl
 
 import (
+	"io/ioutil"
 	"testing"
 
 	"github.com/emicklei/melrose/core"
@@ -117,4 +118,14 @@ dm = dynamicmap(' 1:+ , 2:-- ,3:0,4:0',s,t)`)
 	checkStorex(t, r, "dynamicmap('1:+,2:--,3:0,4:0',s,t)")
 	checkStorex(t, r.(core.Sequenceable).S(),
 		"sequence('C+ E-- G B')")
+}
+
+func TestProcessLanguageTest(t *testing.T) {
+	src, _ := ioutil.ReadFile("language_test.mel")
+	defer func() {
+		if err := recover(); err != nil {
+			t.Log(err)
+		}
+	}()
+	eval(t, string(src))
 }

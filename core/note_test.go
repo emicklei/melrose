@@ -123,29 +123,25 @@ func ExampleParseNote() {
 	n1, _ := ParseNote("2C#3")
 	n2, _ := ParseNote("2.E_2")
 	n3, _ := ParseNote(".F_2++")
+	e1, _ := ParseNote("½C♯")
+	e2, _ := ParseNote("⅛B♭")
+	e3, _ := ParseNote("¼.D")
+	e4, _ := ParseNote("E♭")
+	fmt.Println(e1)
+	fmt.Println(e2)
+	fmt.Println(e3)
+	fmt.Println(e4)
 	fmt.Println(n1)
 	fmt.Println(n2)
 	fmt.Println(n3)
-	// Output:
-	// ½C♯3
-	// ½.E♭2
-	// .F♭2++
-}
-
-func ExampleParseNoteAsPrinted() {
-	n1, _ := ParseNote("½C♯")
-	n2, _ := ParseNote("⅛B♭")
-	n3, _ := ParseNote("¼.D")
-	n4, _ := ParseNote("E♭")
-	fmt.Println(n1)
-	fmt.Println(n2)
-	fmt.Println(n3)
-	fmt.Println(n4)
 	// Output:
 	// ½C♯
 	// ⅛B♭
 	// .D
 	// E♭
+	// ½C♯3
+	// ½.E♭2
+	// .F♭2++
 }
 
 // Failures

@@ -60,7 +60,7 @@ func NewNoteMap(indices string, note core.Valueable) (NoteMap, error) {
 func convertDotsAndBangs(format string) string {
 	var b bytes.Buffer
 	for i, each := range []rune(format) {
-		if '.' == each {
+		if each == '.' {
 			fmt.Fprintf(&b, "  ")
 		} else {
 			fmt.Fprintf(&b, "%d ", i+1)

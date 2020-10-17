@@ -88,7 +88,7 @@ func showHelp(ctx core.Context, args []string) notify.Message {
 	{
 		cmds := cmdFunctions()
 		keys := []string{}
-		for k, _ := range cmds {
+		for k := range cmds {
 			keys = append(keys, k)
 		}
 		sort.Strings(keys)

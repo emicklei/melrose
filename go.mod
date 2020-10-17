@@ -12,4 +12,5 @@ require (
 	github.com/rakyll/portmidi v0.0.0-20191102002215-74e95e8bc9b1
 	github.com/rivo/tview v0.0.0-20200915114512-42866ecf6ca6
 	gopkg.in/yaml.v2 v2.3.0 // indirect
+	honnef.co/go/tools v0.0.1-2020.1.4 // indirect
 )

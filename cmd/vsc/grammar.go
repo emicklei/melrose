@@ -3,11 +3,12 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/dsl"
 )
@@ -27,7 +28,7 @@ func grammar() {
 		LoopControl:     core.NoLooper,
 	}
 	var buffer bytes.Buffer
-	for k, _ := range dsl.EvalFunctions(ctx) {
+	for k := range dsl.EvalFunctions(ctx) {
 		if buffer.Len() > 0 {
 			fmt.Fprintf(&buffer, "|")
 		}

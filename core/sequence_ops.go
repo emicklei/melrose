@@ -29,14 +29,6 @@ func (s Sequence) Reversed() Sequence {
 	return Sequence{groups}
 }
 
-func (s Sequence) Repeated(howMany int) Sequence {
-	groups := [][]Note{}
-	for i := 0; i < howMany; i++ {
-		groups = append(groups, s.Notes...)
-	}
-	return Sequence{Notes: groups}
-}
-
 func (s Sequence) Octaved(howMuch int) Sequence {
 	if len(s.Notes) == 0 {
 		return s
@@ -52,6 +44,7 @@ func (s Sequence) Octaved(howMuch int) Sequence {
 	return Sequence{groups}
 }
 
+// TODO create op for this
 func (s Sequence) RotatedBy(howMany int) Sequence {
 	if len(s.Notes) == 0 {
 		return s

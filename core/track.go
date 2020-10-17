@@ -75,9 +75,9 @@ func (t *Track) Storex() string {
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "track('%s',%d", t.Title, t.Channel)
 	for k, v := range t.Content {
-		fmt.Fprintf(&buf, ",")
+		fmt.Fprint(&buf, ",")
 		sont := NewSequenceOnTrack(On(k), On(0), v) // TODO
-		fmt.Fprintf(&buf, sont.Storex())
+		fmt.Fprint(&buf, sont.Storex())
 	}
 	fmt.Fprintf(&buf, ")")
 	return buf.String()

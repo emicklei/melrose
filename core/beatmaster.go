@@ -19,7 +19,13 @@ type Beatmaster struct {
 	beats      int64   // monotonic increasing number, starting at 0
 	biab       int64   // current number of beats in a bar
 	bpm        float64 // current beats per minute
-	verbose    bool    // if true log beats and bars
+
+	// verbose will produce cryptic logging of the behavior
+	// . = a quarter tick
+	// | = a bar
+	// * = a loop was started
+	// x = a loop was stopped
+	verbose bool
 }
 
 func NewBeatmaster(ctx Context, bpm float64) *Beatmaster {
@@ -48,11 +54,6 @@ func (b *Beatmaster) Reset() {
 	b.Start()
 }
 
-// Verbose will produce cryptic logging of the behavior
-// . = a quarter tick
-// | = a bar
-// * = a loop was started
-// x = a loop was stopped
 func (b *Beatmaster) Verbose(v bool) {
 	b.verbose = v
 }

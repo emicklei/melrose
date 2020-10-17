@@ -39,12 +39,6 @@ type Device struct {
 	listener *listener
 }
 
-type MIDIWriter interface {
-	WriteShort(int64, int64, int64) error
-	Close() error
-	Abort() error
-}
-
 func (m *Device) Timeline() *core.Timeline { return m.timeline }
 
 // SetEchoNotes is part of melrose.AudioDevice

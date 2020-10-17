@@ -146,11 +146,13 @@ progression('(C D)') // => (C E G D G♭ A)`,
 		Prefix:      "joinm",
 		IsComposer:  true,
 		Template:    `joinmap('${1:indices}',${2:join})`,
+		Samples: `j = join(note('c'), sequence('d e f'))
+jm = joinmap('1 (2 3) 4',j)`,
 		Func: func(indices string, join interface{}) interface{} { // allow multiple seq?
 			v := getValueable(join)
 			vNow := v.Value()
 			if _, ok := vNow.(op.Join); !ok {
-				return notify.Panic(fmt.Errorf("cannot joinmap (%T) %v", join, join))
+				return notify.Panic(fmt.Errorf("cannot joinmap (%T) %v, must be a join", join, join))
 			}
 			return op.NewJoinMapper(v, indices)
 		}}
@@ -316,9 +318,9 @@ pitch(p,note('c'))`,
 
 	eval["repeat"] = Function{
 		Title:       "Repeat operator",
-		Description: "repeat the musical object a number of times",
+		Description: "repeat one or more musical objects a number of times",
 		Prefix:      "rep",
-		Template:    `repeat(${1:times},${2:sequenceable})`,
+		Template:    `repeat(${1:times},${2:sequenceables})`,
 		Samples:     `repeat(4,sequence('C D E'))`,
 		IsComposer:  true,
 		Func: func(howMany interface{}, playables ...interface{}) interface{} {
@@ -335,7 +337,7 @@ pitch(p,note('c'))`,
 
 	registerFunction(eval, "join", Function{
 		Title:       "Join operator",
-		Description: "joins two or more musical objects as one",
+		Description: "joins one or more musical objects as one",
 		Prefix:      "joi",
 		Template:    `join(${1:first},${2:second})`,
 		Samples: `a = chord('A')
@@ -371,7 +373,7 @@ ab = join(a,b)`,
 
 	eval["duration"] = Function{
 		Title:       "Duration calculator",
-		Description: "computes the duration of the object",
+		Description: "computes the duration of the object using the current BPM",
 		Prefix:      "dur",
 		Template:    `duration(${1:object})`,
 		Samples:     `duration(note('C'))`,

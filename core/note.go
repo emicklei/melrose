@@ -8,8 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/emicklei/melrose/notify"
 )
 
 // Note represents a musical note.
@@ -137,26 +135,6 @@ func (n Note) WithVelocity(v int) Note {
 func (n Note) WithFraction(f float32, dotted bool) Note {
 	n.fraction = f
 	n.Dotted = dotted
-	return n
-}
-
-func (n Note) FromFraction(f int, dotted bool) Note {
-	var fraction float32
-	switch f {
-	case 16:
-		fraction = 0.0625
-	case 8:
-		fraction = 0.125
-	case 4:
-		fraction = 0.25
-	case 2:
-		fraction = 0.5
-	case 1:
-		fraction = 1
-	default:
-		notify.Panic(fmt.Errorf("cannot create note with fraction [%d]", f))
-	}
-	n.fraction = fraction
 	return n
 }
 
