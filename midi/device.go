@@ -26,7 +26,6 @@ var (
 
 // Device is an melrose.AudioDevice
 type Device struct {
-	enabled      bool
 	outputStream *portmidi.Stream
 	inputStream  *portmidi.Stream
 	echo         bool
@@ -37,6 +36,10 @@ type Device struct {
 
 	timeline *core.Timeline
 	listener *listener
+}
+
+func (m *Device) IO() (inputDeviceID, outputDeviceID int) {
+	return m.currentInputDeviceID, m.currentOutputDeviceID
 }
 
 func (m *Device) Timeline() *core.Timeline { return m.timeline }
@@ -89,7 +92,7 @@ func (m *Device) Command(args []string) notify.Message {
 		if err != nil {
 			return notify.Errorf("bad device number:%v", err)
 		}
-		if err := m.changeInputDeviceID(nr); err != nil {
+		if err := m.ChangeInputDeviceID(nr); err != nil {
 			return notify.Error(err)
 		}
 		return notify.Infof("Current input device id:%v", m.currentInputDeviceID)
@@ -101,7 +104,7 @@ func (m *Device) Command(args []string) notify.Message {
 		if err != nil {
 			return notify.Errorf("bad device number:%v", err)
 		}
-		if err := m.changeOutputDeviceID(nr); err != nil {
+		if err := m.ChangeOutputDeviceID(nr); err != nil {
 			return notify.Error(err)
 		}
 		return notify.Infof("Current output device id:%v", m.currentOutputDeviceID)
@@ -147,6 +150,8 @@ func (m *Device) printInfo() {
 
 func Open(ctx core.Context) (*Device, error) {
 	m := new(Device)
+	m.currentInputDeviceID = -1
+	m.currentOutputDeviceID = -1
 	m.timeline = core.NewTimeline()
 	m.listener = newListener(ctx)
 	if err := m.init(); err != nil {
@@ -162,36 +167,35 @@ func Open(ctx core.Context) (*Device, error) {
 
 func (m *Device) init() error {
 	portmidi.Initialize()
+	// on startup, only setup output
 	outputID := portmidi.DefaultOutputDeviceID()
 	if outputID == -1 {
 		return errors.New("no default output MIDI device available")
 	}
-	inputID := portmidi.DefaultInputDeviceID()
-	if inputID == -1 {
-		return errors.New("no default input MIDI device available")
-	}
-	m.enabled = true
-	if err := m.changeInputDeviceID(int(inputID)); err != nil {
-		return err
-	}
-	if err := m.changeOutputDeviceID(int(outputID)); err != nil {
+	if err := m.ChangeOutputDeviceID(int(outputID)); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (m *Device) changeInputDeviceID(id int) error {
-	if !m.enabled {
-		return errors.New("MIDI is not enabled")
-	}
+// ChangeInputDeviceID close the existing and opens a new stream. id can be -1
+func (m *Device) ChangeInputDeviceID(id int) error {
 	if m.currentInputDeviceID == id {
 		// check stream
 		if m.inputStream != nil {
 			return nil
 		}
 	}
+	if id == -1 {
+		if m.inputStream != nil {
+			// stop listener
+			m.listener.stop()
+			_ = m.inputStream.Close()
+		}
+		return nil
+	}
 	// open new
-	in, err := portmidi.NewInputStream(portmidi.DeviceID(id), 1024)
+	in, err := portmidi.NewInputStream(portmidi.DeviceID(id), 1024) // TODO flag
 	if err != nil {
 		return err
 	}
@@ -205,22 +209,25 @@ func (m *Device) changeInputDeviceID(id int) error {
 	// start listener with new stream
 	m.listener.stream = m.inputStream
 	go m.listener.listen()
-
 	return nil
 }
 
-func (m *Device) changeOutputDeviceID(id int) error {
-	if !m.enabled {
-		return errors.New("MIDI is not enabled")
-	}
+// ChangeOutputDeviceID close the existing and opens a new stream. id can be -1
+func (m *Device) ChangeOutputDeviceID(id int) error {
 	if m.currentOutputDeviceID == id {
 		// check stream
 		if m.outputStream != nil {
 			return nil
 		}
 	}
+	if id == -1 {
+		if m.outputStream != nil {
+			_ = m.outputStream.Close()
+		}
+		return nil
+	}
 	// open new
-	out, err := portmidi.NewOutputStream(portmidi.DeviceID(id), 1024, 0)
+	out, err := portmidi.NewOutputStream(portmidi.DeviceID(id), 1024, 0) // TODO flag
 	if err != nil {
 		return err
 	}
@@ -247,5 +254,4 @@ func (m *Device) Close() {
 	}
 	m.listener.stop()
 	portmidi.Terminate()
-	m.enabled = false
 }

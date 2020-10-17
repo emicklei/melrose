@@ -11,7 +11,8 @@ import (
 // Returns the end time of the last played Note.
 func (m *Device) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
 	moment := beginAt
-	if !m.enabled {
+	// do we have output active?
+	if m.currentOutputDeviceID == -1 {
 		return moment
 	}
 	channel := m.defaultOutputChannel

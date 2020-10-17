@@ -10,10 +10,11 @@ import (
 )
 
 type listener struct {
-	stream *portmidi.Stream
-	quit   chan bool
-	noteOn map[int]portmidi.Event
-	ctx    core.Context
+	listening bool
+	stream    *portmidi.Stream
+	quit      chan bool
+	noteOn    map[int]portmidi.Event
+	ctx       core.Context
 }
 
 func newListener(ctx core.Context) *listener {
@@ -26,6 +27,7 @@ func newListener(ctx core.Context) *listener {
 func (l *listener) listen() {
 	l.quit = make(chan bool)
 	ch := l.stream.Listen()
+	l.listening = true
 	for {
 		select {
 		case <-l.quit:
@@ -36,6 +38,7 @@ func (l *listener) listen() {
 	}
 stop:
 	close(l.quit)
+	l.listening = false
 }
 
 func (l *listener) handle(event portmidi.Event) {
@@ -70,5 +73,7 @@ func (l *listener) handle(event portmidi.Event) {
 func (l *listener) stop() {
 	// forget open notes
 	l.noteOn = map[int]portmidi.Event{}
-	l.quit <- true
+	if l.listening {
+		l.quit <- true
+	}
 }
