@@ -124,7 +124,7 @@ chord('G/M/2')
 ```
 
 ### duration<a name="duration"></a>
-Computes the duration of the object.
+Computes the duration of the object using the current BPM.
 
 ```javascript
 duration(note('C'))
@@ -210,7 +210,7 @@ i = iterator(1,3,5,7,9)
 ```
 
 ### join<a name="join"></a>
-Joins two or more musical objects as one.
+Joins one or more musical objects as one.
 
 ```javascript
 a = chord('A')
@@ -224,7 +224,9 @@ ab = join(a,b)
 Creates a new join by mapping elements based on an index (1-based).
 
 ```javascript
+j = join(note('c'), sequence('d e f'))
 
+jm = joinmap('1 (2 3) 4',j)
 ```
 
 ### loop<a name="loop"></a>
@@ -385,7 +387,7 @@ s = r.S() // returns the sequence of notes from the recording
 ```
 
 ### repeat<a name="repeat"></a>
-Repeat the musical object a number of times.
+Repeat one or more musical objects a number of times.
 
 ```javascript
 repeat(4,sequence('C D E'))

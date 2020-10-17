@@ -35,7 +35,6 @@ func TestEventNoteOff(t *testing.T) {
 
 func TestPlay(t *testing.T) {
 	m := new(Device)
-	m.enabled = true
 	m.timeline = core.NewTimeline()
 	now := time.Now()
 	m.Play(core.MustParseSequence("> C ^ D E <"), 120.0, now)

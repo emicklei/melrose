@@ -17,6 +17,10 @@ See [documentation](https://emicklei.github.io/melrose/) how to install and use 
 
 Until `v1.0.0` both language syntax and package api may change.
 
+### Programming music
+
+![screenshot.png](screenshot.png)
+
 
 ### Contributions
 
