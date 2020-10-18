@@ -8,24 +8,26 @@ import (
 )
 
 type Monitor struct {
-	BPM              *tvp.StringHolder
-	Beat             *tvp.StringHolder
-	Sent             *tvp.StringHolder
-	Received         *tvp.StringHolder
-	InputDeviceList  *tvp.StringListSelectionHolder
-	OutputDeviceList *tvp.StringListSelectionHolder
-	Console          *tvp.StringHolder
+	BPM                   *tvp.StringHolder
+	Beat                  *tvp.StringHolder
+	Sent                  *tvp.StringHolder
+	Received              *tvp.StringHolder
+	EchoReceivedPitchOnly *tvp.BoolHolder
+	InputDeviceList       *tvp.StringListSelectionHolder
+	OutputDeviceList      *tvp.StringListSelectionHolder
+	Console               *tvp.StringHolder
 }
 
 func NewMonitor() *Monitor {
 	return &Monitor{
-		BPM:              new(tvp.StringHolder),
-		Beat:             new(tvp.StringHolder),
-		Sent:             new(tvp.StringHolder),
-		Received:         new(tvp.StringHolder),
-		InputDeviceList:  new(tvp.StringListSelectionHolder),
-		OutputDeviceList: new(tvp.StringListSelectionHolder),
-		Console:          new(tvp.StringHolder),
+		BPM:                   new(tvp.StringHolder),
+		Beat:                  new(tvp.StringHolder),
+		Sent:                  new(tvp.StringHolder),
+		Received:              new(tvp.StringHolder),
+		EchoReceivedPitchOnly: new(tvp.BoolHolder),
+		InputDeviceList:       new(tvp.StringListSelectionHolder),
+		OutputDeviceList:      new(tvp.StringListSelectionHolder),
+		Console:               new(tvp.StringHolder),
 	}
 }
 

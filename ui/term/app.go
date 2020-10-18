@@ -67,4 +67,8 @@ func (m *Monitor) setupDeviceSelections(ctx core.Context) {
 		fmt.Fprintf(notify.Console.StandardOut, "changing output MIDI device to %s\n", new.Value)
 		device.ChangeOutputDeviceID(id)
 	})
+
+	m.EchoReceivedPitchOnly.AddDependent(func(old, new bool) {
+		device.EchoReceivedPitchOnly(new)
+	})
 }

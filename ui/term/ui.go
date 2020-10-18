@@ -23,7 +23,12 @@ func startUI(mon *Monitor) {
 	bpm := tvp.NewReadOnlyTextView(app, mon.BPM)
 
 	inputDevice := tvp.NewDropDownView(foc, mon.InputDeviceList)
-	inputDevice.SetLabel(" in  ")
+	inputDevice.SetLabel("  in ")
+	pitchOnly := tvp.NewCheckboxView(foc, mon.EchoReceivedPitchOnly).SetLabel("pitch only ")
+
+	inputSection := tview.NewFlex().SetDirection(tview.FlexColumn).
+		AddItem(inputDevice, 0, 1, false).
+		AddItem(pitchOnly, 0, 1, false)
 
 	outputDevice := tvp.NewDropDownView(foc, mon.OutputDeviceList)
 	outputDevice.SetLabel(" out ")
@@ -65,7 +70,7 @@ func startUI(mon *Monitor) {
 
 		// received
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
-		AddItem(inputDevice, 1, 0, false).
+		AddItem(inputSection, 1, 0, false).
 		AddItem(received, 0, 2, false).
 
 		// console

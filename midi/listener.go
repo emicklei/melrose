@@ -15,6 +15,7 @@ type listener struct {
 	quit      chan bool
 	noteOn    map[int]portmidi.Event
 	ctx       core.Context
+	pitchOnly bool
 }
 
 func newListener(ctx core.Context) *listener {
@@ -64,6 +65,11 @@ func (l *listener) handle(event portmidi.Event) {
 		note, err := core.MIDItoNote(frac, nr, int(on.Data2))
 		if err != nil {
 			panic(err)
+		}
+		if l.pitchOnly {
+			// forget velocity and duration
+			note = note.WithVelocity(core.Normal)
+			note = note.WithFraction(0.25, false) // quarter
 		}
 		// echo note
 		fmt.Fprintf(notify.Console.DeviceIn, " %s", note)

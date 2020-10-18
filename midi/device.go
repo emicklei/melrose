@@ -212,6 +212,10 @@ func (m *Device) ChangeInputDeviceID(id int) error {
 	return nil
 }
 
+func (m *Device) EchoReceivedPitchOnly(pitchOnly bool) {
+	m.listener.pitchOnly = pitchOnly
+}
+
 // ChangeOutputDeviceID close the existing and opens a new stream. id can be -1
 func (m *Device) ChangeOutputDeviceID(id int) error {
 	if m.currentOutputDeviceID == id {

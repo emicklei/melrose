@@ -6,7 +6,7 @@ require (
 	github.com/Try431/EasyMIDI v1.0.3
 	github.com/antonmedv/expr v1.8.9
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/emicklei/tviewplus v0.4.0
+	github.com/emicklei/tviewplus v0.4.1
 	github.com/gdamore/tcell v1.4.0
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/peterh/liner v1.2.0
