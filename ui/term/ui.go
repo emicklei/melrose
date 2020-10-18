@@ -3,6 +3,7 @@ package term
 import (
 	"log"
 
+	"github.com/emicklei/tviewplus"
 	tvp "github.com/emicklei/tviewplus"
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
@@ -40,8 +41,16 @@ func startUI(mon *Monitor) {
 	console := tvp.NewReadOnlyTextView(app, mon.Console)
 	console.SetBackgroundColor(textBg)
 
+	clear := tviewplus.NewButtonView(foc).SetLabel("clear")
+	clear.SetSelectedFunc(func() {
+		mon.Sent.Set("")
+		mon.Received.Set("")
+		mon.Console.Set("")
+	})
+
 	settings := tview.NewFlex().SetDirection(tview.FlexColumn).
 		AddItem(NewStaticView(" [white]Melrōse "), 0, 1, false).
+		AddItem(clear, 0, 1, false).
 		AddItem(beat, 4, 1, false).
 		AddItem(tview.NewBox().SetBorderPadding(0, 0, 1, 0), 1, 1, false).
 		AddItem(bpm, 3, 0, false)
@@ -63,12 +72,6 @@ func startUI(mon *Monitor) {
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
 		AddItem(NewStaticView(" [yellow]console"), 1, 1, false).
 		AddItem(console, 0, 4, false)
-
-		// in & output devices
-	// devices := tview.NewFlex().SetDirection(tview.FlexColumn).
-	// 	AddItem(inputDevice, 0, 1, false).
-	// 	AddItem(outputDevice, 0, 1, false)
-	// flex.AddItem(devices, 0, 1, false)
 
 	if err := app.SetRoot(flex, true).EnableMouse(true).Run(); err != nil {
 		log.Println(err)
