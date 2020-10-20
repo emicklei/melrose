@@ -66,8 +66,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 			// check for function
 			if reflect.TypeOf(returnValue).Kind() == reflect.Func {
 				if fn, ok := l.evaluator.LookupFunction(string(data)); ok {
-					fmt.Println(fn.Title)
-					fmt.Println(fn.Description)
+					fmt.Fprintf(notify.Console.StandardOut, "%s: %s\n", fn.Title, fn.Description)
 				}
 			} else {
 				core.PrintValue(l.context, returnValue)

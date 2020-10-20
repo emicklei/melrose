@@ -19,7 +19,7 @@ Until `v1.0.0` both language syntax and package api may change.
 
 ### Programming music
 
-![screenshot.png](screenshot.png)
+![screenshot.png](docs/images/screenshot.png)
 
 
 ### Contributions
@@ -28,4 +28,4 @@ Fixes, suggestions, documentation improvements are all welcome. Fork this projec
 You can also sponsor Melrōse via [Github Sponsors](https://github.com/sponsors/emicklei).
 
 Software is licensed under [Apache 2.0 license](LICENSE).
-(c) 2014-2020 [ernestmicklei.com](http://ernestmicklei.com)
+&copy; 2014-2020 [ernestmicklei.com](http://ernestmicklei.com)

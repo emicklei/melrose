@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 	"text/scanner"
+
+	"github.com/emicklei/melrose/notify"
 )
 
 // "1 (4 5 6) 2 (4 5 6) 3 (4 5 6) 2 (4 5 6)"
@@ -75,5 +77,5 @@ func PrintValue(ctx Context, v interface{}) {
 		return
 	}
 	i := NewInspect(ctx, v)
-	fmt.Println(i.String())
+	fmt.Fprintf(notify.Console.StandardOut, "%s\n", i.String())
 }

@@ -33,3 +33,6 @@ Basic musical objects in Melrōse are:
 - [chord](dsl.html#chord)
 - [scale](dsl.html#scale)
 - [progression](dsl.html#progression)
+
+
+![screenshot.png](images/screenshot.png)

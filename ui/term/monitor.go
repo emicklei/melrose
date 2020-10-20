@@ -1,15 +1,15 @@
 package term
 
 import (
-	"bytes"
 	"fmt"
 
+	"github.com/emicklei/melrose/core"
 	tvp "github.com/emicklei/tviewplus"
 )
 
 type Monitor struct {
 	BPM                   *tvp.StringHolder
-	Beat                  *tvp.StringHolder
+	BIAB                  *tvp.StringHolder
 	Sent                  *tvp.StringHolder
 	Received              *tvp.StringHolder
 	EchoReceivedPitchOnly *tvp.BoolHolder
@@ -21,7 +21,7 @@ type Monitor struct {
 func NewMonitor() *Monitor {
 	return &Monitor{
 		BPM:                   new(tvp.StringHolder),
-		Beat:                  new(tvp.StringHolder),
+		BIAB:                  new(tvp.StringHolder),
 		Sent:                  new(tvp.StringHolder),
 		Received:              new(tvp.StringHolder),
 		EchoReceivedPitchOnly: new(tvp.BoolHolder),
@@ -31,35 +31,9 @@ func NewMonitor() *Monitor {
 	}
 }
 
-func (m *Monitor) SetBPM(bpm int) {
-	m.BPM.Set(fmt.Sprintf("%d", bpm))
-}
-
-func (m *Monitor) SetBeat(b int) {
-	buf := new(bytes.Buffer)
-	for i := 1; i < b; i++ {
-		fmt.Fprintf(buf, " ")
-	}
-	fmt.Fprintf(buf, "@")
-	for i := b + 1; i < 5; i++ {
-		fmt.Fprintf(buf, " ")
-	}
-	m.Beat.Set(buf.String())
-}
-
-func (m *Monitor) AppendSent(sent string) {
-	m.Sent.Append(sent)
-}
-
-func (m *Monitor) SetInputDevices(list []string) {
-	m.InputDeviceList.Set(list)
-}
-
-func (m *Monitor) SetOutputDevices(list []string) {
-	m.OutputDeviceList.Set(list)
-}
-
-func (m *Monitor) AppendConsole(text string) {
-	// TODO keep at most X chars
-	m.Sent.Append(text)
+func (m *Monitor) HandleControlSetting(control core.LoopController) {
+	bpm := control.BPM()
+	biab := control.BIAB()
+	m.BPM.Set(fmt.Sprintf("%.2f", bpm))
+	m.BIAB.Set(fmt.Sprintf("%d", biab))
 }

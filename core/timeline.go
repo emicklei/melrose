@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// Timeline is a chain of events that are place in the future (playing) or past (recording).
-// TODO use sync.Pool for noteEvents
+// Timeline is a chain of events that are placed in the future (playing).
+// TODO use sync.Pool for noteEvents?
 type Timeline struct {
 	head       *scheduledTimelineEvent // earliest
 	tail       *scheduledTimelineEvent // latest

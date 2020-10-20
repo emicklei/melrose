@@ -56,6 +56,8 @@ type LoopController interface {
 
 	BeatsAndBars() (int64, int64)
 	Plan(bars int64, beats int64, seq Sequenceable)
+
+	SettingNotifier(handler func(control LoopController))
 }
 
 type Replaceable interface {

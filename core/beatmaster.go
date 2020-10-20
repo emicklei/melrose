@@ -10,15 +10,16 @@ import (
 
 // Beatmaster is a LoopController
 type Beatmaster struct {
-	context    Context
-	beating    bool
-	bpmChanges chan float64
-	ticker     *time.Ticker
-	done       chan bool
-	schedule   *BeatSchedule
-	beats      int64   // monotonic increasing number, starting at 0
-	biab       int64   // current number of beats in a bar
-	bpm        float64 // current beats per minute
+	context         Context
+	beating         bool
+	bpmChanges      chan float64
+	ticker          *time.Ticker
+	done            chan bool
+	schedule        *BeatSchedule
+	beats           int64   // monotonic increasing number, starting at 0
+	biab            int64   // current number of beats in a bar
+	bpm             float64 // current beats per minute
+	settingNotifier func(LoopController)
 
 	// verbose will produce cryptic logging of the behavior
 	// . = a quarter tick
@@ -70,6 +71,10 @@ func (b *Beatmaster) BeatsAndBars() (int64, int64) {
 	return b.beats, b.beats / b.biab
 }
 
+func (b *Beatmaster) SettingNotifier(handler func(LoopController)) {
+	b.settingNotifier = handler
+}
+
 // StartLoop will schedule the start of a Loop at the next bar, unless the master is not started.
 func (b *Beatmaster) StartLoop(l *Loop) {
 	if !b.beating {
@@ -78,7 +83,7 @@ func (b *Beatmaster) StartLoop(l *Loop) {
 	if l == nil || l.IsRunning() {
 		return
 	}
-	b.schedule.Schedule(b.beatsAndNextBar(), func(beats int64) {
+	b.schedule.Schedule(b.beatsAtNextBar(), func(beats int64) {
 		l.Start(b.context.Device())
 	})
 }
@@ -88,7 +93,7 @@ func (b *Beatmaster) Plan(bars int64, beats int64, seq Sequenceable) {
 	if !b.beating {
 		return
 	}
-	atBeats := b.beatsAndNextBar()
+	atBeats := b.beatsAtNextBar()
 	atBeats += (b.biab * bars)
 	atBeats += beats
 	b.schedule.Schedule(atBeats, func(beats int64) {
@@ -96,7 +101,7 @@ func (b *Beatmaster) Plan(bars int64, beats int64, seq Sequenceable) {
 	})
 }
 
-func (b *Beatmaster) beatsAndNextBar() int64 {
+func (b *Beatmaster) beatsAtNextBar() int64 {
 	if b.beats%b.biab == 0 {
 		return b.beats
 	}
@@ -111,7 +116,7 @@ func (b *Beatmaster) EndLoop(l *Loop) {
 	if l == nil || !l.IsRunning() {
 		return
 	}
-	b.schedule.Schedule(b.beatsAndNextBar(), func(b int64) {
+	b.schedule.Schedule(b.beatsAtNextBar(), func(b int64) {
 		l.Stop()
 	})
 }
@@ -120,6 +125,7 @@ func (b *Beatmaster) EndLoop(l *Loop) {
 func (b *Beatmaster) SetBPM(bpm float64) {
 	if !b.beating {
 		b.bpm = bpm
+		b.notifySettingChanged()
 		return
 	}
 	if b.bpm == bpm {
@@ -133,7 +139,6 @@ func (b *Beatmaster) SetBPM(bpm float64) {
 		notify.Print(notify.Warningf("bpm [%.1f] must be in [1..300], setting to [%d]", bpm, 300))
 		bpm = 300.0
 	}
-	b.bpm = bpm
 	go func() { b.bpmChanges <- bpm }()
 }
 
@@ -155,12 +160,21 @@ func (b *Beatmaster) SetBIAB(biab int) {
 		biab = 6
 	}
 	b.biab = int64(biab)
+	b.notifySettingChanged()
+}
+
+func (b *Beatmaster) notifySettingChanged() {
+	if b.settingNotifier == nil {
+		return
+	}
+	b.settingNotifier(b)
 }
 
 func (b *Beatmaster) Start() {
 	if b.beating {
 		return
 	}
+	b.notifySettingChanged()
 	b.beats = 0
 	b.ticker = time.NewTicker(tickerDuration(b.bpm))
 	b.beating = true
@@ -181,6 +195,7 @@ func (b *Beatmaster) Start() {
 						fmt.Println("bpm:", bpm)
 					}
 					b.bpm = bpm
+					b.notifySettingChanged()
 					b.ticker.Stop()
 					b.ticker = time.NewTicker(tickerDuration(bpm))
 				default:
@@ -238,3 +253,4 @@ func (s zeroBeat) SetBIAB(biab int)                               {}
 func (s zeroBeat) BIAB() int                                      { return 4 }
 func (s zeroBeat) BeatsAndBars() (int64, int64)                   { return 0, 0 }
 func (s zeroBeat) Plan(bars int64, beats int64, seq Sequenceable) {}
+func (s zeroBeat) SettingNotifier(handler func(LoopController))   {}

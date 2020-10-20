@@ -14,6 +14,7 @@ func (m *Monitor) Open(ctx core.Context) {
 	ctx.Device().SetEchoNotes(true)
 	setupConsole(m)
 	m.setupDeviceSelections(ctx)
+	ctx.Control().SettingNotifier(m.HandleControlSetting)
 	ctx.Control().Start() // looper
 	startUI(m)
 }
