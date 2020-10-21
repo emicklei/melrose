@@ -195,3 +195,35 @@ func (s Sequence) Duration(bpm float64) time.Duration {
 	}
 	return l
 }
+
+// W returns the mapping of each note to a delta of semitones compared to middle C4.
+// Can be used for the pitch lane of the Korg Wavestate
+func (s Sequence) W() string {
+	var buf bytes.Buffer
+	ref, _ := NewNote("C", 4, 0.25, 0, false, Normal)
+	mapit := func(n Note) {
+		fmt.Fprintf(&buf, "%s:%d", n.String(), n.MIDI()-ref.MIDI())
+	}
+	for i, group := range s.Notes {
+		if i > 0 {
+			buf.WriteString(" ")
+		}
+		if len(group) > 1 {
+			buf.WriteString(groupOpen)
+			for i, note := range group {
+				if i > 0 {
+					buf.WriteString(" ")
+				}
+				if note.IsHearable() {
+					mapit(note)
+				}
+			}
+			buf.WriteString(groupClose)
+		} else {
+			if len(group) == 1 && group[0].IsHearable() {
+				mapit(group[0])
+			}
+		}
+	}
+	return buf.String()
+}

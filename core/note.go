@@ -138,6 +138,10 @@ func (n Note) WithFraction(f float32, dotted bool) Note {
 	return n
 }
 
+func (n Note) IsHearable() bool {
+	return strings.IndexAny(n.Name, "ABCDEFG") != -1
+}
+
 // Conversion
 // https://regoio.herokuapp.com/
 var noteRegexp = regexp.MustCompile("([1]?[½¼⅛12468]?)(\\.?)([CDEFGAB=<^>])([#♯_♭]?)([0-9]?)([-+]?[-+]?[-+]?)")
