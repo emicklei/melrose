@@ -338,7 +338,7 @@ play(s1,s2,s3) // play s3 after s2 after s1
 ```
 
 ### print<a name="print"></a>
-Prints the musical object when evaluated (play,loop).
+Prints an object when evaluated (play,loop).
 
 ```javascript
 

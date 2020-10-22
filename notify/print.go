@@ -2,6 +2,7 @@ package notify
 
 import (
 	"fmt"
+	"strings"
 )
 
 func Print(m Message) {
@@ -31,5 +32,9 @@ func printWarning(args ...interface{}) {
 }
 
 func Debugf(format string, args ...interface{}) {
+	// make sure it ends with newline
+	if !strings.HasSuffix(format, "\n") {
+		format += "\n"
+	}
 	fmt.Fprintf(Console.StandardOut, format, args...)
 }

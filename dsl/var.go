@@ -2,6 +2,7 @@ package dsl
 
 import (
 	"fmt"
+
 	"github.com/emicklei/melrose/core"
 )
 
@@ -15,7 +16,8 @@ func (v variable) Storex() string {
 }
 
 func (v variable) String() string {
-	return fmt.Sprintf("var %s", v.Name)
+	currentValue, _ := v.store.Get(v.Name)
+	return fmt.Sprintf("var %s = %v", v.Name, currentValue)
 }
 
 func (v variable) S() core.Sequence {

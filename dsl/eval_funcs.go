@@ -244,13 +244,9 @@ midi(500,36,70) // => 16C2 (kick)`,
 
 	eval["print"] = Function{
 		Title:       "Printer creator",
-		Description: "prints the musical object when evaluated (play,loop)",
+		Description: "prints an object when evaluated (play,loop)",
 		Func: func(m interface{}) interface{} {
-			s, ok := getSequenceable(getValue(m))
-			if !ok {
-				return notify.Panic(fmt.Errorf("cannot print (%T) %v", m, m))
-			}
-			return core.Watch{Context: ctx, Target: s}
+			return core.Watch{Context: ctx, Target: m}
 		}}
 
 	eval["chord"] = Function{

@@ -19,17 +19,16 @@ func ToggleDebug() bool {
 
 type Watch struct {
 	Context Context
-	Target  Sequenceable
+	Target  interface{}
 }
 
 // S is part of Sequenceable
 func (w Watch) S() Sequence {
 	beats, bars := w.Context.Control().BeatsAndBars()
 	target := fmt.Sprintf("%v", w.Target)
-	st, ok := w.Target.(Storable)
-	if ok {
-		target = st.Storex()
+	if v, ok := w.Target.(Valueable); ok {
+		target = fmt.Sprintf("%v", v)
 	}
-	notify.Print(notify.Infof("on bars [%d] beats [%d] called sequence of [%s]", beats, bars, target))
-	return w.Target.S()
+	notify.Print(notify.Infof("on bars [%d] beats [%d] called sequence of [%v]", beats, bars, target))
+	return EmptySequence
 }

@@ -11,13 +11,17 @@ import (
 )
 
 var (
-	Version  = "dev"
-	verbose  = flag.Bool("v", false, "verbose logging")
-	httpPort = flag.String("http", ":8118", "address on which to listen for HTTP requests")
+	Version      = "dev"
+	debugLogging = flag.Bool("d", false, "debug logging")
+	httpPort     = flag.String("http", ":8118", "address on which to listen for HTTP requests")
 )
 
 func Setup() (core.Context, error) {
 	flag.Parse()
+
+	if *debugLogging {
+		core.ToggleDebug()
+	}
 
 	ctx := new(core.PlayContext)
 	ctx.EnvironmentVars = map[string]string{}

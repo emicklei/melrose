@@ -59,7 +59,7 @@ func (l *Loop) Inspect(i Inspection) {
 func (l *Loop) reschedule(d AudioDevice, when time.Time) {
 	endOfLastNote := d.Play(l.target, l.ctx.Control().BPM(), when)
 	if IsDebug() {
-		notify.Debugf("next loop until [%s]", endOfLastNote.Format("15:04:05.00"))
+		notify.Debugf("core.loop: next=%s", endOfLastNote.Format("15:04:05.00"))
 	}
 	// schedule the loop itself so it can play again when Handle is called
 	d.Timeline().Schedule(l, endOfLastNote)

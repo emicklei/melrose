@@ -25,6 +25,9 @@ func (m Message) S() core.Sequence {
 	channel := core.Int(m.channel)
 	data1 := core.Int(m.data1)
 	data2 := core.Int(m.data2)
+	if core.IsDebug() {
+		notify.Debugf("midi.message: status=%d channel=%v data1=%v data2=%v", m.status, channel, data1, data2)
+	}
 	if err := m.device.SendRaw(m.status, channel, data1, data2); err != nil {
 		notify.Console.Errorf("failed to send MIDI message(status=%d,channel=%v,data1=%v,data2=%v) error:%v",
 			m.status, m.channel, m.data1, m.data2, err)

@@ -30,6 +30,11 @@ func (i *Interval) Value() interface{} {
 	return i.value
 }
 
+func (i *Interval) String() string {
+	return fmt.Sprintf("core.Interval(from=%v,to=%v,by=%v,strategy=%v,value=%v)",
+		i.from, i.to, i.by, i.strategy, i.value)
+}
+
 // Next returns and increases its value with [by].
 func (i *Interval) Next() interface{} {
 	by := Int(i.by)

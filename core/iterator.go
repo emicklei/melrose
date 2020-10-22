@@ -7,10 +7,14 @@ type Iterator struct {
 	Target []interface{}
 }
 
+func (i *Iterator) String() string {
+	return fmt.Sprintf("core.Iterator(index=%d,target=%v)", i.Index, i.Target)
+}
+
 //  Value is part of Valueable
 func (i *Iterator) Value() interface{} {
 	if len(i.Target) == 0 {
-		return ""
+		return nil
 	}
 	return i.Target[i.Index]
 }

@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"math"
 	"time"
 
@@ -20,13 +19,6 @@ type Beatmaster struct {
 	biab            int64   // current number of beats in a bar
 	bpm             float64 // current beats per minute
 	settingNotifier func(LoopController)
-
-	// verbose will produce cryptic logging of the behavior
-	// . = a quarter tick
-	// | = a bar
-	// * = a loop was started
-	// x = a loop was stopped
-	verbose bool
 }
 
 func NewBeatmaster(ctx Context, bpm float64) *Beatmaster {
@@ -38,8 +30,7 @@ func NewBeatmaster(ctx Context, bpm float64) *Beatmaster {
 		schedule:   NewBeatSchedule(),
 		beats:      0,
 		biab:       4,
-		bpm:        bpm,
-		verbose:    false}
+		bpm:        bpm}
 }
 
 func (b *Beatmaster) Reset() {
@@ -53,10 +44,6 @@ func (b *Beatmaster) Reset() {
 	}()
 	b.schedule.Reset()
 	b.Start()
-}
-
-func (b *Beatmaster) Verbose(v bool) {
-	b.verbose = v
 }
 
 func (b *Beatmaster) BPM() float64 {
@@ -123,7 +110,7 @@ func (b *Beatmaster) EndLoop(l *Loop) {
 
 // SetBPM will change the beats per minute at the next bar, unless the master is not started.
 func (b *Beatmaster) SetBPM(bpm float64) {
-	if !b.beating {
+	if !b.beating || b.schedule.IsEmpty() {
 		b.bpm = bpm
 		b.notifySettingChanged()
 		return
@@ -178,10 +165,10 @@ func (b *Beatmaster) Start() {
 	b.beats = 0
 	b.ticker = time.NewTicker(tickerDuration(b.bpm))
 	b.beating = true
-	if b.verbose {
-		fmt.Println("beatmaster started")
-	}
 	go func() {
+		if IsDebug() {
+			notify.Debugf("core.beatmaster: started")
+		}
 		for {
 			if b.beats%b.biab == 0 {
 				// on a bar
@@ -191,8 +178,8 @@ func (b *Beatmaster) Start() {
 					return
 				// only change BPM on a bar
 				case bpm := <-b.bpmChanges:
-					if b.verbose {
-						fmt.Println("bpm:", bpm)
+					if IsDebug() {
+						notify.Debugf("core.beatmaster: bpm=%v", bpm)
 					}
 					b.bpm = bpm
 					b.notifySettingChanged()
@@ -232,8 +219,8 @@ func (b *Beatmaster) Stop() {
 	b.beating = false
 	b.ticker.Stop()
 	b.done <- true
-	if b.verbose {
-		fmt.Println("\nbeatmaster stopped")
+	if IsDebug() {
+		notify.Debugf("core.beatmaster: stopped")
 	}
 }
 

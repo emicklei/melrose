@@ -28,7 +28,7 @@ func (p pedalEvent) Handle(tim *core.Timeline, when time.Time) {
 		if !p.goingDown {
 			msg = "up"
 		}
-		notify.Debugf("ch=%d bytes=[%b(%d),%b(%d),%b(%d)] sustain=%s",
+		notify.Debugf("midi.pedal channel=%d bytes=[%b(%d),%b(%d),%b(%d)] sustain=%s",
 			p.channel, status, status, sustainPedal, sustainPedal, onoff, onoff, msg)
 	}
 }

@@ -30,7 +30,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		defer core.ToggleDebug()
 	}
 	if core.IsDebug() {
-		notify.Debugf("%s", r.URL.String())
+		notify.Debugf("service.http: %s", r.URL.String())
 	}
 	// get line
 	line := 1
@@ -127,7 +127,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		enc := json.NewEncoder(&buf)
 		enc.SetIndent("", "\t")
 		err = enc.Encode(response)
-		notify.Debugf("%s, error:%v\n", buf.String(), err)
+		notify.Debugf("http.response: %s error=%v", buf.String(), err)
 	}
 }
 

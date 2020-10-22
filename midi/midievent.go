@@ -32,7 +32,7 @@ func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
 		if m.onoff == noteOff {
 			onoff = "off"
 		}
-		fmt.Fprintf(notify.Console.StandardOut, "ch=%d notes=%s state=%s bytes=[%b(%d),%v,%b(%d)]\n",
+		fmt.Fprintf(notify.Console.StandardOut, "midi.note: channel=%d notes=%s state=%s bytes=[%b(%d),%v,%b(%d)]\n",
 			m.channel, m.echoString, onoff, status, status, m.which, m.velocity, m.velocity)
 	}
 }
