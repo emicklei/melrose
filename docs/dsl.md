@@ -46,8 +46,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#join">join</a>
 - <a href="#joinmap">joinmap</a>
 - <a href="#merge">merge</a>
-- <a href="#midi_cc">midi_cc</a>
-- <a href="#midi_pc">midi_pc</a>
+- <a href="#midi_send">midi_send</a>
 - <a href="#next">next</a>
 - <a href="#notemap">notemap</a>
 - <a href="#octave">octave</a>
@@ -261,18 +260,15 @@ midi(500,52,80) // => E3+
 midi(500,36,70) // => 16C2 (kick)
 ```
 
-### midi_cc<a name="midi_cc"></a>
-Sends the MIDI message CC (Control Change).
+### midi_send<a name="midi_send"></a>
+Sends a MIDI message with status, channel(ignore if < 1), 2nd byte and 3rd byte.
 
 ```javascript
-midi_cc(1,0x7B,0) // all notes off in channel 1
-```
+midi_send(0xB0,1,0x7B,0) // control change, all notes off in channel 1
 
-### midi_pc<a name="midi_pc"></a>
-Sends the MIDI message PC (Program Change).
+midi_send(0xC0,2,1,0) // program change, select program 1 for channel 2
 
-```javascript
-midi_pc(1,12) // 
+midi_send(0xB0,4,0,16) // control change, bank select 16 for channel 4
 ```
 
 ### multi<a name="multi"></a>

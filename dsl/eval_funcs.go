@@ -832,33 +832,19 @@ pitchD = replace(pitchA, c, d) // c -> d in pitchA`,
 			return op.Replace{Target: targetS, From: fromS, To: toS}
 		}}
 
-	eval["midi_pc"] = Function{
-		Title:       "MIDI program change (PC)",
-		Description: "Sends the MIDI message PC (Program Change)",
-		Template:    "midi_pc(${1:data1},${2:data1}",
-		Samples:     "midi_pc(1,12) // ",
-		Func: func(channel, data1 int) interface{} {
+	eval["midi_send"] = Function{
+		Title:       "Send MIDI message",
+		Description: "Sends a MIDI message with status, channel(ignore if < 1), 2nd byte and 3rd byte",
+		Template:    "midi_send(${1:status},${2:channel},${3:2nd-byte},${4:3rd-byte}",
+		Samples: `midi_send(0xB0,1,0x7B,0) // control change, all notes off in channel 1
+midi_send(0xC0,2,1,0) // program change, select program 1 for channel 2
+midi_send(0xB0,4,0,16) // control change, bank select 16 for channel 4`,
+		Func: func(status, channel, data1, data2 int) interface{} {
 			md, ok := ctx.Device().(*midi.Device)
 			if !ok {
 				return notify.Panic(fmt.Errorf("not a MIDI device"))
 			}
-			if err := md.SendPC(channel, data1); err != nil {
-				return notify.Error(err)
-			}
-			return nil
-		}}
-
-	eval["midi_cc"] = Function{
-		Title:       "MIDI control change (CC)",
-		Description: "Sends the MIDI message CC (Control Change)",
-		Template:    "midi_cc(${1:channel},${2:data1},${3:data2}",
-		Samples:     "midi_cc(1,0x7B,0) // all notes off in channel 1",
-		Func: func(channel, data1, data2 int) interface{} {
-			md, ok := ctx.Device().(*midi.Device)
-			if !ok {
-				return notify.Panic(fmt.Errorf("not a MIDI device"))
-			}
-			if err := md.SendCC(channel, data1, data2); err != nil {
+			if err := md.SendRaw(status, channel, data1, data2); err != nil {
 				return notify.Error(err)
 			}
 			return nil
