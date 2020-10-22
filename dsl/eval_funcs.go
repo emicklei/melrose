@@ -845,9 +845,9 @@ midi_send(0xB0,4,0,16) // control change, bank select 16 for channel 4`,
 				return notify.Panic(fmt.Errorf("not a MIDI device"))
 			}
 			if err := md.SendRaw(status, channel, data1, data2); err != nil {
-				return notify.Error(err)
+				return notify.Panic(err)
 			}
-			return nil
+			return core.EmptySequence
 		}}
 
 	return eval
