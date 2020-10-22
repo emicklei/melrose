@@ -7,19 +7,19 @@ import (
 
 func TestMIDI_Failures(t *testing.T) {
 	{
-		m := MIDI{duration: On(-1), number: On(60), velocity: On(60)}
+		m := MIDINote{duration: On(-1), number: On(60), velocity: On(60)}
 		if _, err := m.ToNote(); err == nil {
 			t.Fail()
 		}
 	}
 	{
-		m := MIDI{duration: On(500), number: On(-1), velocity: On(60)}
+		m := MIDINote{duration: On(500), number: On(-1), velocity: On(60)}
 		if _, err := m.ToNote(); err == nil {
 			t.Fail()
 		}
 	}
 	{
-		m := MIDI{duration: On(500), number: On(60), velocity: On(-1)}
+		m := MIDINote{duration: On(500), number: On(60), velocity: On(-1)}
 		if _, err := m.ToNote(); err == nil {
 			t.Fail()
 		}
@@ -71,7 +71,7 @@ func TestMIDI_ToNote(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := MIDI{
+			m := MIDINote{
 				duration: tt.fields.duration,
 				number:   tt.fields.number,
 				velocity: tt.fields.velocity,

@@ -8,14 +8,14 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-type MIDI struct {
+type MIDINote struct {
 	duration Valueable // faction number or number in milliseconds or time.Duration
 	number   Valueable
 	velocity Valueable
 }
 
 // ToNote() is part of NoteConvertable
-func (m MIDI) ToNote() (Note, error) {
+func (m MIDINote) ToNote() (Note, error) {
 	nr := Int(m.number)
 	velocity := Int(m.velocity)
 	// check for fraction
@@ -41,7 +41,7 @@ func (m MIDI) ToNote() (Note, error) {
 	return n, nil
 }
 
-func (m MIDI) S() Sequence {
+func (m MIDINote) S() Sequence {
 	n, err := m.ToNote()
 	if err != nil {
 		notify.Console.Errorf("MIDI to sequence failed:%v", err)
@@ -50,18 +50,18 @@ func (m MIDI) S() Sequence {
 	return n.S()
 }
 
-func NewMIDI(duration Valueable, number Valueable, velocity Valueable) MIDI {
-	return MIDI{duration: duration, number: number, velocity: velocity}
+func NewMIDI(duration Valueable, number Valueable, velocity Valueable) MIDINote {
+	return MIDINote{duration: duration, number: number, velocity: velocity}
 }
 
-func (m MIDI) Storex() string {
+func (m MIDINote) Storex() string {
 	if s, ok := m.duration.(Storable); ok {
 		return fmt.Sprintf("midi(%s,%v,%v)", s.Storex(), m.number, m.velocity)
 	}
 	return fmt.Sprintf("midi(%v,%v,%v)", m.duration, m.number, m.velocity)
 }
 
-func (m MIDI) Inspect(i Inspection) {
+func (m MIDINote) Inspect(i Inspection) {
 	n, err := m.ToNote()
 	if err != nil {
 		i.Properties["error"] = err.Error()

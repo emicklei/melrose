@@ -35,7 +35,7 @@ func (d Dynamic) S() core.Sequence {
 
 func CheckDynamic(emphasis string) error {
 	if core.ParseVelocity(emphasis) == -1 {
-		return fmt.Errorf("dynamic parameter [%v] must in %v", emphasis, "{+,++,+++,++++,-,--,---,----,0}")
+		return fmt.Errorf("dynamic parameter [%v] must in %v", emphasis, "{+,++,+++,++++,-,--,---,----,o}")
 	}
 	return nil
 }

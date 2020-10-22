@@ -46,7 +46,6 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#join">join</a>
 - <a href="#joinmap">joinmap</a>
 - <a href="#merge">merge</a>
-- <a href="#midi_send">midi_send</a>
 - <a href="#next">next</a>
 - <a href="#notemap">notemap</a>
 - <a href="#octave">octave</a>
@@ -58,6 +57,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#repeat">repeat</a>
 - <a href="#replace">replace</a>
 - <a href="#reverse">reverse</a>
+- <a href="#send">send</a>
 - <a href="#sequencemap">sequencemap</a>
 - <a href="#track">track</a>
 - <a href="#undynamic">undynamic</a>
@@ -260,17 +260,6 @@ midi(500,52,80) // => E3+
 midi(500,36,70) // => 16C2 (kick)
 ```
 
-### midi_send<a name="midi_send"></a>
-Sends a MIDI message with status, channel(ignore if < 1), 2nd byte and 3rd byte.
-
-```javascript
-midi_send(0xB0,1,0x7B,0) // control change, all notes off in channel 1
-
-midi_send(0xC0,2,1,0) // program change, select program 1 for channel 2
-
-midi_send(0xB0,4,0,16) // control change, bank select 16 for channel 4
-```
-
 ### multi<a name="multi"></a>
 Create a multi-track object from zero or more tracks.
 
@@ -349,7 +338,7 @@ play(s1,s2,s3) // play s3 after s2 after s1
 ```
 
 ### print<a name="print"></a>
-Prints the musical object when evaluated (play,go,loop).
+Prints the musical object when evaluated (play,loop).
 
 ```javascript
 
@@ -414,6 +403,17 @@ Create a Scale using this <a href="/melrose/notations.html#scale-not">format</a>
 
 ```javascript
 scale(1,'E/m') // => E F G A B C5 D5
+```
+
+### send<a name="send"></a>
+Sends a MIDI message with status, channel(ignore if < 1), 2nd byte and 3rd byte. Can be used as a musical object.
+
+```javascript
+send(0xB0,1,0x7B,0) // control change, all notes off in channel 1
+
+send(0xC0,2,1,0) // program change, select program 1 for channel 2
+
+send(0xB0,4,0,16) // control change, bank select 16 for channel 4
 ```
 
 ### sequence<a name="sequence"></a>

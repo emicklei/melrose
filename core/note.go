@@ -240,7 +240,7 @@ func ParseVelocity(plusmin string) (velocity int) {
 		velocity = Fortissimo
 	case "++++":
 		velocity = Fortississimo
-	case "0":
+	case "o":
 		velocity = Normal
 	default:
 		// invalid

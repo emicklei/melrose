@@ -24,7 +24,7 @@ func TestCheckDynamic(t *testing.T) {
 		wantErr bool
 	}{
 		{"piano", args{"-"}, false},
-		{"normal", args{"0"}, false},
+		{"normal", args{"o"}, false},
 		{"forte", args{"+++"}, false},
 		{"bogus", args{"~"}, true},
 	}

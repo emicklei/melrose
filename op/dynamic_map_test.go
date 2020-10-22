@@ -23,7 +23,7 @@ func TestNewDynamicMapper(t *testing.T) {
 
 func TestNewDynamicMapper_DuplicateAndChangeOrder(t *testing.T) {
 	l := core.MustParseSequence("A B")
-	d, err := NewDynamicMap([]core.Sequenceable{l}, "2:0,1:++,2:--,1:++")
+	d, err := NewDynamicMap([]core.Sequenceable{l}, "2:o,1:++,2:--,1:++")
 	if err != nil {
 		t.Fatal(err)
 	}

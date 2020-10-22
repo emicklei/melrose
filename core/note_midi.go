@@ -27,7 +27,7 @@ var noteNameToOffset = map[string]int{
 func (n Note) MIDI() int {
 	// http://en.wikipedia.org/wiki/Musical_Note
 	// C4 = 60 (scientific pitch notation)
-	if n.IsRest() { // TODO
+	if !n.IsHearable() {
 		return 0
 	}
 	nameOffset := noteNameToOffset[n.Name]

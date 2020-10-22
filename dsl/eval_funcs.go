@@ -244,7 +244,7 @@ midi(500,36,70) // => 16C2 (kick)`,
 
 	eval["print"] = Function{
 		Title:       "Printer creator",
-		Description: "prints the musical object when evaluated (play,go,loop)",
+		Description: "prints the musical object when evaluated (play,loop)",
 		Func: func(m interface{}) interface{} {
 			s, ok := getSequenceable(getValue(m))
 			if !ok {
@@ -832,22 +832,19 @@ pitchD = replace(pitchA, c, d) // c -> d in pitchA`,
 			return op.Replace{Target: targetS, From: fromS, To: toS}
 		}}
 
-	eval["midi_send"] = Function{
+	eval["send"] = Function{
 		Title:       "Send MIDI message",
-		Description: "Sends a MIDI message with status, channel(ignore if < 1), 2nd byte and 3rd byte",
-		Template:    "midi_send(${1:status},${2:channel},${3:2nd-byte},${4:3rd-byte}",
-		Samples: `midi_send(0xB0,1,0x7B,0) // control change, all notes off in channel 1
-midi_send(0xC0,2,1,0) // program change, select program 1 for channel 2
-midi_send(0xB0,4,0,16) // control change, bank select 16 for channel 4`,
-		Func: func(status, channel, data1, data2 int) interface{} {
+		Description: "Sends a MIDI message with status, channel(ignore if < 1), 2nd byte and 3rd byte. Can be used as a musical object",
+		Template:    "send(${1:status},${2:channel},${3:2nd-byte},${4:3rd-byte}",
+		Samples: `send(0xB0,1,0x7B,0) // control change, all notes off in channel 1
+send(0xC0,2,1,0) // program change, select program 1 for channel 2
+send(0xB0,4,0,16) // control change, bank select 16 for channel 4`,
+		Func: func(status int, channel, data1, data2 interface{}) interface{} {
 			md, ok := ctx.Device().(*midi.Device)
 			if !ok {
 				return notify.Panic(fmt.Errorf("not a MIDI device"))
 			}
-			if err := md.SendRaw(status, channel, data1, data2); err != nil {
-				return notify.Panic(err)
-			}
-			return core.EmptySequence
+			return midi.NewMessage(md, status, core.On(channel), core.On(data1), core.On(data2))
 		}}
 
 	return eval

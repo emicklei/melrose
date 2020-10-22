@@ -79,3 +79,10 @@ func PrintValue(ctx Context, v interface{}) {
 	i := NewInspect(ctx, v)
 	fmt.Fprintf(notify.Console.StandardOut, "%s\n", i.String())
 }
+
+func Storex(v interface{}) string {
+	if s, ok := v.(Storable); ok {
+		return s.Storex()
+	}
+	return fmt.Sprintf("unstorable:%T", v)
+}
