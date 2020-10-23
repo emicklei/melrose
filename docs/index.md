@@ -34,5 +34,14 @@ Basic musical objects in Melrōse are:
 - [scale](dsl.html#scale)
 - [progression](dsl.html#progression)
 
+Musical object can be composed using many operators such as:
+
+- pitch
+- sequencemap
+- repeat
+- dynamic
+- loop
+
+See [Language](dsl.html) for all supported functions.
 
 ![screenshot.png](images/screenshot.png)

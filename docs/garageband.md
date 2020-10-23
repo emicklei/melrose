@@ -19,11 +19,11 @@ This article describes the steps to get Melrōse working with GarageBand such th
 
 ### Install melrōse
 
-[Download](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/versions/Melrose-v0.31.0.pkg) the latest packaged release of melrōse.
+[Download](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/versions/Melrose-v0.31.0.pkg) and install the latest packaged release of Melrōse.
 
 ### Configure Audio MIDI Setup
 
-In order to make melrōse communicate with GarageBand, you need to enable an IAC Driver which is part of standard Mac OSX.
+In order to make Melrōse communicate with GarageBand, you need to enable an IAC Driver which is part of standard Mac OSX.
 Open the separate Audio MIDI Setup program, next to GarageBand.
 Use Spotlight Search to find this program.
 Once started, then from the menu choose `Window -> Show MIDI Studio`.
@@ -63,9 +63,28 @@ Then choose Software Instrument.
 This opens a window with a Classic Electic Piano instrument.
 
 
+### Using melrose
+
+
+#### Security warnings
+
+If you have installed melrōse from the public package then you are installing software that is not verified by any party other than the developer who published the release. With newer versions of operating systems, both Apple and Microsoft are more restrictive when it comes to installing software. Currently, it is still allowed to install unregistered software (most open-source packages are) but the you, the user, will be asked to accept the risk.
+
+You have to pass 3 steps of security checks:
+
+1. When downloading the release (.zip archive) from Github, your computer will detect that it contains an application. It will ask you to proceed.
+
+2. When starting the application melrōse, your computer will detect that the developer of the application is not verified. It will ask you to accept.
+
+![lib not verified](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/osx_warning_app.png)
+
+3. When the application melrōse is loading an extra library for MIDI access, your computer will detect that the developer of the application is not verified. It will ask you to accept.
+
+![app not verified](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/osx_warning_portmidi.png)
+
 ### Start melrose
 
-The previously installed extension needs to communicate with melrōse to play your melodies.
+The previously installed extension needs to communicate with Melrōse to play your melodies.
 Starting melrōse should be done from a Terminal pane of the Visual Studio Code editor.
 This way, you can view any messages reported by melrōse and it also give you access to all its commands.
 You can open this pane using the menu `Terminal -> New Terminal`.
@@ -87,17 +106,22 @@ Use `:h` to see all available commands and functions.
 
 ### Play your first melody
 
-Paste the following expression in your demo file
+Paste the following program in your demo file
 
 ```javascript
-sequence('c e d f e g f a g b a c5 b d5 c5')
+bpm(120)
+y = sequence('e+ a- c5- b- c5- a- e+ f+ a- c5- b- c5- a- f-')
+p = interval(-2,2,1)
+ly = loop(pitch(p, fraction(8,y)), next(p)) // quarter->eight, semitones interval
 ```
 
 ![demo in vsc](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/vsc_melrose_demo.png)
 
-Place the cursor anywhere on line 3 containing the expression and press `cmd+3`.
+Place the cursor anywhere on line 2 containing the sequence and press `cmd+3`.
 This will both evaluate the expression and play the result.
 You should hear notes being played using the instrument selected (most likely a piano) in GarageBand.
+
+Now select the complete script `cmd+A` and press `cmd+3` and you will hear a loop with changing pitch.
 
 ### What's next
 

@@ -6,8 +6,8 @@ title: Melrōse installation guide
 
 ## Download
 
-Due to increased restrictions and costs of releasing non-commercial packages for the Apple Mac OSX and Microsoft Windows plaform, I can only provide unsigned pre-build binaries for Apple Mac OSX.
-You can download a version from the published [releases](https://github.com/emicklei/melrose/releases).
+Due to increased restrictions and costs of releasing non-commercial packages for the Apple Mac OSX and Microsoft Windows plaform, I can only provide unsigned packages for Apple Mac OSX, see [Using Melrōse with Apple Garageband](https://emicklei.github.io/melrose/garageband.html).
+
 Contact me if you want a commercial, signed and supported version.
 
 ## Install from source
@@ -20,25 +20,13 @@ In order to work with `melrōse` on your operating system, the following compone
 
 Depending on your operating system, different steps are required.
 
-## Mac OSX
+### Mac OSX
 
     brew install portmidi
 
 See [Brew](https://brew.sh/) for instructions on how to install `brew` on your Mac.
 
 See the [PortMidi](https://sourceforge.net/p/portmedia/wiki/portmidi/) for alternative installation instructions of `portmidi`.
-
-Proceed with [install melrōse](install.md#install-melrōse)
-
-## Linux
-
-On Ubuntu / Debian
-
-	apt-get install libportmidi-dev
-
-Proceed with [install melrōse](install.md#install-melrōse)
-
-## Install Melrōse<a name="install-melrōse"></a> 
 
 You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
 
@@ -50,7 +38,27 @@ After installing both `portmidi` and `melrōse`, you can start the tool in a Ter
 
 If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH`.
 
-## Melrōse plugin for Visual Studio Code<a name="plugin"></a>
+### Linux
+
+On Ubuntu / Debian
+
+	apt-get install libportmidi-dev
+
+You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
+
+	go install github.com/emicklei/melrose/cmd/melrose
+
+After installing both `portmidi` and `melrōse`, you can start the tool in a Terminal using:
+
+	$ melrose
+
+If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH`.
+
+### Melrōse plugin for Visual Studio Code<a name="plugin"></a>
 
 Currently, the `melrōse` plugin is not yet published on the Marketplace.
-You install the plugin from the Extensions overview in Visual Studio Code and open the `.vsix` file from your extracted download.
+Get the [sources](https://github.com/emicklei/melrose-for-vscode) and compile a `VSIX` file.
+
+	$ vsce package
+	
+Then install this extension from the Visual Studio Code editor.	
