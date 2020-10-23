@@ -1,5 +1,5 @@
 #!/bin/sh
 
-# Melrose startup script
+# Melrōse startup script
 
-export DYLD_FALLBACK_LIBRARY_PATH=`pwd` && /Applications/Melrose/melrose
+export DYLD_FALLBACK_LIBRARY_PATH=/Applications/Melrose && /Applications/Melrose/melrose
