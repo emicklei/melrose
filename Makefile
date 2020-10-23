@@ -41,7 +41,7 @@ vsc:
 	cd ../melrose-for-vscode && vsce package
 
 APP := /Applications/Melrose
-package: clean build vsc
+package: clean build grammar vsc
 	# prepare target
 	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target
 	cp ../melrose-for-vscode/*vsix "target/melrose-for-vscode-$(LATEST_TAG).vsix"
@@ -53,6 +53,9 @@ package: clean build vsc
 	cp target/*vsix $(APP)
 	cp packaging/macosx/*.sh $(APP)
 	cp target/version.txt $(APP)
+	# package it up
+	/usr/local/bin/packagesbuild --package-version "$(LATEST_TAG)" packaging/macosx/Melrose.pkgproj
+	mv packaging/macosx/Melrose.pkg "packaging/macosx/Melrose-$(LATEST_TAG).pkg"
 
 prezip: clean build vsc
 	mkdir target/demos

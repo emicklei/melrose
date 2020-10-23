@@ -19,9 +19,7 @@ This article describes the steps to get Melrōse working with GarageBand such th
 
 ### Install melrōse
 
-[Download](https://github.com/emicklei/melrose/releases) the latest release of melrōse and unzip it into your preferred folder. Your Finder should look like this:
-
-![finder](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/melrose_finder.png)
+[Download](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/versions/Melrose-v0.31.0.pkg) the latest packaged release of melrōse.
 
 ### Configure Audio MIDI Setup
 
@@ -39,10 +37,10 @@ Open the settings of this IAC Driver and make sure the device is online.
 
 ### Install extension for Visual Studio Code
 
-[Visual Studio Code](https://code.visualstudio.com/download) is a popular free open-source file editor, sponsored by Microsoft, also available for Mac OSX. 
-The Melrōse extension adds a few keyboard combinations to play and validate musical objects.
+[Visual Studio Code](https://code.visualstudio.com/download) is a popular free open-source file editor, sponsored by Microsoft, also available for Mac OSX.
+The Melrōse extension adds keyboard combinations to play and validate musical objects.
 
-The folder to which you unzipped the downloaded archive, contains a file that ends with the name `.vsix`. 
+The folder `/Applications/Melrose` contains a file that ends with the name `.vsix`.
 This file contains the source code of the extension.
 To install this extension, you need to open the Visual Studio Code Editor and go to `Code -> Preferences -> Extensions`.
 This opens the install extensions for your editor.
@@ -71,16 +69,10 @@ The previously installed extension needs to communicate with melrōse to play yo
 Starting melrōse should be done from a Terminal pane of the Visual Studio Code editor.
 This way, you can view any messages reported by melrōse and it also give you access to all its commands.
 You can open this pane using the menu `Terminal -> New Terminal`.
-Within the terminal pane, change to the directory that contains the downloaded melrōse program, e.g:
+Within the terminal pane, start the melrōse program, e.g:
 
 ```bash
-cd Melrose
-```
-
-Start the program using the following command:
-
-```bash
-./run.sh
+melrose
 ```
 
 You can verify the connectivity of melrōse and the IAC Driver by executing the command `:m` in the terminal.
