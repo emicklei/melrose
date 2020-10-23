@@ -15,7 +15,7 @@ title: Using Melrōse with Garageband
 Garageband is a simple Digital Audio Workstation (DAW) that comes with the standard installation of Apple Mac OSX on devices such as MacBook or MacPro.
 Melrōse can communicate with GarageaBand by exchanging MIDI messages. GarageBand has a rich set of sounds and instruments to play MIDI notes. 
 
-This article describes the steps to get Melrōse working with GarageBand such that you can play your melodies. Note that some of the steps will report [installation warnings](https://emicklei.github.io/melrose/installation_warnings.html) depending on your operating system and version.
+This article describes the steps to get Melrōse working with GarageBand such that you can play your melodies.
 
 ### Install melrōse
 
