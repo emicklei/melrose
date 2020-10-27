@@ -106,6 +106,12 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 			}
 			// ignore if not Loop
 		}
+
+		// setter TODO make interface?
+		if set, ok := returnValue.(core.SetBPM); ok {
+			set.S()
+		}
+
 		response = resultFrom(line, returnValue)
 	}
 	w.Header().Set("content-type", "application/json")

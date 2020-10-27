@@ -5,13 +5,12 @@ import (
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
-	"github.com/rakyll/portmidi"
 )
 
 type pedalEvent struct {
 	goingDown bool
 	channel   int
-	out       *portmidi.Stream
+	out       MIDIOut
 }
 
 func (p pedalEvent) Handle(tim *core.Timeline, when time.Time) {

@@ -6,8 +6,6 @@ import (
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
-
-	"github.com/rakyll/portmidi"
 )
 
 type midiEvent struct {
@@ -16,7 +14,7 @@ type midiEvent struct {
 	onoff      int64
 	channel    int
 	velocity   int64
-	out        *portmidi.Stream
+	out        MIDIOut
 }
 
 func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {

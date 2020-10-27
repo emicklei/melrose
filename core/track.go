@@ -3,9 +3,10 @@ package core
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"math"
 	"time"
+
+	"github.com/emicklei/melrose/notify"
 )
 
 type Track struct {
@@ -137,7 +138,7 @@ func (m MultiTrack) Play(ctx Context) error {
 			}
 		} else {
 			// TODO
-			log.Println("not a track")
+			notify.Errorf("not a track:%v", each)
 		}
 	}
 	return nil

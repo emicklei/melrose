@@ -24,9 +24,15 @@ var (
 	DefaultChannel = 1
 )
 
+type MIDIOut interface {
+	WriteShort(status int64, data1 int64, data2 int64) error
+	Close() error
+	Abort() error
+}
+
 // Device is an melrose.AudioDevice
 type Device struct {
-	outputStream *portmidi.Stream
+	outputStream MIDIOut
 	inputStream  *portmidi.Stream
 	echo         bool
 
@@ -50,12 +56,15 @@ func (m *Device) SetEchoNotes(echo bool) {
 }
 
 func (m *Device) Reset() {
+	if core.IsDebug() {
+		notify.Debugf("sending Note OFF to all 16 channels")
+	}
 	m.timeline.Reset()
 	if m.outputStream != nil {
 		// send note off all to all channels for current device
 		for c := 1; c <= 16; c++ {
 			if err := m.outputStream.WriteShort(controlChange|int64(c-1), noteAllOff, 0); err != nil {
-				fmt.Println("portmidi write error:", err)
+				notify.Console.Errorf("portmidi write error:%v", err)
 			}
 		}
 	}
@@ -146,6 +155,11 @@ func (m *Device) printInfo() {
 	fmt.Printf("[midi] %d = input  device id (default = %d)\n", m.currentInputDeviceID, defaultIn)
 	fmt.Printf("[midi] %d = output device id (default = %d)\n", m.currentOutputDeviceID, defaultOut)
 	fmt.Printf("[midi] %d = default output channel\n", m.defaultOutputChannel)
+
+	// temp
+	// if t, ok := m.outputStream.(tracingMIDIStream); ok {
+	// 	t.log()
+	// }
 }
 
 func Open(ctx core.Context) (*Device, error) {
@@ -238,7 +252,7 @@ func (m *Device) ChangeOutputDeviceID(id int) error {
 	if m.outputStream != nil {
 		_ = m.outputStream.Close()
 	}
-	m.outputStream = out
+	m.outputStream = tracingMIDIStreamOn(out)
 	m.currentOutputDeviceID = id
 	return nil
 }

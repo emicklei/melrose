@@ -114,16 +114,16 @@ func formatIndices(src [][]int) string {
 	return b.String()
 }
 
-// 1:-1,3:-1,1:0,2:0,3:0,1:1,2:1
+// 1:-1, 3:-1 ,1:0,2:0,3:0,1:1,2:1
 func parseIndexOffsets(s string) (m []int2int) {
 	entries := strings.Split(s, ",")
 	for _, each := range entries {
 		kv := strings.Split(each, ":")
-		ik, err := strconv.Atoi(kv[0])
+		ik, err := strconv.Atoi(strings.TrimSpace(kv[0]))
 		if err != nil {
 			continue
 		}
-		iv, err := strconv.Atoi(kv[1])
+		iv, err := strconv.Atoi(strings.TrimSpace(kv[1]))
 		if err != nil {
 			continue
 		}

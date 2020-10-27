@@ -359,12 +359,8 @@ ab = join(a,b)`,
 		Prefix:        "bpm",
 		Template:      `bpm(${1:beats-per-minute})`,
 		Samples:       `bpm(90)`,
-		Func: func(f float64) interface{} {
-			if f < 1 || f > 300 {
-				return notify.Panic(fmt.Errorf("invalid beats-per-minute [1..300], %f = ", f))
-			}
-			ctx.Control().SetBPM(f)
-			return nil
+		Func: func(v interface{}) interface{} {
+			return core.NewBPM(core.On(v), ctx.Control())
 		}}
 
 	eval["duration"] = Function{

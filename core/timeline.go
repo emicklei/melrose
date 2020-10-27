@@ -2,9 +2,10 @@ package core
 
 import (
 	"fmt"
-	"log"
 	"sync"
 	"time"
+
+	"github.com/emicklei/melrose/notify"
 )
 
 // Timeline is a chain of events that are placed in the future (playing).
@@ -15,14 +16,12 @@ type Timeline struct {
 	protection sync.RWMutex
 	isPlaying  bool
 	resume     chan bool
-	verbose    bool
 }
 
 // NewTimeline creates a new Timeline.
 func NewTimeline() *Timeline {
 	return &Timeline{
 		protection: sync.RWMutex{},
-		verbose:    false,
 	}
 }
 
@@ -99,6 +98,9 @@ func (t *Timeline) Play() {
 
 // Reset forgets about all scheduled calls.
 func (t *Timeline) Reset() {
+	if IsDebug() {
+		notify.Debugf("flushing all scheduled MIDI events")
+	}
 	t.protection.Lock()
 	defer t.protection.Unlock()
 	t.head = nil
@@ -108,17 +110,7 @@ func (t *Timeline) Reset() {
 // Schedule adds an event for a given time
 func (t *Timeline) Schedule(event TimelineEvent, when time.Time) error {
 	now := time.Now()
-	if t.verbose {
-		log.Println(event, when.Sub(now))
-	}
 	diff := when.Sub(now)
-	if t.isPlaying {
-		// if between -wait..wait then handle now
-		if -wait <= diff && diff <= wait {
-			event.Handle(t, now)
-			return nil
-		}
-	}
 	if diff < -wait {
 		return fmt.Errorf("cannot schedule in the past:%v", now.Sub(when))
 	}
