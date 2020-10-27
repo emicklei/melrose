@@ -358,7 +358,9 @@ ab = join(a,b)`,
 		ControlsAudio: true,
 		Prefix:        "bpm",
 		Template:      `bpm(${1:beats-per-minute})`,
-		Samples:       `bpm(90)`,
+		Samples: `bpm(90)
+speedup = iterator(80,90,100,110,120)
+l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Func: func(v interface{}) interface{} {
 			return core.NewBPM(core.On(v), ctx.Control())
 		}}
