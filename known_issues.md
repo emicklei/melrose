@@ -1,0 +1,2 @@
+- loop cannot have channel
+- onbar can only have one sequenceable
