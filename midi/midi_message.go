@@ -38,3 +38,10 @@ func (m Message) S() core.Sequence {
 func (m Message) Storex() string {
 	return fmt.Sprintf("midi_send(%d,%v,%v,%v)", m.status, core.Storex(m.channel), core.Storex(m.data1), core.Storex(m.data2))
 }
+
+// Evaluate implements core.Evaluateable
+// perform the message send
+func (m Message) Evaluate() error {
+	m.S()
+	return nil
+}
