@@ -131,12 +131,20 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 	}
 	// evaluate and print
 	r, err := e.EvaluateExpression(entry)
+	if err != nil {
+		return nil, err
+	}
+
+	// special case for Evals
+	if theEval, ok := r.(core.Evaluatable); ok {
+		if err := theEval.Evaluate(); err != nil {
+			return nil, err
+		}
+	}
+
 	// special case for Loop
 	if theLoop, ok := r.(*core.Loop); ok {
 		return nil, fmt.Errorf("cannot have an unnamed Loop, use e.g. myLoop = %s", theLoop.Storex())
-	}
-	if err != nil {
-		return nil, err
 	}
 	return r, nil
 }

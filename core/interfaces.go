@@ -94,3 +94,7 @@ type Context interface {
 
 // WorkingDirectory is a key in a context environment.
 const WorkingDirectory = "pwd"
+
+type Evaluatable interface {
+	Evaluate() error
+}

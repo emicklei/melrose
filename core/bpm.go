@@ -20,6 +20,13 @@ func (s SetBPM) S() Sequence {
 	return EmptySequence
 }
 
+// Evaluate implements Evaluatable
+// performs the set operation
+func (s SetBPM) Evaluate() error {
+	s.S()
+	return nil
+}
+
 // Inspect implements Inspectable
 func (s SetBPM) Inspect(i Inspection) {
 	i.Properties["bpm"] = fmt.Sprintf("%.2f", Float(s.bpm))
