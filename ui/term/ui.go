@@ -54,6 +54,7 @@ func startUI(mon *Monitor) {
 		mon.Sent.Set("")
 		mon.Received.Set("")
 		mon.Console.Set("")
+		foc.GetApplication().SetFocus(nil) // loose it
 	})
 
 	settings := tview.NewFlex().SetDirection(tview.FlexColumn).
