@@ -130,8 +130,8 @@ dynamicmap('2:0,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 		Prefix:      "pro",
 		IsCore:      true,
 		Template:    `progression('${1:chords}')`,
-		Samples: `progression('E F') // => (E A♭ B) (F A C5)
-progression('(C D)') // => (C E G D G♭ A)`,
+		Samples: `progression('e f') // => (E A♭ B) (F A C5)
+progression('(c d)') // => (C E G D G♭ A)`,
 		Func: func(chords string) interface{} {
 			p, err := core.ParseProgression(chords)
 			if err != nil {
@@ -227,7 +227,7 @@ jm = joinmap('1 (2 3) 4',j)`,
 	eval["midi"] = Function{
 		Title: "Note creator",
 		Description: `create a Note from MIDI information and is typically used for drum sets.
-The first parameter is a fraction {1,2,4,8,16}, a duration in milliseconds or a time.Duration.
+The first parameter is a fraction {1,2,4,8,16} or a duration in milliseconds or a time.Duration.
 Second parameter is the MIDI number and must be one of [0..127].
 The third parameter is the velocity (~ loudness) and must be one of [0..127]`,
 		Prefix:   "mid",
@@ -447,7 +447,7 @@ note('2.e#--')`,
 		Prefix:      "sc",
 		Template:    `scale(${1:octaves},'${2:note}')`,
 		IsCore:      true,
-		Samples:     `scale(1,'E/m') // => E F G A B C5 D5`,
+		Samples:     `scale(1,'e/m') // => E F G A B C5 D5`,
 		Func: func(octaves int, s string) interface{} {
 			if octaves < 1 {
 				return notify.Panic(fmt.Errorf("octaves must be >= 1%v", octaves))
@@ -465,7 +465,7 @@ note('2.e#--')`,
 		Description: "create an index getter (1-based) to select a musical object",
 		Prefix:      "at",
 		Template:    `at(${1:index},${2:object})`,
-		Samples:     `at(1,scale('E/m')) // => E`,
+		Samples:     `at(1,scale('e/m')) // => E`,
 		Func: func(index interface{}, object interface{}) interface{} {
 			indexVal := getValueable(index)
 			objectSeq, ok := getSequenceable(object)
@@ -527,8 +527,8 @@ next(num)`,
 		Prefix:      "ung",
 		Template:    `ungroup(${1:sequenceable})`,
 		IsComposer:  true,
-		Samples: `ungroup(chord('E')) // => E G B
-ungroup(sequence('(C D)'),note('E')) // => C D E`,
+		Samples: `ungroup(chord('e')) // => E G B
+ungroup(sequence('(c d)'),note('e')) // => C D E`,
 		Func: func(playables ...interface{}) interface{} {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
@@ -548,7 +548,7 @@ ungroup(sequence('(C D)'),note('E')) // => C D E`,
 		Prefix:      "oct",
 		Template:    `octave(${1:offset},${2:sequenceable})`,
 		IsComposer:  true,
-		Samples:     `octave(1,sequence('C D')) // => C5 D5`,
+		Samples:     `octave(1,sequence('c d')) // => C5 D5`,
 		Func: func(scalarOrVar interface{}, playables ...interface{}) interface{} {
 			list := []core.Sequenceable{}
 			for _, p := range playables {
@@ -562,21 +562,21 @@ ungroup(sequence('(C D)'),note('E')) // => C D E`,
 			return op.Octave{Target: list, Offset: core.ToValueable(scalarOrVar)}
 		}}
 
-	eval["record"] = Function{
-		Title:         "Recording creator",
-		Description:   "create a recorded sequence of notes from the current MIDI input device",
-		ControlsAudio: true,
-		Prefix:        "rec",
-		Template:      `record()`,
-		Samples: `r = record() // record notes played on the current input device and stop recording after 5 seconds
-s = r.S() // returns the sequence of notes from the recording`,
-		Func: func() interface{} {
-			seq, err := ctx.Device().Record(ctx)
-			if err != nil {
-				return notify.Panic(err)
-			}
-			return seq
-		}}
+	// 	eval["record"] = Function{
+	// 		Title:         "Recording creator",
+	// 		Description:   "create a recorded sequence of notes from the current MIDI input device",
+	// 		ControlsAudio: true,
+	// 		Prefix:        "rec",
+	// 		Template:      `record()`,
+	// 		Samples: `r = record() // record notes played on the current input device and stop recording after 5 seconds
+	// s = r.S() // returns the sequence of notes from the recording`,
+	// 		Func: func() interface{} {
+	// 			seq, err := ctx.Device().Record(ctx)
+	// 			if err != nil {
+	// 				return notify.Panic(err)
+	// 			}
+	// 			return seq
+	// 		}}
 
 	eval["undynamic"] = Function{
 		Title:       "Undo dynamic operator",
@@ -826,14 +826,14 @@ pitchD = replace(pitchA, c, d) // c -> d in pitchA`,
 			return op.Replace{Target: targetS, From: fromS, To: toS}
 		}}
 
-	eval["send"] = Function{
+	eval["midi_send"] = Function{
 		Title:       "Send MIDI message",
-		Description: "Sends a MIDI message with status, channel(ignore if < 1), 2nd byte and 3rd byte. Can be used as a musical object",
-		Template:    "send(${1:status},${2:channel},${3:2nd-byte},${4:3rd-byte}",
-		Samples: `send(0xB0,1,0x7B,0) // control change, all notes off in channel 1
-send(0xC0,2,1,0) // program change, select program 1 for channel 2
-send(0xB0,4,0,16) // control change, bank select 16 for channel 4`,
-		Func: func(status int, channel, data1, data2 interface{}) interface{} {
+		Description: "Sends a MIDI message with status, channel(ignore if < 1), 2nd byte and 3rd byte to an output device. Can be used as a musical object",
+		Template:    "midi_send(${1:device-id},${1:status},${2:channel},${3:2nd-byte},${4:3rd-byte}",
+		Samples: `midi_send(1,0xB0,7,0x7B,0) // to device id 1, control change, all notes off in channel 7
+midi_send(1,0xC0,2,1,0) // program change, select program 1 for channel 2
+midi_send(2,0xB0,4,0,16) // control change, bank select 16 for channel 4`,
+		Func: func(deviceID int, status int, channel, data1, data2 interface{}) interface{} {
 			md, ok := ctx.Device().(*midi.Device)
 			if !ok {
 				return notify.Panic(fmt.Errorf("not a MIDI device"))
