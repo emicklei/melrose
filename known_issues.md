@@ -1,2 +1,3 @@
 - loop cannot have channel
 - onbar can only have one sequenceable
+- cannot use variable for indices in joinmap (or any map)

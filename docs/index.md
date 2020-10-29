@@ -42,6 +42,12 @@ Musical object can be composed using many operators such as:
 - dynamic
 - loop
 
+Audio control objects such as:
+
+- [bpm](dsl.html#bpm)
+- [midi note](dsl.html#midi)
+- [midi_send](dsl.html#midi_send)
+
 See [Language](dsl.html) for all supported functions.
 
 ![screenshot.png](images/screenshot.png)

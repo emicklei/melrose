@@ -46,6 +46,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#join">join</a>
 - <a href="#joinmap">joinmap</a>
 - <a href="#merge">merge</a>
+- <a href="#midi_send">midi_send</a>
 - <a href="#next">next</a>
 - <a href="#notemap">notemap</a>
 - <a href="#octave">octave</a>
@@ -57,7 +58,6 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#repeat">repeat</a>
 - <a href="#replace">replace</a>
 - <a href="#reverse">reverse</a>
-- <a href="#send">send</a>
 - <a href="#sequencemap">sequencemap</a>
 - <a href="#track">track</a>
 - <a href="#undynamic">undynamic</a>
@@ -73,14 +73,13 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#loop">loop</a>
 - <a href="#multi">multi</a>
 - <a href="#play">play</a>
-- <a href="#record">record</a>
 
 
 ### at<a name="at"></a>
 Create an index getter (1-based) to select a musical object.
 
 ```javascript
-at(1,scale('E/m')) // => E
+at(1,scale('e/m')) // => E
 ```
 
 ### begin<a name="begin"></a>
@@ -104,6 +103,10 @@ Set the Beats Per Minute (BPM) [1..300]; default is 120.
 
 ```javascript
 bpm(90)
+
+speedup = iterator(80,90,100,110,120)
+
+l = loop(bpm(speedup),sequence('c e g'),next(speedup))
 ```
 
 ### channel<a name="channel"></a>
@@ -250,7 +253,7 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =
 
 ### midi<a name="midi"></a>
 Create a Note from MIDI information and is typically used for drum sets.
-The first parameter is a fraction {1,2,4,8,16}, a duration in milliseconds or a time.Duration.
+The first parameter is a fraction {1,2,4,8,16} or a duration in milliseconds or a time.Duration.
 Second parameter is the MIDI number and must be one of [0..127].
 The third parameter is the velocity (~ loudness) and must be one of [0..127].
 
@@ -258,6 +261,17 @@ The third parameter is the velocity (~ loudness) and must be one of [0..127].
 midi(500,52,80) // => E3+
 
 midi(500,36,70) // => 16C2 (kick)
+```
+
+### midi_send<a name="midi_send"></a>
+Sends a MIDI message with status, channel(ignore if < 1), 2nd byte and 3rd byte to an output device. Can be used as a musical object.
+
+```javascript
+midi_send(1,0xB0,7,0x7B,0) // to device id 1, control change, all notes off in channel 7
+
+midi_send(1,0xC0,2,1,0) // program change, select program 1 for channel 2
+
+midi_send(2,0xB0,4,0,16) // control change, bank select 16 for channel 4
 ```
 
 ### multi<a name="multi"></a>
@@ -302,7 +316,7 @@ m2 = notemap('3 6 9', note('d2'))
 Change the pitch of notes by steps of 12 semitones for one or more musical objects.
 
 ```javascript
-octave(1,sequence('C D')) // => C5 D5
+octave(1,sequence('c d')) // => C5 D5
 ```
 
 ### octavemap<a name="octavemap"></a>
@@ -348,9 +362,9 @@ Prints an object when evaluated (play,loop).
 Create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>.
 
 ```javascript
-progression('E F') // => (E A♭ B) (F A C5)
+progression('e f') // => (E A♭ B) (F A C5)
 
-progression('(C D)') // => (C E G D G♭ A)
+progression('(c d)') // => (C E G D G♭ A)
 ```
 
 ### random<a name="random"></a>
@@ -360,15 +374,6 @@ Create a random integer generator. Use next() to generate a new integer.
 num = random(1,10)
 
 next(num)
-```
-
-### record<a name="record"></a>
-Create a recorded sequence of notes from the current MIDI input device.
-
-```javascript
-r = record() // record notes played on the current input device and stop recording after 5 seconds
-
-s = r.S() // returns the sequence of notes from the recording
 ```
 
 ### repeat<a name="repeat"></a>
@@ -402,18 +407,7 @@ reverse(chord('A'))
 Create a Scale using this <a href="/melrose/notations.html#scale-not">format</a>.
 
 ```javascript
-scale(1,'E/m') // => E F G A B C5 D5
-```
-
-### send<a name="send"></a>
-Sends a MIDI message with status, channel(ignore if < 1), 2nd byte and 3rd byte. Can be used as a musical object.
-
-```javascript
-send(0xB0,1,0x7B,0) // control change, all notes off in channel 1
-
-send(0xC0,2,1,0) // program change, select program 1 for channel 2
-
-send(0xB0,4,0,16) // control change, bank select 16 for channel 4
+scale(1,'e/m') // => E F G A B C5 D5
 ```
 
 ### sequence<a name="sequence"></a>
@@ -456,9 +450,9 @@ undynamic('A+ B++ C-- D-') // =>  A B C D
 Undo any grouping of notes from one or more musical objects.
 
 ```javascript
-ungroup(chord('E')) // => E G B
+ungroup(chord('e')) // => E G B
 
-ungroup(sequence('(C D)'),note('E')) // => C D E
+ungroup(sequence('(c d)'),note('e')) // => C D E
 ```
 
 
