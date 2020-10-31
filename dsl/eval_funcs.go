@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/emicklei/melrose/control"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/midi"
 
@@ -362,7 +363,7 @@ ab = join(a,b)`,
 speedup = iterator(80,100,120,140)
 l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Func: func(v interface{}) interface{} {
-			return core.NewBPM(core.On(v), ctx.Control())
+			return control.NewBPM(core.On(v), ctx.Control())
 		}}
 
 	eval["duration"] = Function{
@@ -510,15 +511,15 @@ next(num)`,
 		Template:      `play(${1:sequenceable})`,
 		Samples:       `play(s1,s2,s3) // play s3 after s2 after s1`,
 		Func: func(playables ...interface{}) interface{} {
-			moment := time.Now()
+			list := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(getValue(p)); ok { // unwrap var
-					moment = ctx.Device().Play(s, ctx.Control().BPM(), moment)
+					list = append(list, s)
 				} else {
 					notify.Print(notify.Warningf("cannot play (%T) %v", p, p))
 				}
 			}
-			return nil
+			return control.NewPlay(ctx, list)
 		}}
 
 	eval["ungroup"] = Function{

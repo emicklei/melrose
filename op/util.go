@@ -21,6 +21,11 @@ func appendStorexValueableList(b *bytes.Buffer, isFirstParameter bool, list []co
 	appendStorexList(b, isFirstParameter, target)
 }
 
+// TODO
+func AppendStorexList(b *bytes.Buffer, isFirstParameter bool, list []core.Sequenceable) {
+	appendStorexList(b, isFirstParameter, list)
+}
+
 // if not isFirstParameter then write comma first
 func appendStorexList(b *bytes.Buffer, isFirstParameter bool, list []core.Sequenceable) {
 	if len(list) == 0 {

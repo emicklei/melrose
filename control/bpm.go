@@ -1,23 +1,27 @@
-package core
+package control
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/emicklei/melrose/core"
+)
 
 type SetBPM struct {
-	bpm     Valueable
-	control LoopController
+	bpm     core.Valueable
+	control core.LoopController
 }
 
-func NewBPM(bpm Valueable, ctr LoopController) SetBPM {
+func NewBPM(bpm core.Valueable, ctr core.LoopController) SetBPM {
 	return SetBPM{bpm: bpm, control: ctr}
 }
 
 // S has the side effect of setting the BPM unless BPM is zero
-func (s SetBPM) S() Sequence {
-	f := Float(s.bpm)
+func (s SetBPM) S() core.Sequence {
+	f := core.Float(s.bpm)
 	if f > 0.0 {
 		s.control.SetBPM(float64(f))
 	}
-	return EmptySequence
+	return core.EmptySequence
 }
 
 // Evaluate implements Evaluatable
@@ -28,8 +32,8 @@ func (s SetBPM) Evaluate() error {
 }
 
 // Inspect implements Inspectable
-func (s SetBPM) Inspect(i Inspection) {
-	i.Properties["bpm"] = fmt.Sprintf("%.2f", Float(s.bpm))
+func (s SetBPM) Inspect(i core.Inspection) {
+	i.Properties["bpm"] = fmt.Sprintf("%.2f", core.Float(s.bpm))
 }
 
 // Storex implements Storable

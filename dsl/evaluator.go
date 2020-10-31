@@ -125,6 +125,13 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 			} else {
 				// not a Loop
 				e.context.Variables().Put(variable, r)
+
+				// special case for Evals
+				if theEval, ok := r.(core.Evaluatable); ok {
+					if err := theEval.Evaluate(); err != nil {
+						return nil, err
+					}
+				}
 			}
 		}
 		return r, nil
