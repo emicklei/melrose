@@ -15,7 +15,7 @@ See [documentation](https://emicklei.github.io/melrose/) how to install and use 
 
 ### Status
 
-Until `v1.0.0` both language syntax and package api may change.
+Until `v1.0.0` the language syntax may change in a an incompatible way.
 
 ### Programming music
 
@@ -24,8 +24,10 @@ Until `v1.0.0` both language syntax and package api may change.
 
 ### Contributions
 
-Fixes, suggestions, documentation improvements are all welcome. Fork this project and submit Pull requests.
+Fixes, suggestions, documentation improvements are all welcome.
+Fork this project and submit small Pull requests. 
+Discuss larger ones in the Issues list.
 You can also sponsor Melrōse via [Github Sponsors](https://github.com/sponsors/emicklei).
 
-Software is licensed under [Apache 2.0 license](LICENSE).
+Software is licensed under [MIT](LICENSE).
 &copy; 2014-2020 [ernestmicklei.com](http://ernestmicklei.com)
