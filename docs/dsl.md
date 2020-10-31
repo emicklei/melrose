@@ -155,7 +155,7 @@ Changes the dynamic of notes from a musical object using an 1-index-based mappin
 ```javascript
 dynamicmap('1:++,2:--',sequence('e f')) // => E++ F--
 
-dynamicmap('2:0,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++
+dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++
 ```
 
 ### end<a name="end"></a>

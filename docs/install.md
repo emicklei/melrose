@@ -4,11 +4,15 @@ title: Melrōse installation guide
 
 [Home](https://emicklei.github.io/melrose)
 
-## Download
+## Install from package
 
-Due to increased restrictions and costs of releasing non-commercial packages for the Apple Mac OSX and Microsoft Windows plaform, I can only provide unsigned packages for Apple Mac OSX, see [Using Melrōse with Apple Garageband](https://emicklei.github.io/melrose/garageband.html).
+Due to increased restrictions and costs of releasing non-commercial packages for the Apple Mac OSX and Microsoft Windows plaform, I can only provide unsigned packages for Apple Mac OSX.
 
 Contact me if you want a commercial, signed and supported version.
+
+### Mac OSX
+
+[Using Melrōse with Apple Garageband](https://emicklei.github.io/melrose/garageband.html).
 
 ## Install from source
 

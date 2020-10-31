@@ -51,3 +51,7 @@ Audio control objects such as:
 See [Language](dsl.html) for all supported functions.
 
 ![screenshot.png](images/screenshot.png)
+
+
+Software is licensed under [MIT](LICENSE).
+&copy; 2014-2020 [ernestmicklei.com](http://ernestmicklei.com)
