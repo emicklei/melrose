@@ -64,6 +64,25 @@ func (d *DeviceRegistry) Output(id int) (*OutputDevice, error) {
 	return od, nil
 }
 
+func (d *DeviceRegistry) Input(id int) (*InputDevice, error) {
+	d.mutex.RLock()
+	if m, ok := d.in[id]; ok {
+		d.mutex.RUnlock()
+		return m, nil
+	}
+	d.mutex.RUnlock()
+	// not present
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	midiIn, err := d.streamRegistry.input(id)
+	if err != nil {
+		return nil, tre.New(err, "Input", "id", id)
+	}
+	ide := NewInputDevice(id, midiIn)
+	d.in[id] = ide
+	return ide, nil
+}
+
 func (d *DeviceRegistry) init() error {
 	portmidi.Initialize()
 	outputID := portmidi.DefaultOutputDeviceID()

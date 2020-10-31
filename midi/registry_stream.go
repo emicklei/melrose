@@ -18,7 +18,9 @@ type MIDIOut interface {
 	Abort() error
 }
 
-type MIDIIn interface{}
+type MIDIIn interface {
+	Close() error
+}
 
 func newStreamRegistry() *streamRegistry {
 	return &streamRegistry{
@@ -42,17 +44,36 @@ func (s *streamRegistry) output(id int) (MIDIOut, error) {
 	if err != nil {
 		return nil, err
 	}
-	s.out[id] = tracingMIDIStreamOn(out) // TEMP
-	return out, nil
+	// TEMP TODO
+	tout := tracingMIDIStreamOn(out)
+	s.out[id] = tout
+	return tout, nil
+}
+
+func (s *streamRegistry) input(id int) (MIDIIn, error) {
+	s.mutex.RLock()
+	if m, ok := s.in[id]; ok {
+		s.mutex.RUnlock()
+		return m, nil
+	}
+	s.mutex.RUnlock()
+	// not present
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	in, err := portmidi.NewInputStream(portmidi.DeviceID(id), 1024) // TODO flag
+	if err != nil {
+		return nil, err
+	}
+	s.in[id] = in
+	return in, nil
 }
 
 func (s *streamRegistry) close() error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	// for _, each := range s.in {
-	// 	each.Abort()
-	// 	each.Close()
-	// }
+	for _, each := range s.in {
+		each.Close()
+	}
 	for _, each := range s.out {
 		each.Abort()
 		each.Close()

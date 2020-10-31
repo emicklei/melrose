@@ -31,10 +31,10 @@ func (d *OutputDevice) Start() {
 }
 
 func (d *OutputDevice) Reset() {
+	d.timeline.Reset()
 	if core.IsDebug() {
 		notify.Debugf("device.%d: sending Note OFF to all 16 channels", d.id)
 	}
-	d.timeline.Reset()
 	if d.stream != nil {
 		// send note off all to all channels for current device
 		for c := 1; c <= 16; c++ {

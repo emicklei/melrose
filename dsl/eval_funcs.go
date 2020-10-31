@@ -848,9 +848,10 @@ pitchD = replace(pitchA, c, d) // c -> d in pitchA`,
 		Template:    "midi_send(${1:device-id},${1:status},${2:channel},${3:2nd-byte},${4:3rd-byte}",
 		Samples: `midi_send(1,0xB0,7,0x7B,0) // to device id 1, control change, all notes off in channel 7
 midi_send(1,0xC0,2,1,0) // program change, select program 1 for channel 2
-midi_send(2,0xB0,4,0,16) // control change, bank select 16 for channel 4`,
+midi_send(2,0xB0,4,0,16) // control change, bank select 16 for channel 4
+midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1`,
 		Func: func(deviceID int, status int, channel, data1, data2 interface{}) interface{} {
-			return midi.NewMessage(ctx.Device(), status, core.On(channel), core.On(data1), core.On(data2))
+			return midi.NewMessage(ctx.Device(), core.On(deviceID), status, core.On(channel), core.On(data1), core.On(data2))
 		}}
 
 	return eval

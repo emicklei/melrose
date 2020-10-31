@@ -280,6 +280,8 @@ midi_send(1,0xB0,7,0x7B,0) // to device id 1, control change, all notes off in c
 midi_send(1,0xC0,2,1,0) // program change, select program 1 for channel 2
 
 midi_send(2,0xB0,4,0,16) // control change, bank select 16 for channel 4
+
+midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1
 ```
 
 ### multi<a name="multi"></a>

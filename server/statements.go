@@ -13,6 +13,7 @@ import (
 
 	"github.com/antonmedv/expr/file"
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -49,6 +50,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	defer r.Body.Close()
 	if query.Get("action") == "kill" {
 		// kill the play and any loop
+		dsl.StopAllLoops(l.context)
 		l.context.Control().Reset()
 		l.context.Device().Reset()
 		return
