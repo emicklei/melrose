@@ -53,5 +53,5 @@ See [Language](dsl.html) for all supported functions.
 ![screenshot.png](images/screenshot.png)
 
 
-Software is licensed under [MIT](LICENSE).
+Software is licensed under [MIT](https://github.com/emicklei/melrose/LICENSE).
 &copy; 2014-2020 [ernestmicklei.com](http://ernestmicklei.com)
