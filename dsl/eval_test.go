@@ -9,7 +9,7 @@ import (
 )
 
 func TestIsCompatible(t *testing.T) {
-	if got, want := true, IsCompatibleSyntax("1.0"); got != want {
+	if got, want := true, IsCompatibleSyntax("0.20"); got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 	if got, want := false, IsCompatibleSyntax("2.0"); got != want {

@@ -24,7 +24,7 @@ func IsCompatibleSyntax(s string) bool {
 		// ignore syntax ; you are on your own
 		return true
 	}
-	mm := strings.Split(Syntax, ".")
+	mm := strings.Split(SyntaxVersion, ".")
 	ss := strings.Split(s, ".")
 	return mm[0] == ss[0] && ss[1] <= mm[1]
 }
