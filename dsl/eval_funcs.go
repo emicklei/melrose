@@ -232,7 +232,7 @@ Second parameter is the MIDI number and must be one of [0..127].
 The third parameter is the velocity (~ loudness) and must be one of [0..127]`,
 		Prefix:   "mid",
 		Template: `midi(${1:numberOrDuration},${2:number},${3:number})`,
-		Samples: `midi(500,52,80) // => E3+
+		Samples: `midi(500,52,80) // => 500ms E3+
 midi(500,36,70) // => 16C2 (kick)`,
 		IsCore: true,
 		Func: func(dur, nr, velocity interface{}) interface{} {
@@ -254,8 +254,8 @@ midi(500,36,70) // => 16C2 (kick)`,
 		Description: `create a Chord from its string <a href="/melrose/notations.html#chord-not">notation</a>`,
 		Prefix:      "cho",
 		Template:    `chord('${1:note}')`,
-		Samples: `chord('C#5/m/1')
-chord('G/M/2')`,
+		Samples: `chord('c#5/m/1')
+chord('g/M/2') // Major G second inversion`,
 		IsCore: true,
 		Func: func(chord string) interface{} {
 			c, err := core.ParseChord(chord)
@@ -271,7 +271,7 @@ chord('G/M/2')`,
 		Prefix:      "octavem",
 		Template:    `octavemap('${1:int2int}',${2:object})`,
 		IsComposer:  true,
-		Samples:     `octavemap('1:-1,2:0,3:1',chord('C')) // => (C3 E G5)`,
+		Samples:     `octavemap('1:-1,2:0,3:1',chord('c')) // => (C3 E G5)`,
 		Func: func(indices string, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
@@ -302,7 +302,7 @@ pitch(p,note('c'))`,
 		Description: "reverse the (groups of) notes in a sequence",
 		Prefix:      "rev",
 		Template:    `reverse(${1:sequenceable})`,
-		Samples:     `reverse(chord('A'))`,
+		Samples:     `reverse(chord('a'))`,
 		IsComposer:  true,
 		Func: func(m interface{}) interface{} {
 			s, ok := getSequenceable(m)
@@ -317,7 +317,7 @@ pitch(p,note('c'))`,
 		Description: "repeat one or more musical objects a number of times",
 		Prefix:      "rep",
 		Template:    `repeat(${1:times},${2:sequenceables})`,
-		Samples:     `repeat(4,sequence('C D E'))`,
+		Samples:     `repeat(4,sequence('c d e'))`,
 		IsComposer:  true,
 		Func: func(howMany interface{}, playables ...interface{}) interface{} {
 			joined := []core.Sequenceable{}
@@ -336,8 +336,8 @@ pitch(p,note('c'))`,
 		Description: "joins one or more musical objects as one",
 		Prefix:      "joi",
 		Template:    `join(${1:first},${2:second})`,
-		Samples: `a = chord('A')
-b = sequence('(C E G)')
+		Samples: `a = chord('a')
+b = sequence('(c e g)')
 ab = join(a,b)`,
 		IsComposer: true,
 		Func: func(playables ...interface{}) interface{} {
@@ -359,7 +359,7 @@ ab = join(a,b)`,
 		Prefix:        "bpm",
 		Template:      `bpm(${1:beats-per-minute})`,
 		Samples: `bpm(90)
-speedup = iterator(80,90,100,110,120)
+speedup = iterator(80,100,120,140)
 l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Func: func(v interface{}) interface{} {
 			return core.NewBPM(core.On(v), ctx.Control())
@@ -370,7 +370,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Description: "computes the duration of the object using the current BPM",
 		Prefix:      "dur",
 		Template:    `duration(${1:object})`,
-		Samples:     `duration(note('C'))`,
+		Samples:     `duration(note('c'))`,
 		Func: func(m interface{}) time.Duration {
 			if s, ok := getSequenceable(m); ok {
 				return s.S().Duration(ctx.Control().BPM())
@@ -413,8 +413,8 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Description: `create a Sequence using this <a href="/melrose/notations.html#sequence-not">format</a>`,
 		Prefix:      "seq",
 		Template:    `sequence('${1:space-separated-notes}')`,
-		Samples: `sequence('C D E')
-sequence('(8C D E)') => (⅛C ⅛D ⅛E)
+		Samples: `sequence('c d e')
+sequence('(8c d e)') => (⅛C ⅛D ⅛E)
 sequence('c (d e f) a =')`,
 		IsCore: true,
 		Func: func(s string) interface{} {
@@ -776,8 +776,8 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 		Title:       "Next operator",
 		Description: `is used to produce the next value in a generator such as random and interval`,
 		Samples: `i = interval(-4,4,2)
-pi = pitch(i,sequence('C D E F G A B'))
-lp_pi = loop(pi,next(i))
+pi = pitch(i,sequence('c d e f g a b')) // current value of "i" is used
+lp_pi = loop(pi,next(i)) // "i" will advance to the next value
 begin(lp_pi)`,
 		Func: func(v interface{}) interface{} {
 			return core.Nexter{Target: getValueable(v)}

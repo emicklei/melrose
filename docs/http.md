@@ -72,3 +72,11 @@ If the HTTP URL has the query parameter `action=kill` then `melrōse` will stop 
 ### inspecting
 
 If the HTTP URL has the query parameter `action=inspect` then `melrōse` will print inspection details of the selected expression.
+
+### version
+
+    GET http://localhost:8118/version
+
+return version information such as
+
+    {"APIVersion":"v1","SyntaxVersion":"0.30","BuildTag":"v1.0.1"}
