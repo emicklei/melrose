@@ -12,9 +12,10 @@ import (
 
 // Record is part of melrose.AudioDevice
 func (m *Device) Record(ctx core.Context) (*core.Recording, error) {
-	stopAfterInactivity := time.Duration(5) * time.Second // TODO config 5
-	deviceID := m.currentInputDeviceID
-	return m.record(ctx, deviceID, stopAfterInactivity)
+	// stopAfterInactivity := time.Duration(5) * time.Second // TODO config 5
+	// deviceID := m.currentInputDeviceID
+	// return m.record(ctx, deviceID, stopAfterInactivity)
+	return nil, nil
 }
 
 func (m *Device) record(ctx core.Context, deviceID int, stopAfterInactivity time.Duration) (*core.Recording, error) {

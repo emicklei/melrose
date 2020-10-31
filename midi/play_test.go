@@ -32,13 +32,3 @@ func TestEventNoteOff(t *testing.T) {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
-
-func TestPlay(t *testing.T) {
-	m := new(Device)
-	m.timeline = core.NewTimeline()
-	now := time.Now()
-	m.Play(core.MustParseSequence("> C ^ D E <"), 120.0, now)
-	m.timeline.EventsDo(func(event core.TimelineEvent, when time.Time) {
-		t.Logf("on [%v] event [%v]\n", when.Sub(now), event)
-	})
-}

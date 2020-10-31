@@ -11,7 +11,7 @@ import (
 )
 
 func (m *Monitor) Open(ctx core.Context) {
-	ctx.Device().SetEchoNotes(true)
+	//ctx.Device().SetEchoNotes(true)
 	setupConsole(m)
 	m.setupDeviceSelections(ctx)
 	ctx.Control().SettingNotifier(m.HandleControlSetting)
@@ -29,7 +29,7 @@ func setupConsole(mon *Monitor) {
 }
 
 func (m *Monitor) setupDeviceSelections(ctx core.Context) {
-	device := ctx.Device().(*midi.Device)
+	device := ctx.Device().(*midi.DeviceRegistry)
 	inputID, outputID := device.IO()
 	input := []string{" not active "}
 	output := []string{" not active "}

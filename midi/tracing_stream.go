@@ -40,8 +40,8 @@ func (t tracingMIDIStream) Abort() error {
 	return t.out.Abort()
 }
 
-func (t tracingMIDIStream) log() {
+func (t tracingMIDIStream) log(deviceID int) {
 	for nr, when := range t.notesOn {
-		notify.Debugf("note %d on at %v", nr, when)
+		notify.Debugf("device %d, note %d ON at %v", deviceID, nr, when)
 	}
 }

@@ -6,33 +6,51 @@ import (
 	"github.com/emicklei/melrose/core"
 )
 
-// Play is part of melrose.AudioDevice
-// It schedules all the notes on the timeline beginning at a give time (now or in the future).
-// Returns the end time of the last played Note.
-func (m *Device) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
-	moment := beginAt
-	// do we have output active?
-	if m.currentOutputDeviceID == -1 {
-		return moment
+func (registry *DeviceRegistry) Schedule(e core.TimelineEvent, beginAt time.Time) {
+	// TODO check DeviceSelector
+	device, err := registry.Output(registry.defaultOutputID)
+	if err != nil {
+		return
 	}
-	channel := m.defaultOutputChannel
+	device.timeline.Schedule(e, beginAt)
+}
+
+// Play schedules all the notes on the timeline beginning at a give time (now or in the future).
+// Returns the end time of the last played Note.
+func (registry *DeviceRegistry) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
+	// which device?
+	var device *OutputDevice
+	deviceID := registry.defaultOutputID
+	if dev, ok := seq.(core.DeviceSelector); ok {
+		deviceID = dev.DeviceID()
+	}
+	device, err := registry.Output(deviceID)
+	if err != nil {
+		return beginAt
+	}
+
+	// which channel?
+	channel := device.defaultChannel
 	if sel, ok := seq.(core.ChannelSelector); ok {
 		channel = sel.Channel()
 	}
+
+	// schedule all notes of the sequenceable
 	wholeNoteDuration := core.WholeNoteDuration(bpm)
+	moment := beginAt
 	for _, eachGroup := range seq.S().Notes {
 		if len(eachGroup) == 0 {
 			continue
 		}
-		if m.handledPedalChange(channel, m.timeline, moment, eachGroup) {
+		if device.handledPedalChange(channel, device.timeline, moment, eachGroup) {
 			continue
 		}
 		var actualDuration = time.Duration(float32(wholeNoteDuration) * eachGroup[0].DurationFactor())
 		var event midiEvent
 		if len(eachGroup) > 1 {
 			// combined, first note makes fraction and velocity
-			event = m.combinedMidiEvent(channel, eachGroup)
-			if m.echo {
+			event = combinedMidiEvent(channel, eachGroup, device.stream)
+			if device.echo {
 				event.echoString = core.StringFromNoteGroup(eachGroup)
 			}
 		} else {
@@ -40,10 +58,10 @@ func (m *Device) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) tim
 			// rest?
 			if eachGroup[0].IsRest() {
 				event := restEvent{}
-				if m.echo {
+				if device.echo {
 					event.echoString = eachGroup[0].String()
 				}
-				m.timeline.Schedule(event, moment)
+				device.timeline.Schedule(event, moment)
 				moment = moment.Add(actualDuration)
 				continue
 			}
@@ -52,21 +70,21 @@ func (m *Device) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) tim
 				actualDuration = fixed
 			}
 			// non-rest
-			event = m.combinedMidiEvent(channel, eachGroup)
-			if m.echo {
+			event = combinedMidiEvent(channel, eachGroup, device.stream)
+			if device.echo {
 				event.echoString = eachGroup[0].String()
 			}
 		}
 		// solo or group
-		m.timeline.Schedule(event, moment)
+		device.timeline.Schedule(event, moment)
 		moment = moment.Add(actualDuration)
-		m.timeline.Schedule(event.asNoteoff(), moment)
+		device.timeline.Schedule(event.asNoteoff(), moment)
 	}
 	return moment
 }
 
 // Pre: notes not empty
-func (m *Device) combinedMidiEvent(channel int, notes []core.Note) midiEvent {
+func combinedMidiEvent(channel int, notes []core.Note, stream MIDIOut) midiEvent {
 	// first note makes fraction and velocity
 	velocity := notes[0].Velocity
 	if velocity > 127 {
@@ -84,6 +102,6 @@ func (m *Device) combinedMidiEvent(channel int, notes []core.Note) midiEvent {
 		onoff:    noteOn,
 		channel:  channel,
 		velocity: int64(velocity),
-		out:      m.outputStream,
+		out:      stream,
 	}
 }

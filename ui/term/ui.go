@@ -3,7 +3,6 @@ package term
 import (
 	"log"
 
-	"github.com/emicklei/tviewplus"
 	tvp "github.com/emicklei/tviewplus"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -49,7 +48,7 @@ func startUI(mon *Monitor) {
 	console.SetTextColor(tcell.ColorLightGray)
 	console.SetBackgroundColor(textBg)
 
-	clear := tviewplus.NewButtonView(foc).SetLabel("clear all")
+	clear := tvp.NewButtonView(foc).SetLabel("clear all")
 	clear.SetSelectedFunc(func() {
 		mon.Sent.Set("")
 		mon.Received.Set("")

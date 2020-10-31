@@ -693,7 +693,7 @@ begin(l1) // end(l1)`,
 		}}
 	// END Loop and control
 	eval["channel"] = Function{
-		Title:         "MIDI channel operator",
+		Title:         "MIDI channel selector",
 		Description:   "select a MIDI channel, must be in [1..16]; must be a top-level operator",
 		ControlsAudio: true,
 		Prefix:        "chan",
@@ -706,6 +706,22 @@ begin(l1) // end(l1)`,
 			}
 			return core.ChannelSelector{Target: s, Number: getValueable(midiChannel)}
 		}}
+
+	eval["device"] = Function{
+		Title:         "MIDI device selector",
+		Description:   "select a MIDI device from the available device IDs; must become before channel",
+		ControlsAudio: true,
+		Prefix:        "dev",
+		Template:      `device(${1:number},${2:sequenceable})`,
+		Samples:       `device(1,channel(2,sequence('C2 E3'))) // plays on connected device 1 through MIDI channel 2`,
+		Func: func(deviceID, m interface{}) interface{} {
+			s, ok := getSequenceable(m)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot decorate with device (%T) %v", m, m))
+			}
+			return core.DeviceSelector{Target: s, ID: getValueable(deviceID)}
+		}}
+
 	eval["interval"] = Function{
 		Title:       "Interval creator",
 		Description: "create an integer repeating interval (from,to,by,method). Default method is 'repeat', Use next() to get a new integer",
@@ -834,11 +850,7 @@ pitchD = replace(pitchA, c, d) // c -> d in pitchA`,
 midi_send(1,0xC0,2,1,0) // program change, select program 1 for channel 2
 midi_send(2,0xB0,4,0,16) // control change, bank select 16 for channel 4`,
 		Func: func(deviceID int, status int, channel, data1, data2 interface{}) interface{} {
-			md, ok := ctx.Device().(*midi.Device)
-			if !ok {
-				return notify.Panic(fmt.Errorf("not a MIDI device"))
-			}
-			return midi.NewMessage(md, status, core.On(channel), core.On(data1), core.On(data2))
+			return midi.NewMessage(ctx.Device(), status, core.On(channel), core.On(data1), core.On(data2))
 		}}
 
 	return eval

@@ -2,6 +2,7 @@ package system
 
 import (
 	"flag"
+	"log"
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/midi"
@@ -26,12 +27,11 @@ func Setup() (core.Context, error) {
 	ctx.EnvironmentVars = map[string]string{}
 	ctx.VariableStorage = dsl.NewVariableStore()
 	ctx.LoopControl = core.NewBeatmaster(ctx, 120)
-
-	device, err := midi.Open(ctx)
+	reg, err := midi.NewDeviceRegistry()
 	if err != nil {
-		return nil, err
+		log.Fatalln("unable to initialize MIDI")
 	}
-	ctx.AudioDevice = device
+	ctx.AudioDevice = reg
 
 	if len(*httpPort) > 0 {
 		// start DSL server

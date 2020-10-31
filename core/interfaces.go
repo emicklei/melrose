@@ -33,11 +33,13 @@ type AudioDevice interface {
 	// Play schedules all the notes on the timeline using a BPM (beats-per-minute).
 	// Returns the end time of the last played Note.
 	Play(seq Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time)
-	Record(ctx Context) (*Recording, error)
-	Timeline() *Timeline
-	SetEchoNotes(echo bool)
+
+	// Schedule put an event on the timeline at a begin
+	Schedule(event TimelineEvent, beginAt time.Time)
+
+	// Record(ctx Context) (*Recording, error)
 	Reset()
-	Close()
+	Close() error
 }
 
 type LoopController interface {

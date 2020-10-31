@@ -9,7 +9,6 @@ import (
 )
 
 // Timeline is a chain of events that are placed in the future (playing).
-// TODO use sync.Pool for noteEvents?
 type Timeline struct {
 	head       *scheduledTimelineEvent // earliest
 	tail       *scheduledTimelineEvent // latest
@@ -99,7 +98,7 @@ func (t *Timeline) Play() {
 // Reset forgets about all scheduled calls.
 func (t *Timeline) Reset() {
 	if IsDebug() {
-		notify.Debugf("flushing all scheduled MIDI events")
+		notify.Debugf("core.timeline: flushing all scheduled MIDI events")
 	}
 	t.protection.Lock()
 	defer t.protection.Unlock()
@@ -112,7 +111,7 @@ func (t *Timeline) Schedule(event TimelineEvent, when time.Time) error {
 	now := time.Now()
 	diff := when.Sub(now)
 	if diff < -wait {
-		return fmt.Errorf("cannot schedule in the past:%v", now.Sub(when))
+		return fmt.Errorf("core.timeline: cannot schedule in the past:%v", now.Sub(when))
 	}
 	t.schedule(&scheduledTimelineEvent{
 		when:  when,

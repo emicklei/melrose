@@ -2,7 +2,6 @@ package core
 
 import (
 	"errors"
-	"fmt"
 	"time"
 )
 
@@ -94,28 +93,4 @@ func MIDItoNote(fraction float32, nr int, vel int) (Note, error) {
 		return Rest4, err
 	}
 	return nn, nil
-}
-
-type ChannelSelector struct {
-	Target Sequenceable
-	Number Valueable
-}
-
-func NewChannelSelector(target Sequenceable, channel Valueable) ChannelSelector {
-	return ChannelSelector{Target: target, Number: channel}
-}
-
-func (c ChannelSelector) S() Sequence {
-	return c.Target.S()
-}
-
-func (c ChannelSelector) Channel() int {
-	return Int(c.Number)
-}
-
-func (c ChannelSelector) Storex() string {
-	if s, ok := c.Target.(Storable); ok {
-		return fmt.Sprintf("channel(%v,%s)", c.Number, s.Storex())
-	}
-	return ""
 }

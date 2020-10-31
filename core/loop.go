@@ -62,7 +62,7 @@ func (l *Loop) reschedule(d AudioDevice, when time.Time) {
 		notify.Debugf("core.loop: next=%s", endOfLastNote.Format("15:04:05.00"))
 	}
 	// schedule the loop itself so it can play again when Handle is called
-	d.Timeline().Schedule(l, endOfLastNote)
+	d.Schedule(l, endOfLastNote)
 }
 
 // Handle is part of TimelineEvent

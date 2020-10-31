@@ -69,6 +69,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#biab">biab</a>
 - <a href="#bpm">bpm</a>
 - <a href="#channel">channel</a>
+- <a href="#device">device</a>
 - <a href="#end">end</a>
 - <a href="#loop">loop</a>
 - <a href="#multi">multi</a>
@@ -104,7 +105,7 @@ Set the Beats Per Minute (BPM) [1..300]; default is 120.
 ```javascript
 bpm(90)
 
-speedup = iterator(80,90,100,110,120)
+speedup = iterator(80,100,120,140)
 
 l = loop(bpm(speedup),sequence('c e g'),next(speedup))
 ```
@@ -120,16 +121,23 @@ channel(2,sequence('C2 E3')) // plays on instrument connected to MIDI channel 2
 Create a Chord from its string <a href="/melrose/notations.html#chord-not">notation</a>.
 
 ```javascript
-chord('C#5/m/1')
+chord('c#5/m/1')
 
-chord('G/M/2')
+chord('g/M/2') // Major G second inversion
+```
+
+### device<a name="device"></a>
+Select a MIDI device from the available device IDs; must become before channel.
+
+```javascript
+device(1,channel(2,sequence('C2 E3'))) // plays on connected device 1 through MIDI channel 2
 ```
 
 ### duration<a name="duration"></a>
 Computes the duration of the object using the current BPM.
 
 ```javascript
-duration(note('C'))
+duration(note('c'))
 ```
 
 ### dynamic<a name="dynamic"></a>
@@ -215,9 +223,9 @@ i = iterator(1,3,5,7,9)
 Joins one or more musical objects as one.
 
 ```javascript
-a = chord('A')
+a = chord('a')
 
-b = sequence('(C E G)')
+b = sequence('(c e g)')
 
 ab = join(a,b)
 ```
@@ -258,7 +266,7 @@ Second parameter is the MIDI number and must be one of [0..127].
 The third parameter is the velocity (~ loudness) and must be one of [0..127].
 
 ```javascript
-midi(500,52,80) // => E3+
+midi(500,52,80) // => 500ms E3+
 
 midi(500,36,70) // => 16C2 (kick)
 ```
@@ -287,9 +295,9 @@ Is used to produce the next value in a generator such as random and interval.
 ```javascript
 i = interval(-4,4,2)
 
-pi = pitch(i,sequence('C D E F G A B'))
+pi = pitch(i,sequence('c d e f g a b')) // current value of "i" is used
 
-lp_pi = loop(pi,next(i))
+lp_pi = loop(pi,next(i)) // "i" will advance to the next value
 
 begin(lp_pi)
 ```
@@ -323,7 +331,7 @@ octave(1,sequence('c d')) // => C5 D5
 Create a sequence with notes for which the order and the octaves are changed.
 
 ```javascript
-octavemap('1:-1,2:0,3:1',chord('C')) // => (C3 E G5)
+octavemap('1:-1,2:0,3:1',chord('c')) // => (C3 E G5)
 ```
 
 ### onbar<a name="onbar"></a>
@@ -380,7 +388,7 @@ next(num)
 Repeat one or more musical objects a number of times.
 
 ```javascript
-repeat(4,sequence('C D E'))
+repeat(4,sequence('c d e'))
 ```
 
 ### replace<a name="replace"></a>
@@ -400,7 +408,7 @@ pitchD = replace(pitchA, c, d) // c -> d in pitchA
 Reverse the (groups of) notes in a sequence.
 
 ```javascript
-reverse(chord('A'))
+reverse(chord('a'))
 ```
 
 ### scale<a name="scale"></a>
@@ -414,9 +422,9 @@ scale(1,'e/m') // => E F G A B C5 D5
 Create a Sequence using this <a href="/melrose/notations.html#sequence-not">format</a>.
 
 ```javascript
-sequence('C D E')
+sequence('c d e')
 
-sequence('(8C D E)') => (⅛C ⅛D ⅛E)
+sequence('(8c d e)') => (⅛C ⅛D ⅛E)
 
 sequence('c (d e f) a =')
 ```

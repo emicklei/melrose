@@ -22,5 +22,4 @@ func (l *LanguageServer) versionHandler(w http.ResponseWriter, r *http.Request) 
 		BuildTag:      core.BuildTag,
 	}
 	json.NewEncoder(w).Encode(v)
-	return
 }

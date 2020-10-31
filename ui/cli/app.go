@@ -20,7 +20,6 @@ var (
 
 func StartREPL(ctx core.Context) {
 	welcome()
-	ctx.Device().SetEchoNotes(false)
 	// start REPL
 	line := liner.NewLiner()
 	defer line.Close()
