@@ -14,7 +14,7 @@ unused:
 
 build:
 	export LATEST_TAG=$(shell git describe --abbrev=0)
-	cd cmd/melrose && go build -ldflags "-s -w -X main.version=$(LATEST_TAG)" -o ../../target/melrose
+	cd cmd/melrose && go build -ldflags "-s -w -X core.BuildTag=$(LATEST_TAG)" -o ../../target/melrose
 	
 install: test snippets grammar dslmd
 	go install github.com/emicklei/melrose/cmd/melrose

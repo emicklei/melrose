@@ -11,7 +11,6 @@ import (
 )
 
 var (
-	Version      = "dev"
 	debugLogging = flag.Bool("d", false, "debug logging")
 	httpPort     = flag.String("http", ":8118", "address on which to listen for HTTP requests")
 )

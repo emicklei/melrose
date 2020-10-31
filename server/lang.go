@@ -25,5 +25,6 @@ func NewLanguageServer(ctx core.Context, addr string) *LanguageServer {
 func (l *LanguageServer) Start() error {
 	http.HandleFunc("/v1/statements", l.statementHandler)
 	http.HandleFunc("/v1/inspect", l.inspectHandler)
+	http.HandleFunc("/version", l.versionHandler)
 	return http.ListenAndServe(l.address, nil)
 }

@@ -16,8 +16,8 @@ import (
 	"github.com/emicklei/melrose/op"
 )
 
-// Syntax tells what language version this package is supporting.
-const Syntax = "1.0-rc" // major,minor
+// SyntaxVersion tells what language version this package is supporting.
+const SyntaxVersion = "0.30" // major,minor
 
 func IsCompatibleSyntax(s string) bool {
 	if len(s) == 0 {
