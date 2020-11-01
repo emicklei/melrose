@@ -32,3 +32,27 @@ func TestEventNoteOff(t *testing.T) {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
+
+func Test_canCombineEvent(t *testing.T) {
+	type args struct {
+		notes []core.Note
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{"one", args{[]core.Note{core.MustParseNote("c")}}, true},
+		{"cd", args{[]core.Note{core.MustParseNote("c"), core.MustParseNote("d")}}, true},
+		{"cd+", args{[]core.Note{core.MustParseNote("c"), core.MustParseNote("d+")}}, false},
+		{"cd+", args{[]core.Note{core.MustParseNote(".c"), core.MustParseNote("d")}}, false},
+		{"cd+", args{[]core.Note{core.MustParseNote(".c#-"), core.MustParseNote(".d-")}}, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := canCombineEvent(tt.args.notes); got != tt.want {
+				t.Errorf("canCombineEvent() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

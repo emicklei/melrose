@@ -30,8 +30,8 @@ func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
 		if m.onoff == noteOff {
 			onoff = "off"
 		}
-		fmt.Fprintf(notify.Console.StandardOut, "midi.note: channel=%d notes=%s state=%s bytes=[%b(%d),%v,%b(%d)]\n",
-			m.channel, m.echoString, onoff, status, status, m.which, m.velocity, m.velocity)
+		fmt.Fprintf(notify.Console.StandardOut, "midi.note: time=%s channel=%d notes=%s state=%s bytes=[%b(%d),%v,%b(%d)]\n",
+			when.Format("04:05.000"), m.channel, m.echoString, onoff, status, status, m.which, m.velocity, m.velocity)
 	}
 }
 

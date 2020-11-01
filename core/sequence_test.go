@@ -16,8 +16,8 @@ func TestParseSequence(t *testing.T) {
 	}{
 		{"C (E G)", "C (E G)"},
 		{"C ( A )", "C A"},
-		{"2C# (8D_ E_ F#)", "½C♯ (⅛D♭ ⅛E♭ ⅛F♯)"},
-		{"(C E)(.D F)(E G)", "(C E) (.D .F) (E G)"},
+		{"2C# (8D_ E_ F#)", "½C♯ (⅛D♭ E♭ F♯)"},
+		{"(C E)(.D F)(E G)", "(C E) (.D F) (E G)"},
 		{"B_ 8F 8D_5 8B_5 8F A_ 8E_ 8C5 8A_5 8E_", "B♭ ⅛F ⅛D♭5 ⅛B♭5 ⅛F A♭ ⅛E♭ ⅛C5 ⅛A♭5 ⅛E♭"},
 		{"> c d e ^ ( c d e ) <", "> C D E ^ (C D E) <"},
 		{"<=^> ^= <^=^>", "< = ^ > ^ = < ^ = ^ >"},
@@ -60,7 +60,7 @@ func TestSequenceLength(t *testing.T) {
 
 func TestSequencePitchlane(t *testing.T) {
 	m, _ := ParseSequence("1C (8E#++ G)")
-	if got, want := m.W(), "1C:0 (⅛E♯++:5 ⅛G:7)"; got != want {
+	if got, want := m.W(), "1C:0 (⅛E♯++:5 G:7)"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }

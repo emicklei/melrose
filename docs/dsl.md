@@ -426,7 +426,7 @@ Create a Sequence using this <a href="/melrose/notations.html#sequence-not">form
 ```javascript
 sequence('c d e')
 
-sequence('(8c d e)') => (⅛C ⅛D ⅛E)
+sequence('(8c d e)') => (⅛C D E)
 
 sequence('c (d e f) a =')
 ```

@@ -415,7 +415,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Prefix:      "seq",
 		Template:    `sequence('${1:space-separated-notes}')`,
 		Samples: `sequence('c d e')
-sequence('(8c d e)') => (⅛C ⅛D ⅛E)
+sequence('(8c d e)') => (⅛C D E)
 sequence('c (d e f) a =')`,
 		IsCore: true,
 		Func: func(s string) interface{} {
