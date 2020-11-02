@@ -220,3 +220,15 @@ func TestEvaluate_Scale_At(t *testing.T) {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
+
+func TestLineCommentOnBrokenExpression(t *testing.T) {
+	e := newTestEvaluator()
+	r, err := e.EvaluateProgram(
+		`join( // comment
+	sequence('A'))`)
+	checkError(t, err)
+	if got, want := r.(op.Join).Storex(), "join(sequence('A'))"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+
+}

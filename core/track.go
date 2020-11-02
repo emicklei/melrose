@@ -36,10 +36,16 @@ func (t *Track) S() Sequence {
 func (t *Track) Play(ctx Context) error {
 	now := time.Now()
 	bpm := ctx.Control().BPM()
+	biab := ctx.Control().BIAB()
 	whole := WholeNoteDuration(bpm)
 	for bars, each := range t.Content {
 		cs := NewChannelSelector(each, On(t.Channel))
-		ctx.Device().Play(cs, bpm, now.Add(time.Duration(bars-1)*whole))
+		offset := int64((bars-1)*biab) * whole.Nanoseconds() / 4
+		when := now.Add(time.Duration(time.Duration(offset)))
+		if IsDebug() {
+			notify.Debugf("core.track title=%s channel=%d bar=%d, biab=%d, bpm=%.2f time=%s", t.Title, t.Channel, bars, biab, bpm, when.Format("04:05.000"))
+		}
+		ctx.Device().Play(cs, bpm, when)
 	}
 	return nil
 }

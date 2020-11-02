@@ -41,7 +41,7 @@ func (e *Evaluator) EvaluateProgram(source string) (interface{}, error) {
 			if nrOfLastExpression+1 != lineNr {
 				return nil, fmt.Errorf("syntax error, line with TAB [%d] must be part of expression", lineNr+1)
 			}
-			lines[len(lines)-1] = lines[len(lines)-1] + each // with TAB
+			lines[len(lines)-1] = withoutTrailingComment(lines[len(lines)-1]) + each // with TAB TODO
 			nrOfLastExpression = lineNr
 			continue
 		}
@@ -80,9 +80,8 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 		return nil, nil
 	}
 	// remove trailing inline comment
-	if slashes := strings.Index(entry, "//"); slashes != -1 {
-		entry = entry[0:slashes]
-	}
+	entry = withoutTrailingComment(entry)
+
 	if len(entry) == 0 {
 		return nil, nil
 	}
@@ -197,4 +196,11 @@ func (e *Evaluator) LookupFunction(fn string) (Function, bool) {
 		}
 	}
 	return Function{}, false
+}
+
+func withoutTrailingComment(s string) string {
+	if slashes := strings.Index(s, "//"); slashes != -1 {
+		return s[0:slashes]
+	}
+	return s
 }
