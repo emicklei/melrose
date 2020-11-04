@@ -4,8 +4,10 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 )
 
+// TODO deprecated
 func (registry *DeviceRegistry) Schedule(e core.TimelineEvent, beginAt time.Time) {
 	// TODO check DeviceSelector
 	device, err := registry.Output(registry.defaultOutputID)
@@ -18,6 +20,9 @@ func (registry *DeviceRegistry) Schedule(e core.TimelineEvent, beginAt time.Time
 // Play schedules all the notes on the timeline beginning at a give time (now or in the future).
 // Returns the end time of the last played Note.
 func (registry *DeviceRegistry) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
+	if core.IsDebug() {
+		notify.Debugf("midi.play: time=%s object=%s", beginAt.Format("04:05.000"), core.Storex(seq))
+	}
 	// which device?
 	var device *OutputDevice
 	deviceID := registry.defaultOutputID

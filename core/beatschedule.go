@@ -1,6 +1,9 @@
 package core
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 // BeatSchedule holds mapping between beat counts and an action (function).
 type BeatSchedule struct {
@@ -8,7 +11,7 @@ type BeatSchedule struct {
 	entries map[int64][]BeatAction
 }
 
-type BeatAction func(beat int64)
+type BeatAction func(when time.Time)
 
 func NewBeatSchedule() *BeatSchedule {
 	return &BeatSchedule{

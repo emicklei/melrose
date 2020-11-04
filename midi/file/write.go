@@ -24,7 +24,7 @@ func Export(fileName string, m interface{}, bpm float64) error {
 	}
 	if seq, ok := m.(core.Sequenceable); ok {
 		t := core.NewTrack("melrōse-track", 1)
-		t.Add(seq)
+		t.Add(core.NewSequenceOnTrack(core.On(1), seq))
 		mt := core.MultiTrack{Tracks: []core.Valueable{core.On(t)}}
 		return exportMultiTrack(fileName, mt, bpm)
 	}

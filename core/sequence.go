@@ -123,7 +123,7 @@ func (s Sequence) DurationFactor() float64 {
 func (s Sequence) Inspect(i Inspection) {
 	i.Properties["duration"] = s.Duration(i.Context.Control().BPM())
 	i.Properties["note(s)|groups"] = len(s.Notes)
-	i.Properties["bars"] = float64(s.DurationFactor()) * 4 / float64(i.Context.Control().BIAB()) // 4 because signature
+	i.Properties["bars"] = s.Bars(i.Context.Control().BIAB())
 }
 
 // Conversion
@@ -189,6 +189,10 @@ func (s Sequence) Duration(bpm float64) time.Duration {
 		}
 	}
 	return l
+}
+
+func (s Sequence) Bars(biab int) float64 {
+	return float64(s.DurationFactor()) * 4 / float64(biab) // 4 because signature denominator
 }
 
 // W returns the mapping of each note to a delta of semitones compared to middle C4.

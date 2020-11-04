@@ -446,7 +446,7 @@ i2 = sequencemap('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)
 Create a named track for a given MIDI channel with a musical object.
 
 ```javascript
-track("lullaby",1,sequence('c d e')) // => a new track on MIDI channel 1
+track("lullaby",1,onbar(2, sequence('c d e'))) // => a new track on MIDI channel 1 with sequence starting at bar
 ```
 
 ### undynamic<a name="undynamic"></a>

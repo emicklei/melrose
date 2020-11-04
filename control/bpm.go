@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 )
 
 type SetBPM struct {
@@ -17,17 +18,20 @@ func NewBPM(bpm core.Valueable, ctr core.LoopController) SetBPM {
 
 // S has the side effect of setting the BPM unless BPM is zero
 func (s SetBPM) S() core.Sequence {
-	f := core.Float(s.bpm)
-	if f > 0.0 {
-		s.control.SetBPM(float64(f))
-	}
+	s.Evaluate()
 	return core.EmptySequence
 }
 
 // Evaluate implements Evaluatable
 // performs the set operation
 func (s SetBPM) Evaluate() error {
-	s.S()
+	f := core.Float(s.bpm)
+	if core.IsDebug() {
+		notify.Debugf("control.bpm set %.2f", f)
+	}
+	if f > 0.0 {
+		s.control.SetBPM(float64(f))
+	}
 	return nil
 }
 

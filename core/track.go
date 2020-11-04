@@ -3,7 +3,6 @@ package core
 import (
 	"bytes"
 	"fmt"
-	"math"
 	"time"
 
 	"github.com/emicklei/melrose/notify"
@@ -55,26 +54,10 @@ func (t *Track) Inspect(i Inspection) {
 	i.Properties["pieces"] = len(t.Content)
 }
 
-// Add adds a SequenceOnTrack or a Sequence.
-// If a Sequence then append it to the track.
-// Overrides any sequence at the bar.
-func (t *Track) Add(seq interface{}) {
-	if at, ok := seq.(SequenceOnTrack); ok {
-		t.Content[Int(at.Bar)] = at.Target
-		return
-	}
-	if s, ok := seq.(Sequenceable); ok {
-		// find a free bar :-)
-		here := 1
-		for {
-			x, ok := t.Content[here]
-			if !ok {
-				t.Content[here] = s
-				return
-			}
-			here += int(math.Round((x.S().DurationFactor())))
-		}
-	}
+// Add adds a SequenceOnTrack
+func (t *Track) Add(seq SequenceOnTrack) {
+	b := Int(seq.Bar)
+	t.Content[b] = seq.Target
 }
 
 // Storex implements Storable
@@ -83,7 +66,7 @@ func (t *Track) Storex() string {
 	fmt.Fprintf(&buf, "track('%s',%d", t.Title, t.Channel)
 	for k, v := range t.Content {
 		fmt.Fprint(&buf, ",")
-		sont := NewSequenceOnTrack(On(k), On(0), v) // TODO
+		sont := NewSequenceOnTrack(On(k), v) // TODO
 		fmt.Fprint(&buf, sont.Storex())
 	}
 	fmt.Fprintf(&buf, ")")
@@ -92,12 +75,11 @@ func (t *Track) Storex() string {
 
 type SequenceOnTrack struct {
 	Bar    Valueable
-	Beat   Valueable
 	Target Sequenceable
 }
 
-func NewSequenceOnTrack(bar Valueable, beat Valueable, seq Sequenceable) SequenceOnTrack {
-	return SequenceOnTrack{Bar: bar, Beat: beat, Target: seq}
+func NewSequenceOnTrack(bar Valueable, seq Sequenceable) SequenceOnTrack {
+	return SequenceOnTrack{Bar: bar, Target: seq}
 }
 
 func (s SequenceOnTrack) S() Sequence {
@@ -140,7 +122,7 @@ func (m MultiTrack) Play(ctx Context) error {
 		if track, ok := each.Value().(*Track); ok {
 			for bar, seq := range track.Content {
 				ch := ChannelSelector{Number: On(track.Channel), Target: seq}
-				ctx.Control().Plan(int64(bar-1), int64(0), ch)
+				ctx.Control().Plan(int64(bar-1), ch)
 			}
 		} else {
 			// TODO

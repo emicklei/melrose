@@ -57,7 +57,7 @@ type LoopController interface {
 	EndLoop(l *Loop)
 
 	BeatsAndBars() (int64, int64)
-	Plan(bars int64, beats int64, seq Sequenceable)
+	Plan(bars int64, seq Sequenceable)
 
 	SettingNotifier(handler func(control LoopController))
 }

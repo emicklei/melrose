@@ -3,3 +3,4 @@
 - cannot use variable for indices in joinmap (or any map)
 - group cannot have multiple sequences
 - .2a is not the same as 2.a
+- no longer use special unicode character, because of copy from output resuability

@@ -1,6 +1,7 @@
 package midi
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 
@@ -26,13 +27,22 @@ func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
 		m.out.WriteShort(status, each, m.velocity)
 	}
 	if core.IsDebug() {
-		onoff := "on"
-		if m.onoff == noteOff {
-			onoff = "off"
-		}
-		fmt.Fprintf(notify.Console.StandardOut, "midi.note: time=%s channel=%d notes=%s state=%s bytes=[%b(%d),%v,%b(%d)]\n",
-			when.Format("04:05.000"), m.channel, m.echoString, onoff, status, status, m.which, m.velocity, m.velocity)
+		m.log(status, when)
 	}
+}
+
+func (m midiEvent) log(status int64, when time.Time) {
+	onoff := "on"
+	if m.onoff == noteOff {
+		onoff = "off"
+	}
+	var echos bytes.Buffer
+	for _, each := range m.which {
+		n, _ := core.MIDItoNote(0.25, int(each), core.Normal)
+		fmt.Fprintf(&echos, "%s ", n.String())
+	}
+	fmt.Fprintf(notify.Console.StandardOut, "midi.note: time=%s channel=%d notes=%s state=%s bytes=[%b(%d),%v,%b(%d)]\n",
+		when.Format("04:05.000"), m.channel, echos.String(), onoff, status, status, m.which, m.velocity, m.velocity)
 }
 
 func (m midiEvent) asNoteoff() midiEvent {

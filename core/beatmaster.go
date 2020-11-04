@@ -70,21 +70,20 @@ func (b *Beatmaster) StartLoop(l *Loop) {
 	if l == nil || l.IsRunning() {
 		return
 	}
-	b.schedule.Schedule(b.beatsAtNextBar(), func(beats int64) {
+	b.schedule.Schedule(b.beatsAtNextBar(), func(when time.Time) {
 		l.Start(b.context.Device())
 	})
 }
 
 // Plan is part of LoopControl
-func (b *Beatmaster) Plan(bars int64, beats int64, seq Sequenceable) {
-	if !b.beating {
-		return
+// bars is zero-based
+func (b *Beatmaster) Plan(bars int64, seq Sequenceable) {
+	atBeats := b.beatsAtNextBar() + (b.biab * bars)
+	if IsDebug() {
+		notify.Debugf("beat.schedule at: %d put: %s bars: %.2f", atBeats, Storex(seq), seq.S().Bars(int(b.biab)))
 	}
-	atBeats := b.beatsAtNextBar()
-	atBeats += (b.biab * bars)
-	atBeats += beats
-	b.schedule.Schedule(atBeats, func(beats int64) {
-		b.context.Device().Play(seq, b.bpm, time.Now())
+	b.schedule.Schedule(atBeats, func(when time.Time) {
+		b.context.Device().Play(seq, b.bpm, when)
 	})
 }
 
@@ -92,7 +91,7 @@ func (b *Beatmaster) beatsAtNextBar() int64 {
 	if b.beats%b.biab == 0 {
 		return b.beats
 	}
-	return (b.beats * b.biab / b.biab) + 1
+	return (b.beats/b.biab + 1) * b.biab
 }
 
 // EndLoop will schedule the stop of a Loop at the next bar, unless the master is not started.
@@ -103,14 +102,14 @@ func (b *Beatmaster) EndLoop(l *Loop) {
 	if l == nil || !l.IsRunning() {
 		return
 	}
-	b.schedule.Schedule(b.beatsAtNextBar(), func(b int64) {
+	b.schedule.Schedule(b.beatsAtNextBar(), func(when time.Time) {
 		l.Stop()
 	})
 }
 
 // SetBPM will change the beats per minute at the next bar, unless the master is not started.
 func (b *Beatmaster) SetBPM(bpm float64) {
-	if !b.beating || b.schedule.IsEmpty() {
+	if !b.beating {
 		b.bpm = bpm
 		b.notifySettingChanged()
 		return
@@ -129,6 +128,7 @@ func (b *Beatmaster) SetBPM(bpm float64) {
 	go func() { b.bpmChanges <- bpm }()
 }
 
+// TODO move checks to SetBIAB in control
 // SetBIAB will change the beats per bar, unless the master is not started.
 func (b *Beatmaster) SetBIAB(biab int) {
 	if !b.beating {
@@ -163,11 +163,11 @@ func (b *Beatmaster) Start() {
 	}
 	b.notifySettingChanged()
 	b.beats = 0
-	b.ticker = time.NewTicker(tickerDuration(b.bpm))
+	b.ticker = time.NewTicker(beatTickerDuration(b.bpm))
 	b.beating = true
 	go func() {
 		if IsDebug() {
-			notify.Debugf("core.beatmaster: started")
+			notify.Debugf("core.beatmaster: status=started bpm=%v tick=%v", b.bpm, beatTickerDuration(b.bpm))
 		}
 		for {
 			if b.beats%b.biab == 0 {
@@ -179,12 +179,12 @@ func (b *Beatmaster) Start() {
 				// only change BPM on a bar
 				case bpm := <-b.bpmChanges:
 					if IsDebug() {
-						notify.Debugf("core.beatmaster: bpm=%v", bpm)
+						notify.Debugf("core.beatmaster: bpm=%v tick=%v", bpm, beatTickerDuration(bpm))
 					}
 					b.bpm = bpm
 					b.notifySettingChanged()
 					b.ticker.Stop()
-					b.ticker = time.NewTicker(tickerDuration(bpm))
+					b.ticker = time.NewTicker(beatTickerDuration(bpm))
 				default:
 				}
 			}
@@ -192,13 +192,13 @@ func (b *Beatmaster) Start() {
 			select {
 			case <-b.done:
 				return
-			case <-b.ticker.C:
+			case now := <-b.ticker.C:
 				if b.schedule.IsEmpty() {
 					b.beats = 0
 				} else {
 					actions := b.schedule.Unschedule(b.beats)
 					for _, each := range actions {
-						each(b.beats)
+						each(now)
 					}
 					b.beats++
 				}
@@ -207,7 +207,7 @@ func (b *Beatmaster) Start() {
 	}()
 }
 
-func tickerDuration(bpm float64) time.Duration {
+func beatTickerDuration(bpm float64) time.Duration {
 	return time.Duration(int(math.Round(float64(60*1000)/bpm))) * time.Millisecond
 }
 
@@ -229,15 +229,15 @@ var NoLooper = zeroBeat{}
 
 type zeroBeat struct{}
 
-func (s zeroBeat) StartLoop(l *Loop)                              {}
-func (s zeroBeat) EndLoop(l *Loop)                                {}
-func (s zeroBeat) Start()                                         {}
-func (s zeroBeat) Stop()                                          {}
-func (s zeroBeat) Reset()                                         {}
-func (s zeroBeat) SetBPM(bpm float64)                             {}
-func (s zeroBeat) BPM() float64                                   { return 120.0 }
-func (s zeroBeat) SetBIAB(biab int)                               {}
-func (s zeroBeat) BIAB() int                                      { return 4 }
-func (s zeroBeat) BeatsAndBars() (int64, int64)                   { return 0, 0 }
-func (s zeroBeat) Plan(bars int64, beats int64, seq Sequenceable) {}
-func (s zeroBeat) SettingNotifier(handler func(LoopController))   {}
+func (s zeroBeat) StartLoop(l *Loop)                            {}
+func (s zeroBeat) EndLoop(l *Loop)                              {}
+func (s zeroBeat) Start()                                       {}
+func (s zeroBeat) Stop()                                        {}
+func (s zeroBeat) Reset()                                       {}
+func (s zeroBeat) SetBPM(bpm float64)                           {}
+func (s zeroBeat) BPM() float64                                 { return 120.0 }
+func (s zeroBeat) SetBIAB(biab int)                             {}
+func (s zeroBeat) BIAB() int                                    { return 4 }
+func (s zeroBeat) BeatsAndBars() (int64, int64)                 { return 0, 0 }
+func (s zeroBeat) Plan(bars int64, seq Sequenceable)            {}
+func (s zeroBeat) SettingNotifier(handler func(LoopController)) {}

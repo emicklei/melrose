@@ -190,9 +190,9 @@ jm = joinmap('1 (2 3) 4',j)`,
 		Title:       "Track creator",
 		Description: "create a named track for a given MIDI channel with a musical object",
 		Prefix:      "tr",
-		Template:    `track('${1:title}',${2:channel})`,
-		Samples:     `track("lullaby",1,sequence('c d e')) // => a new track on MIDI channel 1`,
-		Func: func(title string, channel int, playables ...interface{}) interface{} {
+		Template:    `track('${1:title}',${2:channel}, onbar(1,${3:object}))`,
+		Samples:     `track("lullaby",1,onbar(2, sequence('c d e'))) // => a new track on MIDI channel 1 with sequence starting at bar`,
+		Func: func(title string, channel int, onbars ...core.SequenceOnTrack) interface{} {
 			if len(title) == 0 {
 				return notify.Panic(fmt.Errorf("cannot have a track without title"))
 			}
@@ -200,12 +200,8 @@ jm = joinmap('1 (2 3) 4',j)`,
 				return notify.Panic(fmt.Errorf("MIDI channel must be in [1..15]"))
 			}
 			tr := core.NewTrack(title, channel)
-			for _, p := range playables {
-				if s, ok := getSequenceable(p); !ok {
-					return notify.Panic(fmt.Errorf("cannot compose track with (%T) %v", p, p))
-				} else {
-					tr.Add(s)
-				}
+			for _, each := range onbars {
+				tr.Add(each)
 			}
 			return tr
 		}}
@@ -487,7 +483,7 @@ note('2.e#--')`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot put on track (%T) %v", seq, seq))
 			}
-			return core.NewSequenceOnTrack(getValueable(bar), getValueable(0), s)
+			return core.NewSequenceOnTrack(getValueable(bar), s)
 		}}
 
 	eval["random"] = Function{
