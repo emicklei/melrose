@@ -1,11 +1,10 @@
 package midi
 
 import (
-	"fmt"
+	"sync"
 	"time"
 
 	"github.com/emicklei/melrose/core"
-	"github.com/emicklei/melrose/notify"
 	"github.com/rakyll/portmidi"
 )
 
@@ -14,21 +13,49 @@ type listener struct {
 	stream    *portmidi.Stream
 	quit      chan bool
 	noteOn    map[int]portmidi.Event
-	ctx       core.Context
-	pitchOnly bool
+
+	mutex         *sync.RWMutex
+	pitchOnly     bool
+	noteListeners []core.NoteListener
 }
 
-func newListener(ctx core.Context) *listener {
+func newListener(inputStream *portmidi.Stream) *listener {
 	return &listener{
+		stream: inputStream,
 		noteOn: map[int]portmidi.Event{},
-		ctx:    ctx,
+		mutex:  new(sync.RWMutex),
 	}
+}
+
+func (l *listener) add(lis core.NoteListener) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	l.noteListeners = append(l.noteListeners, lis)
+}
+
+func (l *listener) remove(lis core.NoteListener) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	without := []core.NoteListener{}
+	for _, each := range l.noteListeners {
+		if each != lis {
+			without = append(without, each)
+		}
+	}
+	l.noteListeners = without
+}
+
+func (l *listener) start() {
+	if l.listening {
+		return
+	}
+	l.listening = true
+	go l.listen()
 }
 
 func (l *listener) listen() {
 	l.quit = make(chan bool)
 	ch := l.stream.Listen()
-	l.listening = true
 	for {
 		select {
 		case <-l.quit:
@@ -43,6 +70,8 @@ stop:
 }
 
 func (l *listener) handle(event portmidi.Event) {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
 	nr := int(event.Data1)
 	if event.Status == noteOn {
 		if _, ok := l.noteOn[nr]; ok {
@@ -51,6 +80,10 @@ func (l *listener) handle(event portmidi.Event) {
 		// replace with now in nanos
 		event.Timestamp = portmidi.Timestamp(time.Now().UnixNano())
 		l.noteOn[nr] = event
+		noteOn, _ := core.MIDItoNote(0.25, nr, core.Normal) // TODO
+		for _, each := range l.noteListeners {
+			each.NoteOn(noteOn)
+		}
 	} else if event.Status == noteOff {
 		on, ok := l.noteOn[nr]
 		if !ok {
@@ -61,18 +94,11 @@ func (l *listener) handle(event portmidi.Event) {
 		event.Timestamp = portmidi.Timestamp(time.Now().UnixNano())
 		// compute delta
 		ms := time.Duration(event.Timestamp-on.Timestamp) * time.Nanosecond
-		frac := core.DurationToFraction(l.ctx.Control().BPM(), ms)
-		note, err := core.MIDItoNote(frac, nr, int(on.Data2))
-		if err != nil {
-			panic(err)
+		frac := core.DurationToFraction(120.0, ms) // TODO
+		noteOff, _ := core.MIDItoNote(frac, nr, int(on.Data2))
+		for _, each := range l.noteListeners {
+			each.NoteOff(noteOff)
 		}
-		if l.pitchOnly {
-			// forget velocity and duration
-			note = note.WithVelocity(core.Normal)
-			note = note.WithFraction(0.25, false) // quarter
-		}
-		// echo note
-		fmt.Fprintf(notify.Console.DeviceIn, " %s", note)
 	}
 }
 

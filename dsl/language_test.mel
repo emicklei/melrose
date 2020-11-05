@@ -10,3 +10,10 @@ pitch(i,n).S()
 
 j = join(note('c'), sequence('d e f'))
 joinmap('1 2 (1 2)',j).S()
+
+
+// listen
+//rec = note('c')
+//call = play(repeat(2,rec))
+//doit = listen(1,rec,call)
+//begin(doit)

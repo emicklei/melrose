@@ -34,6 +34,8 @@ type AudioDevice interface {
 	// Returns the end time of the last played Note.
 	Play(seq Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time)
 
+	Listen(deviceID int, who NoteListener, startOrStop bool)
+
 	// Schedule put an event on the timeline at a begin
 	Schedule(event TimelineEvent, beginAt time.Time)
 
@@ -99,4 +101,9 @@ const WorkingDirectory = "pwd"
 
 type Evaluatable interface {
 	Evaluate() error
+}
+
+type NoteListener interface {
+	NoteOn(Note)
+	NoteOff(Note)
 }

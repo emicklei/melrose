@@ -21,12 +21,6 @@ func NewPlay(ctx core.Context, list []core.Sequenceable) Play {
 	}
 }
 
-// TODO this causes inpsection and hover to perform the play
-// func (p Play) S() core.Sequence {
-// 	p.Evaluate()
-// 	return core.EmptySequence
-// }
-
 // Evaluate implements Evaluatable
 // performs the set operation
 func (p Play) Evaluate() error {

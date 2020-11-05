@@ -124,7 +124,7 @@ func TestProcessLanguageTest(t *testing.T) {
 	src, _ := ioutil.ReadFile("language_test.mel")
 	defer func() {
 		if err := recover(); err != nil {
-			t.Log(err)
+			t.Fatal("panic recovered:", err)
 		}
 	}()
 	eval(t, string(src))

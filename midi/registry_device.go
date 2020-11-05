@@ -95,6 +95,9 @@ func (d *DeviceRegistry) init() error {
 
 func (d *DeviceRegistry) Close() error {
 	defer portmidi.Terminate()
+	for _, each := range d.in {
+		each.stopListener()
+	}
 	return d.streamRegistry.close()
 }
 

@@ -18,7 +18,7 @@ import (
 )
 
 // SyntaxVersion tells what language version this package is supporting.
-const SyntaxVersion = "0.30" // major,minor
+const SyntaxVersion = "0.32" // major,minor
 
 func IsCompatibleSyntax(s string) bool {
 	if len(s) == 0 {
@@ -277,6 +277,21 @@ chord('g/M/2') // Major G second inversion`,
 			return op.NewOctaveMapper(s, indices)
 		}}
 
+	eval["pitchmap"] = Function{
+		Title:       "Pitch Map operator",
+		Description: "create a sequence with notes for which the order and the pitch are changed",
+		Prefix:      "pitchm",
+		Template:    `pitchmap('${1:int2int}',${2:object})`,
+		IsComposer:  true,
+		Samples:     `pitchmap('1:-1,1:0,1:1',note('c')) // => B3 C D`,
+		Func: func(indices string, m interface{}) interface{} {
+			s, ok := getSequenceable(m)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot pitchmap (%T) %v", m, m))
+			}
+			return op.NewPitchMap(s, indices)
+		}}
+
 	eval["pitch"] = Function{
 		Title:       "Pitch operator",
 		Description: "change the pitch with a delta of semitones",
@@ -509,7 +524,7 @@ next(num)`,
 		Func: func(playables ...interface{}) interface{} {
 			list := []core.Sequenceable{}
 			for _, p := range playables {
-				if s, ok := getSequenceable(getValue(p)); ok { // unwrap var
+				if s, ok := getSequenceable(p); ok { // unwrap var
 					list = append(list, s)
 				} else {
 					notify.Print(notify.Warningf("cannot play (%T) %v", p, p))
@@ -850,6 +865,23 @@ midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1`,
 		Func: func(deviceID int, status int, channel, data1, data2 interface{}) interface{} {
 			return midi.NewMessage(ctx.Device(), core.On(deviceID), status, core.On(channel), core.On(data1), core.On(data2))
 		}}
+
+	registerFunction(eval, "listen", Function{
+		Title:       "Start a MIDI listener",
+		Description: "Listen for note(s) from a device and call a function to handle",
+		Template:    "listen(${1:device-id},${2:variable},${3:function})",
+		Samples: `rec = note('c') // define a variable "rec" with a initial object
+fun = play(rec) // define the function to call when notes are received
+ear = listen(1,rec,fun) // start a listener for notes from device 1, store it "rec" and call "fun"`,
+		Func: func(deviceID int, injectable variable, function interface{}) interface{} {
+			_, ok := getValue(function).(core.Evaluatable)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot listen and call (%T) %v", function, function))
+			}
+			// use function as Valueable and not the Evaluatable to allow redefinition of the callback function in the script
+			return control.NewListen(deviceID, ctx.Variables(), injectable.Name, getValueable(function))
+		},
+	})
 
 	return eval
 }

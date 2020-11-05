@@ -15,32 +15,33 @@ See [instructions](install.html#plugin) on how to install this plugin after you 
 This editor extension works with `.mel` and `.melrose` files.
 The syntax of the program uses the [Melrōse Lanugage](dsl.html).
 
-### evaluate
+### ⌘+e : Evaluate
 
 To evaluate a single line statement or expression, the cursor must be on that line and then use `cmd+e`.
 You can also evaluate source you have selected using the same shortcut `cmd+e`.
 To evaluate a program, you need to select all the source and use `cmd+e`.
 
-### play
+### ⌘+3 : Play
 
 To play a single line statement or expression, use `cmd+3`.
 You can also evaluate the function `play(...)`.
 
-### begin
+### ⌘+4 : Begin
 
-To begin a loop, use `cmd+4`.
+To begin a loop or listener, use `cmd+4`.
 You can also evaluate the function `begin(...)`.
 
-### end
+### ⌘+5 : End
 
-To end a running loop, use `cmd+5`.
+To end a running loop or listener, use `cmd+5`.
 You can also evaluate the function `end(...)`.
 
-### inspect
+### ⌘+2 : Inspect
 
-To inspect a variable or a function, just hover with your mouse pointer above its name. To explicitly inspect the value of an expression, use `cmd+2`.
+To inspect a variable or a function, just hover with your mouse pointer above its name.
+To explicitly inspect the value of an expression, use `cmd+2`.
 
-### stop all sound
+### ⌘+m : Stop all sounds
 
 To stop sounds being played, including loops, use `cmd+k`.
 

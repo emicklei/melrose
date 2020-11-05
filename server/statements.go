@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/antonmedv/expr/file"
+	"github.com/emicklei/melrose/control"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
@@ -93,18 +94,22 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		// loop operation
 		if query.Get("action") == "begin" {
 			if lp, ok := returnValue.(*core.Loop); ok {
-				if !lp.IsRunning() {
-					l.context.Control().StartLoop(lp)
-				}
+				lp.Play(l.context)
 			}
-			// ignore if not Loop
+			if lis, ok := returnValue.(*control.Listen); ok {
+				lis.Play(l.context)
+			}
+			// ignore if not Loop or Listen
 		}
 		// loop operation
 		if query.Get("action") == "end" {
 			if lp, ok := returnValue.(*core.Loop); ok {
 				if lp.IsRunning() {
-					lp.Stop()
+					lp.Stop() // TODO add context?
 				}
+			}
+			if lis, ok := returnValue.(*control.Listen); ok {
+				lis.Stop(l.context)
 			}
 			// ignore if not Loop
 		}

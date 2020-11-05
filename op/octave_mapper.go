@@ -7,7 +7,7 @@ import (
 	"github.com/emicklei/melrose/core"
 )
 
-type OctaveMapper struct {
+type OctaveMap struct {
 	Target       core.Sequenceable
 	IndexOffsets []int2int // one-based
 }
@@ -17,18 +17,18 @@ type int2int struct {
 	to   int
 }
 
-func NewOctaveMapper(target core.Sequenceable, indices string) OctaveMapper {
-	return OctaveMapper{
+func NewOctaveMapper(target core.Sequenceable, indices string) OctaveMap {
+	return OctaveMap{
 		Target:       target,
 		IndexOffsets: parseIndexOffsets(indices),
 	}
 }
 
-func (o OctaveMapper) S() core.Sequence {
+func (o OctaveMap) S() core.Sequence {
 	return core.Sequence{Notes: o.Notes()}
 }
 
-func (o OctaveMapper) Notes() [][]core.Note {
+func (o OctaveMap) Notes() [][]core.Note {
 	source := o.Target.S().Notes
 	target := [][]core.Note{}
 	for _, entry := range o.IndexOffsets {
@@ -51,7 +51,7 @@ func (o OctaveMapper) Notes() [][]core.Note {
 	return target
 }
 
-func (o OctaveMapper) Storex() string {
+func (o OctaveMap) Storex() string {
 	s, ok := o.Target.(core.Storable)
 	if !ok {
 		return ""
@@ -70,15 +70,15 @@ func (o OctaveMapper) Storex() string {
 }
 
 // Replaced is part of Replaceable
-func (o OctaveMapper) Replaced(from, to core.Sequenceable) core.Sequenceable {
+func (o OctaveMap) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	if core.IsIdenticalTo(o, from) {
 		return to
 	}
 	if core.IsIdenticalTo(o.Target, from) {
-		return OctaveMapper{Target: to, IndexOffsets: o.IndexOffsets}
+		return OctaveMap{Target: to, IndexOffsets: o.IndexOffsets}
 	}
 	if rep, ok := o.Target.(core.Replaceable); ok {
-		return OctaveMapper{Target: rep.Replaced(from, to), IndexOffsets: o.IndexOffsets}
+		return OctaveMap{Target: rep.Replaced(from, to), IndexOffsets: o.IndexOffsets}
 	}
 	return o
 }

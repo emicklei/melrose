@@ -19,6 +19,8 @@ func TestImplements(t *testing.T) {
 		{source: NoteMap{}},
 		{source: Dynamic{}},
 		{source: DynamicMap{}},
+		{source: PitchMap{}},
+		{source: OctaveMap{}},
 	} {
 		if !each.notSequenceable {
 			if _, ok := each.source.(core.Sequenceable); !ok {

@@ -2,9 +2,10 @@ package op
 
 import (
 	"fmt"
-	"github.com/emicklei/melrose/core"
 	"math/rand"
 	"time"
+
+	"github.com/emicklei/melrose/core"
 )
 
 type RandomInteger struct {
@@ -26,7 +27,7 @@ func NewRandomInteger(from, to core.Valueable) *RandomInteger {
 
 // Storex is part of Storable
 func (r RandomInteger) Storex() string {
-	return fmt.Sprintf("random(%v,%v)", r.From, r.To)
+	return fmt.Sprintf("random(%s,%s)", core.Storex(r.From), core.Storex(r.To))
 }
 
 // Value is part of Valueable
@@ -45,3 +46,5 @@ func (r *RandomInteger) Next() interface{} {
 	r.last = f + r.rnd.Intn(t-f+1)
 	return r.last
 }
+
+// TODO  Replaceable

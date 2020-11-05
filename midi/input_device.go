@@ -1,5 +1,7 @@
 package midi
 
+import "github.com/rakyll/portmidi"
+
 type InputDevice struct {
 	id       int
 	stream   MIDIIn
@@ -12,6 +14,10 @@ func NewInputDevice(id int, in MIDIIn) *InputDevice {
 		id:       id,
 		stream:   in,
 		echo:     false,
-		listener: nil,
+		listener: newListener(in.(*portmidi.Stream)), // TODO
 	}
+}
+
+func (i *InputDevice) stopListener() {
+	i.listener.stop()
 }

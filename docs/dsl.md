@@ -45,6 +45,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#iterator">iterator</a>
 - <a href="#join">join</a>
 - <a href="#joinmap">joinmap</a>
+- <a href="#listen">listen</a>
 - <a href="#merge">merge</a>
 - <a href="#midi_send">midi_send</a>
 - <a href="#next">next</a>
@@ -53,6 +54,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#octavemap">octavemap</a>
 - <a href="#onbar">onbar</a>
 - <a href="#pitch">pitch</a>
+- <a href="#pitchmap">pitchmap</a>
 - <a href="#print">print</a>
 - <a href="#random">random</a>
 - <a href="#repeat">repeat</a>
@@ -239,6 +241,17 @@ j = join(note('c'), sequence('d e f'))
 jm = joinmap('1 (2 3) 4',j)
 ```
 
+### listen<a name="listen"></a>
+Listen for note(s) from a device and call a function to handle.
+
+```javascript
+rec = note('c') // define a variable "rec" with a initial object
+
+fun = play(rec) // define the function to call when notes are received
+
+ear = listen(1,rec,fun) // start a listener for notes from device 1, store it "rec" and call "fun"
+```
+
 ### loop<a name="loop"></a>
 Create a new loop from one or more musical objects; must be assigned to a variable.
 
@@ -352,6 +365,13 @@ pitch(-1,sequence('c d e'))
 p = interval(-4,4,1)
 
 pitch(p,note('c'))
+```
+
+### pitchmap<a name="pitchmap"></a>
+Create a sequence with notes for which the order and the pitch are changed.
+
+```javascript
+pitchmap('1:-1,1:0,1:1',note('c')) // => B3 C D
 ```
 
 ### play<a name="play"></a>

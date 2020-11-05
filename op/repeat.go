@@ -3,6 +3,7 @@ package op
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/emicklei/melrose/core"
 )
 
@@ -24,7 +25,7 @@ func (r Repeat) S() core.Sequence {
 
 func (r Repeat) Storex() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "repeat(%v", r.Times)
+	fmt.Fprintf(&b, "repeat(%s", core.Storex(r.Times))
 	appendStorexList(&b, false, r.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
