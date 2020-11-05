@@ -9,15 +9,18 @@ import (
 	"github.com/emicklei/melrose/op"
 )
 
+// Play represents play() and sync()
 type Play struct {
 	ctx    core.Context
 	target []core.Sequenceable
+	sync   bool
 }
 
-func NewPlay(ctx core.Context, list []core.Sequenceable) Play {
+func NewPlay(ctx core.Context, list []core.Sequenceable, playInSync bool) Play {
 	return Play{
 		ctx:    ctx,
 		target: list,
+		sync:   playInSync,
 	}
 }
 
@@ -26,7 +29,11 @@ func NewPlay(ctx core.Context, list []core.Sequenceable) Play {
 func (p Play) Evaluate() error {
 	moment := time.Now()
 	for _, each := range p.target {
-		moment = p.ctx.Device().Play(each, p.ctx.Control().BPM(), moment)
+		end := p.ctx.Device().Play(each, p.ctx.Control().BPM(), moment)
+		if !p.sync {
+			// play after each other
+			moment = end
+		}
 	}
 	return nil
 }
@@ -34,7 +41,11 @@ func (p Play) Evaluate() error {
 // Storex implements Storable
 func (p Play) Storex() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "play(")
+	if p.sync {
+		fmt.Fprintf(&b, "sync(")
+	} else {
+		fmt.Fprintf(&b, "play(")
+	}
 	op.AppendStorexList(&b, true, p.target)
 	fmt.Fprintf(&b, ")")
 	return b.String()

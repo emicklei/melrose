@@ -6,6 +6,7 @@ import (
 	"github.com/emicklei/melrose/core"
 )
 
+// TODO rename to Group
 type Parallel struct {
 	Target core.Sequenceable
 }

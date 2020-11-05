@@ -515,7 +515,7 @@ next(num)`,
 		}}
 
 	eval["play"] = Function{
-		Title:         "Play musical objects in the background",
+		Title:         "Play musical objects in order. Use sync() for parallel playing",
 		Description:   "play all musical objects",
 		ControlsAudio: true,
 		Prefix:        "pla",
@@ -530,7 +530,26 @@ next(num)`,
 					notify.Print(notify.Warningf("cannot play (%T) %v", p, p))
 				}
 			}
-			return control.NewPlay(ctx, list)
+			return control.NewPlay(ctx, list, false)
+		}}
+
+	eval["sync"] = Function{
+		Title:         "Play musical objects at the same time. Use play() for serial playing",
+		Description:   "play all musical objects",
+		ControlsAudio: true,
+		Prefix:        "syn",
+		Template:      `sync(${1:sequenceable})`,
+		Samples:       `sync(s1,s2,s3) // play s1,s2 and s3 at the same time`,
+		Func: func(playables ...interface{}) interface{} {
+			list := []core.Sequenceable{}
+			for _, p := range playables {
+				if s, ok := getSequenceable(p); ok { // unwrap var
+					list = append(list, s)
+				} else {
+					notify.Print(notify.Warningf("cannot sync (%T) %v", p, p))
+				}
+			}
+			return control.NewPlay(ctx, list, true)
 		}}
 
 	eval["ungroup"] = Function{

@@ -76,6 +76,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#loop">loop</a>
 - <a href="#multi">multi</a>
 - <a href="#play">play</a>
+- <a href="#sync">sync</a>
 
 
 ### at<a name="at"></a>
@@ -460,6 +461,13 @@ s1 = sequence('C D E F G A B')
 i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D
 
 i2 = sequencemap('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)
+```
+
+### sync<a name="sync"></a>
+Play all musical objects.
+
+```javascript
+sync(s1,s2,s3) // play s1,s2 and s3 at the same time
 ```
 
 ### track<a name="track"></a>
