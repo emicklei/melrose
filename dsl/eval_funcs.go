@@ -716,7 +716,7 @@ begin(l1) // end(l1)`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot decorate with device (%T) %v", m, m))
 			}
-			return core.DeviceSelector{Target: s, ID: getValueable(deviceID)}
+			return core.NewDeviceSelector(s, getValueable(deviceID))
 		}}
 
 	eval["interval"] = Function{

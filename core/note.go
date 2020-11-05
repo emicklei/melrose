@@ -139,12 +139,12 @@ func (n Note) WithFraction(f float32, dotted bool) Note {
 }
 
 func (n Note) IsHearable() bool {
-	return strings.IndexAny(n.Name, "ABCDEFG") != -1
+	return strings.ContainsAny(n.Name, "ABCDEFG")
 }
 
 // Conversion
 // https://regoio.herokuapp.com/
-var noteRegexp = regexp.MustCompile("([1]?[½¼⅛12468]?)(\\.?)([CDEFGAB=<^>])([#♯_♭]?)([0-9]?)([-+]?[-+]?[-+]?)")
+var noteRegexp = regexp.MustCompile(`([1]?[½¼⅛12468]?)(\.?)([CDEFGAB=<^>])([#♯_♭]?)([0-9]?)([-+]?[-+]?[-+]?)`)
 
 // MustParseNote returns a Note by parsing the input. Panic if it fails.
 func MustParseNote(input string) Note {

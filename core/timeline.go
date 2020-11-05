@@ -52,13 +52,6 @@ func (t *Timeline) Len() int64 {
 	return count
 }
 
-// IsEmpty is true if no events are scheduled.
-func (t *Timeline) IsEmpty() bool {
-	t.protection.RLock()
-	defer t.protection.RUnlock()
-	return t.head == nil
-}
-
 // Play runs a loop to handle all the events in time. This is blocking.
 func (t *Timeline) Play() {
 	t.resume = make(chan bool)

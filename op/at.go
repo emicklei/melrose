@@ -2,6 +2,7 @@ package op
 
 import (
 	"fmt"
+
 	"github.com/emicklei/melrose/core"
 )
 
@@ -23,10 +24,7 @@ func (a AtIndex) S() core.Sequence {
 }
 
 func (a AtIndex) Storex() string {
-	if s, ok := a.Target.(core.Storable); ok {
-		return fmt.Sprintf("at(%v,%s)", a.Index, s.Storex())
-	}
-	return ""
+	return fmt.Sprintf("at(%v,%s)", core.Storex(a.Index), core.Storex(a.Target))
 }
 
 func NewAtIndex(index core.Valueable, target core.Sequenceable) AtIndex {
