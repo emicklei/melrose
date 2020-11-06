@@ -43,7 +43,7 @@ func CheckDynamic(emphasis string) error {
 func (d Dynamic) Storex() string {
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "dynamic('%s'", d.Emphasis)
-	appendStorexList(&b, false, d.Target)
+	core.AppendStorexList(&b, false, d.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
 }

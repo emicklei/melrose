@@ -3,6 +3,7 @@ package op
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/emicklei/melrose/core"
 )
 
@@ -18,7 +19,7 @@ func (o Octave) S() core.Sequence {
 func (o Octave) Storex() string {
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "octave(%v", o.Offset)
-	appendStorexList(&b, false, o.Target)
+	core.AppendStorexList(&b, false, o.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
 }

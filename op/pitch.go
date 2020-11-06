@@ -2,6 +2,7 @@ package op
 
 import (
 	"fmt"
+
 	"github.com/emicklei/melrose/core"
 )
 
@@ -15,10 +16,7 @@ func (p Pitch) S() core.Sequence {
 }
 
 func (p Pitch) Storex() string {
-	if s, ok := p.Target.(core.Storable); ok {
-		return fmt.Sprintf("pitch(%v,%s)", p.Semitones, s.Storex())
-	}
-	return ""
+	return fmt.Sprintf("pitch(%v,%s)", p.Semitones, core.Storex(p.Target))
 }
 
 // Replaced is part of Replaceable

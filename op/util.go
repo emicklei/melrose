@@ -3,38 +3,12 @@ package op
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"strconv"
 	"strings"
 	"text/scanner"
 
 	"github.com/emicklei/melrose/core"
 )
-
-// TODO
-func AppendStorexList(b *bytes.Buffer, isFirstParameter bool, list []core.Sequenceable) {
-	appendStorexList(b, isFirstParameter, list)
-}
-
-// if not isFirstParameter then write comma first
-func appendStorexList(b *bytes.Buffer, isFirstParameter bool, list []core.Sequenceable) {
-	if len(list) == 0 {
-		return
-	}
-	if !isFirstParameter {
-		fmt.Fprintf(b, ",")
-	}
-	for i, each := range list {
-		if s, ok := each.(core.Storable); !ok {
-			fmt.Fprintf(b, "nil")
-		} else {
-			fmt.Fprintf(b, "%s", s.Storex())
-		}
-		if i < len(list)-1 {
-			io.WriteString(b, ",")
-		}
-	}
-}
 
 // "1 (4 5 6) 2 (4 5 6) 3 (4 5 6) 2 (4 5 6)"
 func parseIndices(src string) [][]int {
@@ -93,21 +67,21 @@ func replacedAll(target []core.Sequenceable, from, to core.Sequenceable) []core.
 }
 
 // "1 (4 5 6) 2 (4 5 6) 3 (4 5 6) 2 (4 5 6)"
-// func formatIndices(src [][]int) string {
-// 	var b bytes.Buffer
-// 	for _, each := range src {
-// 		if len(each) == 1 {
-// 			fmt.Fprintf(&b, "%d ", each[0])
-// 		} else {
-// 			fmt.Fprintf(&b, "(")
-// 			for _, other := range each {
-// 				fmt.Fprintf(&b, "%d ", other)
-// 			}
-// 			fmt.Fprintf(&b, ") ")
-// 		}
-// 	}
-// 	return b.String()
-// }
+func formatIndices(src [][]int) string {
+	var b bytes.Buffer
+	for _, each := range src {
+		if len(each) == 1 {
+			fmt.Fprintf(&b, "%d ", each[0])
+		} else {
+			fmt.Fprintf(&b, "(")
+			for _, other := range each {
+				fmt.Fprintf(&b, "%d ", other)
+			}
+			fmt.Fprintf(&b, ") ")
+		}
+	}
+	return b.String()
+}
 
 // 1:-1, 3:-1 ,1:0,2:0,3:0,1:1,2:1
 func parseIndexOffsets(s string) (m []int2int) {

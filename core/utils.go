@@ -3,6 +3,7 @@ package core
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"reflect"
 	"strconv"
 	"strings"
@@ -85,4 +86,30 @@ func Storex(v interface{}) string {
 		return s.Storex()
 	}
 	return fmt.Sprintf("unstorable:%T", v)
+}
+
+func AppendStorexList(b *bytes.Buffer, isFirstParameter bool, list []Sequenceable) {
+	if len(list) == 0 {
+		return
+	}
+	if !isFirstParameter {
+		fmt.Fprintf(b, ",")
+	}
+	for i, each := range list {
+		if s, ok := each.(Storable); !ok {
+			fmt.Fprintf(b, "nil")
+		} else {
+			fmt.Fprintf(b, "%s", s.Storex())
+		}
+		if i < len(list)-1 {
+			io.WriteString(b, ",")
+		}
+	}
+}
+
+func UnValue(v Sequenceable) Sequenceable {
+	if s, ok := v.(Valueable); ok {
+		return s.Value().(Sequenceable)
+	}
+	return v
 }

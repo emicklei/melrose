@@ -41,7 +41,9 @@ func (d *DeviceRegistry) Reset() {
 	for _, each := range d.out {
 		each.Reset()
 	}
-	// TODO reset in
+	for _, each := range d.in {
+		each.stopListener()
+	}
 }
 
 func (d *DeviceRegistry) Output(id int) (*OutputDevice, error) {

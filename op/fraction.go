@@ -43,7 +43,7 @@ func (d Fraction) S() core.Sequence {
 func (d Fraction) Storex() string {
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "fraction(%d", d.Parameter)
-	appendStorexList(&b, false, d.Target)
+	core.AppendStorexList(&b, false, d.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
 }

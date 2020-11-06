@@ -126,6 +126,7 @@ func (h ValueHolder) Storex() string {
 	return fmt.Sprintf("%v", h.Any)
 }
 
+// TODO used?
 func (h ValueHolder) String() string {
 	return h.Storex()
 }

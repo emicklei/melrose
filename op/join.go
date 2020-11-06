@@ -3,6 +3,7 @@ package op
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/emicklei/melrose/core"
 )
 
@@ -13,7 +14,7 @@ type Join struct {
 func (j Join) Storex() string {
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "join(")
-	appendStorexList(&b, true, j.Target)
+	core.AppendStorexList(&b, true, j.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
 }

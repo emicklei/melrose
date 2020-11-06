@@ -49,7 +49,7 @@ func (d DynamicMap) S() core.Sequence {
 func (d DynamicMap) Storex() string {
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "dynamicmap('%s'", formatIndex2Dynamics(d.IndexDynamics))
-	appendStorexList(&b, false, d.Target)
+	core.AppendStorexList(&b, false, d.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
 }

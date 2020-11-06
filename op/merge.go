@@ -47,7 +47,7 @@ func (m Merge) S() core.Sequence {
 func (m Merge) Storex() string {
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "merge(")
-	appendStorexList(&b, true, m.Target)
+	core.AppendStorexList(&b, true, m.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
 }

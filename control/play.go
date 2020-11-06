@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose/core"
-	"github.com/emicklei/melrose/op"
 )
 
 // Play represents play() and sync()
@@ -46,7 +45,7 @@ func (p Play) Storex() string {
 	} else {
 		fmt.Fprintf(&b, "play(")
 	}
-	op.AppendStorexList(&b, true, p.target)
+	core.AppendStorexList(&b, true, p.target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
 }

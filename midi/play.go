@@ -23,6 +23,9 @@ func (registry *DeviceRegistry) Play(seq core.Sequenceable, bpm float64, beginAt
 	if core.IsDebug() {
 		notify.Debugf("midi.play: time=%s object=%s", beginAt.Format("04:05.000"), core.Storex(seq))
 	}
+	// unwrap if variable because we need to detect device or channel selector
+	seq = core.UnValue(seq)
+
 	// which device?
 	var device *OutputDevice
 	deviceID := registry.defaultOutputID

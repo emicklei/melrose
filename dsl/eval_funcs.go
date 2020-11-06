@@ -155,7 +155,7 @@ jm = joinmap('1 (2 3) 4',j)`,
 			if _, ok := vNow.(op.Join); !ok {
 				return notify.Panic(fmt.Errorf("cannot joinmap (%T) %v, must be a join", join, join))
 			}
-			return op.NewJoinMapper(v, indices)
+			return op.NewJoinMap(v, indices)
 		}}
 
 	eval["bars"] = Function{
@@ -274,7 +274,7 @@ chord('g/M/2') // Major G second inversion`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot octavemap (%T) %v", m, m))
 			}
-			return op.NewOctaveMapper(s, indices)
+			return op.NewOctaveMap(s, indices)
 		}}
 
 	eval["pitchmap"] = Function{
@@ -650,7 +650,7 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 			if s, ok := getSequenceable(value); !ok {
 				return notify.Panic(fmt.Errorf("cannot group (%T) %v", value, value))
 			} else {
-				return op.Parallel{Target: s}
+				return op.Group{Target: s}
 			}
 		}}
 	// BEGIN Loop and control
@@ -672,10 +672,7 @@ lp_cb = loop(cb,reverse(cb))`,
 					joined = append(joined, s)
 				}
 			}
-			if len(joined) == 1 {
-				return core.NewLoop(ctx, joined[0])
-			}
-			return core.NewLoop(ctx, op.Join{Target: joined})
+			return core.NewLoop(ctx, joined)
 		}}
 
 	eval["begin"] = Function{

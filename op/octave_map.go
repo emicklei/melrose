@@ -17,7 +17,7 @@ type int2int struct {
 	to   int
 }
 
-func NewOctaveMapper(target core.Sequenceable, indices string) OctaveMap {
+func NewOctaveMap(target core.Sequenceable, indices string) OctaveMap {
 	return OctaveMap{
 		Target:       target,
 		IndexOffsets: parseIndexOffsets(indices),

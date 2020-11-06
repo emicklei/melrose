@@ -1,6 +1,7 @@
 package core
 
 import (
+	"bytes"
 	"fmt"
 	"sync"
 	"time"
@@ -10,26 +11,26 @@ import (
 
 type Loop struct {
 	ctx       Context
-	target    Sequenceable
+	target    []Sequenceable
 	isRunning bool
 	mutex     sync.RWMutex
 }
 
-func NewLoop(ctx Context, target Sequenceable) *Loop {
+func NewLoop(ctx Context, target []Sequenceable) *Loop {
 	return &Loop{
 		ctx:    ctx,
 		target: target,
 	}
 }
 
-func (l *Loop) Target() Sequenceable { return l.target }
+func (l *Loop) Target() []Sequenceable { return l.target }
 
 func (l *Loop) Storex() string {
-	if s, ok := l.target.(Storable); ok {
-		return fmt.Sprintf("loop(%s)", s.Storex())
-	}
-	return ""
-
+	var b bytes.Buffer
+	fmt.Fprintf(&b, "loop(")
+	AppendStorexList(&b, true, l.target)
+	fmt.Fprintf(&b, ")")
+	return b.String()
 }
 
 func (l *Loop) IsRunning() bool {
@@ -51,18 +52,19 @@ func (l *Loop) Start(d AudioDevice) *Loop {
 
 func (l *Loop) Inspect(i Inspection) {
 	i.Properties["running"] = l.isRunning
-	if st, ok := l.target.(Storable); ok {
-		i.Properties["sequence"] = st.Storex()
-	}
 }
 
 func (l *Loop) reschedule(d AudioDevice, when time.Time) {
-	endOfLastNote := d.Play(l.target, l.ctx.Control().BPM(), when)
+	moment := when
+	for _, each := range l.target {
+		// after each other
+		moment = d.Play(each, l.ctx.Control().BPM(), moment)
+	}
 	if IsDebug() {
-		notify.Debugf("core.loop: next=%s", endOfLastNote.Format("15:04:05.00"))
+		notify.Debugf("core.loop: next=%s", moment.Format("15:04:05.00"))
 	}
 	// schedule the loop itself so it can play again when Handle is called
-	d.Schedule(l, endOfLastNote)
+	d.Schedule(l, moment)
 }
 
 // Handle is part of TimelineEvent
@@ -86,7 +88,7 @@ func (l *Loop) Stop() *Loop {
 	return l
 }
 
-func (l *Loop) SetTarget(newTarget Sequenceable) {
+func (l *Loop) SetTarget(newTarget []Sequenceable) {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 	l.target = newTarget
