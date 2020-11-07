@@ -10,6 +10,7 @@
 - https://github.com/lxn/win
 - https://github.com/dbatbold/beep
 - https://www.basicmusictheory.com/
+- https://schollz.com/blog/portmidi/
 
 ## todos
 

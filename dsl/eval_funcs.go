@@ -639,6 +639,17 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 			}
 		}})
 
+	registerFunction(eval, "stretch", Function{
+		Title:       "Stretch operator",
+		Description: "stretches the duration of musical object(s) with a factor. If the factor < 1 then duration is shortened",
+		Prefix:      "st",
+		Template:    `stretch(${1:factor},${2:object})`,
+		Samples: `stretch(2,note('c'))  // 2C
+stretch(0.25,sequence('(c e g)'))  // (16C 16E 16G)`,
+		Func: func(factor interface{}, m ...interface{}) interface{} {
+			return op.NewStretch(getValueable(factor), getSequenceableList(m...))
+		}})
+
 	eval["group"] = Function{
 		Title:       "Group operator",
 		Description: "create a new sequence in which all notes of a musical object are grouped",
@@ -924,6 +935,15 @@ func getSequenceable(v interface{}) (core.Sequenceable, bool) {
 		return s, ok
 	}
 	return nil, false
+}
+
+func getSequenceableList(m ...interface{}) (list []core.Sequenceable) {
+	for _, each := range m {
+		if s, ok := getSequenceable(each); ok {
+			list = append(list, s)
+		}
+	}
+	return
 }
 
 func getValueable(val interface{}) core.Valueable {

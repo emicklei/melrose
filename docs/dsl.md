@@ -61,6 +61,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#replace">replace</a>
 - <a href="#reverse">reverse</a>
 - <a href="#sequencemap">sequencemap</a>
+- <a href="#stretch">stretch</a>
 - <a href="#track">track</a>
 - <a href="#undynamic">undynamic</a>
 - <a href="#ungroup">ungroup</a>
@@ -461,6 +462,13 @@ s1 = sequence('C D E F G A B')
 i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D
 
 i2 = sequencemap('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)
+```
+
+### stretch<a name="stretch"></a>
+Stretches the duration of an object with a factor. If the factor < 1 then duration is shortened.
+
+```javascript
+
 ```
 
 ### sync<a name="sync"></a>

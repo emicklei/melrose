@@ -26,3 +26,11 @@ func (n Note) Octaved(howmuch int) Note {
 	nn, _ := NewNote(n.Name, n.Octave+howmuch, n.fraction, n.Accidental, n.Dotted, n.Velocity)
 	return nn
 }
+
+func (n Note) Stretched(f float32) Note {
+	if f == 1.0 {
+		return n
+	}
+	nn, _ := NewNote(n.Name, n.Octave, n.fraction*f, n.Accidental, n.Dotted, n.Velocity)
+	return nn
+}

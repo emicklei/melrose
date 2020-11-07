@@ -18,6 +18,21 @@ func (s Sequence) Pitched(semitones int) Sequence {
 	return Sequence{groups}
 }
 
+func (s Sequence) Stretched(f float32) Sequence {
+	if len(s.Notes) == 0 {
+		return s
+	}
+	groups := [][]Note{}
+	for _, group := range s.Notes {
+		changed := []Note{}
+		for _, each := range group {
+			changed = append(changed, each.Stretched(f))
+		}
+		groups = append(groups, changed)
+	}
+	return Sequence{groups}
+}
+
 func (s Sequence) Reversed() Sequence {
 	if len(s.Notes) == 0 {
 		return s
