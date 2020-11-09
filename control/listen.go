@@ -62,5 +62,5 @@ func (l *Listen) NoteOff(n core.Note) {
 
 // Storex is part of core.Storable
 func (l *Listen) Storex() string {
-	return fmt.Sprintf("listen(%d,%s,%s", l.deviceID, l.variableName, core.Storex(l.callback))
+	return fmt.Sprintf("listen(%d,%s,%s)", l.deviceID, l.variableName, core.Storex(l.callback))
 }
