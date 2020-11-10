@@ -398,8 +398,8 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Template:      `biab(${1:beats-in-a-bar})`,
 		Samples:       `biab(4)`,
 		Func: func(i int) interface{} {
-			if i < 1 || i > 16 {
-				return notify.Panic(fmt.Errorf("invalid beats-in-a-bar [1..16], %d = ", i))
+			if i < 1 {
+				return notify.Panic(fmt.Errorf("invalid beats-in-a-bar, must be positive, %d = ", i))
 			}
 			ctx.Control().SetBIAB(i)
 			return nil
