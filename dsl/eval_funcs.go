@@ -392,14 +392,14 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 
 	eval["biab"] = Function{
 		Title:         "Beats in a Bar",
-		Description:   "set the Beats in a Bar [1..6]; default is 4",
+		Description:   "set the Beats in a Bar [1..16]; default is 4",
 		ControlsAudio: true,
 		Prefix:        "biab",
 		Template:      `biab(${1:beats-in-a-bar})`,
 		Samples:       `biab(4)`,
 		Func: func(i int) interface{} {
-			if i < 1 || i > 6 {
-				return notify.Panic(fmt.Errorf("invalid beats-in-a-bar [1..6], %d = ", i))
+			if i < 1 || i > 16 {
+				return notify.Panic(fmt.Errorf("invalid beats-in-a-bar [1..16], %d = ", i))
 			}
 			ctx.Control().SetBIAB(i)
 			return nil

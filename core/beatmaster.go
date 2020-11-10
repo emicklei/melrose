@@ -117,14 +117,6 @@ func (b *Beatmaster) SetBPM(bpm float64) {
 	if b.bpm == bpm {
 		return
 	}
-	if bpm < 1.0 {
-		notify.Print(notify.Warningf("bpm [%.1f] must be in [1..300], setting to [%d]", bpm, 1))
-		bpm = 1.0
-	}
-	if bpm > 300 {
-		notify.Print(notify.Warningf("bpm [%.1f] must be in [1..300], setting to [%d]", bpm, 300))
-		bpm = 300.0
-	}
 	go func() { b.bpmChanges <- bpm }()
 }
 
@@ -137,14 +129,6 @@ func (b *Beatmaster) SetBIAB(biab int) {
 	}
 	if b.biab == int64(biab) {
 		return
-	}
-	if biab < 1 {
-		notify.Print(notify.Warningf("biab [%d] must be in [1..6], setting to [%d]", biab, 1))
-		biab = 1
-	}
-	if biab > 6 {
-		notify.Print(notify.Warningf("biab [%d] must be in [1..6], setting to [%d]", biab, 6))
-		biab = 6
 	}
 	b.biab = int64(biab)
 	b.notifySettingChanged()
