@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -69,39 +68,37 @@ var (
 const validNoteNames = "ABCDEFG=<^>"
 
 func NewNote(name string, octave int, frac float32, accidental int, dot bool, velocity int) (Note, error) {
-	if len(name) != 1 {
-		return Rest4, fmt.Errorf("note must be one character, got [%s]", name)
-	}
-	// pedal check
-	switch name {
-	case "^":
-		return PedalUpDown, nil
-	case ">":
-		return PedalDown, nil
-	case "<":
-		return PedalUp, nil
-	}
+	/**
+		if len(name) != 1 {
+			return Rest4, fmt.Errorf("note must be one character, got [%s]", name)
+		}
+		// pedal check
+		switch name {
+		case "^":
+			return PedalUpDown, nil
+		case ">":
+			return PedalDown, nil
+		case "<":
+			return PedalUp, nil
+		}
 
-	if !strings.Contains(validNoteNames, name) {
-		return Rest4, fmt.Errorf("invalid note name [%s]:%s", validNoteNames, name)
-	}
-	if octave < 0 || octave > 9 {
-		return Rest4, fmt.Errorf("invalid octave [0..9]: %d", octave)
-	}
-	switch frac {
-	case 0.0625:
-	case 0.125:
-	case 0.25:
-	case 0.5:
-	case 1:
-	default:
-		return Rest4, fmt.Errorf("invalid fraction [1,0.5,0.25,0.125,0.0625]:%v", frac)
-	}
+		if !strings.Contains(validNoteNames, name) {
+			return Rest4, fmt.Errorf("invalid note name [%s]:%s", validNoteNames, name)
+		}
+		switch frac {
+		case 0.0625:
+		case 0.125:
+		case 0.25:
+		case 0.5:
+		case 1:
+		default:
+			return Rest4, fmt.Errorf("invalid fraction [1,0.5,0.25,0.125,0.0625]:%v", frac)
+		}
 
-	if accidental != 0 && accidental != -1 && accidental != 1 {
-		return Rest4, fmt.Errorf("invalid accidental: %d", accidental)
-	}
-
+		if accidental != 0 && accidental != -1 && accidental != 1 {
+			return Rest4, fmt.Errorf("invalid accidental: %d", accidental)
+		}
+	**/
 	return Note{Name: name, Octave: octave, fraction: frac, Accidental: accidental, Dotted: dot, Velocity: velocity}, nil
 }
 
@@ -159,67 +156,7 @@ var N = MustParseNote
 
 // ParseNote reads the format  <(inverse-)duration?>[CDEFGA=<^>]<accidental?><dot?><octave?>
 func ParseNote(input string) (Note, error) {
-	matches := noteRegexp.FindStringSubmatch(strings.ToUpper(input))
-	if matches == nil {
-		return Note{}, fmt.Errorf("illegal note: [%s]", input)
-	}
-
-	var fraction float32
-	switch matches[1] {
-	case "16":
-		fraction = 0.0625
-	case "⅛", "8":
-		fraction = 0.125
-	case "¼", "4":
-		fraction = 0.25
-	case "½", "2":
-		fraction = 0.5
-	case "1":
-		fraction = 1
-	default:
-		fraction = 0.25 // quarter
-	}
-
-	dotted := matches[2] == "."
-
-	// pedal
-	switch matches[3] {
-	case "^":
-		return PedalUpDown, nil
-	case "<":
-		return PedalUp, nil
-	case ">":
-		return PedalDown, nil
-	}
-
-	var accidental int
-	switch matches[4] {
-	case "#":
-		accidental = 1
-	case "♯":
-		accidental = 1
-	case "♭":
-		accidental = -1
-	case "_":
-		accidental = -1
-	default:
-		accidental = 0
-	}
-
-	octave := 4
-	if len(matches[5]) > 0 {
-		i, err := strconv.Atoi(matches[5])
-		if err != nil {
-			return Note{}, fmt.Errorf("illegal octave: %s", matches[5])
-
-		}
-		octave = i
-	}
-	var velocity = Normal
-	if len(matches[6]) > 0 {
-		velocity = ParseVelocity(matches[6])
-	}
-	return NewNote(matches[3], octave, fraction, accidental, dotted, velocity)
+	return newFormatParser(input).parseNote()
 }
 
 func ParseVelocity(plusmin string) (velocity int) {

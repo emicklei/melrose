@@ -149,13 +149,14 @@ progression('(c d)') // => (C E G D G♭ A)`,
 		Template:    `joinmap('${1:indices}',${2:join})`,
 		Samples: `j = join(note('c'), sequence('d e f'))
 jm = joinmap('1 (2 3) 4',j)`,
-		Func: func(indices string, join interface{}) interface{} { // allow multiple seq?
+		Func: func(indices interface{}, join interface{}) interface{} { // allow multiple seq?
 			v := getValueable(join)
 			vNow := v.Value()
 			if _, ok := vNow.(op.Join); !ok {
 				return notify.Panic(fmt.Errorf("cannot joinmap (%T) %v, must be a join", join, join))
 			}
-			return op.NewJoinMap(v, indices)
+			p := getValueable(indices)
+			return op.NewJoinMap(v, p)
 		}}
 
 	eval["bars"] = Function{

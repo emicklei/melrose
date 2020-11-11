@@ -33,9 +33,10 @@ func NewScale(octaves int, input string) (Scale, error) {
 }
 
 func ParseScale(s string) (Scale, error) {
-	n, err := ParseNote(s)
+	parts := strings.Split(s, "/")
+	n, err := ParseNote(parts[0])
 	v := Major
-	if strings.HasSuffix(s, "/m") {
+	if len(parts) == 2 && parts[1] == "m" {
 		v = Minor
 	}
 	return Scale{start: n, variant: v, octaves: 1}, err

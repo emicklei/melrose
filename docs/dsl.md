@@ -97,7 +97,7 @@ begin(lp_cb) // end(lp_cb)
 ```
 
 ### biab<a name="biab"></a>
-Set the Beats in a Bar [1..6]; default is 4.
+Set the Beats in a Bar [1..16]; default is 4.
 
 ```javascript
 biab(4)
@@ -465,10 +465,12 @@ i2 = sequencemap('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)
 ```
 
 ### stretch<a name="stretch"></a>
-Stretches the duration of an object with a factor. If the factor < 1 then duration is shortened.
+Stretches the duration of musical object(s) with a factor. If the factor < 1 then duration is shortened.
 
 ```javascript
+stretch(2,note('c'))  // 2C
 
+stretch(0.25,sequence('(c e g)'))  // (16C 16E 16G)
 ```
 
 ### sync<a name="sync"></a>

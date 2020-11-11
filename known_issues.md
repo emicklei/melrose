@@ -1,4 +1,8 @@
-- cannot use variable for indices in joinmap (or any map)
+- cannot use variable for indices in 
+    - dynamicmap
+    - pitchmap
+    - octavemap
+    - notemap
+    - sequencemap
 - group cannot have multiple sequences
-- .2a is not the same as 2.a
-- no longer use special unicode character, because of copy from output resuability
+- ? no longer use special unicode character, because of copy from output resuability ?

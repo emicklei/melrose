@@ -9,11 +9,16 @@ import (
 
 type JoinMap struct {
 	target  core.Valueable
-	indices [][]int
+	pattern core.Valueable
 }
 
 func (j JoinMap) Storex() string {
-	return fmt.Sprintf("joinmap('%s',%s)", formatIndices(j.indices), core.Storex(j.target))
+	return fmt.Sprintf("joinmap('%s',%s)", formatIndices(j.indices()), core.Storex(j.target))
+}
+
+func (j JoinMap) indices() [][]int {
+	ps := core.String(j.pattern)
+	return parseIndices(ps)
 }
 
 func (j JoinMap) S() core.Sequence {
@@ -23,7 +28,7 @@ func (j JoinMap) S() core.Sequence {
 	}
 	source := join.Target
 	target := []core.Sequenceable{}
-	for i, indexGroup := range j.indices {
+	for i, indexGroup := range j.indices() {
 		if len(indexGroup) == 1 {
 			// single
 			if j.check(i, 0, indexGroup[0], len(source)) {
@@ -55,8 +60,8 @@ func (j JoinMap) check(index, subindex, value, length int) bool { // indices are
 	return true
 }
 
-func NewJoinMap(v core.Valueable, indices string) JoinMap {
-	return JoinMap{target: v, indices: parseIndices(indices)}
+func NewJoinMap(v core.Valueable, indices core.Valueable) JoinMap {
+	return JoinMap{target: v, pattern: indices}
 }
 
 // Replaced is part of Replaceable
@@ -68,5 +73,5 @@ func (j JoinMap) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	if !ok {
 		return j
 	}
-	return JoinMap{target: core.On(join.Replaced(from, to)), indices: j.indices}
+	return JoinMap{target: core.On(join.Replaced(from, to)), pattern: j.pattern}
 }

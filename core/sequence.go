@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -70,39 +69,7 @@ const (
 
 // ParseSequence creates a Sequence by reading the format "Note* [Note Note*]* Note*"
 func ParseSequence(input string) (Sequence, error) {
-	m := EmptySequence
-	// hack to keep scanning simple, TODO
-	splitable := strings.Replace(input, groupOpen, " "+groupOpen+" ", -1)
-	splitable = strings.Replace(splitable, groupClose, " "+groupClose+" ", -1)
-	splitable = strings.Replace(splitable, PedalDown.Name, " "+PedalDown.Name+" ", -1)
-	splitable = strings.Replace(splitable, PedalUp.Name, " "+PedalUp.Name+" ", -1)
-	splitable = strings.Replace(splitable, PedalUpDown.Name, " "+PedalUpDown.Name+" ", -1)
-	parts := strings.Fields(splitable)
-	ingroup := false
-	var group []Note
-	for _, each := range parts {
-		if groupOpen == each {
-			ingroup = true
-			group = []Note{}
-		} else if groupClose == each {
-			ingroup = false
-			// first note in group makes duration
-			if len(group) > 0 {
-				m.Notes = append(m.Notes, group)
-			}
-		} else {
-			next, err := ParseNote(each)
-			if err != nil {
-				return m, err
-			}
-			if ingroup {
-				group = append(group, next)
-			} else {
-				m.Notes = append(m.Notes, []Note{next})
-			}
-		}
-	}
-	return m, nil
+	return newFormatParser(input).parseSequence()
 }
 
 func (s Sequence) S() Sequence {

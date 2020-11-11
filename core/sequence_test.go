@@ -20,7 +20,7 @@ func TestParseSequence(t *testing.T) {
 		{"(C E)(.D F)(E G)", "(C E) (.D F) (E G)"},
 		{"B_ 8F 8D_5 8B_5 8F A_ 8E_ 8C5 8A_5 8E_", "B♭ ⅛F ⅛D♭5 ⅛B♭5 ⅛F A♭ ⅛E♭ ⅛C5 ⅛A♭5 ⅛E♭"},
 		{"> c d e ^ ( c d e ) <", "> C D E ^ (C D E) <"},
-		{"<=^> ^= <^=^>", "< = ^ > ^ = < ^ = ^ >"},
+		{"< = ^ > ^ = < ^ = ^ >", "< = ^ > ^ = < ^ = ^ >"},
 	} {
 		sin, err := ParseSequence(each.in)
 		if err != nil {

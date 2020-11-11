@@ -146,43 +146,6 @@ func ExampleParseNote() {
 
 // Failures
 
-func TestFailedNewNote_BadName(t *testing.T) {
-	// name string, octave int, fraction float32, accidental int, dot bool
-	if _, err := NewNote("Z", 4, 0.5, 0, false, 1.0); err == nil {
-		t.Fail()
-	}
-}
-
-func TestFailedNewNote_BadOctave(t *testing.T) {
-	// name string, octave int, fraction float32, accidental int, dot bool
-	if _, err := NewNote("A", -1, 0.5, 0, false, 1); err == nil {
-		t.Fail()
-	}
-	if _, err := NewNote("A", 10, 0.5, 0, false, 1); err == nil {
-		t.Fail()
-	}
-}
-
-func TestFailedNewNote_BadDuration(t *testing.T) {
-	// name string, octave int, fraction float32, accidental int, dot bool
-	if _, err := NewNote("A", 4, 2, 0, false, 1); err == nil {
-		t.Fail()
-	}
-	if _, err := NewNote("A", 4, -1, 0, false, 1); err == nil {
-		t.Fail()
-	}
-}
-
-func TestFailedNewNote_BadAccidental(t *testing.T) {
-	// name string, octave int, fraction float32, accidental int, dot bool
-	if _, err := NewNote("A", 4, 0.25, -2, false, 1); err == nil {
-		t.Error(err)
-	}
-	if _, err := NewNote("A", 4, 0.25, 2, false, 1); err == nil {
-		t.Error(err)
-	}
-}
-
 func TestNote_Storex(t *testing.T) {
 	n, _ := NewNote("A", 4, 0.25, 1, false, 1)
 	if got, want := n.Storex(), `note('A♯')`; got != want {
