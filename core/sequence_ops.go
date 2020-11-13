@@ -81,3 +81,28 @@ func (s Sequence) RotatedBy(howMany int) Sequence {
 	}
 	return Sequence{groups}
 }
+
+// Split return sequences with one-note groups. Merge would produce s again.
+func (s Sequence) Split() []Sequence {
+	longest := 0
+	for _, each := range s.Notes {
+		if len(each) > longest {
+			longest = len(each)
+		}
+	}
+	all := []Sequence{}
+	for i := 0; i < longest; i++ {
+		layer := []Note{}
+		for j, each := range s.Notes {
+			if i < len(each) {
+				layer = append(layer, each[i])
+			} else {
+				// take rest duration from first sequence
+				restOne := all[0].Notes[j][0].ToRest()
+				layer = append(layer, restOne)
+			}
+		}
+		all = append(all, BuildSequence(layer))
+	}
+	return all
+}

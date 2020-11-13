@@ -14,6 +14,7 @@ type Sequence struct {
 	Notes [][]Note
 }
 
+// At uses zero-based indexing into the Notes
 func (s Sequence) At(i int) []Note {
 	if i < 0 || i > len(s.Notes)-1 {
 		panic("Sequence index out of bounds:" + strconv.Itoa(i))
@@ -62,11 +63,6 @@ func MustParseSequence(input string) Sequence {
 	}
 }
 
-const (
-	groupOpen  = "("
-	groupClose = ")"
-)
-
 // ParseSequence creates a Sequence by reading the format "Note* [Note Note*]* Note*"
 func ParseSequence(input string) (Sequence, error) {
 	return newFormatParser(input).parseSequence()
@@ -109,6 +105,11 @@ func (s Sequence) PrintString(sharpOrFlatKey int) string {
 	s.writeNotesOn(&buf, (Note).printOn, sharpOrFlatKey)
 	return buf.String()
 }
+
+const (
+	groupOpen  = "("
+	groupClose = ")"
+)
 
 func (s Sequence) writeNotesOn(
 	buf *bytes.Buffer,

@@ -19,10 +19,10 @@ import (
 // http://en.wikipedia.org/wiki/Musical_Note
 type Note struct {
 	Name       string // {C D E F G A B = ^ < >}
-	Octave     int    // [0 .. 9]
-	Accidental int    // -1 Flat, +1 Sharp, 0 Normal
-	Dotted     bool   // if true then fraction is increased by half
-	Velocity   int    // 1..127
+	Octave     int
+	Accidental int  // -1 Flat, +1 Sharp, 0 Normal
+	Dotted     bool // if true then fraction is increased by half
+	Velocity   int  // 1..127
 
 	fraction float32       // {0.0625,0.125,0.25,0.5,1}
 	duration time.Duration // if set then this overrides Dotted and fraction
@@ -65,41 +65,41 @@ var (
 	ZeroDuration = time.Duration(0)
 )
 
-const validNoteNames = "ABCDEFG=<^>"
-
 func NewNote(name string, octave int, frac float32, accidental int, dot bool, velocity int) (Note, error) {
-	/**
-		if len(name) != 1 {
-			return Rest4, fmt.Errorf("note must be one character, got [%s]", name)
-		}
-		// pedal check
-		switch name {
-		case "^":
-			return PedalUpDown, nil
-		case ">":
-			return PedalDown, nil
-		case "<":
-			return PedalUp, nil
-		}
+	if len(name) != 1 {
+		return Rest4, fmt.Errorf("note must be one character, got [%s]", name)
+	}
+	// pedal check
+	switch name {
+	case "^":
+		return PedalUpDown, nil
+	case ">":
+		return PedalDown, nil
+	case "<":
+		return PedalUp, nil
+	}
 
-		if !strings.Contains(validNoteNames, name) {
-			return Rest4, fmt.Errorf("invalid note name [%s]:%s", validNoteNames, name)
-		}
-		switch frac {
-		case 0.0625:
-		case 0.125:
-		case 0.25:
-		case 0.5:
-		case 1:
-		default:
-			return Rest4, fmt.Errorf("invalid fraction [1,0.5,0.25,0.125,0.0625]:%v", frac)
-		}
+	if !strings.Contains(allowedNoteNames, name) {
+		return Rest4, fmt.Errorf("invalid note name [%s]:%s", allowedNoteNames, name)
+	}
+	switch frac {
+	case 0.0625:
+	case 0.125:
+	case 0.25:
+	case 0.5:
+	case 1:
+	default:
+		return Rest4, fmt.Errorf("invalid fraction [1,0.5,0.25,0.125,0.0625]:%v", frac)
+	}
 
-		if accidental != 0 && accidental != -1 && accidental != 1 {
-			return Rest4, fmt.Errorf("invalid accidental: %d", accidental)
-		}
-	**/
+	if accidental != 0 && accidental != -1 && accidental != 1 {
+		return Rest4, fmt.Errorf("invalid accidental: %d", accidental)
+	}
 	return Note{Name: name, Octave: octave, fraction: frac, Accidental: accidental, Dotted: dot, Velocity: velocity}, nil
+}
+
+func MakeNote(name string, octave int, frac float32, accidental int, dot bool, velocity int) Note {
+	return Note{Name: name, Octave: octave, fraction: frac, Accidental: accidental, Dotted: dot, Velocity: velocity}
 }
 
 func (n Note) IsRest() bool        { return Rest4.Name == n.Name }

@@ -88,9 +88,5 @@ func MIDItoNote(fraction float32, nr int, vel int) (Note, error) {
 	if nrIndex != offset {
 		accidental = -1
 	}
-	nn, err := NewNote(string(nonRestNoteNames[offsetIndex]), octave, fraction, accidental, false, vel)
-	if err != nil {
-		return Rest4, err
-	}
-	return nn, nil
+	return MakeNote(string(nonRestNoteNames[offsetIndex]), octave, fraction, accidental, false, vel), nil
 }

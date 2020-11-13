@@ -64,3 +64,20 @@ func TestSequencePitchlane(t *testing.T) {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
+
+func TestSequence_Split(t *testing.T) {
+	s := MustParseSequence("2C (4D 4E) (16F 16G 16A)")
+	m := s.Split()
+	if len(m) != 3 {
+		t.Fatal()
+	}
+	if got, want := m[0].Storex(), "sequence('½C D 16F')"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := m[1].Storex(), "sequence('½= E 16G')"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := m[2].Storex(), "sequence('½= = 16A')"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}

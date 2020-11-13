@@ -198,7 +198,7 @@ func (s *noteSTM) note() (Note, error) {
 			return Rest4, fmt.Errorf("invalid dynamic, unexpected:%s", s.velocity)
 		}
 	}
-	return NewNote(s.name, s.octave, s.fraction, s.accidental, s.dotted, vel)
+	return MakeNote(s.name, s.octave, s.fraction, s.accidental, s.dotted, vel), nil
 }
 
 func (s *sequenceSTM) accept(lit string) error {
