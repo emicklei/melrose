@@ -10,6 +10,7 @@ func TestMerge_EigthAndSixteenth(t *testing.T) {
 	for _, each := range []struct {
 		top, bottom, result string
 	}{
+		//{"F♯3 = F♯3", "16C♯5 16C♯ 16F♯ ⅛A", "sequence('(F♯3 16C♯5) 16C♯ 16F♯ (16= ⅛A) F#3"},
 		{"8a 8a", "16d 16d 16d 16d", "sequence('(⅛A 16D) 16D (⅛A 16D) 16D')"},
 		{"c", "d", "sequence('(C D)')"},
 		{"c", "1d", "sequence('(C 1D)')"},
