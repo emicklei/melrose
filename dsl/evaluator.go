@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 
 	"github.com/antonmedv/expr"
 )
@@ -161,6 +162,15 @@ func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
 	options := []expr.Option{expr.Env(env), expr.Patch(new(indexedAccessPatcher))}
 	program, err := expr.Compile(entry, append(options, env.exprOperators()...)...)
 	if err != nil {
+		// try parsing the entry as a sequence
+		// this can be requested from the editor to listen to a part of a sequence,chord,note,progression
+		if subseq, suberr := core.ParseSequence(entry); suberr == nil {
+			if core.IsDebug() {
+				notify.Debugf("dsl.evaluate:%s", subseq.Storex())
+			}
+			return subseq, nil
+		}
+		// give up
 		return nil, err
 	}
 	return expr.Run(program, env)

@@ -178,11 +178,11 @@ func (d *DeviceRegistry) printInfo() {
 
 	fmt.Println()
 
-	fmt.Printf("[midi] %d = default input\n", d.defaultInputID)
-	fmt.Printf("[midi] %d = default output\n", d.defaultOutputID)
+	fmt.Printf("[midi] device %d = default input\n", d.defaultInputID)
+	fmt.Printf("[midi] device %d = default output\n", d.defaultOutputID)
 
 	od, _ := d.Output(d.defaultOutputID)
-	fmt.Printf("[midi] %v = echo output notes\n", od.echo)
+	fmt.Printf("[midi] echo notes = %v\n", od.echo)
 
 	for deviceID, each := range d.out {
 		if trace, ok := each.stream.(tracingMIDIStream); ok {

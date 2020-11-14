@@ -60,7 +60,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	var response evaluationResult
 	if err != nil {
 		// evaluation failed.
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		response = resultFrom(line, err)
 	} else {
 		// evaluation was ok.
