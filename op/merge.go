@@ -1,6 +1,8 @@
 package op
 
 import (
+	"bytes"
+	"fmt"
 	"math"
 
 	"github.com/emicklei/melrose/core"
@@ -8,6 +10,22 @@ import (
 
 type Merge struct {
 	Target []core.Sequenceable
+}
+
+func (m Merge) Storex() string {
+	var b bytes.Buffer
+	fmt.Fprintf(&b, "join(")
+	core.AppendStorexList(&b, true, m.Target)
+	fmt.Fprintf(&b, ")")
+	return b.String()
+}
+
+// Replaced is part of Replaceable
+func (m Merge) Replaced(from, to core.Sequenceable) core.Sequenceable {
+	if core.IsIdenticalTo(m, from) {
+		return to
+	}
+	return Join{Target: replacedAll(m.Target, from, to)}
 }
 
 func (m Merge) S() core.Sequence {

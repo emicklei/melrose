@@ -13,20 +13,20 @@ title: Using Melrōse with Logic Pro
 ## Goal
 
 Logic Pro is a professional Digital Audio Workstation (DAW) available for Apple Mac OSX.
-Melrōse can communicate with Logic Pro by exchanging MIDI messages. Logic Pro has a rich set of sounds and instruments to play MIDI notes. In addition, Logic Pro is able to play multiple MIDI channels simultaneously which can be programmed individualy by melrōse.
+Melrōse can communicate with Logic Pro by exchanging MIDI messages. Logic Pro has a rich set of sounds and instruments to play MIDI notes. In addition, Logic Pro is able to play multiple MIDI channels simultaneously which can be programmed individualy by `melrōse`.
 
 This article describes the steps to get Melrōse working with Logic Pro such that you can play your melody per-channel.
 
 ### Installation
 
-The installation steps are mostly the same as described for [GarageBand](https://emicklei.github.io/melrose/garageband). Follow this article and open Logic instead of GarageBand. 
+The installation steps are the same as described for [GarageBand](https://emicklei.github.io/melrose/garageband). Follow this article and open Logic instead of GarageBand. 
 
 Keep the editor and the `demo.mel` file open.
 
 ### Create project
 
 Open the application Logic Pro and create a new project.
-Go to the project settings and enable de-mixing of MIDI messages for recording.
+Go to the project settings, Recording, and enable de-mixing of MIDI messages.
 
 
 ### Add Instruments

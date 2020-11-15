@@ -6,3 +6,4 @@
     - sequencemap
 - group cannot have multiple sequences
 - ? no longer use special unicode character, because of copy from output resuability ?
+- missing storex for Interval
