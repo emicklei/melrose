@@ -5,5 +5,7 @@
     - notemap
     - sequencemap
 - group cannot have multiple sequences
-- ? no longer use special unicode character, because of copy from output resuability ?
-- missing storex for Interval
+- ? no longer use special unicode character, because of copy from output resuability ? 
+- rotated not used
+- recording needs rewrite
+- terminal ui drop down for echoing

@@ -8,3 +8,4 @@ title: Melrōse Tutorial
 - [02 Sequence](02-sequence.html)
 - [03 Chord](03-chord.html)
 - [04 Loop](04-loop.html)
+- [05 Playing](05-playing.html)
