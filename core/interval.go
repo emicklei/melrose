@@ -64,10 +64,10 @@ func NewInterval(from, to, by Valueable, strategy int) *Interval {
 // Storex is part of Storable.
 func (i Interval) Storex() string {
 	if i.strategy.id() == OnceFromTo {
-		return fmt.Sprintf("interval(%v,%v,%v)", i.from, i.to, i.by)
+		return fmt.Sprintf("interval(%v,%v,%v)", Storex(i.from), Storex(i.to), Storex(i.by))
 	}
 	name := intervalStrategyName(i.strategy.id())
-	return fmt.Sprintf("interval(%v,%v,%v,'%s')", i.from, i.to, i.by, name)
+	return fmt.Sprintf("interval(%s,%s,%s,'%s')", Storex(i.from), Storex(i.to), Storex(i.by), name)
 }
 
 // Inpsect is part of Inspectable
