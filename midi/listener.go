@@ -15,7 +15,6 @@ type listener struct {
 	noteOn    map[int]portmidi.Event
 
 	mutex         *sync.RWMutex
-	pitchOnly     bool
 	noteListeners []core.NoteListener
 }
 

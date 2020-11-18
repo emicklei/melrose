@@ -156,7 +156,7 @@ func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
 	for k, f := range e.funcs {
 		env[k] = f.Func
 	}
-	for k, _ := range e.context.Variables().Variables() {
+	for k := range e.context.Variables().Variables() {
 		env[k] = variable{Name: k, store: e.context.Variables()}
 	}
 	options := []expr.Option{expr.Env(env), expr.Patch(new(indexedAccessPatcher))}
