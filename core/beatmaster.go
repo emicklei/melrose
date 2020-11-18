@@ -80,7 +80,7 @@ func (b *Beatmaster) StartLoop(l *Loop) {
 func (b *Beatmaster) Plan(bars int64, seq Sequenceable) {
 	atBeats := b.beatsAtNextBar() + (b.biab * bars)
 	if IsDebug() {
-		notify.Debugf("beat.schedule at: %d put: %s bars: %.2f", atBeats, Storex(seq), seq.S().Bars(int(b.biab)))
+		notify.Debugf("beat.schedule at beats: %d put: %s bars: %.2f", atBeats, Storex(seq), seq.S().Bars(int(b.biab)))
 	}
 	b.schedule.Schedule(atBeats, func(when time.Time) {
 		b.context.Device().Play(seq, b.bpm, when)
@@ -117,6 +117,11 @@ func (b *Beatmaster) SetBPM(bpm float64) {
 	if b.bpm == bpm {
 		return
 	}
+	if b.schedule.IsEmpty() {
+		b.bpm = bpm
+		b.notifySettingChanged()
+		return
+	}
 	go func() { b.bpmChanges <- bpm }()
 }
 
@@ -151,7 +156,7 @@ func (b *Beatmaster) Start() {
 	b.beating = true
 	go func() {
 		if IsDebug() {
-			notify.Debugf("core.beatmaster: status=started bpm=%v tick=%v", b.bpm, beatTickerDuration(b.bpm))
+			notify.Debugf("core.beatmaster: started bpm=%v tick=%v", b.bpm, beatTickerDuration(b.bpm))
 		}
 		for {
 			if b.beats%b.biab == 0 {
@@ -163,7 +168,7 @@ func (b *Beatmaster) Start() {
 				// only change BPM on a bar
 				case bpm := <-b.bpmChanges:
 					if IsDebug() {
-						notify.Debugf("core.beatmaster: bpm=%v tick=%v", bpm, beatTickerDuration(bpm))
+						notify.Debugf("core.beatmaster: changed bpm=%v tick=%v", bpm, beatTickerDuration(bpm))
 					}
 					b.bpm = bpm
 					b.notifySettingChanged()

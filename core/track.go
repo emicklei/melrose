@@ -11,7 +11,6 @@ import (
 type Track struct {
 	Title   string
 	Channel int
-	// TODO make this beats -> musical object
 	Content map[int]Sequenceable // bar -> musical object
 }
 
@@ -118,6 +117,10 @@ func (m MultiTrack) Storex() string {
 
 // Play is part of Playable
 func (m MultiTrack) Play(ctx Context) error {
+	// because all tracks must be synchronized, we first stop the beatmaster
+	// then schedule all tracks
+	// then start the beatmaster again.
+	ctx.Control().Stop()
 	for _, each := range m.Tracks {
 		if track, ok := each.Value().(*Track); ok {
 			for bar, seq := range track.Content {
@@ -129,5 +132,6 @@ func (m MultiTrack) Play(ctx Context) error {
 			notify.Errorf("not a track:%v", each)
 		}
 	}
+	ctx.Control().Start()
 	return nil
 }
