@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/emicklei/melrose/core"
@@ -27,8 +28,16 @@ func grammar() {
 		VariableStorage: varstore,
 		LoopControl:     core.NoLooper,
 	}
-	var buffer bytes.Buffer
+	// collect and sort by length , descending
+	keywords := []string{}
 	for k := range dsl.EvalFunctions(ctx) {
+		keywords = append(keywords, k)
+	}
+	sort.SliceStable(keywords, func(i, j int) bool {
+		return len(keywords[i]) > len(keywords[j])
+	})
+	var buffer bytes.Buffer
+	for _, k := range keywords {
 		if buffer.Len() > 0 {
 			fmt.Fprintf(&buffer, "|")
 		}
