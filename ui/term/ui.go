@@ -25,6 +25,7 @@ func startUI(mon *Monitor) {
 	inputDevice.SetLabel("  in ")
 	inputDevice.SetTextOptions("", "", "", "▼", "---")
 	pitchOnly := tvp.NewCheckboxView(foc, mon.EchoReceivedPitchOnly).SetLabel("pitch only ")
+	pitchOnly.SetCheckedString("Y")
 
 	inputSection := tview.NewFlex().SetDirection(tview.FlexColumn).
 		AddItem(inputDevice, 0, 1, false).
