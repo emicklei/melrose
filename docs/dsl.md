@@ -163,12 +163,14 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++
 ```
 
 ### end<a name="end"></a>
-End running loop(s). Ignore if it was stopped.
+End running loop(s) or listener(s). Ignore if it was stopped.
 
 ```javascript
 l1 = loop(sequence('C E G'))
 
-begin(l1) // end(l1)
+begin(l1)
+
+end(l1)
 ```
 
 ### export<a name="export"></a>
