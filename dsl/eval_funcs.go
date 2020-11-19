@@ -709,25 +709,29 @@ begin(lp_cb) // end(lp_cb)`,
 		}}
 
 	eval["end"] = Function{
-		Title:         "End loop command",
-		Description:   "end running loop(s). Ignore if it was stopped.",
+		Title:         "End loop or listen command",
+		Description:   "end running loop(s) or listener(s). Ignore if it was stopped.",
 		ControlsAudio: true,
-		Template:      `end(${1:loop-or-empty})`,
+		Template:      `end(${1:control})`,
 		Samples: `l1 = loop(sequence('C E G'))
-begin(l1) // end(l1)`,
+begin(l1)
+end(l1)`,
 		Func: func(vars ...variable) interface{} {
 			if len(vars) == 0 {
 				StopAllLoops(ctx)
 				return nil
 			}
 			for _, each := range vars {
-				l, ok := each.Value().(*core.Loop)
-				if !ok {
-					notify.Print(notify.Warningf("cannot end (%T) %v", l, l))
-					continue
+				if l, ok := each.Value().(*core.Loop); ok {
+					notify.Print(notify.Infof("stopping %s", each.Name))
+					ctx.Control().EndLoop(l)
 				}
-				notify.Print(notify.Infof("stopping loop: %s", each.Name))
-				ctx.Control().EndLoop(l)
+				if l, ok := each.Value().(*control.Listen); ok {
+					notify.Print(notify.Infof("stopping %s", each.Name))
+					l.Stop(ctx)
+				}
+				notify.Print(notify.Warningf("cannot end (%T) %v", each.Value(), each.Value()))
+				continue
 			}
 			return nil
 		}}

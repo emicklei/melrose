@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"strconv"
 	"sync"
+	"time"
 
+	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
 	"github.com/emicklei/tre"
 	"github.com/rakyll/portmidi"
@@ -199,4 +201,24 @@ func (d *DeviceRegistry) ChangeOutputDeviceID(id int) {
 }
 func (d *DeviceRegistry) EchoReceivedPitchOnly(bool) {
 	// TODO
+}
+
+func (r *DeviceRegistry) Listen(deviceID int, who core.NoteListener, startOrStop bool) {
+	if core.IsDebug() {
+		notify.Debugf("midi.listen id=%d, start=%v", deviceID, startOrStop)
+	}
+	in, err := r.Input(deviceID)
+	if err != nil {
+		// TODO
+		return
+	}
+	if startOrStop {
+		in.listener.start()
+		// wait for pending events to be flushed
+		time.Sleep(200 * time.Millisecond)
+		in.listener.add(who)
+	} else {
+		in.listener.remove(who)
+		// do not stop the listener such that incoming events are just ignored
+	}
 }

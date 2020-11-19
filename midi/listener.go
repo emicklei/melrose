@@ -44,6 +44,12 @@ func (l *listener) remove(lis core.NoteListener) {
 	l.noteListeners = without
 }
 
+func (l *listener) removeAll() {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	l.noteListeners = []core.NoteListener{}
+}
+
 func (l *listener) start() {
 	if l.listening {
 		return

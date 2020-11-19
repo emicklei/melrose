@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/emicklei/melrose/control"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
 
@@ -122,10 +123,32 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 					// new variable for theLoop
 					e.context.Variables().Put(variable, theLoop)
 				}
-			} else {
-				// not a Loop
-				e.context.Variables().Put(variable, r)
+				return r, nil
 			}
+			// special case for Listen
+			// if the value is a Listen
+			// then if the variable refers to an existing listen
+			// 		then change to Target of that listen
+			//		else store the listen
+			// else store the result
+			if theListen, ok := r.(*control.Listen); ok {
+				if storedValue, present := e.context.Variables().Get(variable); present {
+					if otherListen, replaceme := storedValue.(*control.Listen); replaceme {
+						otherListen.SetTarget(theListen.Target())
+						r = otherListen
+					} else {
+						// existing variable but not a Listen
+						e.context.Variables().Put(variable, theListen)
+					}
+				} else {
+					// new variable for theLoop
+					e.context.Variables().Put(variable, theListen)
+				}
+				return r, nil
+			}
+
+			// not a Loop or Listen
+			e.context.Variables().Put(variable, r)
 		}
 		return r, nil
 	}

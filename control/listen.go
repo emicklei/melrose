@@ -24,6 +24,12 @@ func NewListen(deviceID int, store core.VariableStorage, variableName string, ta
 	}
 }
 
+// Target is for replacing functions
+func (l *Listen) Target() core.Valueable { return l.callback }
+
+// SetTarget is for replacing functions
+func (l *Listen) SetTarget(c core.Valueable) { l.callback = c }
+
 // Play is part of core.Playable
 func (l *Listen) Play(ctx core.Context) error {
 	if l.isRunning {
@@ -35,7 +41,7 @@ func (l *Listen) Play(ctx core.Context) error {
 }
 
 func (l *Listen) Stop(ctx core.Context) {
-	if l.isRunning {
+	if !l.isRunning {
 		return
 	}
 	l.isRunning = false
