@@ -36,11 +36,11 @@ Basic musical objects in Melrōse are:
 
 Musical object can be composed using many operators such as:
 
-- pitch
-- sequencemap
-- repeat
-- dynamic
-- loop
+- [pitch](dsl.html#bpm)
+- [sequencemap](dsl.html#sequencemap)
+- [repeat](dsl.html#repeat)
+- [dynamic](dsl.html#dynamic)
+- [loop](dsl.html#loop)
 
 Audio control objects such as:
 
