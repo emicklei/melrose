@@ -78,12 +78,7 @@ After installing both `portmidi` and `melrōse`, you can start the tool in a Ter
 
 #### Melrōse plugin for Visual Studio Code<a name="plugin"></a>
 
-Currently, the `melrōse` plugin is not yet published on the Marketplace.
-Get the [sources](https://github.com/emicklei/melrose-for-vscode) and compile a `VSIX` file.
-
-	$ vsce package
-	
-Then install this extension from the Visual Studio Code editor.	
+Search and install the extension from the editor or go to the [Marketplace published package](https://marketplace.visualstudio.com/items?itemName=EMicklei.melrose-for-vscode)
 
 
 ### Contributions

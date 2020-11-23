@@ -8,11 +8,15 @@ title: Melrōse installation guide
 
 Due to increased restrictions and costs of releasing non-commercial packages for the Apple Mac OSX and Microsoft Windows plaform, I can only provide unsigned packages for Apple Mac OSX.
 
-Contact me if you want a commercial, signed and supported version.
-
 ### Mac OSX
 
 [Using Melrōse with Apple Garageband](https://emicklei.github.io/melrose/garageband.html).
+
+Contact me if you want a commercial, signed and supported version.
+
+## Install Melrōse plugin for the free Visual Studio Code editor
+
+You can install the extension directly from your running Visual Studio Code Editor or by going to the [Marketplace published package](https://marketplace.visualstudio.com/items?itemName=EMicklei.melrose-for-vscode)
 
 ## Install from source
 
