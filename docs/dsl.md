@@ -11,7 +11,7 @@ title: Melrōse Language
 Musical objects are created, composed and played using the <strong>melrõse</strong> tool by evaluating expressions.
 Expressions use any of the predefined functions (creation,composition,audio control).
 By assigning an expression to a variable name, you can use that expression by its name to compose other objects.
-
+You can break up long expressions by indenting consecutive lines with 4 spaces or a Tab character.
 ### variables
 
 Variable names must start with a non-digit character and can have zero or more characters in [a-z A-Z _ 0-9].
