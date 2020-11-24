@@ -16,9 +16,14 @@ type midiEvent struct {
 	channel    int
 	velocity   int64
 	out        MIDIOut
+	mustHandle core.Condition
 }
 
 func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
+	// TODO not sure if the noteOn check is correct
+	if m.mustHandle != nil && m.onoff == noteOn && !m.mustHandle() {
+		return
+	}
 	if len(m.echoString) > 0 {
 		fmt.Fprintf(notify.Console.DeviceOut, " %s", m.echoString)
 	}
@@ -54,9 +59,13 @@ func (m midiEvent) asNoteoff() midiEvent {
 
 type restEvent struct {
 	echoString string
+	mustHandle core.Condition
 }
 
 func (r restEvent) Handle(tim *core.Timeline, when time.Time) {
+	if r.mustHandle != nil && !r.mustHandle() {
+		return
+	}
 	if len(r.echoString) > 0 {
 		fmt.Fprintf(notify.Console.DeviceOut, " %s", r.echoString)
 	}

@@ -32,7 +32,7 @@ type AudioDevice interface {
 
 	// Play schedules all the notes on the timeline using a BPM (beats-per-minute).
 	// Returns the end time of the last played Note.
-	Play(seq Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time)
+	Play(condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time)
 
 	Listen(deviceID int, who NoteListener, startOrStop bool)
 
@@ -100,10 +100,14 @@ type Context interface {
 const WorkingDirectory = "pwd"
 
 type Evaluatable interface {
-	Evaluate() error
+	Evaluate(condition Condition) error
 }
 
 type NoteListener interface {
 	NoteOn(Note)
 	NoteOff(Note)
 }
+
+type Condition func() bool
+
+var NoCondition Condition = nil

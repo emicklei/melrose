@@ -8,19 +8,23 @@ import (
 )
 
 type Listen struct {
-	deviceID      int
-	variableStore core.VariableStorage
-	variableName  string
-	isRunning     bool
-	callback      core.Valueable
+	deviceID        int
+	variableStore   core.VariableStorage
+	variableName    string
+	isRunning       bool
+	callback        core.Valueable
+	notesOn         map[int]int
+	noteChangeCount int
 }
 
 func NewListen(deviceID int, store core.VariableStorage, variableName string, target core.Valueable) *Listen {
 	return &Listen{
-		deviceID:      deviceID,
-		variableStore: store,
-		variableName:  variableName,
-		callback:      target,
+		deviceID:        deviceID,
+		variableStore:   store,
+		variableName:    variableName,
+		callback:        target,
+		notesOn:         map[int]int{},
+		noteChangeCount: 0,
 	}
 }
 
@@ -53,9 +57,19 @@ func (l *Listen) NoteOn(n core.Note) {
 	if core.IsDebug() {
 		notify.Debugf("control.listen ON %v", n)
 	}
+	l.noteChangeCount++
+	countCheck := l.noteChangeCount
+	nr := n.MIDI()
+	l.notesOn[nr] = countCheck
 	l.variableStore.Put(l.variableName, n)
 	if e, ok := l.callback.Value().(core.Evaluatable); ok {
-		e.Evaluate()
+		// only actually play the note if the hit count matches the check
+		e.Evaluate(func() bool {
+			// is the note still on?
+			count, ok := l.notesOn[nr]
+			// is the note on on the count
+			return ok && count == countCheck
+		})
 	}
 }
 
@@ -64,6 +78,7 @@ func (l *Listen) NoteOff(n core.Note) {
 	if core.IsDebug() {
 		notify.Debugf("control.listen OFF %v", n)
 	}
+	delete(l.notesOn, n.MIDI())
 }
 
 // Storex is part of core.Storable

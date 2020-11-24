@@ -85,6 +85,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 				// any sequenceable is playable
 				if s, ok := returnValue.(core.Sequenceable); ok {
 					l.context.Device().Play(
+						core.NoCondition,
 						s,
 						l.context.Control().BPM(),
 						time.Now())

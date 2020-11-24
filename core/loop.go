@@ -58,7 +58,7 @@ func (l *Loop) reschedule(d AudioDevice, when time.Time) {
 	moment := when
 	for _, each := range l.target {
 		// after each other
-		moment = d.Play(each, l.ctx.Control().BPM(), moment)
+		moment = d.Play(NoCondition, each, l.ctx.Control().BPM(), moment)
 	}
 	if IsDebug() {
 		notify.Debugf("core.loop: next=%s", moment.Format("15:04:05.00"))

@@ -83,7 +83,7 @@ func (b *Beatmaster) Plan(bars int64, seq Sequenceable) {
 		notify.Debugf("beat.schedule at beats: %d put: %s bars: %.2f", atBeats, Storex(seq), seq.S().Bars(int(b.biab)))
 	}
 	b.schedule.Schedule(atBeats, func(when time.Time) {
-		b.context.Device().Play(seq, b.bpm, when)
+		b.context.Device().Play(NoCondition, seq, b.bpm, when)
 	})
 }
 

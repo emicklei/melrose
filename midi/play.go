@@ -19,7 +19,7 @@ func (registry *DeviceRegistry) Schedule(e core.TimelineEvent, beginAt time.Time
 
 // Play schedules all the notes on the timeline beginning at a give time (now or in the future).
 // Returns the end time of the last played Note.
-func (registry *DeviceRegistry) Play(seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
+func (registry *DeviceRegistry) Play(condition core.Condition, seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
 	if core.IsDebug() {
 		notify.Debugf("midi.play: time=%s object=%s", beginAt.Format("04:05.000"), core.Storex(seq))
 	}
@@ -51,12 +51,12 @@ func (registry *DeviceRegistry) Play(seq core.Sequenceable, bpm float64, beginAt
 			continue
 		}
 		// pedal
-		if device.handledPedalChange(channel, device.timeline, moment, eachGroup) {
+		if device.handledPedalChange(condition, channel, device.timeline, moment, eachGroup) {
 			continue
 		}
 		// one note
 		if len(eachGroup) == 1 {
-			moment = scheduleOneNote(device, channel, eachGroup[0], wholeNoteDuration, moment)
+			moment = scheduleOneNote(device, condition, channel, eachGroup[0], wholeNoteDuration, moment)
 			continue
 		}
 		//  more than one note
@@ -66,13 +66,14 @@ func (registry *DeviceRegistry) Play(seq core.Sequenceable, bpm float64, beginAt
 				event.echoString = core.StringFromNoteGroup(eachGroup)
 			}
 			actualDuration := durationOfGroup(eachGroup, wholeNoteDuration)
+			event.mustHandle = condition
 			moment = scheduleOnOffEvents(device, event, actualDuration, moment)
 			continue
 		}
 		//  not combinable group of more than one note
 		earliest := moment.Add(1 * time.Hour)
 		for _, each := range eachGroup {
-			endTime := scheduleOneNote(device, channel, each, wholeNoteDuration, moment)
+			endTime := scheduleOneNote(device, condition, channel, each, wholeNoteDuration, moment)
 			if endTime.Before(earliest) {
 				earliest = endTime
 			}
@@ -94,9 +95,9 @@ func durationOfGroup(notes []core.Note, whole time.Duration) time.Duration {
 	return longest
 }
 
-func scheduleOneNote(device *OutputDevice, channel int, note core.Note, whole time.Duration, moment time.Time) time.Time {
+func scheduleOneNote(device *OutputDevice, condition core.Condition, channel int, note core.Note, whole time.Duration, moment time.Time) time.Time {
 	if note.IsRest() {
-		event := restEvent{}
+		event := restEvent{mustHandle: condition}
 		if device.echo {
 			event.echoString = note.String()
 		}
@@ -107,21 +108,23 @@ func scheduleOneNote(device *OutputDevice, channel int, note core.Note, whole ti
 	// midi variable length note?
 	if fixed, ok := note.NonFractionBasedDuration(); ok {
 		event := midiEvent{
-			which:    []int64{int64(note.MIDI())},
-			onoff:    noteOn,
-			channel:  channel,
-			velocity: int64(note.Velocity),
-			out:      device.stream,
+			which:      []int64{int64(note.MIDI())},
+			onoff:      noteOn,
+			channel:    channel,
+			velocity:   int64(note.Velocity),
+			out:        device.stream,
+			mustHandle: condition,
 		}
 		return scheduleOnOffEvents(device, event, fixed, moment)
 	}
 	// normal note
 	event := midiEvent{
-		which:    []int64{int64(note.MIDI())},
-		onoff:    noteOn,
-		channel:  channel,
-		velocity: int64(note.Velocity),
-		out:      device.stream,
+		which:      []int64{int64(note.MIDI())},
+		onoff:      noteOn,
+		channel:    channel,
+		velocity:   int64(note.Velocity),
+		out:        device.stream,
+		mustHandle: condition,
 	}
 	actualDuration := time.Duration(float32(whole) * note.DurationFactor())
 	return scheduleOnOffEvents(device, event, actualDuration, moment)

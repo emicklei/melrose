@@ -43,7 +43,7 @@ func (t *Track) Play(ctx Context) error {
 		if IsDebug() {
 			notify.Debugf("core.track title=%s channel=%d bar=%d, biab=%d, bpm=%.2f time=%s", t.Title, t.Channel, bars, biab, bpm, when.Format("04:05.000"))
 		}
-		ctx.Device().Play(cs, bpm, when)
+		ctx.Device().Play(NoCondition, cs, bpm, when)
 	}
 	return nil
 }

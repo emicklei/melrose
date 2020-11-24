@@ -45,7 +45,7 @@ func (d *OutputDevice) Reset() {
 	}
 }
 
-func (d *OutputDevice) handledPedalChange(channel int, timeline *core.Timeline, moment time.Time, group []core.Note) bool {
+func (d *OutputDevice) handledPedalChange(condition core.Condition, channel int, timeline *core.Timeline, moment time.Time, group []core.Note) bool {
 	if len(group) == 0 || len(group) > 1 {
 		return false
 	}
@@ -53,25 +53,29 @@ func (d *OutputDevice) handledPedalChange(channel int, timeline *core.Timeline, 
 	switch {
 	case note.IsPedalUp():
 		timeline.Schedule(pedalEvent{
-			goingDown: false,
-			channel:   channel,
-			out:       d.stream}, moment)
+			goingDown:  false,
+			channel:    channel,
+			out:        d.stream,
+			mustHandle: condition}, moment)
 		return true
 	case note.IsPedalUpDown():
 		timeline.Schedule(pedalEvent{
-			goingDown: false,
-			channel:   channel,
-			out:       d.stream}, moment)
+			goingDown:  false,
+			channel:    channel,
+			out:        d.stream,
+			mustHandle: condition}, moment)
 		timeline.Schedule(pedalEvent{
-			goingDown: true,
-			channel:   channel,
-			out:       d.stream}, moment)
+			goingDown:  true,
+			channel:    channel,
+			out:        d.stream,
+			mustHandle: condition}, moment)
 		return true
 	case note.IsPedalDown():
 		timeline.Schedule(pedalEvent{
-			goingDown: true,
-			channel:   channel,
-			out:       d.stream}, moment)
+			goingDown:  true,
+			channel:    channel,
+			out:        d.stream,
+			mustHandle: condition}, moment)
 	}
 	return false
 }

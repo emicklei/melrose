@@ -160,7 +160,7 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 
 	// special case for Evals
 	if theEval, ok := r.(core.Evaluatable); ok {
-		if err := theEval.Evaluate(); err != nil {
+		if err := theEval.Evaluate(core.NoCondition); err != nil { // no condition
 			return nil, err
 		}
 	}

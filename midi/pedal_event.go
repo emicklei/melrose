@@ -8,12 +8,16 @@ import (
 )
 
 type pedalEvent struct {
-	goingDown bool
-	channel   int
-	out       MIDIOut
+	goingDown  bool
+	channel    int
+	out        MIDIOut
+	mustHandle core.Condition
 }
 
 func (p pedalEvent) Handle(tim *core.Timeline, when time.Time) {
+	if p.mustHandle != nil && !p.mustHandle() {
+		return
+	}
 	// 0 to 63 = Off, 64 to 127 = On
 	var onoff int64 = 0
 	if p.goingDown {
