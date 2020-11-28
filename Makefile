@@ -47,34 +47,19 @@ vsc:
 	cd ../melrose-for-vscode && vsce package
 
 APP := /Applications/Melrose
-package: clean build grammar vsc
+package: clean build  
 	# prepare target
-	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target
-	cp ../melrose-for-vscode/*vsix "target/melrose-for-vscode-$(LATEST_TAG).vsix"
+	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target 
 	echo "$(LATEST_TAG)" > target/version.txt
 	# copy to APP
 	rm -rf $(APP)
 	mkdir -p $(APP)	
 	cp target/melrose $(APP)
-	cp target/*vsix $(APP)
 	cp packaging/macosx/*.sh $(APP)
 	cp target/version.txt $(APP)
 	# package it up
 	/usr/local/bin/packagesbuild --package-version "$(LATEST_TAG)" packaging/macosx/Melrose.pkgproj
 	mv packaging/macosx/Melrose.pkg "packaging/macosx/Melrose-$(LATEST_TAG).pkg"
-
-prezip: clean build vsc
-	mkdir target/demos
-	cp docs/examples/*.mel target/demos
-	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target
-	cp packaging/old/run.sh target
-	cp ../melrose-for-vscode/*vsix target
-	echo "$(LATEST_TAG)" > target/version.txt
-	cp LICENSE target
-
-zip: prezip
-	cd target && zip -mr macosx-melrose-$(LATEST_TAG).zip . && md5 macosx-melrose-$(LATEST_TAG).zip > macosx-melrose-$(LATEST_TAG).zip.md5
-
 
 # go get -u -v github.com/aktau/github-release
 # export GITHUB_TOKEN=$(kiya me get github/emicklei/macbookhub)
