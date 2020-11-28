@@ -648,7 +648,11 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 		Samples: `stretch(2,note('c'))  // 2C
 stretch(0.25,sequence('(c e g)'))  // (16C 16E 16G)`,
 		Func: func(factor interface{}, m ...interface{}) interface{} {
-			return op.NewStretch(getValueable(factor), getSequenceableList(m...))
+			list, ok := getSequenceableList(m...)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot stretch (%T) %v", m, m))
+			}
+			return op.NewStretch(getValueable(factor), list)
 		}})
 
 	eval["group"] = Function{
@@ -725,13 +729,12 @@ end(l1)`,
 				if l, ok := each.Value().(*core.Loop); ok {
 					notify.Print(notify.Infof("stopping %s", each.Name))
 					ctx.Control().EndLoop(l)
-				}
-				if l, ok := each.Value().(*control.Listen); ok {
+				} else if l, ok := each.Value().(*control.Listen); ok {
 					notify.Print(notify.Infof("stopping %s", each.Name))
 					l.Stop(ctx)
+				} else {
+					notify.Print(notify.Warningf("cannot end (%T) %v", each.Value(), each.Value()))
 				}
-				notify.Print(notify.Warningf("cannot end (%T) %v", each.Value(), each.Value()))
-				continue
 			}
 			return nil
 		}}
@@ -742,13 +745,13 @@ end(l1)`,
 		ControlsAudio: true,
 		Prefix:        "chan",
 		Template:      `channel(${1:number},${2:sequenceable})`,
-		Samples:       `channel(2,sequence('C2 E3')) // plays on instrument connected to MIDI channel 2`,
-		Func: func(midiChannel, m interface{}) interface{} {
-			s, ok := getSequenceable(m)
+		Samples:       `channel(2,note('g3'), sequence('c2 e3')) // plays on instrument connected to MIDI channel 2`,
+		Func: func(midiChannel interface{}, m ...interface{}) interface{} {
+			list, ok := getSequenceableList(m...)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot decorate with channel (%T) %v", m, m))
 			}
-			return core.ChannelSelector{Target: s, Number: getValueable(midiChannel)}
+			return core.NewChannelSelector(list, getValueable(midiChannel))
 		}}
 
 	eval["device"] = Function{
@@ -757,13 +760,13 @@ end(l1)`,
 		ControlsAudio: true,
 		Prefix:        "dev",
 		Template:      `device(${1:number},${2:sequenceable})`,
-		Samples:       `device(1,channel(2,sequence('C2 E3'))) // plays on connected device 1 through MIDI channel 2`,
-		Func: func(deviceID, m interface{}) interface{} {
-			s, ok := getSequenceable(m)
+		Samples:       `device(1,channel(2,sequence('c2 e3'), note('g3'))) // plays on connected device 1 through MIDI channel 2`,
+		Func: func(deviceID interface{}, m ...interface{}) interface{} {
+			list, ok := getSequenceableList(m...)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot decorate with device (%T) %v", m, m))
 			}
-			return core.NewDeviceSelector(s, getValueable(deviceID))
+			return core.NewDeviceSelector(list, getValueable(deviceID))
 		}}
 
 	eval["interval"] = Function{
@@ -942,10 +945,13 @@ func getSequenceable(v interface{}) (core.Sequenceable, bool) {
 	return nil, false
 }
 
-func getSequenceableList(m ...interface{}) (list []core.Sequenceable) {
+func getSequenceableList(m ...interface{}) (list []core.Sequenceable, ok bool) {
+	ok = true
 	for _, each := range m {
 		if s, ok := getSequenceable(each); ok {
 			list = append(list, s)
+		} else {
+			return list, false
 		}
 	}
 	return

@@ -113,3 +113,10 @@ func UnValue(v Sequenceable) Sequenceable {
 	}
 	return v
 }
+
+func InList(s Sequenceable) []Sequenceable {
+	if s == nil {
+		return []Sequenceable{}
+	}
+	return []Sequenceable{s}
+}

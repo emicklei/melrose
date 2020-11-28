@@ -1,18 +1,25 @@
 package core
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+)
 
 type ChannelSelector struct {
-	Target Sequenceable
+	Target []Sequenceable
 	Number Valueable
 }
 
-func NewChannelSelector(target Sequenceable, channel Valueable) ChannelSelector {
+func NewChannelSelector(target []Sequenceable, channel Valueable) ChannelSelector {
 	return ChannelSelector{Target: target, Number: channel}
 }
 
 func (c ChannelSelector) S() Sequence {
-	return c.Target.S()
+	groups := [][]Note{}
+	for _, each := range c.Target {
+		groups = append(groups, each.S().Notes...)
+	}
+	return Sequence{Notes: groups}
 }
 
 func (c ChannelSelector) Channel() int {
@@ -20,23 +27,28 @@ func (c ChannelSelector) Channel() int {
 }
 
 func (c ChannelSelector) Storex() string {
-	if s, ok := c.Target.(Storable); ok {
-		return fmt.Sprintf("channel(%v,%s)", c.Number, s.Storex())
-	}
-	return ""
+	var b bytes.Buffer
+	fmt.Fprintf(&b, "channel(%v", c.Number)
+	AppendStorexList(&b, false, c.Target)
+	fmt.Fprintf(&b, ")")
+	return b.String()
 }
 
 type DeviceSelector struct {
-	Target Sequenceable
+	Target []Sequenceable
 	ID     Valueable
 }
 
-func NewDeviceSelector(target Sequenceable, deviceID Valueable) DeviceSelector {
+func NewDeviceSelector(target []Sequenceable, deviceID Valueable) DeviceSelector {
 	return DeviceSelector{Target: target, ID: deviceID}
 }
 
 func (d DeviceSelector) S() Sequence {
-	return d.Target.S()
+	groups := [][]Note{}
+	for _, each := range d.Target {
+		groups = append(groups, each.S().Notes...)
+	}
+	return Sequence{Notes: groups}
 }
 
 func (d DeviceSelector) DeviceID() int {
@@ -44,8 +56,9 @@ func (d DeviceSelector) DeviceID() int {
 }
 
 func (d DeviceSelector) Storex() string {
-	if s, ok := d.Target.(Storable); ok {
-		return fmt.Sprintf("device(%v,%s)", d.ID, s.Storex())
-	}
-	return ""
+	var b bytes.Buffer
+	fmt.Fprintf(&b, "device(%v", d.ID)
+	AppendStorexList(&b, false, d.Target)
+	fmt.Fprintf(&b, ")")
+	return b.String()
 }

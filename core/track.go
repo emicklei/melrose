@@ -37,7 +37,7 @@ func (t *Track) Play(ctx Context) error {
 	biab := ctx.Control().BIAB()
 	whole := WholeNoteDuration(bpm)
 	for bars, each := range t.Content {
-		cs := NewChannelSelector(each, On(t.Channel))
+		cs := NewChannelSelector(InList(each), On(t.Channel))
 		offset := int64((bars-1)*biab) * whole.Nanoseconds() / 4
 		when := now.Add(time.Duration(time.Duration(offset)))
 		if IsDebug() {
@@ -124,7 +124,7 @@ func (m MultiTrack) Play(ctx Context) error {
 	for _, each := range m.Tracks {
 		if track, ok := each.Value().(*Track); ok {
 			for bar, seq := range track.Content {
-				ch := ChannelSelector{Number: On(track.Channel), Target: seq}
+				ch := NewChannelSelector(InList(seq), On(track.Channel))
 				ctx.Control().Plan(int64(bar-1), ch)
 			}
 		} else {

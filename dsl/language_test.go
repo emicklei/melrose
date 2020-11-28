@@ -75,6 +75,16 @@ func TestTrack(t *testing.T) {
 	checkStorex(t, r, "track('test',1,onbar(1,note('C')))")
 }
 
+func TestChannelSelector(t *testing.T) {
+	r := eval(t, "channel(1,note('e'),note('f'))")
+	checkStorex(t, r, "channel(1,note('E'),note('F'))")
+}
+
+func TestDeviceSelector(t *testing.T) {
+	r := eval(t, "device(1,note('e'),note('f'))")
+	checkStorex(t, r, "device(1,note('E'),note('F'))")
+}
+
 func TestBars(t *testing.T) {
 	r := eval(t, "bars(sequence('a b c d'))")
 	if got, want := r.(int), 1; got != want {
