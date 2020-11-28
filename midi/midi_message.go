@@ -60,7 +60,7 @@ func (m Message) Storex() string {
 
 // Evaluate implements core.Evaluateable
 // perform the message send
-func (m Message) Evaluate() error {
+func (m Message) Evaluate(condition core.Condition) error {
 	m.S()
 	return nil
 }

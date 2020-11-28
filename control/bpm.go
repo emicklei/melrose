@@ -18,13 +18,13 @@ func NewBPM(bpm core.Valueable, ctr core.LoopController) SetBPM {
 
 // S has the side effect of setting the BPM unless BPM is zero
 func (s SetBPM) S() core.Sequence {
-	s.Evaluate()
+	s.Evaluate(core.NoCondition)
 	return core.EmptySequence
 }
 
 // Evaluate implements Evaluatable
 // performs the set operation
-func (s SetBPM) Evaluate() error {
+func (s SetBPM) Evaluate(condition core.Condition) error {
 	f := core.Float(s.bpm)
 	if core.IsDebug() {
 		notify.Debugf("control.bpm set %.2f", f)
