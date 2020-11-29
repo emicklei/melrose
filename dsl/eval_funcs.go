@@ -837,7 +837,7 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 
 	eval["next"] = Function{
 		Title:       "Next operator",
-		Description: `is used to produce the next value in a generator such as random and interval`,
+		Description: `is used to produce the next value in a generator such as random, iterator and interval`,
 		Samples: `i = interval(-4,4,2)
 pi = pitch(i,sequence('c d e f g a b')) // current value of "i" is used
 lp_pi = loop(pi,next(i)) // "i" will advance to the next value

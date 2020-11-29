@@ -33,6 +33,8 @@ Depending on your operating system, different steps are required.
 
 #### Mac OSX
 
+Either use a packaged version from [Downloads](https://emicklei.github.io/melrose/garageband.html) or proceed building it from source.
+
     brew install portmidi
 
 See [Brew](https://brew.sh/) for instructions on how to install `brew` on your Mac.
