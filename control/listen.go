@@ -28,6 +28,11 @@ func NewListen(deviceID int, store core.VariableStorage, variableName string, ta
 	}
 }
 
+// Inspect implements Inspectable
+func (l *Listen) Inspect(i core.Inspection) {
+	i.Properties["running"] = l.isRunning
+}
+
 // Target is for replacing functions
 func (l *Listen) Target() core.Valueable { return l.callback }
 
