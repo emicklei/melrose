@@ -78,18 +78,18 @@ func (l *listener) handle(event portmidi.Event) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 	nr := int(event.Data1)
-	if event.Status == noteOn {
+	if (event.Status & noteOn) == noteOn {
 		if _, ok := l.noteOn[nr]; ok {
 			return
 		}
 		// replace with now in nanos
 		event.Timestamp = portmidi.Timestamp(time.Now().UnixNano())
 		l.noteOn[nr] = event
-		noteOn, _ := core.MIDItoNote(0.25, nr, core.Normal) // TODO
+		onNote, _ := core.MIDItoNote(0.25, nr, core.Normal) // TODO
 		for _, each := range l.noteListeners {
-			each.NoteOn(noteOn)
+			each.NoteOn(onNote)
 		}
-	} else if event.Status == noteOff {
+	} else if (event.Status & noteOff) == noteOff {
 		on, ok := l.noteOn[nr]
 		if !ok {
 			return
@@ -100,9 +100,9 @@ func (l *listener) handle(event portmidi.Event) {
 		// compute delta
 		ms := time.Duration(event.Timestamp-on.Timestamp) * time.Nanosecond
 		frac := core.DurationToFraction(120.0, ms) // TODO
-		noteOff, _ := core.MIDItoNote(frac, nr, int(on.Data2))
+		offNote, _ := core.MIDItoNote(frac, nr, int(on.Data2))
 		for _, each := range l.noteListeners {
-			each.NoteOff(noteOff)
+			each.NoteOff(offNote)
 		}
 	}
 }
