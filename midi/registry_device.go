@@ -209,7 +209,7 @@ func (r *DeviceRegistry) Listen(deviceID int, who core.NoteListener, startOrStop
 	}
 	in, err := r.Input(deviceID)
 	if err != nil {
-		// TODO
+		notify.Warningf("input creation failed:%v", err)
 		return
 	}
 	if startOrStop {
