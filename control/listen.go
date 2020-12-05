@@ -2,6 +2,7 @@ package control
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
@@ -15,6 +16,7 @@ type Listen struct {
 	callback        core.Valueable
 	notesOn         map[int]int
 	noteChangeCount int
+	mutex           *sync.RWMutex
 }
 
 func NewListen(deviceID int, store core.VariableStorage, variableName string, target core.Valueable) *Listen {
@@ -23,6 +25,7 @@ func NewListen(deviceID int, store core.VariableStorage, variableName string, ta
 		variableStore:   store,
 		variableName:    variableName,
 		callback:        target,
+		mutex:           new(sync.RWMutex),
 		notesOn:         map[int]int{},
 		noteChangeCount: 0,
 	}
@@ -59,6 +62,9 @@ func (l *Listen) Stop(ctx core.Context) {
 
 // NoteOn is part of core.NoteListener
 func (l *Listen) NoteOn(n core.Note) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+
 	if core.IsDebug() {
 		notify.Debugf("control.listen ON %v", n)
 	}
@@ -70,16 +76,24 @@ func (l *Listen) NoteOn(n core.Note) {
 	if e, ok := l.callback.Value().(core.Evaluatable); ok {
 		// only actually play the note if the hit count matches the check
 		e.Evaluate(func() bool {
-			// is the note still on?
-			count, ok := l.notesOn[nr]
-			// is the note on on the count
-			return ok && count == countCheck
+			return l.isNoteOnCount(nr, countCheck)
 		})
 	}
 }
 
+func (l *Listen) isNoteOnCount(nr, countCheck int) bool {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+	// is the note still on?
+	count, ok := l.notesOn[nr]
+	// is the note on on the count
+	return ok && count == countCheck
+}
+
 // NoteOff is part of core.NoteListener
 func (l *Listen) NoteOff(n core.Note) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
 	if core.IsDebug() {
 		notify.Debugf("control.listen OFF %v", n)
 	}
