@@ -155,12 +155,13 @@ func (d *DeviceRegistry) Command(args []string) notify.Message {
 }
 
 func (d *DeviceRegistry) printInfo() {
-	fmt.Println("Usage:")
+	fmt.Println("\033[1;33mUsage:\033[0m")
 	fmt.Println(":m echo                --- toggle printing the notes that are send")
 	fmt.Println(":m in      <device-id> --- change the default MIDI input  device id")
 	fmt.Println(":m out     <device-id> --- change the default MIDI output device id")
 	fmt.Println()
 
+	fmt.Println("\033[1;33mAvailable:\033[0m")
 	var midiDeviceInfo *portmidi.DeviceInfo
 	for i := 0; i < portmidi.CountDevices(); i++ {
 		midiDeviceInfo = portmidi.Info(portmidi.DeviceID(i)) // returns info about a MIDI device
@@ -177,15 +178,21 @@ func (d *DeviceRegistry) printInfo() {
 			", is ", oc, " for ", usage)
 		fmt.Println()
 	}
-
 	fmt.Println()
 
-	fmt.Printf("[midi] device %d = default input\n", d.defaultInputID)
-	fmt.Printf("[midi] device %d = default output\n", d.defaultOutputID)
+	fmt.Println("\033[1;33mDefaults:\033[0m")
+
+	midiDeviceInfo = portmidi.Info(portmidi.DeviceID(d.defaultInputID))
+	fmt.Printf("[midi] device  %d = default  input, %s/%s\n", d.defaultInputID, midiDeviceInfo.Interface, midiDeviceInfo.Name)
+
+	midiDeviceInfo = portmidi.Info(portmidi.DeviceID(d.defaultOutputID))
+	fmt.Printf("[midi] device  %d = default output, %s/%s\n", d.defaultOutputID, midiDeviceInfo.Interface, midiDeviceInfo.Name)
 
 	od, _ := d.Output(d.defaultOutputID)
+	fmt.Printf("[midi] channel %d = default MIDI output channel\n", od.defaultChannel)
 	fmt.Printf("[midi] echo notes = %v\n", od.echo)
 
+	// debug stuff
 	for deviceID, each := range d.out {
 		if trace, ok := each.stream.(tracingMIDIStream); ok {
 			trace.log(deviceID)

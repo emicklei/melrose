@@ -393,7 +393,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 
 	eval["biab"] = Function{
 		Title:         "Beats in a Bar",
-		Description:   "set the Beats in a Bar [1..16]; default is 4",
+		Description:   "set the Beats in a Bar; default is 4",
 		ControlsAudio: true,
 		Prefix:        "biab",
 		Template:      `biab(${1:beats-in-a-bar})`,
