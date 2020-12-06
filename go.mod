@@ -7,13 +7,10 @@ require (
 	github.com/antonmedv/expr v1.8.9
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/tre v1.2.0
-	github.com/emicklei/tviewplus v0.5.0
-	github.com/gdamore/tcell/v2 v2.0.1-0.20201017141208-acf90d56d591
+	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/peterh/liner v1.2.0
 	github.com/rakyll/portmidi v0.0.0-20201020180702-d436ceaa537a
-	github.com/rivo/tview v0.0.0-20201118063654-f007e9ad3893
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
-	honnef.co/go/tools v0.0.1-2020.1.6 // indirect
 )
