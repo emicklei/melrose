@@ -82,7 +82,7 @@ The first parameter controls the fraction of the note, e.g. 1 = whole, 2 = half,
 		Prefix:     "dy",
 		IsComposer: true,
 		Template:   `dynamic(${1:emphasis},${2:object})`,
-		Samples:    `dynamic('++',sequence('E F')) // => E++ F++`,
+		Samples:    `dynamic('++',sequence('e f')) // => E++ F++`,
 		Func: func(emphasis string, playables ...interface{}) interface{} {
 			if err := op.CheckDynamic(emphasis); err != nil {
 				notify.Print(notify.Error(err))
@@ -631,8 +631,8 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 		Prefix:      "it",
 		Template:    `iterator(${1:array-element})`,
 		Samples: `i = iterator(1,3,5,7,9)
-		p = pitch(i,note('c'))
-		lp = loop(p,next(i))
+p = pitch(i,note('c'))
+lp = loop(p,next(i))
 		`,
 		Func: func(values ...interface{}) *core.Iterator {
 			return &core.Iterator{
@@ -660,7 +660,7 @@ stretch(0.25,sequence('(c e g)'))  // (16C 16E 16G)`,
 		Description: "create a new sequence in which all notes of a musical object are grouped",
 		Prefix:      "par",
 		Template:    `group(${1:sequenceable})`,
-		Samples:     `group(sequence('C D E')) // => (C D E)`,
+		Samples:     `group(sequence('c d e')) // => (C D E)`,
 		IsComposer:  true,
 		Func: func(value interface{}) interface{} {
 			if s, ok := getSequenceable(value); !ok {
@@ -676,7 +676,7 @@ stretch(0.25,sequence('(c e g)'))  // (16C 16E 16G)`,
 		ControlsAudio: true,
 		Prefix:        "loo",
 		Template:      `lp_${1:object} = loop(${1:object})`,
-		Samples: `cb = sequence('C D E F G A B')
+		Samples: `cb = sequence('c d e f g a b')
 lp_cb = loop(cb,reverse(cb))`,
 		Func: func(playables ...interface{}) interface{} {
 			joined := []core.Sequenceable{}
@@ -717,7 +717,7 @@ begin(lp_cb) // end(lp_cb)`,
 		Description:   "end running loop(s) or listener(s). Ignore if it was stopped.",
 		ControlsAudio: true,
 		Template:      `end(${1:control})`,
-		Samples: `l1 = loop(sequence('C E G'))
+		Samples: `l1 = loop(sequence('c e g'))
 begin(l1)
 end(l1)`,
 		Func: func(vars ...variable) interface{} {
@@ -775,7 +775,7 @@ end(l1)`,
 		Prefix:      "int",
 		Template:    `interval(${1:from},${2:to},${3:by})`,
 		Samples: `int1 = interval(-2,4,1)
-lp_cdef = loop(pitch(int1,sequence('C D E F')), next(int1))`,
+lp_cdef = loop(pitch(int1,sequence('c d e f')), next(int1))`,
 		IsComposer: true,
 		Func: func(from, to, by interface{}) *core.Interval {
 			return core.NewInterval(core.ToValueable(from), core.ToValueable(to), core.ToValueable(by), core.RepeatFromTo)
