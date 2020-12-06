@@ -45,13 +45,7 @@ Open the settings of this IAC Driver and make sure the device is online.
 
 [Visual Studio Code](https://code.visualstudio.com/download) is a popular free open-source file editor, sponsored by Microsoft, also available for Mac OSX.
 The Melrōse extension adds keyboard combinations to play and validate musical objects.
-
-The folder `/Applications/Melrose` contains a file that ends with the name `.vsix`.
-This file contains the source code of the extension.
-To install this extension, you need to open the Visual Studio Code Editor and go to `Code -> Preferences -> Extensions`.
-This opens the install extensions for your editor.
-Clicking on the dotted menu on the top left will open more actions. 
-Choose `Install from VSIX...` and select the extension file from the melrose folder.
+You can install the extension directly from your running Visual Studio Code Editor or by going to the [Marketplace published package](https://marketplace.visualstudio.com/items?itemName=EMicklei.melrose-for-vscode)
 
 ### Create a file
 
