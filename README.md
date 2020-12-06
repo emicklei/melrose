@@ -21,6 +21,10 @@ Until `v1.0.0` the language syntax may change in a an incompatible way.
 
 ![screenshot.png](docs/images/screenshot.png)
 
+### System setup
+
+![melrose-port-daw.png](docs/images/melrose-port-daw.png)
+
 ### Install
 
 In order to build and work with `melrose` on your operating system, the following components need to be installed:
