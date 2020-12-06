@@ -169,6 +169,12 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 	if theLoop, ok := r.(*core.Loop); ok {
 		return nil, fmt.Errorf("cannot have an unnamed Loop, use e.g. myLoop = %s", theLoop.Storex())
 	}
+
+	// special case for Listen
+	if theListen, ok := r.(*control.Listen); ok {
+		return nil, fmt.Errorf("cannot have an unnamed Listen, use e.g. myListen = %s", theListen.Storex())
+	}
+
 	return r, nil
 }
 

@@ -180,7 +180,7 @@ func (d *DeviceRegistry) printInfo() {
 	}
 	fmt.Println()
 
-	fmt.Println("\033[1;33mDefaults:\033[0m")
+	fmt.Println("\033[1;33mCurrent:\033[0m")
 
 	midiDeviceInfo = portmidi.Info(portmidi.DeviceID(d.defaultInputID))
 	fmt.Printf("[midi] device  %d = default  input, %s/%s\n", d.defaultInputID, midiDeviceInfo.Interface, midiDeviceInfo.Name)
