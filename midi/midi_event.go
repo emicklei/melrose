@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/midi/transport"
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -15,7 +16,7 @@ type midiEvent struct {
 	onoff      int64
 	channel    int
 	velocity   int64
-	out        MIDIOut
+	out        transport.MIDIOut
 	mustHandle core.Condition
 }
 

@@ -4,13 +4,14 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/midi/transport"
 	"github.com/emicklei/melrose/notify"
 )
 
 type pedalEvent struct {
 	goingDown  bool
 	channel    int
-	out        MIDIOut
+	out        transport.MIDIOut
 	mustHandle core.Condition
 }
 

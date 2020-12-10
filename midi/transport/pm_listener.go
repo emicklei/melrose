@@ -1,4 +1,6 @@
-package midi
+// +build !windows
+
+package transport
 
 import (
 	"sync"
@@ -26,13 +28,13 @@ func newListener(inputStream *portmidi.Stream) *listener {
 	}
 }
 
-func (l *listener) add(lis core.NoteListener) {
+func (l *listener) Add(lis core.NoteListener) {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 	l.noteListeners = append(l.noteListeners, lis)
 }
 
-func (l *listener) remove(lis core.NoteListener) {
+func (l *listener) Remove(lis core.NoteListener) {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 	without := []core.NoteListener{}
@@ -44,13 +46,7 @@ func (l *listener) remove(lis core.NoteListener) {
 	l.noteListeners = without
 }
 
-func (l *listener) removeAll() {
-	l.mutex.Lock()
-	defer l.mutex.Unlock()
-	l.noteListeners = []core.NoteListener{}
-}
-
-func (l *listener) start() {
+func (l *listener) Start() {
 	if l.listening {
 		return
 	}
@@ -107,7 +103,7 @@ func (l *listener) handle(event portmidi.Event) {
 	}
 }
 
-func (l *listener) stop() {
+func (l *listener) Stop() {
 	// forget open notes
 	l.noteOn = map[int]portmidi.Event{}
 	if l.listening {

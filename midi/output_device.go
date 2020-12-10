@@ -4,19 +4,20 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/midi/transport"
 	"github.com/emicklei/melrose/notify"
 )
 
 type OutputDevice struct {
 	id             int
-	stream         MIDIOut
+	stream         transport.MIDIOut
 	defaultChannel int
 
 	echo     bool
 	timeline *core.Timeline
 }
 
-func NewOutputDevice(id int, out MIDIOut, ch int) *OutputDevice {
+func NewOutputDevice(id int, out transport.MIDIOut, ch int) *OutputDevice {
 	return &OutputDevice{
 		id:             id,
 		stream:         out,

@@ -34,6 +34,7 @@ type AudioDevice interface {
 	// Returns the end time of the last played Note.
 	Play(condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time)
 
+	HasInputCapability() bool
 	Listen(deviceID int, who NoteListener, startOrStop bool)
 
 	// Schedule put an event on the timeline at a begin

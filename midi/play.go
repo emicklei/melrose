@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/midi/transport"
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -31,6 +32,7 @@ func (registry *DeviceRegistry) Play(condition core.Condition, seq core.Sequence
 	deviceID := registry.defaultOutputID
 	if dev, ok := seq.(core.DeviceSelector); ok {
 		deviceID = dev.DeviceID()
+		seq = dev.Unwrap()
 	}
 	device, err := registry.Output(deviceID)
 	if err != nil {
@@ -41,6 +43,7 @@ func (registry *DeviceRegistry) Play(condition core.Condition, seq core.Sequence
 	channel := device.defaultChannel
 	if sel, ok := seq.(core.ChannelSelector); ok {
 		channel = sel.Channel()
+		seq = sel.Unwrap()
 	}
 
 	// schedule all notes of the sequenceable
@@ -153,7 +156,7 @@ func canCombineEvent(notes []core.Note) bool {
 }
 
 // Pre: notes not empty
-func combinedMidiEvent(channel int, notes []core.Note, stream MIDIOut) midiEvent {
+func combinedMidiEvent(channel int, notes []core.Note, stream transport.MIDIOut) midiEvent {
 	// first note makes fraction and velocity
 	velocity := notes[0].Velocity
 	if velocity > 127 {

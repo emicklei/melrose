@@ -121,6 +121,11 @@ sm = sequencemap(ar,sequence('c d'))`)
 		"sequence('C')")
 }
 
+func TestDeviceOnChannelOnNote(t *testing.T) {
+	r := eval(t, `d = device(1,channel(2,note('e')))`)
+	checkStorex(t, r.(core.Sequenceable).S(), "sequence('E')")
+}
+
 func TestDynamicMapWithTwoSequenceables(t *testing.T) {
 	r := eval(t, `s = sequence('c e g')
 t = note('b')

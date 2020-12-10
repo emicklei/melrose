@@ -10,7 +10,6 @@ import (
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
 	"github.com/emicklei/tre"
-	"github.com/rakyll/portmidi"
 )
 
 type DeviceRegistry struct {
@@ -35,6 +34,7 @@ func NewDeviceRegistry() (*DeviceRegistry, error) {
 	return r, nil
 }
 
+// TODO used?
 func (d *DeviceRegistry) IO() (inputDeviceID, outputDeviceID int) {
 	return d.defaultInputID, d.defaultOutputID
 }
@@ -82,23 +82,22 @@ func (d *DeviceRegistry) Input(id int) (*InputDevice, error) {
 	if err != nil {
 		return nil, tre.New(err, "Input", "id", id)
 	}
-	ide := NewInputDevice(id, midiIn)
+	ide := NewInputDevice(id, midiIn, d.streamRegistry.transport)
 	d.in[id] = ide
 	return ide, nil
 }
 
 func (d *DeviceRegistry) init() error {
-	portmidi.Initialize()
-	outputID := portmidi.DefaultOutputDeviceID()
+	outputID := d.streamRegistry.transport.DefaultOutputDeviceID()
 	if outputID == -1 {
 		return errors.New("no default output MIDI device available")
 	}
-	d.defaultOutputID = int(outputID)
+	d.defaultOutputID = outputID
 	return nil
 }
 
 func (d *DeviceRegistry) Close() error {
-	defer portmidi.Terminate()
+	defer d.streamRegistry.transport.Terminate()
 	for _, each := range d.in {
 		each.stopListener()
 	}
@@ -155,49 +154,15 @@ func (d *DeviceRegistry) Command(args []string) notify.Message {
 }
 
 func (d *DeviceRegistry) printInfo() {
-	fmt.Println("\033[1;33mUsage:\033[0m")
-	fmt.Println(":m echo                --- toggle printing the notes that are send")
-	fmt.Println(":m in      <device-id> --- change the default MIDI input  device id")
-	fmt.Println(":m out     <device-id> --- change the default MIDI output device id")
-	fmt.Println()
+	d.streamRegistry.transport.PrintInfo(d.defaultInputID, d.defaultOutputID)
 
-	fmt.Println("\033[1;33mAvailable:\033[0m")
-	var midiDeviceInfo *portmidi.DeviceInfo
-	for i := 0; i < portmidi.CountDevices(); i++ {
-		midiDeviceInfo = portmidi.Info(portmidi.DeviceID(i)) // returns info about a MIDI device
-		fmt.Printf("[midi] device %d: ", i)
-		usage := "output"
-		if midiDeviceInfo.IsInputAvailable {
-			usage = "input"
-		}
-		oc := "open"
-		if !midiDeviceInfo.IsOpened {
-			oc = "closed"
-		}
-		fmt.Print("\"", midiDeviceInfo.Interface, "/", midiDeviceInfo.Name, "\"",
-			", is ", oc, " for ", usage)
-		fmt.Println()
+	od, err := d.Output(d.defaultOutputID)
+	if err != nil {
+		notify.Print(notify.Error(err))
+		return
 	}
-	fmt.Println()
-
-	fmt.Println("\033[1;33mCurrent:\033[0m")
-
-	midiDeviceInfo = portmidi.Info(portmidi.DeviceID(d.defaultInputID))
-	fmt.Printf("[midi] device  %d = default  input, %s/%s\n", d.defaultInputID, midiDeviceInfo.Interface, midiDeviceInfo.Name)
-
-	midiDeviceInfo = portmidi.Info(portmidi.DeviceID(d.defaultOutputID))
-	fmt.Printf("[midi] device  %d = default output, %s/%s\n", d.defaultOutputID, midiDeviceInfo.Interface, midiDeviceInfo.Name)
-
-	od, _ := d.Output(d.defaultOutputID)
 	fmt.Printf("[midi] channel %d = default MIDI output channel\n", od.defaultChannel)
 	fmt.Printf("[midi] echo notes = %v\n", od.echo)
-
-	// debug stuff
-	for deviceID, each := range d.out {
-		if trace, ok := each.stream.(tracingMIDIStream); ok {
-			trace.log(deviceID)
-		}
-	}
 }
 
 func (d *DeviceRegistry) ChangeInputDeviceID(id int) {
@@ -210,6 +175,10 @@ func (d *DeviceRegistry) EchoReceivedPitchOnly(bool) {
 	// TODO
 }
 
+func (r *DeviceRegistry) HasInputCapability() bool {
+	return r.streamRegistry.transport.HasInputCapability()
+}
+
 func (r *DeviceRegistry) Listen(deviceID int, who core.NoteListener, startOrStop bool) {
 	if core.IsDebug() {
 		notify.Debugf("midi.listen id=%d, start=%v", deviceID, startOrStop)
@@ -220,12 +189,12 @@ func (r *DeviceRegistry) Listen(deviceID int, who core.NoteListener, startOrStop
 		return
 	}
 	if startOrStop {
-		in.listener.start()
+		in.listener.Start()
 		// wait for pending events to be flushed
 		time.Sleep(200 * time.Millisecond)
-		in.listener.add(who)
+		in.listener.Add(who)
 	} else {
-		in.listener.remove(who)
+		in.listener.Remove(who)
 		// do not stop the listener such that incoming events are just ignored
 	}
 }

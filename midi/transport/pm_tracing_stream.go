@@ -1,10 +1,21 @@
-package midi
+// +build !windows
+
+package transport
 
 import (
 	"time"
 
 	"github.com/emicklei/melrose/notify"
 	"github.com/rakyll/portmidi"
+)
+
+// https://www.midi.org/specifications-old/item/table-1-summary-of-midi-message
+const (
+	noteOn        int64 = 0x90 // 10010000 , 144
+	noteOff       int64 = 0x80 // 10000000 , 128
+	controlChange int64 = 0xB0 // 10110000 , 176
+	noteAllOff    int64 = 0x78 // 01111000 , 120  (not 123 because sustain)
+	sustainPedal  int64 = 0x40
 )
 
 type tracingMIDIStream struct {

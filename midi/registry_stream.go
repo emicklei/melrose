@@ -3,34 +3,26 @@ package midi
 import (
 	"sync"
 
-	"github.com/rakyll/portmidi"
+	"github.com/emicklei/melrose/midi/transport"
 )
 
 type streamRegistry struct {
-	mutex *sync.RWMutex
-	out   map[int]MIDIOut
-	in    map[int]MIDIIn
-}
-
-type MIDIOut interface {
-	WriteShort(status int64, data1 int64, data2 int64) error
-	Close() error
-	Abort() error
-}
-
-type MIDIIn interface {
-	Close() error
+	mutex     *sync.RWMutex
+	out       map[int]transport.MIDIOut
+	in        map[int]transport.MIDIIn
+	transport transport.Transporter
 }
 
 func newStreamRegistry() *streamRegistry {
 	return &streamRegistry{
-		mutex: new(sync.RWMutex),
-		out:   map[int]MIDIOut{},
-		in:    map[int]MIDIIn{},
+		mutex:     new(sync.RWMutex),
+		out:       map[int]transport.MIDIOut{},
+		in:        map[int]transport.MIDIIn{},
+		transport: transport.Factory(),
 	}
 }
 
-func (s *streamRegistry) output(id int) (MIDIOut, error) {
+func (s *streamRegistry) output(id int) (transport.MIDIOut, error) {
 	s.mutex.RLock()
 	if m, ok := s.out[id]; ok {
 		s.mutex.RUnlock()
@@ -40,17 +32,15 @@ func (s *streamRegistry) output(id int) (MIDIOut, error) {
 	// not present
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	out, err := portmidi.NewOutputStream(portmidi.DeviceID(id), 1024, 0) // TODO flag
+	out, err := s.transport.NewMIDIOut(id)
 	if err != nil {
 		return nil, err
 	}
-	// TEMP TODO
-	tout := tracingMIDIStreamOn(out)
-	s.out[id] = tout
-	return tout, nil
+	s.out[id] = out
+	return out, nil
 }
 
-func (s *streamRegistry) input(id int) (MIDIIn, error) {
+func (s *streamRegistry) input(id int) (transport.MIDIIn, error) {
 	s.mutex.RLock()
 	if m, ok := s.in[id]; ok {
 		s.mutex.RUnlock()
@@ -60,7 +50,7 @@ func (s *streamRegistry) input(id int) (MIDIIn, error) {
 	// not present
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	in, err := portmidi.NewInputStream(portmidi.DeviceID(id), 1024) // TODO flag
+	in, err := s.transport.NewMIDIIn(id)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +68,7 @@ func (s *streamRegistry) close() error {
 		each.Abort()
 		each.Close()
 	}
-	s.out = map[int]MIDIOut{}
-	s.in = map[int]MIDIIn{}
+	s.out = map[int]transport.MIDIOut{}
+	s.in = map[int]transport.MIDIIn{}
 	return nil
 }

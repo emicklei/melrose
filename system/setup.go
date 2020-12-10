@@ -6,6 +6,7 @@ import (
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/midi"
+	"github.com/emicklei/melrose/midi/transport"
 
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/server"
@@ -14,6 +15,7 @@ import (
 var (
 	debugLogging = flag.Bool("d", false, "debug logging")
 	httpPort     = flag.String("http", ":8118", "address on which to listen for HTTP requests")
+	transportUDP = flag.String("udp", "", "if set to host:port then use UDP transport")
 )
 
 func Setup() (core.Context, error) {
@@ -21,6 +23,10 @@ func Setup() (core.Context, error) {
 
 	if *debugLogging {
 		core.ToggleDebug()
+	}
+
+	if len(*transportUDP) > 0 {
+		transport.UseUDPTransport(*transportUDP)
 	}
 
 	ctx := new(core.PlayContext)

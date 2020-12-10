@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/midi/transport"
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -66,7 +67,7 @@ func (m Message) Evaluate(condition core.Condition) error {
 }
 
 // if channel < then do not include that information
-func sendRaw(status, channel, data1, data2 int, out MIDIOut) error {
+func sendRaw(status, channel, data1, data2 int, out transport.MIDIOut) error {
 	if channel < 1 {
 		return out.WriteShort(int64(status), int64(data1), int64(data2))
 	}

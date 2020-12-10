@@ -1,23 +1,23 @@
 package midi
 
-import "github.com/rakyll/portmidi"
+import (
+	"github.com/emicklei/melrose/midi/transport"
+)
 
 type InputDevice struct {
 	id       int
-	stream   MIDIIn
 	echo     bool
-	listener *listener
+	listener transport.MIDIListener
 }
 
-func NewInputDevice(id int, in MIDIIn) *InputDevice {
+func NewInputDevice(id int, in transport.MIDIIn, t transport.Transporter) *InputDevice {
 	return &InputDevice{
 		id:       id,
-		stream:   in,
 		echo:     false,
-		listener: newListener(in.(*portmidi.Stream)), // TODO
+		listener: t.NewMIDIListener(in), /// newListener(in.(*portmidi.Stream)), // TODO
 	}
 }
 
 func (i *InputDevice) stopListener() {
-	i.listener.stop()
+	i.listener.Stop()
 }

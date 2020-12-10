@@ -1,6 +1,7 @@
 package control
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 
@@ -46,6 +47,9 @@ func (l *Listen) SetTarget(c core.Valueable) { l.callback = c }
 func (l *Listen) Play(ctx core.Context) error {
 	if l.isRunning {
 		return nil
+	}
+	if !ctx.Device().HasInputCapability() {
+		return errors.New("Input in not available for this device")
 	}
 	l.isRunning = true
 	ctx.Device().Listen(l.deviceID, l, l.isRunning)
