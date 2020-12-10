@@ -5,13 +5,16 @@ package transport
 import (
 	"fmt"
 
+	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
 	"github.com/emicklei/tre"
 	"github.com/rakyll/portmidi"
 )
 
 func init() {
-	//log.Println("port init")
+	if core.IsDebug() {
+		notify.Debugf("transport.init with PortmidiTransporter")
+	}
 	Factory = func() Transporter {
 		if err := portmidi.Initialize(); err != nil {
 			notify.Print(notify.Warningf("%v", tre.New(err, "portmidi.Initialize")))
@@ -46,17 +49,15 @@ func (t *PortmidiTransporter) DefaultOutputDeviceID() int {
 func (t *PortmidiTransporter) NewMIDIListener(in MIDIIn) MIDIListener {
 	return newListener(in.(*portmidi.Stream))
 }
-func (t *PortmidiTransporter) Start() {}
-func (t *PortmidiTransporter) Stop()  {}
 
 func (t *PortmidiTransporter) PrintInfo(inID, outID int) {
-	fmt.Println("\033[1;33mUsage:\033[0m")
+	notify.PrintHighlighted("Usage:")
 	fmt.Println(":m echo                --- toggle printing the notes that are send")
 	fmt.Println(":m in      <device-id> --- change the default MIDI input  device id")
 	fmt.Println(":m out     <device-id> --- change the default MIDI output device id")
 	fmt.Println()
 
-	fmt.Println("\033[1;33mAvailable:\033[0m")
+	notify.PrintHighlighted("Available:")
 	var midiDeviceInfo *portmidi.DeviceInfo
 	for i := 0; i < portmidi.CountDevices(); i++ {
 		midiDeviceInfo = portmidi.Info(portmidi.DeviceID(i)) // returns info about a MIDI device
@@ -75,7 +76,7 @@ func (t *PortmidiTransporter) PrintInfo(inID, outID int) {
 	}
 	fmt.Println()
 
-	fmt.Println("\033[1;33mCurrent:\033[0m")
+	notify.PrintHighlighted("Current:")
 
 	midiDeviceInfo = portmidi.Info(portmidi.DeviceID(inID))
 	fmt.Printf("[midi] device  %d = default  input, %s/%s\n", inID, midiDeviceInfo.Interface, midiDeviceInfo.Name)

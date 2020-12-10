@@ -5,6 +5,31 @@ import (
 	"strings"
 )
 
+var ansiColorsEnabled = true
+
+func PrintWelcome() {
+	if ansiColorsEnabled {
+		fmt.Println("\033[1;34mmelrōse\033[0m" + " - program your melodies")
+	} else {
+		fmt.Fprintf(Console.StandardOut, "melrose - program your melodies\n")
+	}
+}
+
+func Prompt() string {
+	if ansiColorsEnabled {
+		return "𝄞 "
+	}
+	return "<| "
+}
+
+func PrintHighlighted(what string) {
+	if ansiColorsEnabled {
+		fmt.Println("\033[1;33m" + what + "\033[0m")
+	} else {
+		fmt.Println(what)
+	}
+}
+
 func Print(m Message) {
 	if m == nil {
 		return
@@ -22,18 +47,6 @@ func Print(m Message) {
 // Println is to inject a function that can report info,error and warning
 var Println = fmt.Println
 
-// func printInfo(args ...interface{}) {
-// 	fmt.Fprintf(Console.StandardOut, "INFO: %s\n", args...)
-// }
-
-// func printError(args ...interface{}) {
-// 	fmt.Fprintf(Console.StandardError, "ERROR: %s\n", args...)
-// }
-
-// func printWarning(args ...interface{}) {
-// 	fmt.Fprintf(Console.StandardOut, "WARN: %s\n", args...)
-// }
-
 func Debugf(format string, args ...interface{}) {
 	// make sure it ends with newline
 	if !strings.HasSuffix(format, "\n") {
@@ -43,13 +56,25 @@ func Debugf(format string, args ...interface{}) {
 }
 
 func printInfo(args ...interface{}) {
-	Println(append([]interface{}{"\033[1;32minfo:\033[0m"}, args...)...)
+	if ansiColorsEnabled {
+		Println(append([]interface{}{"\033[1;32minfo:\033[0m"}, args...)...)
+	} else {
+		fmt.Fprintf(Console.StandardOut, "INFO: %s\n", args...)
+	}
 }
 
 func printError(args ...interface{}) {
-	Println(append([]interface{}{"\033[1;31merror:\033[0m"}, args...)...)
+	if ansiColorsEnabled {
+		Println(append([]interface{}{"\033[1;31merror:\033[0m"}, args...)...)
+	} else {
+		fmt.Fprintf(Console.StandardError, "ERROR: %s\n", args...)
+	}
 }
 
 func printWarning(args ...interface{}) {
-	Println(append([]interface{}{"\033[1;33mwarning:\033[0m"}, args...)...)
+	if ansiColorsEnabled {
+		Println(append([]interface{}{"\033[1;33mwarning:\033[0m"}, args...)...)
+	} else {
+		fmt.Fprintf(Console.StandardOut, "WARN: %s\n", args...)
+	}
 }

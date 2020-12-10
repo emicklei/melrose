@@ -19,7 +19,7 @@ var (
 )
 
 func StartREPL(ctx core.Context) {
-	welcome()
+	notify.PrintWelcome()
 	// start REPL
 	line := liner.NewLiner()
 	defer line.Close()
@@ -28,10 +28,6 @@ func StartREPL(ctx core.Context) {
 	//setupCloseHandler(line)
 	setup(line)
 	repl(line, ctx)
-}
-
-func welcome() {
-	fmt.Println("\033[1;34mmelrōse\033[0m" + " - program your melodies")
 }
 
 func tearDown(line *liner.State, ctx core.Context) {
@@ -58,7 +54,7 @@ func repl(line *liner.State, ctx core.Context) {
 	eval := dsl.NewEvaluator(ctx)
 	ctx.Control().Start()
 	for {
-		entry, err := line.Prompt("𝄞 ")
+		entry, err := line.Prompt(notify.Prompt())
 		if err != nil {
 			notify.Print(notify.Error(err))
 			continue

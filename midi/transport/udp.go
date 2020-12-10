@@ -3,9 +3,15 @@ package transport
 import (
 	"errors"
 	"fmt"
+
+	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 )
 
 func UseUDPTransport(hostport string) {
+	if core.IsDebug() {
+		notify.Debugf("transport.UseUDPTransport with [%s]", hostport)
+	}
 	Factory = func() Transporter {
 		return &UDPTransporter{hostport: hostport}
 	}
@@ -38,8 +44,6 @@ func (t *UDPTransporter) DefaultOutputDeviceID() int {
 func (t *UDPTransporter) NewMIDIListener(in MIDIIn) MIDIListener {
 	return nil
 }
-func (t *UDPTransporter) Start() {}
-func (t *UDPTransporter) Stop()  {}
 
 func (t *UDPTransporter) PrintInfo(inID, outID int) {
 	fmt.Println("\033[1;33mUsage:\033[0m")
