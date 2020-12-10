@@ -46,6 +46,6 @@ func (t *UDPTransporter) NewMIDIListener(in MIDIIn) MIDIListener {
 }
 
 func (t *UDPTransporter) PrintInfo(inID, outID int) {
-	fmt.Println("\033[1;33mUsage:\033[0m")
+	notify.PrintHighlighted("Usage:")
 	fmt.Println()
 }

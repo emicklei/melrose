@@ -1,14 +1,13 @@
 package system
 
 import (
-	"fmt"
-
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 )
 
 func TearDown(ctx core.Context) error {
 	ctx.Control().Reset()
 	ctx.Device().Close()
-	fmt.Println("\033[1;34mmelrose\033[0m" + " sings bye!")
+	notify.PrintBye()
 	return nil
 }

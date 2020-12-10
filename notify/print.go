@@ -15,11 +15,19 @@ func PrintWelcome() {
 	}
 }
 
+func PrintBye() {
+	if ansiColorsEnabled {
+		fmt.Println("\033[1;34mmelrose\033[0m" + " sings bye!")
+	} else {
+		fmt.Fprintf(Console.StandardOut, "melrose sings bye!\n")
+	}
+}
+
 func Prompt() string {
 	if ansiColorsEnabled {
 		return "𝄞 "
 	}
-	return "<| "
+	return "# "
 }
 
 func PrintHighlighted(what string) {
