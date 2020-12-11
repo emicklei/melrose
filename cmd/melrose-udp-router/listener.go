@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"log"
 	"net"
@@ -13,16 +14,11 @@ import (
 
 type UDPToMIDIListener struct {
 	outputStream *portmidi.Stream
-	connection   net.Conn
-	listener     net.Listener
+	connection   net.PacketConn
 }
 
-func newUDPToMIDIListener(host string, port int, deviceID int) (*UDPToMIDIListener, error) {
-	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", host, port))
-	if err != nil {
-		return nil, err
-	}
-	c, err := lis.Accept()
+func newUDPToMIDIListener(port int, deviceID int) (*UDPToMIDIListener, error) {
+	c, err := net.ListenPacket("udp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		return nil, err
 	}
@@ -34,14 +30,15 @@ func newUDPToMIDIListener(host string, port int, deviceID int) (*UDPToMIDIListen
 	return &UDPToMIDIListener{
 		outputStream: s,
 		connection:   c,
-		listener:     lis,
 	}, nil
 }
 
 // start blocks until error
 func (l *UDPToMIDIListener) start() {
-	reader := bufio.NewReader(l.connection)
 	for {
+		buffer := make([]byte, 256)
+		reader := bufio.NewReader(bytes.NewReader(buffer))
+		l.connection.ReadFrom(buffer)
 		msg, err := io.ReadMessage(reader)
 		if err != nil {
 			log.Println("aborted reading messages, error:", err)
@@ -54,9 +51,6 @@ func (l *UDPToMIDIListener) start() {
 func (l *UDPToMIDIListener) close() {
 	if l.connection != nil {
 		l.connection.Close()
-	}
-	if l.listener != nil {
-		l.listener.Close()
 	}
 	if l.outputStream != nil {
 		l.outputStream.Abort()

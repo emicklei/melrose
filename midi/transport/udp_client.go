@@ -1,6 +1,7 @@
 package transport
 
 import (
+	"fmt"
 	"net"
 
 	"github.com/emicklei/melrose/core"
@@ -13,10 +14,10 @@ type routerClient struct {
 	connection net.Conn
 }
 
-func newRouterClient(hostport string, id int) (MIDIOut, error) {
-	con, err := net.Dial("udp", hostport)
+func newRouterClient(port, id int) (MIDIOut, error) {
+	con, err := net.Dial("udp", fmt.Sprintf(":%d", port))
 	if err != nil {
-		return nil, tre.New(err, "net.Dial", "host:port", ":9000")
+		return nil, tre.New(err, "net.Dial", "port", port)
 	}
 	return routerClient{connection: con}, nil
 }

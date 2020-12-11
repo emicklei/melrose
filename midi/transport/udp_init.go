@@ -2,4 +2,4 @@
 
 package transport
 
-func init() { UseUDPTransport(":9000") }
+func init() { UseUDPTransport(9000) }

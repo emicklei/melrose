@@ -13,7 +13,6 @@ import (
 
 var (
 	oDevice = flag.Int("d", 1, "MIDI device id for output")
-	oHost   = flag.String("h", "localhost", "UDP listening on hostname")
 	oPort   = flag.Int("p", 9000, "UDP listening port")
 )
 
@@ -32,6 +31,12 @@ func main() {
 	}
 	defer portmidi.Terminate()
 
+	// report what we have
+	for d := 0; d < portmidi.CountDevices(); d++ {
+		info := portmidi.Info(portmidi.DeviceID(d))
+		fmt.Printf("device id=%d %s/%s\n", d, info.Interface, info.Name)
+	}
+
 	// wait for control-C
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGABRT)
@@ -43,8 +48,8 @@ func main() {
 	}()
 
 	// accept
-	log.Printf("\033[1;33mwaiting\033[0m for client on %s:%d", *oHost, *oPort)
-	lis, err := newUDPToMIDIListener(*oHost, *oPort, *oDevice)
+	log.Printf("\033[1;33mwaiting\033[0m for client on :%d", *oPort)
+	lis, err := newUDPToMIDIListener(*oPort, *oDevice)
 	if err != nil {
 		log.Fatalln(err)
 	}

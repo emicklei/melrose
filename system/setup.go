@@ -15,7 +15,7 @@ import (
 var (
 	debugLogging = flag.Bool("d", false, "debug logging")
 	httpPort     = flag.String("http", ":8118", "address on which to listen for HTTP requests")
-	transportUDP = flag.String("udp", "", "if set to host:port then use UDP transport")
+	transportUDP = flag.Int("udp", 0, "if set to port > 0 then use UDP transport")
 )
 
 func Setup() (core.Context, error) {
@@ -25,7 +25,7 @@ func Setup() (core.Context, error) {
 		core.ToggleDebug()
 	}
 
-	if len(*transportUDP) > 0 {
+	if *transportUDP > 0 {
 		transport.UseUDPTransport(*transportUDP)
 	}
 

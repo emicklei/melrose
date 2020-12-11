@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 var Console = ConsoleWriter{
@@ -21,5 +22,8 @@ type ConsoleWriter struct {
 }
 
 func (c ConsoleWriter) Errorf(format string, args ...interface{}) {
+	if !strings.HasSuffix(format, "\n") {
+		format += "\n"
+	}
 	fmt.Fprintf(c.StandardError, format, args...)
 }

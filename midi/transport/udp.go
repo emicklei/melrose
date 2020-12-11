@@ -8,21 +8,21 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-func UseUDPTransport(hostport string) {
+func UseUDPTransport(port int) {
 	if core.IsDebug() {
-		notify.Debugf("transport.UseUDPTransport with [%s]", hostport)
+		notify.Debugf("transport.UseUDPTransport with [:%d]", port)
 	}
 	Factory = func() Transporter {
-		return &UDPTransporter{hostport: hostport}
+		return &UDPTransporter{port: port}
 	}
 }
 
 type UDPTransporter struct {
-	hostport string
+	port int
 }
 
 func (t *UDPTransporter) NewMIDIOut(id int) (MIDIOut, error) {
-	return newRouterClient(t.hostport, id)
+	return newRouterClient(t.port, id)
 }
 
 func (t *UDPTransporter) NewMIDIIn(id int) (MIDIIn, error) {
