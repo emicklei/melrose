@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	oDevice = flag.Int("d", 1, "MIDI device id for output")
-	oPort   = flag.Int("p", 9000, "UDP listening port")
+	oDevice = flag.Int("device", 1, "MIDI device id for output")
+	oPort   = flag.Int("port", 9000, "UDP listening port")
+	oDebug  = flag.Bool("d", false, "debug logging")
 )
 
 // start for a specific outputdevice
@@ -32,18 +33,15 @@ func main() {
 	defer portmidi.Terminate()
 
 	// report what we have
-	for d := 0; d < portmidi.CountDevices(); d++ {
-		info := portmidi.Info(portmidi.DeviceID(d))
-		fmt.Printf("device id=%d %s/%s\n", d, info.Interface, info.Name)
-	}
+	showAvailable()
 
 	// wait for control-C
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGABRT)
 	go func() {
 		for sig := range c {
-			fmt.Println("stopped", sig)
-			os.Exit(1)
+			fmt.Println("\nstopped because:", sig)
+			os.Exit(0)
 		}
 	}()
 
@@ -57,12 +55,12 @@ func main() {
 
 	// forward
 	info := portmidi.Info(portmidi.DeviceID(*oDevice))
-	log.Printf("\033[1;33mlistening for MIDI\033[0m, forwarding to device %s/%s (press CTR-C to abort)\n", info.Interface, info.Name)
+	log.Printf("\033[1;33mlistening\033[0m for MIDI, forwarding to device %s/%s (press CTR-C to abort)\n", info.Interface, info.Name)
 	lis.start()
 }
 
 func showAvailable() {
-	fmt.Println("\033[1;33mAvailable:\033[0m")
+	fmt.Println("\033[1;33mavailable devices:\033[0m")
 	var midiDeviceInfo *portmidi.DeviceInfo
 	for i := 0; i < portmidi.CountDevices(); i++ {
 		midiDeviceInfo = portmidi.Info(portmidi.DeviceID(i)) // returns info about a MIDI device

@@ -12,6 +12,7 @@ const (
 	command_mask   byte = 0b11110000
 	iscommand_mask byte = 0b10000000
 	channel_mask   byte = 0b00001111
+	controlchange  byte = 0xB0 // 10110000 , 176
 )
 
 type Message struct {
@@ -60,6 +61,16 @@ func ReadMessage(r *bufio.Reader) (Message, error) {
 				return noMessage, err
 			}
 			return Message{command: noteoff, channel: b & channel_mask, parameter1: note, parameter2: velocity}, nil
+		case controlchange:
+			p1, err := r.ReadByte()
+			if err != nil {
+				return noMessage, err
+			}
+			p2, err := r.ReadByte()
+			if err != nil {
+				return noMessage, err
+			}
+			return Message{command: controlchange, parameter1: p1, parameter2: p2}, nil
 		default:
 			log.Printf("unknown command: %b (%d)\n", b, b)
 			// consume data bytes
