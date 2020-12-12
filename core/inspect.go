@@ -42,6 +42,7 @@ func NewInspect(ctx Context, value interface{}) Inspection {
 func (i Inspection) Markdown() string {
 	var b bytes.Buffer
 	title := i.Text
+	// chop to reasonable size
 	if len(title) > maxTextLength {
 		title = title[:maxTextLength] + "..."
 	}
@@ -54,6 +55,14 @@ func (i Inspection) Markdown() string {
 	sort.Strings(keys)
 	for _, k := range keys {
 		v := i.Properties[k]
+		if b, ok := v.(bool); ok {
+			// humanize it
+			if b {
+				v = "is"
+			} else {
+				v = "is not"
+			}
+		}
 		fmt.Fprintf(&b, "- %v %s\n", v, k)
 	}
 	return b.String()

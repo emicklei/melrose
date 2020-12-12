@@ -784,8 +784,7 @@ lp_cdef = loop(pitch(int1,sequence('c d e f')), next(int1))`,
 	eval["sequencemap"] = Function{
 		Title:       "Sequence Map creator",
 		Description: "creates a mapper of sequence notes by index (1-based)",
-		Prefix:      "ind",
-		Alias:       "Im",
+		Prefix:      "sqm",
 		Template:    `sequencemap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
 		Samples: `s1 = sequence('C D E F G A B')
 i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D

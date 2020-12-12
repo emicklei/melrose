@@ -85,7 +85,7 @@ func (s Sequence) DurationFactor() float64 {
 
 func (s Sequence) Inspect(i Inspection) {
 	i.Properties["duration"] = s.Duration(i.Context.Control().BPM())
-	i.Properties["note(s)|groups"] = len(s.Notes)
+	i.Properties["note(s) | groups"] = len(s.Notes)
 	i.Properties["bars"] = s.Bars(i.Context.Control().BIAB())
 }
 
