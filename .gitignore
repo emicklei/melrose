@@ -7,3 +7,4 @@ target
 *.mid
 coverage.txt
 *.pkg
+cmd/melrose/melrose-udp

@@ -2,13 +2,8 @@ LATEST_TAG := $(shell git describe --abbrev=0)
 
 all: installl snippets grammar dslmd
 
-cli: test
-	go install github.com/emicklei/melrose/cmd/melrose
-	melrose
-
-term: test
-	go install github.com/emicklei/melrose/cmd/melrose
-	melrose -cli=false
+udp:
+	cd cmd/melrose/ && go build -tags=udp -o melrose-udp 
 
 test:
 	go vet ./...

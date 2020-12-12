@@ -1,4 +1,4 @@
-// +build !windows
+// +build !udp
 
 package transport
 

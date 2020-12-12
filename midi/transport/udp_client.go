@@ -1,3 +1,5 @@
+// +build udp
+
 package transport
 
 import (
