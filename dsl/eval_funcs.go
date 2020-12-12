@@ -52,16 +52,17 @@ func EvalFunctions(ctx core.Context) map[string]Function {
 		Title: "Duration fraction operator",
 		Description: `Creates a new object for which the fraction of duration of all notes are changed.
 The first parameter controls the fraction of the note, e.g. 1 = whole, 2 = half, 4 = quarter, 8 = eight, 16 = sixteenth.
+Fraction can also be an exact float value between 0 and 1.
 `,
 		Prefix:     "fra",
 		IsComposer: true,
 		Template:   `fraction(${1:object},${2:object})`,
 		Samples:    `fraction(8,sequence('e f')) // => ⅛E ⅛F , shorten the notes from quarter to eight`,
-		Func: func(param int, playables ...interface{}) interface{} {
-			if err := op.CheckFraction(param); err != nil {
-				notify.Print(notify.Error(err))
-				return nil
-			}
+		Func: func(param float64, playables ...interface{}) interface{} {
+			// if err := op.CheckFraction(param); err != nil {
+			// 	notify.Print(notify.Error(err))
+			// 	return nil
+			// }
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
