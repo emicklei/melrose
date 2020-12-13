@@ -54,7 +54,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 ### {{.Title}}<a name="{{.Anchor}}"></a>
 {{.Description}}
 
-	{{.Syntax}}
+> {{.Syntax}}
 
 #### examples	
 {{ backticks }}javascript{{ range .Examples }}

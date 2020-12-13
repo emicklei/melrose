@@ -83,7 +83,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 ### at<a name="at"></a>
 Create an index getter (1-based) to select a musical object.
 
-	at(index,object)
+> at(index,object)
 
 #### examples	
 ```javascript
@@ -93,7 +93,7 @@ at(1,scale('e/m')) // => E
 ### begin<a name="begin"></a>
 Begin loop(s). Ignore if it was running.
 
-	begin(loop)
+> begin(loop)
 
 #### examples	
 ```javascript
@@ -105,7 +105,7 @@ begin(lp_cb) // end(lp_cb)
 ### biab<a name="biab"></a>
 Set the Beats in a Bar; default is 4.
 
-	biab(beats-in-a-bar)
+> biab(beats-in-a-bar)
 
 #### examples	
 ```javascript
@@ -115,7 +115,7 @@ biab(4)
 ### bpm<a name="bpm"></a>
 Set the Beats Per Minute (BPM) [1..300]; default is 120.
 
-	bpm(beats-per-minute)
+> bpm(beats-per-minute)
 
 #### examples	
 ```javascript
@@ -129,7 +129,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))
 ### channel<a name="channel"></a>
 Select a MIDI channel, must be in [1..16]; must be a top-level operator.
 
-	channel(number,sequenceable)
+> channel(number,sequenceable)
 
 #### examples	
 ```javascript
@@ -139,7 +139,7 @@ channel(2,note('g3'), sequence('c2 e3')) // plays on instrument connected to MID
 ### chord<a name="chord"></a>
 Create a Chord from its string <a href="/melrose/notations.html#chord-not">notation</a>.
 
-	chord('note')
+> chord('note')
 
 #### examples	
 ```javascript
@@ -151,7 +151,7 @@ chord('g/M/2') // Major G second inversion
 ### device<a name="device"></a>
 Select a MIDI device from the available device IDs; must become before channel.
 
-	device(number,sequenceable)
+> device(number,sequenceable)
 
 #### examples	
 ```javascript
@@ -161,7 +161,7 @@ device(1,channel(2,sequence('c2 e3'), note('g3'))) // plays on connected device 
 ### duration<a name="duration"></a>
 Computes the duration of the object using the current BPM.
 
-	duration(object)
+> duration(object)
 
 #### examples	
 ```javascript
@@ -173,7 +173,7 @@ Creates a new modified musical object for which the dynamics of all notes are ch
 	The first parameter controls the emphasis the note, e.g. + (mezzoforte,mf), -- (piano,p).
 	.
 
-	dynamic(emphasis,object)
+> dynamic(emphasis,object)
 
 #### examples	
 ```javascript
@@ -183,7 +183,7 @@ dynamic('++',sequence('e f')) // => E++ F++
 ### dynamicmap<a name="dynamicmap"></a>
 Changes the dynamic of notes from a musical object using an 1-index-based mapping.
 
-	dynamicmap('mapping',object)
+> dynamicmap('mapping',object)
 
 #### examples	
 ```javascript
@@ -195,7 +195,7 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++
 ### end<a name="end"></a>
 End running loop(s) or listener(s). Ignore if it was stopped.
 
-	end(control)
+> end(control)
 
 #### examples	
 ```javascript
@@ -209,7 +209,7 @@ end(l1)
 ### export<a name="export"></a>
 Writes a multi-track MIDI file.
 
-	export(filename,sequenceable)
+> export(filename,sequenceable)
 
 #### examples	
 ```javascript
@@ -222,7 +222,7 @@ The first parameter controls the fraction of the note, e.g. 1 = whole, 2 = half,
 Fraction can also be an exact float value between 0 and 1.
 .
 
-	fraction(object,object)
+> fraction(object,object)
 
 #### examples	
 ```javascript
@@ -232,7 +232,7 @@ fraction(8,sequence('e f')) // => ⅛E ⅛F , shorten the notes from quarter to 
 ### group<a name="group"></a>
 Create a new sequence in which all notes of a musical object are grouped.
 
-	group(sequenceable)
+> group(sequenceable)
 
 #### examples	
 ```javascript
@@ -242,7 +242,7 @@ group(sequence('c d e')) // => (C D E)
 ### import<a name="import"></a>
 Evaluate all the statements from another file.
 
-	import(filename)
+> import(filename)
 
 #### examples	
 ```javascript
@@ -252,7 +252,7 @@ import('drumpatterns.mel')
 ### interval<a name="interval"></a>
 Create an integer repeating interval (from,to,by,method). Default method is 'repeat', Use next() to get a new integer.
 
-	interval(from,to,by)
+> interval(from,to,by)
 
 #### examples	
 ```javascript
@@ -264,7 +264,7 @@ lp_cdef = loop(pitch(int1,sequence('c d e f')), next(int1))
 ### iterator<a name="iterator"></a>
 Iterator that has an array of constant values and evaluates to one. Use next() to increase and rotate the value.
 
-	iterator(array-element)
+> iterator(array-element)
 
 #### examples	
 ```javascript
@@ -280,7 +280,7 @@ lp = loop(p,next(i))
 ### join<a name="join"></a>
 Joins one or more musical objects as one.
 
-	join(first,second)
+> join(first,second)
 
 #### examples	
 ```javascript
@@ -294,7 +294,7 @@ ab = join(a,b)
 ### joinmap<a name="joinmap"></a>
 Creates a new join by mapping elements based on an index (1-based).
 
-	joinmap('indices',join)
+> joinmap('indices',join)
 
 #### examples	
 ```javascript
@@ -306,7 +306,7 @@ jm = joinmap('1 (2 3) 4',j)
 ### listen<a name="listen"></a>
 Listen for note(s) from a device and call a function to handle.
 
-	listen(device-id,variable,function)
+> listen(device-id,variable,function)
 
 #### examples	
 ```javascript
@@ -320,7 +320,7 @@ ear = listen(1,rec,fun) // start a listener for notes from device 1, store it "r
 ### loop<a name="loop"></a>
 Create a new loop from one or more musical objects; must be assigned to a variable.
 
-	lp_object = loop(object)
+> lp_object = loop(object)
 
 #### examples	
 ```javascript
@@ -332,7 +332,7 @@ lp_cb = loop(cb,reverse(cb))
 ### merge<a name="merge"></a>
 Merges multiple sequences into one sequence.
 
-	merge(sequenceable)
+> merge(sequenceable)
 
 #### examples	
 ```javascript
@@ -349,7 +349,7 @@ The first parameter is a fraction {1,2,4,8,16} or a duration in milliseconds or 
 Second parameter is the MIDI number and must be one of [0..127].
 The third parameter is the velocity (~ loudness) and must be one of [0..127].
 
-	midi(numberOrDuration,number,number)
+> midi(numberOrDuration,number,number)
 
 #### examples	
 ```javascript
@@ -361,7 +361,7 @@ midi(500,36,70) // => 16C2 (kick)
 ### midi_send<a name="midi_send"></a>
 Sends a MIDI message with status, channel(ignore if < 1), 2nd byte and 3rd byte to an output device. Can be used as a musical object.
 
-	midi_send(device-id,status,channel,2nd-byte,3rd-byte
+> midi_send(device-id,status,channel,2nd-byte,3rd-byte
 
 #### examples	
 ```javascript
@@ -377,7 +377,7 @@ midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1
 ### multi<a name="multi"></a>
 Create a multi-track object from zero or more tracks.
 
-	multi(track)
+> multi(track)
 
 #### examples	
 ```javascript
@@ -387,7 +387,7 @@ multi(track1,track2,track3) // one or more tracks in one multi-track object
 ### next<a name="next"></a>
 Is used to produce the next value in a generator such as random, iterator and interval.
 
-	
+> 
 
 #### examples	
 ```javascript
@@ -403,7 +403,7 @@ begin(lp_pi)
 ### note<a name="note"></a>
 Create a Note using this <a href="/melrose/notations.html#note-not">format</a>.
 
-	note('letter')
+> note('letter')
 
 #### examples	
 ```javascript
@@ -415,7 +415,7 @@ note('2.e#--')
 ### notemap<a name="notemap"></a>
 Creates a mapper of notes by index (1-based) or using dots (.) and bangs (!).
 
-	notemap('space-separated-1-based-indices-or-dots-and-bangs',note)
+> notemap('space-separated-1-based-indices-or-dots-and-bangs',note)
 
 #### examples	
 ```javascript
@@ -427,7 +427,7 @@ m2 = notemap('3 6 9', note('d2'))
 ### octave<a name="octave"></a>
 Change the pitch of notes by steps of 12 semitones for one or more musical objects.
 
-	octave(offset,sequenceable)
+> octave(offset,sequenceable)
 
 #### examples	
 ```javascript
@@ -437,7 +437,7 @@ octave(1,sequence('c d')) // => C5 D5
 ### octavemap<a name="octavemap"></a>
 Create a sequence with notes for which the order and the octaves are changed.
 
-	octavemap('int2int',object)
+> octavemap('int2int',object)
 
 #### examples	
 ```javascript
@@ -447,7 +447,7 @@ octavemap('1:-1,2:0,3:1',chord('c')) // => (C3 E G5)
 ### onbar<a name="onbar"></a>
 Puts a musical object on a track to start at a specific bar.
 
-	onbar(bar,object)
+> onbar(bar,object)
 
 #### examples	
 ```javascript
@@ -457,7 +457,7 @@ tr = track("solo",2, onbar(1,soloSequence)) // 2 = channel
 ### pitch<a name="pitch"></a>
 Change the pitch with a delta of semitones.
 
-	pitch(semitones,sequenceable)
+> pitch(semitones,sequenceable)
 
 #### examples	
 ```javascript
@@ -471,7 +471,7 @@ pitch(p,note('c'))
 ### pitchmap<a name="pitchmap"></a>
 Create a sequence with notes for which the order and the pitch are changed.
 
-	pitchmap('int2int',object)
+> pitchmap('int2int',object)
 
 #### examples	
 ```javascript
@@ -481,7 +481,7 @@ pitchmap('1:-1,1:0,1:1',note('c')) // => B3 C D
 ### play<a name="play"></a>
 Play all musical objects.
 
-	play(sequenceable)
+> play(sequenceable)
 
 #### examples	
 ```javascript
@@ -491,7 +491,7 @@ play(s1,s2,s3) // play s3 after s2 after s1
 ### print<a name="print"></a>
 Prints an object when evaluated (play,loop).
 
-	
+> 
 
 #### examples	
 ```javascript
@@ -501,7 +501,7 @@ Prints an object when evaluated (play,loop).
 ### progression<a name="progression"></a>
 Create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>.
 
-	progression('chords')
+> progression('chords')
 
 #### examples	
 ```javascript
@@ -513,7 +513,7 @@ progression('(c d)') // => (C E G D G♭ A)
 ### random<a name="random"></a>
 Create a random integer generator. Use next() to generate a new integer.
 
-	random(from,to)
+> random(from,to)
 
 #### examples	
 ```javascript
@@ -525,7 +525,7 @@ next(num)
 ### repeat<a name="repeat"></a>
 Repeat one or more musical objects a number of times.
 
-	repeat(times,sequenceables)
+> repeat(times,sequenceables)
 
 #### examples	
 ```javascript
@@ -535,7 +535,7 @@ repeat(4,sequence('c d e'))
 ### replace<a name="replace"></a>
 Replaces all occurrences of one musical object with another object for a given composed musical object.
 
-	replace(target,from,to)
+> replace(target,from,to)
 
 #### examples	
 ```javascript
@@ -551,7 +551,7 @@ pitchD = replace(pitchA, c, d) // c -> d in pitchA
 ### reverse<a name="reverse"></a>
 Reverse the (groups of) notes in a sequence.
 
-	reverse(sequenceable)
+> reverse(sequenceable)
 
 #### examples	
 ```javascript
@@ -561,7 +561,7 @@ reverse(chord('a'))
 ### scale<a name="scale"></a>
 Create a Scale using this <a href="/melrose/notations.html#scale-not">format</a>.
 
-	scale(octaves,'note')
+> scale(octaves,'note')
 
 #### examples	
 ```javascript
@@ -571,7 +571,7 @@ scale(1,'e/m') // => E F G A B C5 D5
 ### sequence<a name="sequence"></a>
 Create a Sequence using this <a href="/melrose/notations.html#sequence-not">format</a>.
 
-	sequence('space-separated-notes')
+> sequence('space-separated-notes')
 
 #### examples	
 ```javascript
@@ -585,7 +585,7 @@ sequence('c (d e f) a =')
 ### sequencemap<a name="sequencemap"></a>
 Creates a mapper of sequence notes by index (1-based).
 
-	sequencemap('space-separated-1-based-indices',sequenceable)
+> sequencemap('space-separated-1-based-indices',sequenceable)
 
 #### examples	
 ```javascript
@@ -599,7 +599,7 @@ i2 = sequencemap('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)
 ### stretch<a name="stretch"></a>
 Stretches the duration of musical object(s) with a factor. If the factor < 1 then duration is shortened.
 
-	stretch(factor,object)
+> stretch(factor,object)
 
 #### examples	
 ```javascript
@@ -611,7 +611,7 @@ stretch(0.25,sequence('(c e g)'))  // (16C 16E 16G)
 ### sync<a name="sync"></a>
 Play all musical objects.
 
-	sync(sequenceable)
+> sync(sequenceable)
 
 #### examples	
 ```javascript
@@ -621,7 +621,7 @@ sync(s1,s2,s3) // play s1,s2 and s3 at the same time
 ### track<a name="track"></a>
 Create a named track for a given MIDI channel with a musical object.
 
-	track('title',channel, onbar(1,object))
+> track('title',channel, onbar(1,object))
 
 #### examples	
 ```javascript
@@ -631,7 +631,7 @@ track("lullaby",1,onbar(2, sequence('c d e'))) // => a new track on MIDI channel
 ### undynamic<a name="undynamic"></a>
 Set the dymamic to normal for all notes in a musical object.
 
-	undynamic(sequenceable)
+> undynamic(sequenceable)
 
 #### examples	
 ```javascript
@@ -641,7 +641,7 @@ undynamic('A+ B++ C-- D-') // =>  A B C D
 ### ungroup<a name="ungroup"></a>
 Undo any grouping of notes from one or more musical objects.
 
-	ungroup(sequenceable)
+> ungroup(sequenceable)
 
 #### examples	
 ```javascript
