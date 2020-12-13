@@ -11,7 +11,7 @@ title: Melrōse Language
 Musical objects are created, composed and played using the <strong>melrõse</strong> tool by evaluating expressions.
 Expressions use any of the predefined functions (creation,composition,audio control).
 By assigning an expression to a variable name, you can use that expression by its name to compose other objects.
-You can break up long expressions by indenting consecutive lines with 4 spaces or a Tab character.
+
 ### variables
 
 Variable names must start with a non-digit character and can have zero or more characters in [a-z A-Z _ 0-9].
@@ -97,7 +97,7 @@ begin(lp_cb) // end(lp_cb)
 ```
 
 ### biab<a name="biab"></a>
-Set the Beats in a Bar [1..16]; default is 4.
+Set the Beats in a Bar; default is 4.
 
 ```javascript
 biab(4)
@@ -118,7 +118,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))
 Select a MIDI channel, must be in [1..16]; must be a top-level operator.
 
 ```javascript
-channel(2,sequence('C2 E3')) // plays on instrument connected to MIDI channel 2
+channel(2,note('g3'), sequence('c2 e3')) // plays on instrument connected to MIDI channel 2
 ```
 
 ### chord<a name="chord"></a>
@@ -134,7 +134,7 @@ chord('g/M/2') // Major G second inversion
 Select a MIDI device from the available device IDs; must become before channel.
 
 ```javascript
-device(1,channel(2,sequence('C2 E3'))) // plays on connected device 1 through MIDI channel 2
+device(1,channel(2,sequence('c2 e3'), note('g3'))) // plays on connected device 1 through MIDI channel 2
 ```
 
 ### duration<a name="duration"></a>
@@ -150,7 +150,7 @@ Creates a new modified musical object for which the dynamics of all notes are ch
 	.
 
 ```javascript
-dynamic('++',sequence('E F')) // => E++ F++
+dynamic('++',sequence('e f')) // => E++ F++
 ```
 
 ### dynamicmap<a name="dynamicmap"></a>
@@ -166,7 +166,7 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++
 End running loop(s) or listener(s). Ignore if it was stopped.
 
 ```javascript
-l1 = loop(sequence('C E G'))
+l1 = loop(sequence('c e g'))
 
 begin(l1)
 
@@ -183,6 +183,7 @@ export('myMelody-v1',myObject)
 ### fraction<a name="fraction"></a>
 Creates a new object for which the fraction of duration of all notes are changed.
 The first parameter controls the fraction of the note, e.g. 1 = whole, 2 = half, 4 = quarter, 8 = eight, 16 = sixteenth.
+Fraction can also be an exact float value between 0 and 1.
 .
 
 ```javascript
@@ -193,7 +194,7 @@ fraction(8,sequence('e f')) // => ⅛E ⅛F , shorten the notes from quarter to 
 Create a new sequence in which all notes of a musical object are grouped.
 
 ```javascript
-group(sequence('C D E')) // => (C D E)
+group(sequence('c d e')) // => (C D E)
 ```
 
 ### import<a name="import"></a>
@@ -209,7 +210,7 @@ Create an integer repeating interval (from,to,by,method). Default method is 'rep
 ```javascript
 int1 = interval(-2,4,1)
 
-lp_cdef = loop(pitch(int1,sequence('C D E F')), next(int1))
+lp_cdef = loop(pitch(int1,sequence('c d e f')), next(int1))
 ```
 
 ### iterator<a name="iterator"></a>
@@ -218,9 +219,9 @@ Iterator that has an array of constant values and evaluates to one. Use next() t
 ```javascript
 i = iterator(1,3,5,7,9)
 
-		p = pitch(i,note('c'))
+p = pitch(i,note('c'))
 
-		lp = loop(p,next(i))
+lp = loop(p,next(i))
 
 		
 ```
@@ -260,7 +261,7 @@ ear = listen(1,rec,fun) // start a listener for notes from device 1, store it "r
 Create a new loop from one or more musical objects; must be assigned to a variable.
 
 ```javascript
-cb = sequence('C D E F G A B')
+cb = sequence('c d e f g a b')
 
 lp_cb = loop(cb,reverse(cb))
 ```
@@ -309,7 +310,7 @@ multi(track1,track2,track3) // one or more tracks in one multi-track object
 ```
 
 ### next<a name="next"></a>
-Is used to produce the next value in a generator such as random and interval.
+Is used to produce the next value in a generator such as random, iterator and interval.
 
 ```javascript
 i = interval(-4,4,2)
