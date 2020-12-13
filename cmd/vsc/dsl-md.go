@@ -54,6 +54,9 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 ### {{.Title}}<a name="{{.Anchor}}"></a>
 {{.Description}}
 
+	{{.Syntax}}
+
+#### examples	
 {{ backticks }}javascript{{ range .Examples }}
 {{ . }}
 {{ end }}{{ backticks }}
@@ -66,6 +69,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 type DocumentedFunction struct {
 	Title            string
 	ShortDescription string
+	Syntax           string
 	Description      string
 	Examples         []string
 	Anchor           string
@@ -104,6 +108,7 @@ func dslmarkdown() {
 			Description:      firstUpcaseAndDot(each.Description),
 			Examples:         strings.Split(each.Samples, "\n"),
 			Anchor:           k,
+			Syntax:           humanizeTemplate(each.Template),
 			Alias:            each.Alias,
 		}
 		if each.ControlsAudio {
@@ -157,4 +162,14 @@ func firstUpcaseAndDot(s string) string {
 		b.WriteRune('.')
 	}
 	return b.String()
+}
+
+func humanizeTemplate(t string) string {
+	r := strings.NewReplacer(
+		"${1:", "",
+		"${2:", "",
+		"${3:", "",
+		"${4:", "",
+		"}", "")
+	return r.Replace(t)
 }
