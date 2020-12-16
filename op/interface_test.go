@@ -22,6 +22,7 @@ func TestImplements(t *testing.T) {
 		{source: PitchMap{}},
 		{source: OctaveMap{}},
 		{source: Merge{}},
+		{source: Stretch{}},
 	} {
 		if !each.notSequenceable {
 			if _, ok := each.source.(core.Sequenceable); !ok {
