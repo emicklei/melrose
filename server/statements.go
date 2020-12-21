@@ -20,18 +20,15 @@ import (
 
 func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
+		notify.Console.Warnf("HTTP method not allowed:%s", r.Method)
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 	query := r.URL.Query()
 	l.context.Environment()[core.WorkingDirectory] = filepath.Dir(query.Get("file"))
 
-	debug := query.Get("debug") == "true"
-	if debug && !core.IsDebug() {
-		core.ToggleDebug()
-		defer core.ToggleDebug()
-	}
-	if core.IsDebug() {
+	debug := query.Get("debug") == "true" || core.IsDebug()
+	if debug {
 		notify.Debugf("service.http: %s", r.URL.String())
 	}
 	// get line
@@ -114,6 +111,11 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 			}
 			// ignore if not Loop
 		}
+
+		if query.Get("action") == "eval" {
+			core.PrintValue(l.context, returnValue)
+		}
+
 		response = resultFrom(line, returnValue)
 	}
 	w.Header().Set("content-type", "application/json")

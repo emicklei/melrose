@@ -54,12 +54,14 @@ func handleMIDISetting(ctx core.Context, args []string) notify.Message {
 
 func handleBeatSetting(ctx core.Context, args []string) notify.Message {
 	l := ctx.Control()
-	fmt.Println("\033[1;33mCurrent:\033[0m")
 	fmt.Printf("[sequencer] beats per minute (BPM): %v\n", l.BPM())
 	fmt.Printf("[sequencer] beats in a bar  (BIAB): %d\n", l.BIAB())
 	return nil
 }
 
 func handleToggleDebug(ctx core.Context, args []string) notify.Message {
-	return notify.Infof("debug enabled:%v", core.ToggleDebug())
+	if core.ToggleDebug() {
+		return notify.Infof("debug enabled")
+	}
+	return notify.Infof("debug not enabled")
 }

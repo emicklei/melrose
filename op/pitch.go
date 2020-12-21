@@ -16,7 +16,7 @@ func (p Pitch) S() core.Sequence {
 }
 
 func (p Pitch) Storex() string {
-	return fmt.Sprintf("pitch(%v,%s)", p.Semitones, core.Storex(p.Target))
+	return fmt.Sprintf("pitch(%s,%s)", core.Storex(p.Semitones), core.Storex(p.Target))
 }
 
 // Replaced is part of Replaceable

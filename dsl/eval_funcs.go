@@ -708,7 +708,7 @@ begin(lp_cb) // end(lp_cb)`,
 					continue
 				}
 				ctx.Control().StartLoop(l)
-				notify.Print(notify.Infof("started loop: %s", each.Name))
+				notify.Print(notify.Infof("begin loop: %s", each.Name))
 			}
 			return nil
 		}}
@@ -728,10 +728,10 @@ end(l1)`,
 			}
 			for _, each := range vars {
 				if l, ok := each.Value().(*core.Loop); ok {
-					notify.Print(notify.Infof("stopping %s", each.Name))
+					notify.Print(notify.Infof("end loop: %s", each.Name))
 					ctx.Control().EndLoop(l)
 				} else if l, ok := each.Value().(*control.Listen); ok {
-					notify.Print(notify.Infof("stopping %s", each.Name))
+					notify.Print(notify.Infof("end listen: %s", each.Name))
 					l.Stop(ctx)
 				} else {
 					notify.Print(notify.Warningf("cannot end (%T) %v", each.Value(), each.Value()))
