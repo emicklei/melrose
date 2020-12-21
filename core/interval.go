@@ -31,7 +31,7 @@ func (i *Interval) Value() interface{} {
 }
 
 func (i *Interval) String() string {
-	return fmt.Sprintf("core.Interval(from=%v,to=%v,by=%v,strategy=%v,value=%v)",
+	return fmt.Sprintf("core.Interval(from=%v,to=%v,by=%v,strategy=%T,value=%v)",
 		i.from, i.to, i.by, i.strategy, i.value)
 }
 

@@ -18,7 +18,7 @@ func (o Octave) S() core.Sequence {
 
 func (o Octave) Storex() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "octave(%v", o.Offset)
+	fmt.Fprintf(&b, "octave(%s", core.Storex(o.Offset))
 	core.AppendStorexList(&b, false, o.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()

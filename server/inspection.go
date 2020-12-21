@@ -11,8 +11,13 @@ import (
 
 func (l *LanguageServer) inspectHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
+		notify.Console.Warnf("HTTP method not allowed:%s", r.Method)
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
+	}
+	debug := r.URL.Query().Get("debug") == "true" || core.IsDebug()
+	if debug {
+		notify.Debugf("service.http: %s", r.URL.String())
 	}
 	// get token
 	defer r.Body.Close()
@@ -29,7 +34,11 @@ func (l *LanguageServer) inspectHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	w.Header().Set("content-type", "application/json")
 	enc := json.NewEncoder(w)
-	err := enc.Encode(markdownHolder{MarkdownString: l.markdownOnInspecting(th.Token)})
+	msg := l.markdownOnInspecting(th.Token)
+	err := enc.Encode(markdownHolder{MarkdownString: msg})
+	if debug {
+		notify.Debugf("service.resoonse.MarkdownString: %s", msg)
+	}
 	if err != nil {
 		notify.Console.Errorf("inspect failed:%v\n", err)
 	}

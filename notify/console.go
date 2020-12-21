@@ -27,3 +27,10 @@ func (c ConsoleWriter) Errorf(format string, args ...interface{}) {
 	}
 	fmt.Fprintf(c.StandardError, format, args...)
 }
+
+func (c ConsoleWriter) Warnf(format string, args ...interface{}) {
+	if !strings.HasSuffix(format, "\n") {
+		format += "\n"
+	}
+	fmt.Fprintf(c.StandardError, format, args...)
+}

@@ -74,6 +74,10 @@ func IsIdenticalTo(left, right Sequenceable) bool {
 }
 
 func PrintValue(ctx Context, v interface{}) {
+	InspectValue(ctx, v)
+}
+
+func InspectValue(ctx Context, v interface{}) {
 	if v == nil {
 		return
 	}
