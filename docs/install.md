@@ -11,8 +11,9 @@ Due to increased restrictions and costs of releasing non-commercial packages for
 ### Mac OSX
 
 [Using Melrōse with Apple Garageband](https://emicklei.github.io/melrose/garageband.html).
+[Using Melrōse with Apple Logic Pro](https://emicklei.github.io/melrose/logicpro.html).
 
-Contact me if you want a commercial, signed and supported version.
+Contact me (see github) if you want a commercial, signed and supported version.
 
 ## Install Melrōse plugin for the free Visual Studio Code editor
 

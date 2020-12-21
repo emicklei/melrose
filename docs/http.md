@@ -49,10 +49,6 @@ If the request is malformed then the response will have the error message.
 
 ## HTTP Request parameters
 
-### tracing
-
-If the HTTP URL has the query parameter `debug=true` then `melrōse` will produce extra logging.
-
 ### play
 
 If the HTTP URL has the query parameter `action=play` then `melrōse` will try to play the result of the selected expression(s).
@@ -64,6 +60,14 @@ If the HTTP URL has the query parameter `action=begin` then `melrōse` will try 
 ### end
 
 If the HTTP URL has the query parameter `action=end` then `melrōse` will try to `end` the loop of the selected expression.
+
+### eval
+
+If the HTTP URL has the query parameter `action=eval` then `melrōse` will only evaluate the expression(s) or statemennts.
+
+### tracing
+
+If the HTTP URL has the query parameter `debug=true` then `melrōse` will produce extra logging.
 
 ### kill
 
