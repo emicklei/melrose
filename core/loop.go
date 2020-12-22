@@ -14,12 +14,14 @@ type Loop struct {
 	target    []Sequenceable
 	isRunning bool
 	mutex     sync.RWMutex
+	condition Condition
 }
 
 func NewLoop(ctx Context, target []Sequenceable) *Loop {
 	return &Loop{
-		ctx:    ctx,
-		target: target,
+		ctx:       ctx,
+		target:    target,
+		condition: TrueCondition,
 	}
 }
 
@@ -39,6 +41,17 @@ func (l *Loop) IsRunning() bool {
 	return l.isRunning
 }
 
+func (l *Loop) Evaluate(condition Condition) error {
+	// create a start a clone
+	clone := NewLoop(l.ctx, l.target)
+	clone.condition = condition
+	if IsDebug() {
+		notify.Debugf("loop.eval")
+	}
+	clone.Start(l.ctx.Device())
+	return nil
+}
+
 func (l *Loop) Start(d AudioDevice) *Loop {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
@@ -55,10 +68,15 @@ func (l *Loop) Inspect(i Inspection) {
 }
 
 func (l *Loop) reschedule(d AudioDevice, when time.Time) {
+	// check condition first
+	if l.condition != nil && !l.condition() {
+		l.isRunning = false
+		return
+	}
 	moment := when
 	for _, each := range l.target {
 		// after each other
-		moment = d.Play(NoCondition, each, l.ctx.Control().BPM(), moment)
+		moment = d.Play(l.condition, each, l.ctx.Control().BPM(), moment)
 	}
 	if IsDebug() {
 		notify.Debugf("core.loop: next=%s", moment.Format("15:04:05.00"))

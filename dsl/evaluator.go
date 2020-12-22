@@ -158,13 +158,6 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 		return nil, err
 	}
 
-	// special case for Evals
-	if theEval, ok := r.(core.Evaluatable); ok {
-		if err := theEval.Evaluate(core.NoCondition); err != nil { // no condition
-			return nil, err
-		}
-	}
-
 	// special case for Loop
 	if theLoop, ok := r.(*core.Loop); ok {
 		return nil, fmt.Errorf("cannot have an unnamed Loop, use e.g. myLoop = %s", theLoop.Storex())
@@ -173,6 +166,13 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 	// special case for Listen
 	if theListen, ok := r.(*control.Listen); ok {
 		return nil, fmt.Errorf("cannot have an unnamed Listen, use e.g. myListen = %s", theListen.Storex())
+	}
+
+	// special case for Evals, put last because Loop is also Evaluatable
+	if theEval, ok := r.(core.Evaluatable); ok {
+		if err := theEval.Evaluate(core.NoCondition); err != nil { // no condition
+			return nil, err
+		}
 	}
 
 	return r, nil

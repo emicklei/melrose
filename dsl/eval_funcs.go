@@ -906,12 +906,12 @@ midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1`,
 		Description: "Listen for note(s) from a device and call a function to handle",
 		Template:    "listen(${1:device-id},${2:variable},${3:function})",
 		Samples: `rec = note('c') // define a variable "rec" with a initial object
-fun = play(rec) // define the function to call when notes are received
+fun = play(rec) // define the function to call when notes are received ; a loop is also possible
 ear = listen(1,rec,fun) // start a listener for notes from device 1, store it "rec" and call "fun"`,
 		Func: func(deviceID int, injectable variable, function interface{}) interface{} {
 			_, ok := getValue(function).(core.Evaluatable)
 			if !ok {
-				return notify.Panic(fmt.Errorf("cannot listen and call (%T) %v", function, function))
+				return notify.Panic(fmt.Errorf("cannot listen and call (%T) %s", function, core.Storex(function)))
 			}
 			// use function as Valueable and not the Evaluatable to allow redefinition of the callback function in the script
 			return control.NewListen(deviceID, ctx.Variables(), injectable.Name, getValueable(function))

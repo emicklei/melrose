@@ -67,8 +67,6 @@ func (l *Listen) Stop(ctx core.Context) {
 // NoteOn is part of core.NoteListener
 func (l *Listen) NoteOn(n core.Note) {
 	l.mutex.Lock()
-	defer l.mutex.Unlock()
-
 	if core.IsDebug() {
 		notify.Debugf("control.listen ON %v", n)
 	}
@@ -77,6 +75,10 @@ func (l *Listen) NoteOn(n core.Note) {
 	nr := n.MIDI()
 	l.notesOn[nr] = countCheck
 	l.variableStore.Put(l.variableName, n)
+
+	// release so condition can be evaluated
+	l.mutex.Unlock()
+
 	if e, ok := l.callback.Value().(core.Evaluatable); ok {
 		// only actually play the note if the hit count matches the check
 		e.Evaluate(func() bool {
