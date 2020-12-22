@@ -111,4 +111,7 @@ type NoteListener interface {
 
 type Condition func() bool
 
-var NoCondition Condition = nil
+var (
+	NoCondition   Condition = nil
+	TrueCondition Condition = func() bool { return true }
+)

@@ -78,9 +78,7 @@ func repl(line *liner.State, ctx core.Context) {
 			notify.Print(notify.Error(err))
 			// even on error, add entry to history so we can edit/fix it
 		} else {
-			if _, ok := result.(core.Evaluatable); result != nil && !ok {
-				core.InspectValue(ctx, result)
-			}
+			core.InspectValue(ctx, result)
 		}
 		line.AppendHistory(entry)
 	}

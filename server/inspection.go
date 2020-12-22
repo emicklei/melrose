@@ -37,7 +37,7 @@ func (l *LanguageServer) inspectHandler(w http.ResponseWriter, r *http.Request) 
 	msg := l.markdownOnInspecting(th.Token)
 	err := enc.Encode(markdownHolder{MarkdownString: msg})
 	if debug {
-		notify.Debugf("service.resoonse.MarkdownString: %s", msg)
+		notify.Debugf("service.http.response.MarkdownString: %s", msg)
 	}
 	if err != nil {
 		notify.Console.Errorf("inspect failed:%v\n", err)
