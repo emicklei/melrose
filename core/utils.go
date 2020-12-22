@@ -89,7 +89,7 @@ func Storex(v interface{}) string {
 	if s, ok := v.(Storable); ok {
 		return s.Storex()
 	}
-	return fmt.Sprintf("unstorable:%T", v)
+	return fmt.Sprintf("unstorable:%T,%v", v, v)
 }
 
 func AppendStorexList(b *bytes.Buffer, isFirstParameter bool, list []Sequenceable) {

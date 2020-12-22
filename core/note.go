@@ -295,19 +295,34 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 	if n.Octave != 4 {
 		fmt.Fprintf(buf, "%d", n.Octave)
 	}
-	if n.Velocity != 72 {
-		switch n.Velocity {
-		case Pianissimo:
+	if n.Velocity != Normal {
+		// switch n.Velocity {
+		// case Pianissimo:
+		// 	io.WriteString(buf, "---")
+		// case Piano:
+		// 	io.WriteString(buf, "--")
+		// case MezzoPiano:
+		// 	io.WriteString(buf, "-")
+		// case MezzoForte:
+		// 	io.WriteString(buf, "+")
+		// case Forte:
+		// 	io.WriteString(buf, "++")
+		// case Fortissimo:
+		// 	io.WriteString(buf, "+++")
+		// }
+
+		switch {
+		case n.Velocity <= Pianissimo:
 			io.WriteString(buf, "---")
-		case Piano:
+		case n.Velocity <= Piano:
 			io.WriteString(buf, "--")
-		case MezzoPiano:
+		case n.Velocity <= MezzoPiano:
 			io.WriteString(buf, "-")
-		case MezzoForte:
+		case n.Velocity <= MezzoForte:
 			io.WriteString(buf, "+")
-		case Forte:
+		case n.Velocity <= Forte:
 			io.WriteString(buf, "++")
-		case Fortissimo:
+		case n.Velocity > Forte:
 			io.WriteString(buf, "+++")
 		}
 	}

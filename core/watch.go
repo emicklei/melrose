@@ -1,8 +1,6 @@
 package core
 
 import (
-	"fmt"
-
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -22,13 +20,21 @@ type Watch struct {
 	Target  interface{}
 }
 
+func (w Watch) Evaluate(c Condition) error {
+	// TODO check c?
+	w.S()
+	return nil
+}
+
 // S is part of Sequenceable
 func (w Watch) S() Sequence {
 	beats, bars := w.Context.Control().BeatsAndBars()
-	target := fmt.Sprintf("%v", w.Target)
-	if v, ok := w.Target.(Valueable); ok {
-		target = fmt.Sprintf("%v", v)
+	in := NewInspect(w.Context, w.Target)
+	in.Properties["bar"] = bars
+	in.Properties["beat"] = beats
+	if seq, ok := w.Target.(Sequenceable); ok {
+		in.Properties["seq"] = seq.S()
 	}
-	notify.Print(notify.Infof("on bars [%d] beats [%d] called sequence of [%v]", beats, bars, target))
+	notify.Print(notify.Infof("%s", in.String()))
 	return EmptySequence
 }

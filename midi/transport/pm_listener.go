@@ -81,7 +81,7 @@ func (l *listener) handle(event portmidi.Event) {
 		// replace with now in nanos
 		event.Timestamp = portmidi.Timestamp(time.Now().UnixNano())
 		l.noteOn[nr] = event
-		onNote, _ := core.MIDItoNote(0.25, nr, core.Normal) // TODO
+		onNote, _ := core.MIDItoNote(0.25, nr, int(event.Data2))
 		for _, each := range l.noteListeners {
 			each.NoteOn(onNote)
 		}

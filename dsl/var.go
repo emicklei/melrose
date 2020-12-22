@@ -20,6 +20,19 @@ func (v variable) String() string {
 	return fmt.Sprintf("var %s = %v", v.Name, currentValue)
 }
 
+func (v variable) Inspect(i core.Inspection) {
+	i.Properties["var"] = v.Name
+	currentValue, ok := v.store.Get(v.Name)
+	if !ok {
+		i.Properties["error"] = "missing value"
+		return
+	}
+	i.Properties["val"] = core.Storex(currentValue)
+	if insp, ok := currentValue.(core.Inspectable); ok {
+		insp.Inspect(i)
+	}
+}
+
 func (v variable) S() core.Sequence {
 	m, ok := v.store.Get(v.Name)
 	if !ok {

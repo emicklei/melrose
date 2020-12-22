@@ -148,7 +148,7 @@ func ExampleParseNote() {
 
 func TestNote_Storex(t *testing.T) {
 	n, _ := NewNote("A", 4, 0.25, 1, false, 1)
-	if got, want := n.Storex(), `note('A♯')`; got != want {
+	if got, want := n.Storex(), `note('A♯---')`; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
