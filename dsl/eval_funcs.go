@@ -903,10 +903,10 @@ midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1`,
 
 	registerFunction(eval, "listen", Function{
 		Title:       "Start a MIDI listener",
-		Description: "Listen for note(s) from a device and call a function to handle",
+		Description: "Listen for note(s) from a device and call a playable function to handle",
 		Template:    "listen(${1:device-id},${2:variable},${3:function})",
-		Samples: `rec = note('c') // define a variable "rec" with a initial object
-fun = play(rec) // define the function to call when notes are received ; a loop is also possible
+		Samples: `rec = note('c') // define a variable "rec" with a initial object ; this is a place holder
+fun = play(rec) // define the playable function to call when notes are received ; loop and print are also possible
 ear = listen(1,rec,fun) // start a listener for notes from device 1, store it "rec" and call "fun"`,
 		Func: func(deviceID int, injectable variable, function interface{}) interface{} {
 			_, ok := getValue(function).(core.Evaluatable)

@@ -32,9 +32,6 @@ func (w Watch) S() Sequence {
 	in := NewInspect(w.Context, w.Target)
 	in.Properties["bar"] = bars
 	in.Properties["beat"] = beats
-	if seq, ok := w.Target.(Sequenceable); ok {
-		in.Properties["seq"] = seq.S()
-	}
 	notify.Print(notify.Infof("%s", in.String()))
 	return EmptySequence
 }

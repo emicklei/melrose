@@ -100,6 +100,7 @@ type Context interface {
 // WorkingDirectory is a key in a context environment.
 const WorkingDirectory = "pwd"
 
+// TODO makue users use Play with a Context that can have a Condition
 type Evaluatable interface {
 	Evaluate(condition Condition) error
 }

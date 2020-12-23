@@ -21,7 +21,7 @@ func (v variable) String() string {
 }
 
 func (v variable) Inspect(i core.Inspection) {
-	i.Properties["var"] = v.Name
+	i.Properties["name"] = v.Name
 	currentValue, ok := v.store.Get(v.Name)
 	if !ok {
 		i.Properties["error"] = "missing value"
