@@ -181,7 +181,7 @@ dynamic('++',sequence('e f')) // => E++ F++
 ```
 
 ### dynamicmap<a name="dynamicmap"></a>
-Changes the dynamic of notes from a musical object using an 1-index-based mapping.
+Changes the dynamic of notes from a musical object. 1-index-based mapping.
 
 > dynamicmap('mapping',object)
 
@@ -294,7 +294,7 @@ ab = join(a,b)
 ```
 
 ### joinmap<a name="joinmap"></a>
-Creates a new join by mapping elements based on an index (1-based).
+Creates a new join by mapping elements. 1-index-based mapping.
 
 > joinmap('indices',join)
 
@@ -357,7 +357,7 @@ The third parameter is the velocity (~ loudness) and must be one of [0..127].
 ```javascript
 midi(500,52,80) // => 500ms E3+
 
-midi(500,36,70) // => 16C2 (kick)
+midi(16,36,70) // => 16C2 (kick)
 ```
 
 ### midi_send<a name="midi_send"></a>
@@ -383,7 +383,7 @@ Create a multi-track object from zero or more tracks.
 
 #### examples	
 ```javascript
-multitrack(track1,track2,track3) // one or more tracks in one multi-track object
+multitrack(track1,track2,track3) // 3 tracks in one multi-track object
 ```
 
 ### next<a name="next"></a>
@@ -437,7 +437,7 @@ octave(1,sequence('c d')) // => C5 D5
 ```
 
 ### octavemap<a name="octavemap"></a>
-Create a sequence with notes for which the order and the octaves are changed.
+Create a sequence with notes for which the order and the octaves are changed. 1-based indexing.
 
 > octavemap('int2int',object)
 
@@ -471,7 +471,7 @@ pitch(p,note('c'))
 ```
 
 ### pitchmap<a name="pitchmap"></a>
-Create a sequence with notes for which the order and the pitch are changed.
+Create a sequence with notes for which the order and the pitch are changed. 1-based indexing.
 
 > pitchmap('int2int',object)
 
@@ -557,7 +557,7 @@ Creates a modifier of sequence notes by index (1-based).
 
 #### examples	
 ```javascript
-s1 = resequence('C D E F G A B')
+s1 = sequence('C D E F G A B')
 
 i1 = resequence('6 5 4 3 2 1',s1) // => B A G F E D
 
@@ -577,7 +577,7 @@ reverse(chord('a'))
 ### scale<a name="scale"></a>
 Create a Scale using this <a href="/melrose/notations.html#scale-not">format</a>.
 
-> scale(octaves,'note')
+> scale(octaves,'scale-syntax')
 
 #### examples	
 ```javascript
@@ -608,6 +608,8 @@ Stretches the duration of musical object(s) with a factor. If the factor < 1 the
 stretch(2,note('c'))  // 2C
 
 stretch(0.25,sequence('(c e g)'))  // (16C 16E 16G)
+
+stretch(8,note('c'))  // C with length of 2 bars
 ```
 
 ### sync<a name="sync"></a>
@@ -625,7 +627,7 @@ sync(loop1,loop2) // begin loop2 at the next start of loop1
 ### track<a name="track"></a>
 Create a named track for a given MIDI channel with a musical object.
 
-> track('title',channel, onbar(1,object))
+> track('title',midi-channel, onbar(1,object))
 
 #### examples	
 ```javascript

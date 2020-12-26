@@ -103,7 +103,7 @@ Fraction can also be an exact float value between 0 and 1.
 
 	eval["dynamicmap"] = Function{
 		Title:       "Dynamic Map creator",
-		Description: `changes the dynamic of notes from a musical object using an 1-index-based mapping`,
+		Description: `changes the dynamic of notes from a musical object. 1-index-based mapping`,
 		Prefix:      "dyna",
 		IsComposer:  true,
 		Template:    `dynamicmap('${1:mapping}',${2:object})`,
@@ -144,7 +144,7 @@ progression('(c d)') // => (C E G D G♭ A)`,
 
 	eval["joinmap"] = Function{
 		Title:       "Join Map creator",
-		Description: "creates a new join by mapping elements based on an index (1-based)",
+		Description: "creates a new join by mapping elements. 1-index-based mapping",
 		Prefix:      "joinm",
 		IsComposer:  true,
 		Template:    `joinmap('${1:indices}',${2:join})`,
@@ -192,7 +192,7 @@ jm = joinmap('1 (2 3) 4',j)`,
 		Title:       "Track creator",
 		Description: "create a named track for a given MIDI channel with a musical object",
 		Prefix:      "tr",
-		Template:    `track('${1:title}',${2:channel}, onbar(1,${3:object}))`,
+		Template:    `track('${1:title}',${2:midi-channel}, onbar(1,${3:object}))`,
 		Samples:     `track("lullaby",1,onbar(2, sequence('c d e'))) // => a new track on MIDI channel 1 with sequence starting at bar`,
 		Func: func(title string, channel int, onbars ...core.SequenceOnTrack) interface{} {
 			if len(title) == 0 {
@@ -213,7 +213,7 @@ jm = joinmap('1 (2 3) 4',j)`,
 		Description:   "create a multi-track object from zero or more tracks",
 		Prefix:        "mtr",
 		Template:      `multitrack(${1:track})`,
-		Samples:       `multitrack(track1,track2,track3) // one or more tracks in one multi-track object`,
+		Samples:       `multitrack(track1,track2,track3) // 3 tracks in one multi-track object`,
 		ControlsAudio: true,
 		Func: func(varOrTrack ...interface{}) interface{} {
 			tracks := []core.Valueable{}
@@ -232,7 +232,7 @@ The third parameter is the velocity (~ loudness) and must be one of [0..127]`,
 		Prefix:   "mid",
 		Template: `midi(${1:numberOrDuration},${2:number},${3:number})`,
 		Samples: `midi(500,52,80) // => 500ms E3+
-midi(500,36,70) // => 16C2 (kick)`,
+midi(16,36,70) // => 16C2 (kick)`,
 		IsCore: true,
 		Func: func(dur, nr, velocity interface{}) interface{} {
 			durVal := getValueable(dur)
@@ -266,7 +266,7 @@ chord('g/M/2') // Major G second inversion`,
 
 	eval["octavemap"] = Function{
 		Title:       "Octave Map operator",
-		Description: "create a sequence with notes for which the order and the octaves are changed",
+		Description: "create a sequence with notes for which the order and the octaves are changed. 1-based indexing",
 		Prefix:      "octavem",
 		Template:    `octavemap('${1:int2int}',${2:object})`,
 		IsComposer:  true,
@@ -281,7 +281,7 @@ chord('g/M/2') // Major G second inversion`,
 
 	eval["pitchmap"] = Function{
 		Title:       "Pitch Map operator",
-		Description: "create a sequence with notes for which the order and the pitch are changed",
+		Description: "create a sequence with notes for which the order and the pitch are changed. 1-based indexing",
 		Prefix:      "pitchm",
 		Template:    `pitchmap('${1:int2int}',${2:object})`,
 		IsComposer:  true,
@@ -459,7 +459,7 @@ note('2.e#--')`,
 		Title:       "Scale creator",
 		Description: `create a Scale using this <a href="/melrose/notations.html#scale-not">format</a>`,
 		Prefix:      "sc",
-		Template:    `scale(${1:octaves},'${2:note}')`,
+		Template:    `scale(${1:octaves},'${2:scale-syntax}')`,
 		IsCore:      true,
 		Samples:     `scale(1,'e/m') // => E F G A B C5 D5`,
 		Func: func(octaves int, s string) interface{} {
@@ -644,7 +644,8 @@ lp = loop(p,next(i))
 		Prefix:      "st",
 		Template:    `stretch(${1:factor},${2:object})`,
 		Samples: `stretch(2,note('c'))  // 2C
-stretch(0.25,sequence('(c e g)'))  // (16C 16E 16G)`,
+stretch(0.25,sequence('(c e g)'))  // (16C 16E 16G)
+stretch(8,note('c'))  // C with length of 2 bars`,
 		Func: func(factor interface{}, m ...interface{}) interface{} {
 			list, ok := getSequenceableList(m...)
 			if !ok {
@@ -787,7 +788,7 @@ lp_cdef = loop(pitch(int1,sequence('c d e f')), next(int1))`,
 		Description: "creates a modifier of sequence notes by index (1-based)",
 		Prefix:      "resq",
 		Template:    `resequence('${1:space-separated-1-based-indices}',${2:sequenceable})`,
-		Samples: `s1 = resequence('C D E F G A B')
+		Samples: `s1 = sequence('C D E F G A B')
 i1 = resequence('6 5 4 3 2 1',s1) // => B A G F E D
 i2 = resequence('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)`,
 		IsComposer: true,
