@@ -26,7 +26,7 @@ func (s Stretch) S() core.Sequence {
 // Storex is part of Storable
 func (s Stretch) Storex() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "stretch(%s,", core.Storex(s.factor))
+	fmt.Fprintf(&b, "stretch(%s", core.Storex(s.factor))
 	core.AppendStorexList(&b, false, s.target)
 	fmt.Fprintf(&b, ")")
 	return b.String()

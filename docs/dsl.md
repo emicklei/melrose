@@ -59,8 +59,8 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#random">random</a>
 - <a href="#repeat">repeat</a>
 - <a href="#replace">replace</a>
+- <a href="#resequence">resequence</a>
 - <a href="#reverse">reverse</a>
-- <a href="#sequencemap">sequencemap</a>
 - <a href="#stretch">stretch</a>
 - <a href="#track">track</a>
 - <a href="#undynamic">undynamic</a>
@@ -75,7 +75,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#device">device</a>
 - <a href="#end">end</a>
 - <a href="#loop">loop</a>
-- <a href="#multi">multi</a>
+- <a href="#multitrack">multitrack</a>
 - <a href="#play">play</a>
 - <a href="#sync">sync</a>
 
@@ -304,15 +304,15 @@ jm = joinmap('1 (2 3) 4',j)
 ```
 
 ### listen<a name="listen"></a>
-Listen for note(s) from a device and call a function to handle.
+Listen for note(s) from a device and call a playable function to handle.
 
 > listen(device-id,variable,function)
 
 #### examples	
 ```javascript
-rec = note('c') // define a variable "rec" with a initial object
+rec = note('c') // define a variable "rec" with a initial object ; this is a place holder
 
-fun = play(rec) // define the function to call when notes are received
+fun = play(rec) // define the playable function to call when notes are received ; loop and print are also possible
 
 ear = listen(1,rec,fun) // start a listener for notes from device 1, store it "rec" and call "fun"
 ```
@@ -374,14 +374,14 @@ midi_send(2,0xB0,4,0,16) // control change, bank select 16 for channel 4
 midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1
 ```
 
-### multi<a name="multi"></a>
+### multitrack<a name="multitrack"></a>
 Create a multi-track object from zero or more tracks.
 
-> multi(track)
+> multitrack(track)
 
 #### examples	
 ```javascript
-multi(track1,track2,track3) // one or more tracks in one multi-track object
+multitrack(track1,track2,track3) // one or more tracks in one multi-track object
 ```
 
 ### next<a name="next"></a>
@@ -548,6 +548,20 @@ pitchA = pitch(1,c)
 pitchD = replace(pitchA, c, d) // c -> d in pitchA
 ```
 
+### resequence<a name="resequence"></a>
+Creates a modifier of sequence notes by index (1-based).
+
+> resequence('space-separated-1-based-indices',sequenceable)
+
+#### examples	
+```javascript
+s1 = resequence('C D E F G A B')
+
+i1 = resequence('6 5 4 3 2 1',s1) // => B A G F E D
+
+i2 = resequence('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)
+```
+
 ### reverse<a name="reverse"></a>
 Reverse the (groups of) notes in a sequence.
 
@@ -580,20 +594,6 @@ sequence('c d e')
 sequence('(8c d e)') => (⅛C D E)
 
 sequence('c (d e f) a =')
-```
-
-### sequencemap<a name="sequencemap"></a>
-Creates a mapper of sequence notes by index (1-based).
-
-> sequencemap('space-separated-1-based-indices',sequenceable)
-
-#### examples	
-```javascript
-s1 = sequence('C D E F G A B')
-
-i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D
-
-i2 = sequencemap('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)
 ```
 
 ### stretch<a name="stretch"></a>

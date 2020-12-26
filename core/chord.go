@@ -105,7 +105,10 @@ func (c Chord) Replaced(from, to Sequenceable) Sequenceable {
 // Notes returns the Note values for this chord.
 func (c Chord) Notes() []Note {
 	notes := []Note{c.start}
-	if c.start.IsRest() {
+	if c.start.IsRest() ||
+		c.start.IsPedalDown() ||
+		c.start.IsPedalUp() ||
+		c.start.IsPedalUpDown() {
 		return notes
 	}
 	var semitones []int
@@ -140,6 +143,7 @@ func (c Chord) Notes() []Note {
 			notes = append(notes, notes[0].Octaved(1))[1:]
 			notes = append(notes, notes[0].Octaved(1))[1:]
 		}
+		// TODO handle inversion 3
 	}
 	return notes
 }

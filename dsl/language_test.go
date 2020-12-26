@@ -106,6 +106,33 @@ func TestNotemapNumbers(t *testing.T) {
 		"sequence('= C = C = = = = = = C')")
 }
 
+func TestTwoBarsNote(t *testing.T) {
+	r := eval(t, "stretch(2,note('1c'))")
+	checkStorex(t, r, "stretch(2,note('1C'))")
+	s := r.(core.Sequenceable).S()
+	n := s.At(0)[0]
+	if got, want := n.DurationFactor(), float32(2.0); got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}
+
+func TestStretchChord(t *testing.T) {
+	r := eval(t, "stretch(2,chord('1c'))")
+	checkStorex(t, r, "stretch(2,chord('1C'))")
+	s := r.(core.Sequenceable).S()
+	n := s.At(0)[0]
+	if got, want := n.DurationFactor(), float32(2.0); got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}
+
+func TestProgressionWithSustain(t *testing.T) {
+	r := eval(t, "progression('> 1g/m/2 ^ 1d5 <')")
+	checkStorex(t, r, "progression('> 1G/m/2 ^ 1D5 <')")
+	checkStorex(t, r.(core.Sequenceable).S(),
+		"sequence('> (1D5 1G5 1B♭5) ^ (1D5 1G♭5 1A5) <')")
+}
+
 func TestNotemapDots(t *testing.T) {
 	r := eval(t, "notemap('.!.!',note('16c'))")
 	checkStorex(t, r, "notemap('.!.!',note('16C'))")
@@ -115,8 +142,8 @@ func TestNotemapDots(t *testing.T) {
 
 func TestSequenceMapFromStringIterator(t *testing.T) {
 	r := eval(t, `ar = iterator('1','2')
-sm = sequencemap(ar,sequence('c d'))`)
-	checkStorex(t, r, "sequencemap(ar,sequence('C D'))")
+sm = resequence(ar,sequence('c d'))`)
+	checkStorex(t, r, "resequence(ar,sequence('C D'))")
 	checkStorex(t, r.(core.Sequenceable).S(),
 		"sequence('C')")
 }

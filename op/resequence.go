@@ -8,13 +8,13 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-type SequenceMapper struct {
+type Resequencer struct {
 	Target  core.Sequenceable
 	Indices [][]int
 	Pattern core.Valueable
 }
 
-func (p SequenceMapper) S() core.Sequence {
+func (p Resequencer) S() core.Sequence {
 	if p.Pattern == nil {
 		return p.Target.S()
 	}
@@ -40,14 +40,14 @@ func (p SequenceMapper) S() core.Sequence {
 	return core.Sequence{Notes: groups}
 }
 
-func NewSequenceMapper(s core.Sequenceable, pattern core.Valueable) SequenceMapper {
-	return SequenceMapper{Target: s, Pattern: pattern}
+func NewResequencer(s core.Sequenceable, pattern core.Valueable) Resequencer {
+	return Resequencer{Target: s, Pattern: pattern}
 }
 
-func (p SequenceMapper) Storex() string {
+func (p Resequencer) Storex() string {
 	if s, ok := p.Target.(core.Storable); ok {
 		if ps, ok := p.Pattern.(core.Storable); ok {
-			return fmt.Sprintf("sequencemap(%s,%s)", ps.Storex(), s.Storex())
+			return fmt.Sprintf("resequence(%s,%s)", ps.Storex(), s.Storex())
 		}
 		return "?"
 	}
@@ -55,15 +55,15 @@ func (p SequenceMapper) Storex() string {
 }
 
 // Replaced is part of Replaceable
-func (p SequenceMapper) Replaced(from, to core.Sequenceable) core.Sequenceable {
+func (p Resequencer) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	if core.IsIdenticalTo(p, from) {
 		return to
 	}
 	if core.IsIdenticalTo(p.Target, from) {
-		return SequenceMapper{Target: to, Pattern: p.Pattern}
+		return Resequencer{Target: to, Pattern: p.Pattern}
 	}
 	if rep, ok := p.Target.(core.Replaceable); ok {
-		return SequenceMapper{Target: rep.Replaced(from, to), Pattern: p.Pattern}
+		return Resequencer{Target: rep.Replaced(from, to), Pattern: p.Pattern}
 	}
 	return p
 }

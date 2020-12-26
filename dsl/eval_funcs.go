@@ -208,12 +208,12 @@ jm = joinmap('1 (2 3) 4',j)`,
 			return tr
 		}}
 
-	eval["multi"] = Function{
+	eval["multitrack"] = Function{
 		Title:         "Multi track creator",
 		Description:   "create a multi-track object from zero or more tracks",
 		Prefix:        "mtr",
-		Template:      `multi(${1:track})`,
-		Samples:       `multi(track1,track2,track3) // one or more tracks in one multi-track object`,
+		Template:      `multitrack(${1:track})`,
+		Samples:       `multitrack(track1,track2,track3) // one or more tracks in one multi-track object`,
 		ControlsAudio: true,
 		Func: func(varOrTrack ...interface{}) interface{} {
 			tracks := []core.Valueable{}
@@ -692,6 +692,24 @@ lp_cb = loop(cb,reverse(cb))`,
 			return core.NewLoop(ctx, joined)
 		}}
 
+	eval["onnext"] = Function{
+		Title:         "Loop synchronizer (DRAFT)",
+		Description:   "Begins one or more loops at the next loop start",
+		ControlsAudio: true,
+		Template:      `lp_${2:object} = onnext(loop(${1:object},loop(${2:object})`,
+		Func: func(playables ...interface{}) interface{} {
+			loops := []core.Valueable{}
+			for _, p := range playables {
+				if s, ok := getLoop(p); !ok {
+					notify.Print(notify.Warningf("cannot loop (%T) %v", p, p))
+					return nil
+				} else {
+					loops = append(loops, s)
+				}
+			}
+			return core.NewPlaySynchronizer(loops)
+		}}
+
 	eval["begin"] = Function{
 		Title:         "Begin loop command",
 		Description:   "begin loop(s). Ignore if it was running.",
@@ -782,21 +800,21 @@ lp_cdef = loop(pitch(int1,sequence('c d e f')), next(int1))`,
 			return core.NewInterval(core.ToValueable(from), core.ToValueable(to), core.ToValueable(by), core.RepeatFromTo)
 		}}
 
-	eval["sequencemap"] = Function{
-		Title:       "Sequence Map creator",
-		Description: "creates a mapper of sequence notes by index (1-based)",
-		Prefix:      "sqm",
-		Template:    `sequencemap('${1:space-separated-1-based-indices}',${2:sequenceable})`,
-		Samples: `s1 = sequence('C D E F G A B')
-i1 = sequencemap('6 5 4 3 2 1',s1) // => B A G F E D
-i2 = sequencemap('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)`,
+	eval["resequence"] = Function{
+		Title:       "Sequence modifier",
+		Description: "creates a modifier of sequence notes by index (1-based)",
+		Prefix:      "resq",
+		Template:    `resequence('${1:space-separated-1-based-indices}',${2:sequenceable})`,
+		Samples: `s1 = resequence('C D E F G A B')
+i1 = resequence('6 5 4 3 2 1',s1) // => B A G F E D
+i2 = resequence('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)`,
 		IsComposer: true,
 		Func: func(pattern, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
-				return notify.Panic(fmt.Errorf("cannot create sequence mapper on (%T) %v", m, m))
+				return notify.Panic(fmt.Errorf("cannot create resequencer on (%T) %v", m, m))
 			}
-			return op.NewSequenceMapper(s, core.ToValueable(pattern))
+			return op.NewResequencer(s, core.ToValueable(pattern))
 		}}
 
 	eval["notemap"] = Function{
@@ -970,4 +988,17 @@ func getValue(val interface{}) interface{} {
 		return v.Value()
 	}
 	return val
+}
+
+func getLoop(v interface{}) (core.Valueable, bool) {
+	if val, ok := v.(core.Valueable); ok {
+		if _, ok := val.Value().(*core.Loop); ok {
+			return val, true
+		}
+		return val, false
+	}
+	if l, ok := v.(*core.Loop); ok {
+		return core.On(l), true
+	}
+	return core.On(v), false
 }

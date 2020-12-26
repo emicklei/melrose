@@ -51,13 +51,13 @@ func (t *PortmidiTransporter) NewMIDIListener(in MIDIIn) MIDIListener {
 }
 
 func (t *PortmidiTransporter) PrintInfo(inID, outID int) {
-	notify.PrintHighlighted("Usage:")
+	notify.PrintHighlighted("usage:")
 	fmt.Println(":m echo                --- toggle printing the notes that are send")
 	fmt.Println(":m in      <device-id> --- change the default MIDI input  device id")
 	fmt.Println(":m out     <device-id> --- change the default MIDI output device id")
 	fmt.Println()
 
-	notify.PrintHighlighted("Available:")
+	notify.PrintHighlighted("available:")
 	var midiDeviceInfo *portmidi.DeviceInfo
 	for i := 0; i < portmidi.CountDevices(); i++ {
 		midiDeviceInfo = portmidi.Info(portmidi.DeviceID(i)) // returns info about a MIDI device
@@ -76,7 +76,7 @@ func (t *PortmidiTransporter) PrintInfo(inID, outID int) {
 	}
 	fmt.Println()
 
-	notify.PrintHighlighted("Current:")
+	notify.PrintHighlighted("current:")
 
 	midiDeviceInfo = portmidi.Info(portmidi.DeviceID(inID))
 	fmt.Printf("[midi] device  %d = default  input, %s/%s\n", inID, midiDeviceInfo.Interface, midiDeviceInfo.Name)

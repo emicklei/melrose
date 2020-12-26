@@ -10,11 +10,12 @@ import (
 )
 
 type Loop struct {
-	ctx       Context
-	target    []Sequenceable
-	isRunning bool
-	mutex     sync.RWMutex
-	condition Condition
+	ctx        Context
+	target     []Sequenceable
+	isRunning  bool
+	mutex      sync.RWMutex
+	condition  Condition
+	nextPlayAt time.Time
 }
 
 func NewLoop(ctx Context, target []Sequenceable) *Loop {
@@ -67,6 +68,7 @@ func (l *Loop) Inspect(i Inspection) {
 	i.Properties["running"] = l.isRunning
 }
 
+// in mutex
 func (l *Loop) reschedule(d AudioDevice, when time.Time) {
 	// check condition first
 	if l.condition != nil && !l.condition() {
@@ -82,7 +84,17 @@ func (l *Loop) reschedule(d AudioDevice, when time.Time) {
 		notify.Debugf("core.loop: next=%s", moment.Format("15:04:05.00"))
 	}
 	// schedule the loop itself so it can play again when Handle is called
+	l.nextPlayAt = moment
 	d.Schedule(l, moment)
+}
+
+func (l *Loop) NextPlayAt() time.Time {
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+	if !l.isRunning {
+		return time.Time{}
+	}
+	return l.nextPlayAt
 }
 
 // Handle is part of TimelineEvent
@@ -116,4 +128,49 @@ func (l *Loop) SetTarget(newTarget []Sequenceable) {
 func (l *Loop) Play(ctx Context) error {
 	ctx.Control().StartLoop(l)
 	return nil
+}
+
+type PlaySynchronizer struct {
+	players []Valueable
+}
+
+func NewPlaySynchronizer(vals []Valueable) PlaySynchronizer {
+	return PlaySynchronizer{players: vals}
+}
+
+// Play is part of Playable
+func (s PlaySynchronizer) Play(ctx Context) error {
+	notify.Debugf("playsync.play")
+	// first for loops
+	if len(s.players) == 0 {
+		return nil
+	}
+	first, ok := s.players[0].Value().(*Loop)
+	if !ok {
+		return nil
+	}
+	if !first.isRunning {
+		return nil
+	}
+	// when := first.NextPlayAt()
+	// for i:=1;i<len(s.players);i++ {
+	// 	p, ok  := s.players[i].Value().(*Loop)
+	// 	if ok {
+	// 		p.Play(when)
+	// 	}
+	// }
+	return nil
+}
+
+func (s PlaySynchronizer) Storex() string {
+	var b bytes.Buffer
+	fmt.Fprintf(&b, "onnext(")
+	for i, each := range s.players {
+		if i > 0 {
+			fmt.Fprintf(&b, ",")
+		}
+		fmt.Fprintf(&b, "%s", Storex(each))
+	}
+	fmt.Fprintf(&b, ")")
+	return b.String()
 }

@@ -80,6 +80,8 @@ type Inspectable interface {
 
 type Playable interface {
 	Play(ctx Context) error
+	// Stop(ctx Context) error
+	// IsPlaying() bool
 }
 
 type VariableStorage interface {

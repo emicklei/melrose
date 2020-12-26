@@ -40,7 +40,7 @@ func TestReplace_Operators(t *testing.T) {
 		}
 	}
 	{
-		s := SequenceMapper{Target: c, Indices: [][]int{[]int{1}}}
+		s := Resequencer{Target: c, Indices: [][]int{[]int{1}}}
 		r := Replace{Target: s, From: c, To: d}
 		if got, want := fmt.Sprintf("%v", r.S()), "D"; got != want {
 			t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)

@@ -100,7 +100,7 @@ type MultiTrack struct {
 // Storex implements Storable
 func (m MultiTrack) Storex() string {
 	var buf bytes.Buffer
-	fmt.Fprintf(&buf, "multi(")
+	fmt.Fprintf(&buf, "multitrack(")
 	for i, each := range m.Tracks {
 		if i > 0 {
 			fmt.Fprintf(&buf, ",")
