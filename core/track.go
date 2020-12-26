@@ -31,8 +31,7 @@ func (t *Track) S() Sequence {
 	return EmptySequence
 }
 
-func (t *Track) Play(ctx Context) error {
-	now := time.Now()
+func (t *Track) Play(ctx Context, now time.Time) error {
 	bpm := ctx.Control().BPM()
 	biab := ctx.Control().BIAB()
 	whole := WholeNoteDuration(bpm)
@@ -116,7 +115,7 @@ func (m MultiTrack) Storex() string {
 }
 
 // Play is part of Playable
-func (m MultiTrack) Play(ctx Context) error {
+func (m MultiTrack) Play(ctx Context, at time.Time) error {
 	// because all tracks must be synchronized, we first stop the beatmaster
 	// then schedule all tracks
 	// then start the beatmaster again.

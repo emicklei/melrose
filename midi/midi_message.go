@@ -59,9 +59,9 @@ func (m Message) Storex() string {
 	return fmt.Sprintf("midi_send(%v,%d,%v,%v,%v)", core.Storex(m.deviceID), m.status, core.Storex(m.channel), core.Storex(m.data1), core.Storex(m.data2))
 }
 
-// Evaluate implements core.Evaluateable
+// Evaluate implements core.Evaluatable
 // perform the message send
-func (m Message) Evaluate(condition core.Condition) error {
+func (m Message) Evaluate(ctx core.Context) error {
 	m.S()
 	return nil
 }

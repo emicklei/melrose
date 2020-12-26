@@ -46,7 +46,7 @@ func TestTrackBarTiming(t *testing.T) {
 	tr2 := NewTrack("2", 1)
 	tr1.Add(NewSequenceOnTrack(On(2), MustParseSequence("c")))
 	m := MultiTrack{Tracks: []Valueable{On(tr1), On(tr2)}}
-	m.Play(ctx)
+	m.Play(ctx, time.Now())
 	t.Log(b.schedule.entries)
 	_, ok := b.schedule.entries[0]
 	if !ok {

@@ -56,9 +56,6 @@ type LoopController interface {
 	SetBIAB(biab int)
 	BIAB() int
 
-	StartLoop(l *Loop)
-	EndLoop(l *Loop)
-
 	BeatsAndBars() (int64, int64)
 	Plan(bars int64, seq Sequenceable)
 
@@ -79,8 +76,8 @@ type Inspectable interface {
 }
 
 type Playable interface {
-	Play(ctx Context) error
-	// Stop(ctx Context) error
+	Play(ctx Context, at time.Time) error
+	Stop(ctx Context) error
 	// IsPlaying() bool
 }
 
@@ -97,6 +94,7 @@ type Context interface {
 	Device() AudioDevice
 	Variables() VariableStorage
 	Environment() map[string]string
+	WithCondition(c Condition) Context
 }
 
 // WorkingDirectory is a key in a context environment.
@@ -104,12 +102,16 @@ const WorkingDirectory = "pwd"
 
 // TODO makue users use Play with a Context that can have a Condition
 type Evaluatable interface {
-	Evaluate(condition Condition) error
+	Evaluate(ctx Context) error
 }
 
 type NoteListener interface {
 	NoteOn(Note)
 	NoteOff(Note)
+}
+
+type Conditional interface {
+	Condition() Condition
 }
 
 type Condition func() bool

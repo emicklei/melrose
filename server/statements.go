@@ -48,9 +48,10 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	defer r.Body.Close()
 	if query.Get("action") == "kill" {
 		// kill the play and any loop
-		dsl.StopAllLoops(l.context)
-		l.context.Control().Reset()
-		l.context.Device().Reset()
+		dsl.StopAllPlayables(l.context)
+		// TODO only execute all NOTE OFF messages
+		//l.context.Control().Reset()
+		//l.context.Device().Reset()
 		return
 	}
 	returnValue, err := l.evaluator.EvaluateProgram(string(data))
@@ -77,7 +78,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		if query.Get("action") == "play" {
 			// first check Playable
 			if pl, ok := returnValue.(core.Playable); ok {
-				_ = pl.Play(l.context)
+				_ = pl.Play(l.context, time.Now())
 			} else {
 				// any sequenceable is playable
 				if s, ok := returnValue.(core.Sequenceable); ok {
@@ -91,29 +92,21 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		}
 		// loop operation
 		if query.Get("action") == "begin" {
-			if lp, ok := returnValue.(*core.Loop); ok {
-				lp.Play(l.context)
+			if p, ok := returnValue.(core.Playable); ok {
+				p.Play(l.context, time.Now())
 			}
 			if lis, ok := returnValue.(*control.Listen); ok {
-				lis.Play(l.context)
+				lis.Play(l.context, time.Now())
 			}
-			// ignore if not Loop or Listen
 		}
 		// loop operation
 		if query.Get("action") == "end" {
-			if lp, ok := returnValue.(*core.Loop); ok {
-				if lp.IsRunning() {
-					lp.Stop() // TODO add context?
-				}
+			if p, ok := returnValue.(core.Playable); ok {
+				p.Stop(l.context)
 			}
 			if lis, ok := returnValue.(*control.Listen); ok {
 				lis.Stop(l.context)
 			}
-			// ignore if not Loop
-		}
-
-		if query.Get("action") == "eval" {
-			core.PrintValue(l.context, returnValue)
 		}
 
 		response = resultFrom(line, returnValue)

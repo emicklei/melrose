@@ -376,7 +376,7 @@ ab = join(a,b)`,
 speedup = iterator(80,100,120,140)
 l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Func: func(v interface{}) interface{} {
-			return control.NewBPM(core.On(v), ctx.Control())
+			return control.NewBPM(core.On(v), ctx)
 		}}
 
 	eval["duration"] = Function{
@@ -536,22 +536,19 @@ next(num)`,
 		}}
 
 	eval["sync"] = Function{
-		Title:         "Play musical objects at the same time. Use play() for serial playing",
-		Description:   "play all musical objects",
+		Title:         "Synchroniser creator",
+		Description:   "Synchronise playing musical objects. Use play() for serial playing",
 		ControlsAudio: true,
 		Prefix:        "syn",
-		Template:      `sync(${1:sequenceable})`,
-		Samples:       `sync(s1,s2,s3) // play s1,s2 and s3 at the same time`,
+		Template:      `sync(${1:object})`,
+		Samples: `sync(s1,s2,s3) // play s1,s2 and s3 at the same time
+sync(loop1,loop2) // begin loop2 at the next start of loop1`,
 		Func: func(playables ...interface{}) interface{} {
-			list := []core.Sequenceable{}
+			vals := []core.Valueable{}
 			for _, p := range playables {
-				if s, ok := getSequenceable(p); ok { // unwrap var
-					list = append(list, s)
-				} else {
-					notify.Print(notify.Warningf("cannot sync (%T) %v", p, p))
-				}
+				vals = append(vals, getValueable(p))
 			}
-			return control.NewPlay(ctx, list, true)
+			return core.NewSyncPlay(vals)
 		}}
 
 	eval["ungroup"] = Function{
@@ -692,24 +689,6 @@ lp_cb = loop(cb,reverse(cb))`,
 			return core.NewLoop(ctx, joined)
 		}}
 
-	eval["onnext"] = Function{
-		Title:         "Loop synchronizer (DRAFT)",
-		Description:   "Begins one or more loops at the next loop start",
-		ControlsAudio: true,
-		Template:      `lp_${2:object} = onnext(loop(${1:object},loop(${2:object})`,
-		Func: func(playables ...interface{}) interface{} {
-			loops := []core.Valueable{}
-			for _, p := range playables {
-				if s, ok := getLoop(p); !ok {
-					notify.Print(notify.Warningf("cannot loop (%T) %v", p, p))
-					return nil
-				} else {
-					loops = append(loops, s)
-				}
-			}
-			return core.NewPlaySynchronizer(loops)
-		}}
-
 	eval["begin"] = Function{
 		Title:         "Begin loop command",
 		Description:   "begin loop(s). Ignore if it was running.",
@@ -725,7 +704,8 @@ begin(lp_cb) // end(lp_cb)`,
 					notify.Print(notify.Warningf("cannot begin (%T) %v", l, l))
 					continue
 				}
-				ctx.Control().StartLoop(l)
+				//ctx.Control().StartLoop(l)
+				_ = l.Play(ctx, time.Now())
 				notify.Print(notify.Infof("begin loop: %s", each.Name))
 			}
 			return nil
@@ -738,16 +718,18 @@ begin(lp_cb) // end(lp_cb)`,
 		Template:      `end(${1:control})`,
 		Samples: `l1 = loop(sequence('c e g'))
 begin(l1)
-end(l1)`,
+end(l1)
+end() // stop all playables`,
 		Func: func(vars ...variable) interface{} {
 			if len(vars) == 0 {
-				StopAllLoops(ctx)
+				StopAllPlayables(ctx)
 				return nil
 			}
 			for _, each := range vars {
 				if l, ok := each.Value().(*core.Loop); ok {
 					notify.Print(notify.Infof("end loop: %s", each.Name))
-					ctx.Control().EndLoop(l)
+					//ctx.Control().EndLoop(l)
+					_ = l.Stop(ctx)
 				} else if l, ok := each.Value().(*control.Listen); ok {
 					notify.Print(notify.Infof("end listen: %s", each.Name))
 					l.Stop(ctx)
@@ -932,7 +914,7 @@ ear = listen(1,rec,fun) // start a listener for notes from device 1, store it "r
 				return notify.Panic(fmt.Errorf("cannot listen and call (%T) %s", function, core.Storex(function)))
 			}
 			// use function as Valueable and not the Evaluatable to allow redefinition of the callback function in the script
-			return control.NewListen(deviceID, ctx.Variables(), injectable.Name, getValueable(function))
+			return control.NewListen(ctx, deviceID, injectable.Name, getValueable(function))
 		},
 	})
 

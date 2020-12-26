@@ -25,10 +25,14 @@ func NewPlay(ctx core.Context, list []core.Sequenceable, playInSync bool) Play {
 
 // Evaluate implements Evaluatable
 // performs the set operation
-func (p Play) Evaluate(condition core.Condition) error {
+func (p Play) Evaluate(ctx core.Context) error {
 	moment := time.Now()
+	cond := core.NoCondition
+	if with, ok := ctx.(core.Conditional); ok {
+		cond = with.Condition()
+	}
 	for _, each := range p.target {
-		end := p.ctx.Device().Play(condition, each, p.ctx.Control().BPM(), moment)
+		end := p.ctx.Device().Play(cond, each, p.ctx.Control().BPM(), moment)
 		if !p.sync {
 			// play after each other
 			moment = end

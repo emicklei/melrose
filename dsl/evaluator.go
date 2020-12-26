@@ -170,7 +170,7 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 
 	// special case for Evals, put last because Loop is also Evaluatable
 	if theEval, ok := r.(core.Evaluatable); ok {
-		if err := theEval.Evaluate(core.NoCondition); err != nil { // no condition
+		if err := theEval.Evaluate(e.context); err != nil { // no condition
 			return nil, err
 		}
 	}

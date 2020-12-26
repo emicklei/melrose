@@ -4,12 +4,15 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
 )
 
 type Listen struct {
+	mutex           *sync.RWMutex
+	ctx             core.Context
 	deviceID        int
 	variableStore   core.VariableStorage
 	variableName    string
@@ -17,16 +20,15 @@ type Listen struct {
 	callback        core.Valueable
 	notesOn         map[int]int
 	noteChangeCount int
-	mutex           *sync.RWMutex
 }
 
-func NewListen(deviceID int, store core.VariableStorage, variableName string, target core.Valueable) *Listen {
+func NewListen(ctx core.Context, deviceID int, variableName string, target core.Valueable) *Listen {
 	return &Listen{
+		mutex:           new(sync.RWMutex),
+		ctx:             ctx,
 		deviceID:        deviceID,
-		variableStore:   store,
 		variableName:    variableName,
 		callback:        target,
-		mutex:           new(sync.RWMutex),
 		notesOn:         map[int]int{},
 		noteChangeCount: 0,
 	}
@@ -44,7 +46,7 @@ func (l *Listen) Target() core.Valueable { return l.callback }
 func (l *Listen) SetTarget(c core.Valueable) { l.callback = c }
 
 // Play is part of core.Playable
-func (l *Listen) Play(ctx core.Context) error {
+func (l *Listen) Play(ctx core.Context, at time.Time) error {
 	if l.isRunning {
 		return nil
 	}
@@ -56,12 +58,13 @@ func (l *Listen) Play(ctx core.Context) error {
 	return nil
 }
 
-func (l *Listen) Stop(ctx core.Context) {
+func (l *Listen) Stop(ctx core.Context) error {
 	if !l.isRunning {
-		return
+		return nil
 	}
 	l.isRunning = false
 	ctx.Device().Listen(l.deviceID, l, l.isRunning)
+	return nil
 }
 
 // NoteOn is part of core.NoteListener
@@ -74,16 +77,17 @@ func (l *Listen) NoteOn(n core.Note) {
 	countCheck := l.noteChangeCount
 	nr := n.MIDI()
 	l.notesOn[nr] = countCheck
-	l.variableStore.Put(l.variableName, n)
+	l.ctx.Variables().Put(l.variableName, n)
 
 	// release so condition can be evaluated
 	l.mutex.Unlock()
 
 	if e, ok := l.callback.Value().(core.Evaluatable); ok {
 		// only actually play the note if the hit count matches the check
-		e.Evaluate(func() bool {
+		cond := func() bool {
 			return l.isNoteOnCount(nr, countCheck)
-		})
+		}
+		e.Evaluate(l.ctx.WithCondition(cond))
 	}
 }
 

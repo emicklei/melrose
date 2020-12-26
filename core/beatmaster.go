@@ -62,19 +62,6 @@ func (b *Beatmaster) SettingNotifier(handler func(LoopController)) {
 	b.settingNotifier = handler
 }
 
-// StartLoop will schedule the start of a Loop at the next bar, unless the master is not started.
-func (b *Beatmaster) StartLoop(l *Loop) {
-	if !b.beating {
-		return
-	}
-	if l == nil || l.IsRunning() {
-		return
-	}
-	b.schedule.Schedule(b.beatsAtNextBar(), func(when time.Time) {
-		l.Start(b.context.Device())
-	})
-}
-
 // Plan is part of LoopControl
 // bars is zero-based
 func (b *Beatmaster) Plan(bars int64, seq Sequenceable) {
@@ -92,19 +79,6 @@ func (b *Beatmaster) beatsAtNextBar() int64 {
 		return b.beats
 	}
 	return (b.beats/b.biab + 1) * b.biab
-}
-
-// EndLoop will schedule the stop of a Loop at the next bar, unless the master is not started.
-func (b *Beatmaster) EndLoop(l *Loop) {
-	if !b.beating {
-		return
-	}
-	if l == nil || !l.IsRunning() {
-		return
-	}
-	b.schedule.Schedule(b.beatsAtNextBar(), func(when time.Time) {
-		l.Stop()
-	})
 }
 
 // SetBPM will change the beats per minute at the next bar, unless the master is not started.
@@ -218,8 +192,6 @@ var NoLooper = zeroBeat{}
 
 type zeroBeat struct{}
 
-func (s zeroBeat) StartLoop(l *Loop)                            {}
-func (s zeroBeat) EndLoop(l *Loop)                              {}
 func (s zeroBeat) Start()                                       {}
 func (s zeroBeat) Stop()                                        {}
 func (s zeroBeat) Reset()                                       {}

@@ -8,29 +8,29 @@ import (
 )
 
 type SetBPM struct {
-	bpm     core.Valueable
-	control core.LoopController
+	bpm core.Valueable
+	ctx core.Context
 }
 
-func NewBPM(bpm core.Valueable, ctr core.LoopController) SetBPM {
-	return SetBPM{bpm: bpm, control: ctr}
+func NewBPM(bpm core.Valueable, ctx core.Context) SetBPM {
+	return SetBPM{bpm: bpm, ctx: ctx}
 }
 
 // S has the side effect of setting the BPM unless BPM is zero
 func (s SetBPM) S() core.Sequence {
-	s.Evaluate(core.NoCondition)
+	s.Evaluate(s.ctx)
 	return core.EmptySequence
 }
 
 // Evaluate implements Evaluatable
 // performs the set operation
-func (s SetBPM) Evaluate(condition core.Condition) error {
+func (s SetBPM) Evaluate(ctx core.Context) error {
 	f := core.Float(s.bpm)
 	if core.IsDebug() {
 		notify.Debugf("control.bpm set %.2f", f)
 	}
 	if f > 0.0 {
-		s.control.SetBPM(float64(f))
+		ctx.Control().SetBPM(float64(f))
 	}
 	return nil
 }

@@ -18,10 +18,8 @@ func cmdFunctions() map[string]Command {
 	cmds[":v"] = Command{Description: "show variables, optional filter on given prefix", Func: func(ctx core.Context, args []string) notify.Message {
 		return dsl.ListVariables(ctx.Variables(), args)
 	}}
-	cmds[":k"] = Command{Description: "end all running Loops", Func: func(ctx core.Context, args []string) notify.Message {
-		dsl.StopAllLoops(ctx)
-		ctx.Control().Reset()
-		ctx.Device().Reset()
+	cmds[":k"] = Command{Description: "end all running playables", Func: func(ctx core.Context, args []string) notify.Message {
+		dsl.StopAllPlayables(ctx)
 		return nil
 	}}
 	cmds[":b"] = Command{Description: "beat settings", Func: handleBeatSetting}
