@@ -204,6 +204,8 @@ l1 = loop(sequence('c e g'))
 begin(l1)
 
 end(l1)
+
+end() // stop all playables
 ```
 
 ### export<a name="export"></a>
@@ -609,13 +611,15 @@ stretch(0.25,sequence('(c e g)'))  // (16C 16E 16G)
 ```
 
 ### sync<a name="sync"></a>
-Play all musical objects.
+Synchronise playing musical objects. Use play() for serial playing.
 
-> sync(sequenceable)
+> sync(object)
 
 #### examples	
 ```javascript
 sync(s1,s2,s3) // play s1,s2 and s3 at the same time
+
+sync(loop1,loop2) // begin loop2 at the next start of loop1
 ```
 
 ### track<a name="track"></a>
