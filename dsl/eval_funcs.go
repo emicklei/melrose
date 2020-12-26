@@ -149,7 +149,7 @@ progression('(c d)') // => (C E G D G♭ A)`,
 		IsComposer:  true,
 		Template:    `joinmap('${1:indices}',${2:join})`,
 		Samples: `j = join(note('c'), sequence('d e f'))
-jm = joinmap('1 (2 3) 4',j)`,
+jm = joinmap('1 (2 3) 4',j) // => C = D =`,
 		Func: func(indices interface{}, join interface{}) interface{} { // allow multiple seq?
 			v := getValueable(join)
 			vNow := v.Value()
@@ -352,7 +352,7 @@ pitch(p,note('c'))`,
 		Template:    `join(${1:first},${2:second})`,
 		Samples: `a = chord('a')
 b = sequence('(c e g)')
-ab = join(a,b)`,
+ab = join(a,b) // => (A D♭5 E5) (C E G)`,
 		IsComposer: true,
 		Func: func(playables ...interface{}) interface{} {
 			joined := []core.Sequenceable{}
@@ -384,7 +384,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Description: "computes the duration of the object using the current BPM",
 		Prefix:      "dur",
 		Template:    `duration(${1:object})`,
-		Samples:     `duration(note('c'))`,
+		Samples:     `duration(note('c')) // => 375ms`,
 		Func: func(m interface{}) time.Duration {
 			if s, ok := getSequenceable(m); ok {
 				return s.S().Duration(ctx.Control().BPM())
@@ -428,7 +428,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Prefix:      "seq",
 		Template:    `sequence('${1:space-separated-notes}')`,
 		Samples: `sequence('c d e')
-sequence('(8c d e)') => (⅛C D E)
+sequence('(8c d e)') // => (⅛C D E)
 sequence('c (d e f) a =')`,
 		IsCore: true,
 		Func: func(s string) interface{} {

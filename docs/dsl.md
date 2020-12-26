@@ -165,7 +165,7 @@ Computes the duration of the object using the current BPM.
 
 #### examples	
 ```javascript
-duration(note('c'))
+duration(note('c')) // => 375ms
 ```
 
 ### dynamic<a name="dynamic"></a>
@@ -290,7 +290,7 @@ a = chord('a')
 
 b = sequence('(c e g)')
 
-ab = join(a,b)
+ab = join(a,b) // => (A D♭5 E5) (C E G)
 ```
 
 ### joinmap<a name="joinmap"></a>
@@ -302,7 +302,7 @@ Creates a new join by mapping elements. 1-index-based mapping.
 ```javascript
 j = join(note('c'), sequence('d e f'))
 
-jm = joinmap('1 (2 3) 4',j)
+jm = joinmap('1 (2 3) 4',j) // => C = D =
 ```
 
 ### listen<a name="listen"></a>
@@ -593,7 +593,7 @@ Create a Sequence using this <a href="/melrose/notations.html#sequence-not">form
 ```javascript
 sequence('c d e')
 
-sequence('(8c d e)') => (⅛C D E)
+sequence('(8c d e)') // => (⅛C D E)
 
 sequence('c (d e f) a =')
 ```
