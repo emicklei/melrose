@@ -157,23 +157,27 @@ func ParseNote(input string) (Note, error) {
 func ParseVelocity(plusmin string) (velocity int) {
 	switch plusmin {
 	case "-":
-		velocity = MezzoPiano
+		velocity = VelocityP
 	case "--":
-		velocity = Piano
+		velocity = VelocityPP
 	case "---":
-		velocity = Pianissimo
+		velocity = VelocityPPP
 	case "----":
-		velocity = Pianississimo
+		velocity = VelocityPPPP
 	case "+":
-		velocity = MezzoForte
+		velocity = VelocityF
 	case "++":
-		velocity = Forte
+		velocity = VelocityFF
 	case "+++":
-		velocity = Fortissimo
+		velocity = VelocityFFF
 	case "++++":
-		velocity = Fortississimo
+		velocity = VelocityFFFF
 	case "o":
 		velocity = Normal
+	case "o-":
+		velocity = VelocityMP
+	case "o+":
+		velocity = VelocityMF
 	default:
 		// invalid
 		velocity = -1
@@ -296,34 +300,27 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 		fmt.Fprintf(buf, "%d", n.Octave)
 	}
 	if n.Velocity != Normal {
-		// switch n.Velocity {
-		// case Pianissimo:
-		// 	io.WriteString(buf, "---")
-		// case Piano:
-		// 	io.WriteString(buf, "--")
-		// case MezzoPiano:
-		// 	io.WriteString(buf, "-")
-		// case MezzoForte:
-		// 	io.WriteString(buf, "+")
-		// case Forte:
-		// 	io.WriteString(buf, "++")
-		// case Fortissimo:
-		// 	io.WriteString(buf, "+++")
-		// }
-
 		switch {
-		case n.Velocity <= Pianissimo:
+		case n.Velocity <= VelocityPPPP:
+			io.WriteString(buf, "----")
+		case n.Velocity <= VelocityPPP:
 			io.WriteString(buf, "---")
-		case n.Velocity <= Piano:
+		case n.Velocity <= VelocityPP:
 			io.WriteString(buf, "--")
-		case n.Velocity <= MezzoPiano:
+		case n.Velocity <= VelocityP:
 			io.WriteString(buf, "-")
-		case n.Velocity <= MezzoForte:
+		case n.Velocity <= VelocityMP:
+			io.WriteString(buf, "o-")
+		case n.Velocity <= VelocityMF:
+			io.WriteString(buf, "o+")
+		case n.Velocity <= VelocityF:
 			io.WriteString(buf, "+")
-		case n.Velocity <= Forte:
+		case n.Velocity <= VelocityFF:
 			io.WriteString(buf, "++")
-		case n.Velocity > Forte:
+		case n.Velocity <= VelocityFFF:
 			io.WriteString(buf, "+++")
+		case n.Velocity > VelocityFFF:
+			io.WriteString(buf, "++++")
 		}
 	}
 }

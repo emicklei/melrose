@@ -15,7 +15,7 @@ See [documentation](https://emicklei.github.io/melrose/) how to install and use 
 
 ### Status
 
-Until `v1.0.0` the language syntax may change in a an incompatible way.
+Until `v1.0.0` the language syntax may change in an incompatible way.
 
 ### Programming music
 

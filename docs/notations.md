@@ -30,15 +30,17 @@ n = note('c#5')
 
 | Notation    | Description
 |-------------|---
-| \-\-\-\-    |Pianississimo (ppp)
-| \-\-\-      |Pianissimo (pp)
-| \-\-        |Piano (p)
-| \-          |MezzoPiano (mp)
-| o (not 0)   |Normal (optional)
-| +           |MezzoForte (mf)
-| ++          |Forte (f)
-| +++         |Fortissimo (ff)
-| ++++        |Fortississimo (fff)
+| \-\-\-\-    |Pianissississimo (pppp)
+| \-\-\-      |Pianississimo (ppp)
+| \-\-        |Pianissimo (pp)
+| \-          |Piano (p)
+| o-          |MezzoPiano (mp)
+| o (not 0)   |Normal (character is optional)
+| o+          |MezzoForte (mf)
+| +           |Forte (f)
+| ++          |Fortissimo (ff)
+| +++         |Fortississimo (fff)
+| ++++        |Fortissississimo (ffff)
 
 ```javascript
 n = note('e++')

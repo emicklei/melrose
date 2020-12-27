@@ -26,12 +26,14 @@ var parsetests = []struct {
 	{".F#9", "F", 9, 0.25, 1, true, Normal},
 	{"1C", "C", 4, 1, 0, false, Normal},
 	{"=", "=", 4, 0.25, 0, false, Normal},
-	{"D++", "D", 4, 0.25, 0, false, Forte},
-	{"D+", "D", 4, 0.25, 0, false, MezzoForte},
-	{"D+++", "D", 4, 0.25, 0, false, Fortissimo},
-	{"E-", "E", 4, 0.25, 0, false, MezzoPiano},
-	{"E--", "E", 4, 0.25, 0, false, Piano},
-	{"E---", "E", 4, 0.25, 0, false, Pianissimo},
+	{"D++", "D", 4, 0.25, 0, false, VelocityFF},
+	{"D+", "D", 4, 0.25, 0, false, VelocityF},
+	{"D+++", "D", 4, 0.25, 0, false, VelocityFFF},
+	{"E-", "E", 4, 0.25, 0, false, VelocityP},
+	{"E--", "E", 4, 0.25, 0, false, VelocityPP},
+	{"E---", "E", 4, 0.25, 0, false, VelocityPPP},
+	{"Bo", "B", 4, 0.25, 0, false, Normal},
+	{"Bo-", "B", 4, 0.25, 0, false, VelocityMP},
 	{"<", "<", 0, 0, 0, false, 0},
 	{"^", "^", 0, 0, 0, false, 0},
 }
@@ -148,7 +150,7 @@ func ExampleParseNote() {
 
 func TestNote_Storex(t *testing.T) {
 	n, _ := NewNote("A", 4, 0.25, 1, false, 1)
-	if got, want := n.Storex(), `note('A♯---')`; got != want {
+	if got, want := n.Storex(), `note('A♯----')`; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }

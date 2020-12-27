@@ -30,15 +30,17 @@ const (
 	Inversion3
 )
 
-// https://nl.wikipedia.org/wiki/Dynamiek_(muziek)
+// https://www.cs.cmu.edu/~music/cmsip/readings/MIDI%20tutorial%20for%20programmers.html
 const (
-	Pianississimo = 16 // ----
-	Pianissimo    = 33 // ---
-	Piano         = 49 // --
-	MezzoPiano    = 64 // -
-	Normal        = 72
-	MezzoForte    = 80  // +
-	Forte         = 96  // ++
-	Fortissimo    = 112 // +++
-	Fortississimo = 127 // ++++
+	VelocityPPPP = 8   // ----
+	VelocityPPP  = 20  // ---
+	VelocityPP   = 31  // --
+	VelocityP    = 42  // -
+	VelocityMP   = 53  // o-
+	Normal       = 59  // o
+	VelocityMF   = 64  // o+
+	VelocityF    = 80  // +
+	VelocityFF   = 96  // ++
+	VelocityFFF  = 112 // +++
+	VelocityFFFF = 127 // ++++
 )

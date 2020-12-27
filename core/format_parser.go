@@ -167,7 +167,7 @@ func (s *noteSTM) accept(lit string) error {
 			return nil
 		}
 		// velocity
-		if strings.ContainsAny(lit, "-+") {
+		if strings.ContainsAny(lit, "-o+") {
 			s.velocity += lit
 			return nil
 		}
