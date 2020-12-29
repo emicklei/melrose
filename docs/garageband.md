@@ -23,7 +23,7 @@ Install the latest packaged (unsigned) release of Melrōse for Mac OSX 10+.
 
 #### versions
 
-- [Melrose-v0.36.0.pkg](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/versions/Melrose-v0.36.0.pkg)
+- [Melrose-v0.36.0.pkg 2020-12-29](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/versions/Melrose-v0.36.0.pkg)
 - [Melrose-v0.35.0.pkg](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/versions/Melrose-v0.35.0.pkg)
 - [Melrose-v0.34.0.pkg](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/versions/Melrose-v0.34.0.pkg)
 - [Melrose-v0.33.0.pkg](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/versions/Melrose-v0.33.0.pkg)
