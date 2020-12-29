@@ -18,7 +18,7 @@ import (
 )
 
 // SyntaxVersion tells what language version this package is supporting.
-const SyntaxVersion = "0.35" // major,minor
+const SyntaxVersion = "0.36" // major,minor
 
 func IsCompatibleSyntax(s string) bool {
 	if len(s) == 0 {
