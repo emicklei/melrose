@@ -548,7 +548,7 @@ sync(loop1,loop2) // begin loop2 at the next start of loop1`,
 			for _, p := range playables {
 				vals = append(vals, getValueable(p))
 			}
-			return core.NewSyncPlay(vals)
+			return control.NewSyncPlay(vals)
 		}}
 
 	eval["ungroup"] = Function{
@@ -705,9 +705,8 @@ begin(lp_cb) // end(lp_cb)`,
 					notify.Print(notify.Warningf("cannot begin (%T) %v", l, l))
 					continue
 				}
-				//ctx.Control().StartLoop(l)
 				_ = l.Play(ctx, time.Now())
-				notify.Print(notify.Infof("begin loop: %s", each.Name))
+				notify.Print(notify.Infof("begin %s", each.Name))
 			}
 			return nil
 		}}
@@ -727,13 +726,9 @@ end() // stop all playables`,
 				return nil
 			}
 			for _, each := range vars {
-				if l, ok := each.Value().(*core.Loop); ok {
-					notify.Print(notify.Infof("end loop: %s", each.Name))
-					//ctx.Control().EndLoop(l)
+				if l, ok := each.Value().(core.Playable); ok {
+					notify.Print(notify.Infof("ending %s", each.Name))
 					_ = l.Stop(ctx)
-				} else if l, ok := each.Value().(*control.Listen); ok {
-					notify.Print(notify.Infof("end listen: %s", each.Name))
-					l.Stop(ctx)
 				} else {
 					notify.Print(notify.Warningf("cannot end (%T) %v", each.Value(), each.Value()))
 				}

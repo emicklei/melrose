@@ -1,16 +1,18 @@
-package core
+package control
 
 import (
 	"bytes"
 	"fmt"
 	"time"
+
+	"github.com/emicklei/melrose/core"
 )
 
 type SyncPlay struct {
-	playables []Valueable
+	playables []core.Valueable
 }
 
-func NewSyncPlay(list []Valueable) SyncPlay {
+func NewSyncPlay(list []core.Valueable) SyncPlay {
 	return SyncPlay{playables: list}
 }
 
@@ -21,52 +23,52 @@ func (s SyncPlay) Storex() string {
 		if i > 0 {
 			fmt.Fprintf(&b, ",")
 		}
-		fmt.Fprintf(&b, "%s", Storex(each))
+		fmt.Fprintf(&b, "%s", core.Storex(each))
 	}
 	fmt.Fprintf(&b, ")")
 	return b.String()
 }
 
 // Play implements Playable
-func (s SyncPlay) Play(ctx Context, at time.Time) error {
+func (s SyncPlay) Play(ctx core.Context, at time.Time) error {
 	return s.Evaluate(ctx)
 }
 
 // Stop implements Playable
-func (s SyncPlay) Stop(ctx Context) error {
+func (s SyncPlay) Stop(ctx core.Context) error {
 	for _, each := range s.playables {
 		val := each.Value()
-		if ply, ok := val.(Playable); ok {
+		if ply, ok := val.(core.Playable); ok {
 			_ = ply.Stop(ctx)
 		}
 	}
 	return nil
 }
 
-func (s SyncPlay) Evaluate(ctx Context) error {
+func (s SyncPlay) Evaluate(ctx core.Context) error {
 	// if the first is a Loop at start playing the others on the NextPlayAt
 	// if the first is not a Loop then start playing the others now
 	if len(s.playables) == 0 {
 		return nil
 	}
 	first := s.playables[0].Value()
-	playfirst, ok := first.(Playable)
+	playfirst, ok := first.(core.Playable)
 	if !ok {
 		// play all right now as sequenceables
 		for _, each := range s.playables {
 			val := each.Value()
-			if ply, ok := val.(Sequenceable); ok {
-				_ = ctx.Device().Play(NoCondition, ply, ctx.Control().BPM(), time.Now())
+			if ply, ok := val.(core.Sequenceable); ok {
+				_ = ctx.Device().Play(core.NoCondition, ply, ctx.Control().BPM(), time.Now())
 			}
 		}
 		return nil
 	}
-	loopfirst, ok := playfirst.(*Loop)
+	loopfirst, ok := playfirst.(*core.Loop)
 	if !ok {
 		// play all right now
 		for _, each := range s.playables {
 			val := each.Value()
-			if ply, ok := val.(Playable); ok {
+			if ply, ok := val.(core.Playable); ok {
 				_ = ply.Play(ctx, time.Now())
 			}
 		}
@@ -80,7 +82,7 @@ func (s SyncPlay) Evaluate(ctx Context) error {
 	}
 	for _, each := range s.playables {
 		val := each.Value()
-		if ply, ok := val.(Playable); ok {
+		if ply, ok := val.(core.Playable); ok {
 			_ = ply.Play(ctx, next)
 		}
 	}

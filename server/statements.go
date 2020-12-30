@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/antonmedv/expr/file"
-	"github.com/emicklei/melrose/control"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
@@ -45,6 +44,9 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	if debug {
+		notify.Debugf("http.request.body %s", string(data))
+	}
 	defer r.Body.Close()
 	if query.Get("action") == "kill" {
 		// kill the play and any loop
@@ -76,10 +78,12 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		if query.Get("action") == "play" {
 			// first check Playable
 			if pl, ok := returnValue.(core.Playable); ok {
+				notify.Print(notify.Infof("play %s", l.context.Variables().NameFor(pl)))
 				_ = pl.Play(l.context, time.Now())
 			} else {
 				// any sequenceable is playable
 				if s, ok := returnValue.(core.Sequenceable); ok {
+					notify.Print(notify.Infof("play %s", l.context.Variables().NameFor(s)))
 					l.context.Device().Play(
 						core.NoCondition,
 						s,
@@ -91,19 +95,15 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		// loop operation
 		if query.Get("action") == "begin" {
 			if p, ok := returnValue.(core.Playable); ok {
+				notify.Print(notify.Infof("begin %s", l.context.Variables().NameFor(p)))
 				p.Play(l.context, time.Now())
-			}
-			if lis, ok := returnValue.(*control.Listen); ok {
-				lis.Play(l.context, time.Now())
 			}
 		}
 		// loop operation
 		if query.Get("action") == "end" {
 			if p, ok := returnValue.(core.Playable); ok {
+				notify.Print(notify.Infof("ending %s", l.context.Variables().NameFor(p)))
 				p.Stop(l.context)
-			}
-			if lis, ok := returnValue.(*control.Listen); ok {
-				lis.Stop(l.context)
 			}
 		}
 

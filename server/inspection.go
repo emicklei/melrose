@@ -29,6 +29,9 @@ func (l *LanguageServer) inspectHandler(w http.ResponseWriter, r *http.Request) 
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	if debug {
+		notify.Debugf("http.request.body %#v", th)
+	}
 	type markdownHolder struct {
 		MarkdownString string
 	}
