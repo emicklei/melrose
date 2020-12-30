@@ -113,7 +113,9 @@ func (c Chord) Notes() []Note {
 	}
 	var semitones []int
 	if c.interval == Triad {
-		if Major == c.quality {
+		if c.quality == Diminished {
+			semitones = []int{3, 6}
+		} else if Major == c.quality {
 			semitones = []int{4, 7}
 		} else if Minor == c.quality {
 			semitones = []int{3, 7}
