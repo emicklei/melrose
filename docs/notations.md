@@ -78,6 +78,12 @@ Usable in `sequence` or `note`.
 | E/M7        | E Major seventh chord
 | G/m7        | G minor seventh chord
 | 1=          | No chord, a whole rest note
+| D/dim       | D diminished triad
+| D/o         | D diminished triad
+| F/dim7/1    | F diminished seventh, 1st inversion
+| C/aug       | C augmented triad
+| E/+         | E augmented triad
+| B_/+7       | B flat augmented seventh
 
 ```javascript
 b7 = chord('b/7')

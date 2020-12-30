@@ -50,12 +50,12 @@ func (c Chord) String() string {
 			io.WriteString(&b, "M")
 		case Diminished:
 			emitSeparator()
-			io.WriteString(&b, "o")
+			io.WriteString(&b, "dim")
 		case Dominant:
 			emitSeparator()
 		case Augmented:
 			emitSeparator()
-			io.WriteString(&b, "A")
+			io.WriteString(&b, "aug")
 		}
 	}
 	if c.interval != Triad {
@@ -113,7 +113,9 @@ func (c Chord) Notes() []Note {
 	}
 	var semitones []int
 	if c.interval == Triad {
-		if c.quality == Diminished {
+		if c.quality == Augmented {
+			semitones = []int{4, 8}
+		} else if c.quality == Diminished {
 			semitones = []int{3, 6}
 		} else if Major == c.quality {
 			semitones = []int{4, 7}
@@ -122,7 +124,9 @@ func (c Chord) Notes() []Note {
 		}
 	}
 	if c.interval == Seventh {
-		if c.quality == Diminished {
+		if c.quality == Augmented {
+			semitones = []int{4, 8, 10}
+		} else if c.quality == Diminished {
 			semitones = []int{3, 6, 9}
 		} else if Minor == c.quality {
 			semitones = []int{3, 7, 10}
@@ -150,7 +154,7 @@ func (c Chord) Notes() []Note {
 	return notes
 }
 
-var chordRegexp = regexp.MustCompile("([MmoA]?)([67]?)")
+var chordRegexp = regexp.MustCompile("([Mmdimaugo+]*)([67]?)")
 
 //  C/D7/2 = C dominant 7, 2nd inversion
 func ParseChord(s string) (Chord, error) {
@@ -180,9 +184,13 @@ func ParseChord(s string) (Chord, error) {
 		chord.quality = Major
 	case "m":
 		chord.quality = Minor
+	case "dim":
+		chord.quality = Diminished
 	case "o":
 		chord.quality = Diminished
-	case "A":
+	case "aug":
+		chord.quality = Augmented
+	case "+":
 		chord.quality = Augmented
 	default:
 		chord.quality = Major

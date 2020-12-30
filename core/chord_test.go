@@ -19,6 +19,34 @@ func TestParseChord(t *testing.T) {
 		wantErr bool
 	}{
 		{
+			"C augmented",
+			args{"C/aug"},
+			Chord{start: N("C"), quality: Augmented, interval: Triad, inversion: Ground},
+			"('(C E A♭)')",
+			false,
+		},
+		{
+			"A augmented",
+			args{"a/+"},
+			Chord{start: N("A"), quality: Augmented, interval: Triad, inversion: Ground},
+			"('(A D♭5 F5)')",
+			false,
+		},
+		{
+			"C augmented seventh",
+			args{"C/aug7"},
+			Chord{start: N("C"), quality: Augmented, interval: Seventh, inversion: Ground},
+			"('(C E A♭ B♭)')",
+			false,
+		},
+		{
+			"E♭ augmented seventh",
+			args{"E♭/aug7"},
+			Chord{start: N("E♭"), quality: Augmented, interval: Seventh, inversion: Ground},
+			"('(E♭ G B D♭5)')",
+			false,
+		},
+		{
 			"C major",
 			args{"C"},
 			Chord{start: N("C"), quality: Major, interval: Triad, inversion: Ground},
@@ -27,17 +55,23 @@ func TestParseChord(t *testing.T) {
 		},
 		{
 			"C diminished 7th",
-			args{"C/o7"},
+			args{"C/dim7"},
 			Chord{start: N("C"), quality: Diminished, interval: Seventh, inversion: Ground},
 			"('(C E♭ G♭ A)')",
 			false,
 		},
 		{
-			"C augmented",
-			args{"C/A"},
-			Chord{start: N("C"), quality: Augmented, interval: Triad, inversion: Ground},
-			// TODO
-			"('C')",
+			"D diminished",
+			args{"d/dim"},
+			Chord{start: N("D"), quality: Diminished, interval: Triad, inversion: Ground},
+			"('(D F A♭)')",
+			false,
+		},
+		{
+			"E diminished",
+			args{"e/o"},
+			Chord{start: N("E"), quality: Diminished, interval: Triad, inversion: Ground},
+			"('(E G B♭)')",
 			false,
 		},
 		{
@@ -110,14 +144,14 @@ func TestParseChord(t *testing.T) {
 			got, err := ParseChord(tt.args.s)
 			s := strings.Replace(got.S().Storex(), "sequence", "", -1)
 			if s != tt.seq {
-				t.Errorf("ParseChord(%q) = %s, want %s", tt.args.s, s, tt.seq)
+				t.Errorf("ParseChord(%q) got %s, want %s", tt.args.s, s, tt.seq)
 			}
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseChord(%q) error = %v, wantErr %v", tt.args.s, err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ParseChord(%q) = %#v, want %#v", tt.args.s, got, tt.want)
+				t.Errorf("ParseChord(%q) got %#v, want %#v", tt.args.s, got, tt.want)
 			}
 		})
 	}
