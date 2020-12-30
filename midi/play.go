@@ -64,7 +64,7 @@ func (registry *DeviceRegistry) Play(condition core.Condition, seq core.Sequence
 		}
 		//  more than one note
 		if canCombineEvent(eachGroup) {
-			event := combinedMidiEvent(channel, eachGroup, device.stream)
+			event := combinedMidiEvent(device.id, channel, eachGroup, device.stream)
 			if device.echo {
 				event.echoString = core.StringFromNoteGroup(eachGroup)
 			}
@@ -113,6 +113,7 @@ func scheduleOneNote(device *OutputDevice, condition core.Condition, channel int
 		event := midiEvent{
 			which:      []int64{int64(note.MIDI())},
 			onoff:      noteOn,
+			device:     device.id,
 			channel:    channel,
 			velocity:   int64(note.Velocity),
 			out:        device.stream,
@@ -124,6 +125,7 @@ func scheduleOneNote(device *OutputDevice, condition core.Condition, channel int
 	event := midiEvent{
 		which:      []int64{int64(note.MIDI())},
 		onoff:      noteOn,
+		device:     device.id,
 		channel:    channel,
 		velocity:   int64(note.Velocity),
 		out:        device.stream,
@@ -156,7 +158,7 @@ func canCombineEvent(notes []core.Note) bool {
 }
 
 // Pre: notes not empty
-func combinedMidiEvent(channel int, notes []core.Note, stream transport.MIDIOut) midiEvent {
+func combinedMidiEvent(deviceID int, channel int, notes []core.Note, stream transport.MIDIOut) midiEvent {
 	// first note makes fraction and velocity
 	velocity := notes[0].Velocity
 	if velocity > 127 {
@@ -172,6 +174,7 @@ func combinedMidiEvent(channel int, notes []core.Note, stream transport.MIDIOut)
 	return midiEvent{
 		which:    nrs,
 		onoff:    noteOn,
+		device:   deviceID,
 		channel:  channel,
 		velocity: int64(velocity),
 		out:      stream,

@@ -803,10 +803,10 @@ i2 = resequence('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)`,
 	eval["notemap"] = Function{
 		Title:       "Note Map creator",
 		Description: "creates a mapper of notes by index (1-based) or using dots (.) and bangs (!)",
-		Template:    `notemap('${1:space-separated-1-based-indices-or-dots-and-bangs}',${2:note})`,
+		Template:    `notemap('${1:space-separated-1-based-indices-or-dots-and-bangs}',${2:has-note})`,
 		IsComposer:  true,
 		Samples: `m1 = notemap('..!..!..!', note('c2'))
-m2 = notemap('3 6 9', note('d2'))`,
+m2 = notemap('3 6 9', octave(-1,note('d2')))`,
 		Func: func(indices string, note interface{}) interface{} {
 			m, err := op.NewNoteMap(indices, getValueable(note))
 			if err != nil {

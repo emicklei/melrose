@@ -16,6 +16,7 @@ type midiEvent struct {
 	onoff      int64
 	channel    int
 	velocity   int64
+	device     int
 	out        transport.MIDIOut
 	mustHandle core.Condition
 }
@@ -47,8 +48,8 @@ func (m midiEvent) log(status int64, when time.Time) {
 		n, _ := core.MIDItoNote(0.25, int(each), core.Normal)
 		fmt.Fprintf(&echos, "%s ", n.String())
 	}
-	fmt.Fprintf(notify.Console.StandardOut, "midi.note: t=%s ch=%d %s %s d=[%d,%v,%d]\n",
-		when.Format("04:05.000"), m.channel, echos.String(), onoff, status, m.which, m.velocity)
+	fmt.Fprintf(notify.Console.StandardOut, "midi.note: t=%s dev=%d ch=%d %s %s=%d,%v,%d\n",
+		when.Format("04:05.000"), m.device, m.channel, echos.String(), onoff, status, m.which, m.velocity)
 }
 
 func (m midiEvent) asNoteoff() midiEvent {
