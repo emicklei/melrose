@@ -417,13 +417,13 @@ note('2.e#--')
 ### notemap<a name="notemap"></a>
 Creates a mapper of notes by index (1-based) or using dots (.) and bangs (!).
 
-> notemap('space-separated-1-based-indices-or-dots-and-bangs',note)
+> notemap('space-separated-1-based-indices-or-dots-and-bangs',has-note)
 
 #### examples	
 ```javascript
 m1 = notemap('..!..!..!', note('c2'))
 
-m2 = notemap('3 6 9', note('d2'))
+m2 = notemap('3 6 9', octave(-1,note('d2')))
 ```
 
 ### octave<a name="octave"></a>
