@@ -49,9 +49,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	if query.Get("action") == "kill" {
 		// kill the play and any loop
 		dsl.StopAllPlayables(l.context)
-		// TODO only execute all NOTE OFF messages
-		//l.context.Control().Reset()
-		//l.context.Device().Reset()
+		l.context.Device().Reset()
 		return
 	}
 	returnValue, err := l.evaluator.EvaluateProgram(string(data))
