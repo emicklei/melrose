@@ -119,17 +119,30 @@ func sliceMax(indices []int) int {
 }
 
 func (n NoteMap) S() core.Sequence {
+	var note core.Note
 	notelike, ok := n.Target.Value().(core.NoteConvertable)
 	if !ok {
-		notify.Console.Errorf("cannot map %v (%T)", n.Target.Value(), n.Target.Value())
-		return core.EmptySequence
+		// try create sequence first
+		seq, ok := n.Target.Value().(core.Sequenceable)
+		if !ok {
+			notify.Console.Errorf("cannot map %v (%T)", n.Target.Value(), n.Target.Value())
+			return core.EmptySequence
+		}
+		// then take the first note
+		notes := seq.S()
+		if len(notes.Notes) == 0 || len(notes.Notes[0]) == 0 {
+			return core.EmptySequence
+		}
+		note = notes.Notes[0][0]
+	} else {
+		var err error
+		note, err = notelike.ToNote()
+		if err != nil {
+			notify.Panic(err)
+			return core.EmptySequence
+		}
 	}
 	notes := make([]core.Note, n.maxIndex)
-	note, err := notelike.ToNote()
-	if err != nil {
-		notify.Panic(err)
-		return core.EmptySequence
-	}
 	for i := range notes {
 		notes[i] = note.ToRest()
 	}

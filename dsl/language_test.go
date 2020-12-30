@@ -140,6 +140,13 @@ func TestNotemapDots(t *testing.T) {
 		"sequence('16= 16C 16= 16C')")
 }
 
+func TestNotemapSequence(t *testing.T) {
+	r := eval(t, "notemap('.!.!',sequence('16c A'))")
+	checkStorex(t, r, "notemap('.!.!',sequence('16C A'))")
+	checkStorex(t, r.(core.Sequenceable).S(),
+		"sequence('16= 16C 16= 16C')")
+}
+
 func TestSequenceMapFromStringIterator(t *testing.T) {
 	r := eval(t, `ar = iterator('1','2')
 sm = resequence(ar,sequence('c d'))`)
