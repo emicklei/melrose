@@ -27,6 +27,8 @@ type Nextable interface {
 }
 
 type AudioDevice interface {
+	DefaultDeviceIDs() (inputDeviceID, outputDeviceID int)
+
 	// Per device specific commands
 	Command(args []string) notify.Message
 

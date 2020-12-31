@@ -910,14 +910,36 @@ midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1`,
 	registerFunction(eval, "listen", Function{
 		Title:       "Start a MIDI listener",
 		Description: "Listen for note(s) from a device and call a playable function to handle",
-		Template:    "listen(${1:device-id},${2:variable},${3:function})",
+		Template:    "listen(${1:variable-or-device-selector},${2:function})",
 		Samples: `rec = note('c') // define a variable "rec" with a initial object ; this is a place holder
 fun = play(rec) // define the playable function to call when notes are received ; loop and print are also possible
-ear = listen(1,rec,fun) // start a listener for notes from device 1, store it "rec" and call "fun"`,
-		Func: func(deviceID int, injectable variable, function interface{}) interface{} {
+ear = listen(rec,fun) // start a listener for notes from default input device, store it "rec" and call "fun"
+alt = listen(device(1,rec),fun) // start a listener for notes from input device 1`,
+		Func: func(varOrDeviceSelector interface{}, function interface{}) interface{} {
 			_, ok := getValue(function).(core.Evaluatable)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot listen and call (%T) %s", function, core.Storex(function)))
+			}
+			var injectable variable
+			deviceID, _ := ctx.Device().DefaultDeviceIDs()
+			if ds, ok := varOrDeviceSelector.(core.DeviceSelector); ok {
+				deviceID = ds.DeviceID()
+				if len(ds.Target) == 0 {
+					return notify.Panic(fmt.Errorf("missing variable parameter"))
+				}
+				first := ds.Target[0]
+				if v, ok := first.(variable); ok {
+					injectable = v
+				} else {
+					return notify.Panic(fmt.Errorf("missing variable parameter"))
+				}
+			} else {
+				// must be variable
+				if v, ok := varOrDeviceSelector.(variable); ok {
+					injectable = v
+				} else {
+					return notify.Panic(fmt.Errorf("missing variable parameter"))
+				}
 			}
 			// use function as Valueable and not the Evaluatable to allow redefinition of the callback function in the script
 			return control.NewListen(ctx, deviceID, injectable.Name, getValueable(function))

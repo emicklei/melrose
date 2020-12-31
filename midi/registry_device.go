@@ -32,8 +32,10 @@ func NewDeviceRegistry() (*DeviceRegistry, error) {
 	return r, nil
 }
 
-// TODO used?
-func (d *DeviceRegistry) IO() (inputDeviceID, outputDeviceID int) {
+// DefaultDeviceIDs is part of AudioDevice
+func (d *DeviceRegistry) DefaultDeviceIDs() (inputDeviceID, outputDeviceID int) {
+	d.mutex.RLock()
+	defer d.mutex.RUnlock()
 	return d.defaultInputID, d.defaultOutputID
 }
 
@@ -100,16 +102,6 @@ func (d *DeviceRegistry) Close() error {
 		each.stopListener()
 	}
 	return d.streamRegistry.close()
-}
-
-func (d *DeviceRegistry) ChangeInputDeviceID(id int) {
-	d.defaultInputID = id
-}
-func (d *DeviceRegistry) ChangeOutputDeviceID(id int) {
-	d.defaultOutputID = id
-}
-func (d *DeviceRegistry) EchoReceivedPitchOnly(bool) {
-	// TODO
 }
 
 func (r *DeviceRegistry) HasInputCapability() bool {

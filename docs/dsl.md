@@ -308,7 +308,7 @@ jm = joinmap('1 (2 3) 4',j) // => C = D =
 ### listen<a name="listen"></a>
 Listen for note(s) from a device and call a playable function to handle.
 
-> listen(device-id,variable,function)
+> listen(variable-or-device-selector,function)
 
 #### examples	
 ```javascript
@@ -316,7 +316,9 @@ rec = note('c') // define a variable "rec" with a initial object ; this is a pla
 
 fun = play(rec) // define the playable function to call when notes are received ; loop and print are also possible
 
-ear = listen(1,rec,fun) // start a listener for notes from device 1, store it "rec" and call "fun"
+ear = listen(rec,fun) // start a listener for notes from default input device, store it "rec" and call "fun"
+
+alt = listen(device(1,rec),fun) // start a listener for notes from input device 1
 ```
 
 ### loop<a name="loop"></a>
