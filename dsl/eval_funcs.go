@@ -44,6 +44,16 @@ type Function struct {
 	Func          interface{}
 }
 
+func (f Function) HumanizedTemplate() string {
+	r := strings.NewReplacer(
+		"${1:", "",
+		"${2:", "",
+		"${3:", "",
+		"${4:", "",
+		"}", "")
+	return r.Replace(f.Template)
+}
+
 func EvalFunctions(ctx core.Context) map[string]Function {
 	eval := map[string]Function{}
 

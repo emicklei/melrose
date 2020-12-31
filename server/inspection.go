@@ -55,7 +55,7 @@ func (l *LanguageServer) markdownOnInspecting(token string) string {
 	}
 	fun, ok := l.evaluator.LookupFunction(token)
 	if ok {
-		return fmt.Sprintf("%s\n\n%s", fun.Description, fun.Template)
+		return fmt.Sprintf("%s\n\n%s", fun.Description, fun.HumanizedTemplate())
 	}
 	return ""
 }

@@ -108,7 +108,7 @@ func dslmarkdown() {
 			Description:      firstUpcaseAndDot(each.Description),
 			Examples:         strings.Split(each.Samples, "\n"),
 			Anchor:           k,
-			Syntax:           humanizeTemplate(each.Template),
+			Syntax:           each.HumanizedTemplate(),
 			Alias:            each.Alias,
 		}
 		if each.ControlsAudio {
@@ -162,14 +162,4 @@ func firstUpcaseAndDot(s string) string {
 		b.WriteRune('.')
 	}
 	return b.String()
-}
-
-func humanizeTemplate(t string) string {
-	r := strings.NewReplacer(
-		"${1:", "",
-		"${2:", "",
-		"${3:", "",
-		"${4:", "",
-		"}", "")
-	return r.Replace(t)
 }
