@@ -913,7 +913,7 @@ midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1`,
 		Template:    "listen(${1:variable-or-device-selector},${2:function})",
 		Samples: `rec = note('c') // define a variable "rec" with a initial object ; this is a place holder
 fun = play(rec) // define the playable function to call when notes are received ; loop and print are also possible
-ear = listen(rec,fun) // start a listener for notes from default input device, store it "rec" and call "fun"
+ear = listen(rec,fun) // start a listener for notes from default input device, store it in "rec" and call "fun"
 alt = listen(device(1,rec),fun) // start a listener for notes from input device 1`,
 		Func: func(varOrDeviceSelector interface{}, function interface{}) interface{} {
 			_, ok := getValue(function).(core.Evaluatable)
