@@ -16,7 +16,7 @@ func TestImplements(t *testing.T) {
 		{source: core.Note{}},
 		{source: core.Chord{}},
 		{source: core.Scale{}},
-		{source: core.Progression{}},
+		{source: core.ChordSequence{}},
 		{source: new(core.Track)},
 		{source: new(core.MultiTrack), notSequenceable: true},
 	} {

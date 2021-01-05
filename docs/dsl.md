@@ -25,9 +25,9 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 ## Creation functions
 
 - <a href="#chord">chord</a>
+- <a href="#chordsequence">chordsequence</a>
 - <a href="#midi">midi</a>
 - <a href="#note">note</a>
-- <a href="#progression">progression</a>
 - <a href="#scale">scale</a>
 - <a href="#sequence">sequence</a>
 
@@ -146,6 +146,18 @@ Create a Chord from its string <a href="/melrose/notations.html#chord-not">notat
 chord('c#5/m/1')
 
 chord('g/M/2') // Major G second inversion
+```
+
+### chordsequence<a name="chordsequence"></a>
+Create a Chord sequence using this <a href="/melrose/notations.html#chordsequence-not">format</a>.
+
+> chordsequence('chords')
+
+#### examples	
+```javascript
+chordsequence('e f') // => (E A♭ B) (F A C5)
+
+		chordsequence('(c d)') // => (C E G D G♭ A)
 ```
 
 ### device<a name="device"></a>
@@ -316,7 +328,7 @@ rec = note('c') // define a variable "rec" with a initial object ; this is a pla
 
 fun = play(rec) // define the playable function to call when notes are received ; loop and print are also possible
 
-ear = listen(rec,fun) // start a listener for notes from default input device, store it "rec" and call "fun"
+ear = listen(rec,fun) // start a listener for notes from default input device, store it in "rec" and call "fun"
 
 alt = listen(device(1,rec),fun) // start a listener for notes from input device 1
 ```
@@ -500,18 +512,6 @@ Prints an object when evaluated (play,loop).
 #### examples	
 ```javascript
 
-```
-
-### progression<a name="progression"></a>
-Create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>.
-
-> progression('chords')
-
-#### examples	
-```javascript
-progression('e f') // => (E A♭ B) (F A C5)
-
-progression('(c d)') // => (C E G D G♭ A)
 ```
 
 ### random<a name="random"></a>

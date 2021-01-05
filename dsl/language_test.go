@@ -39,14 +39,14 @@ func TestSequence_Invalid(t *testing.T) {
 }
 
 func TestProgression(t *testing.T) {
-	r := eval(t, "progression('c/m (d7 e g) =')")
-	checkStorex(t, r, "progression('C/m (D7 E G) =')")
+	r := eval(t, "chordsequence('c/m (d7 e g) =')")
+	checkStorex(t, r, "chordsequence('C/m (D7 E G) =')")
 	checkStorex(t, r.(core.Sequenceable).S(),
 		"sequence('(C E♭ G) (D7 G♭7 A7 E A♭ B G B D5) =')")
 }
 
-func TestProgression_Invalid(t *testing.T) {
-	mustError(t, "progression('k')", "illegal note")
+func TestChordSequence_Invalid(t *testing.T) {
+	mustError(t, "chordsequence('k')", "illegal note")
 }
 
 func TestScale(t *testing.T) {
@@ -63,9 +63,9 @@ func TestPitch_Scale(t *testing.T) {
 		"sequence('16F2 16G2 16A2 16B♭2 16C3 16D3 16E3 16F3 16G3 16A3 16B♭3 16C 16D 16E')")
 }
 
-func TestPitch_Progression(t *testing.T) {
-	r := eval(t, "pitch(1,progression('c/m (d7 e g) ='))")
-	checkStorex(t, r, "pitch(1,progression('C/m (D7 E G) ='))")
+func TestPitch_ChordSequence(t *testing.T) {
+	r := eval(t, "pitch(1,chordsequence('c/m (d7 e g) ='))")
+	checkStorex(t, r, "pitch(1,chordsequence('C/m (D7 E G) ='))")
 	checkStorex(t, r.(core.Sequenceable).S(),
 		"sequence('(D♭ E A♭) (E♭7 G7 B♭7 F A C5 A♭ C5 E♭5) =')")
 }
@@ -126,9 +126,9 @@ func TestStretchChord(t *testing.T) {
 	}
 }
 
-func TestProgressionWithSustain(t *testing.T) {
-	r := eval(t, "progression('> 1g/m/2 ^ 1d5 <')")
-	checkStorex(t, r, "progression('> 1G/m/2 ^ 1D5 <')")
+func TestChordSequenceWithSustain(t *testing.T) {
+	r := eval(t, "chordsequence('> 1g/m/2 ^ 1d5 <')")
+	checkStorex(t, r, "chordsequence('> 1G/m/2 ^ 1D5 <')")
 	checkStorex(t, r.(core.Sequenceable).S(),
 		"sequence('> (1D5 1G5 1B♭5) ^ (1D5 1G♭5 1A5) <')")
 }

@@ -136,16 +136,27 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 			return mapper
 		}}
 
-	eval["progression"] = Function{
-		Title:       "Progress creator",
-		Description: `create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>`,
+	// eval["progression"] = Function{
+	// 	Title:       "Progress creator",
+	// 	Description: `create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>`,
+	// 	Prefix:      "pro",
+	// 	IsCore:      true,
+	// 	Template:    `progression('${1:chords}')`,
+	// 	Samples:     `progression('I IV V') // => `,
+	// 	Func: func(chords string) interface{} {
+	// 		return core.EmptySequence
+	// 	}}
+
+	eval["chordsequence"] = Function{
+		Title:       "Sequence of chords creator",
+		Description: `create a Chord sequence using this <a href="/melrose/notations.html#chordsequence-not">format</a>`,
 		Prefix:      "pro",
 		IsCore:      true,
-		Template:    `progression('${1:chords}')`,
-		Samples: `progression('e f') // => (E A♭ B) (F A C5)
-progression('(c d)') // => (C E G D G♭ A)`,
+		Template:    `chordsequence('${1:chords}')`,
+		Samples: `chordsequence('e f') // => (E A♭ B) (F A C5)
+		chordsequence('(c d)') // => (C E G D G♭ A)`,
 		Func: func(chords string) interface{} {
-			p, err := core.ParseProgression(chords)
+			p, err := core.ParseChordSequence(chords)
 			if err != nil {
 				return notify.Panic(err)
 			}

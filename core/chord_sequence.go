@@ -6,20 +6,20 @@ import (
 	"strings"
 )
 
-type Progression struct {
+type ChordSequence struct {
 	Chords [][]Chord
 }
 
-func MustParseProgression(s string) Progression {
-	p, err := ParseProgression(s)
+func MustParseChordSequence(s string) ChordSequence {
+	p, err := ParseChordSequence(s)
 	if err != nil {
 		panic(err)
 	}
 	return p
 }
 
-func ParseProgression(input string) (Progression, error) {
-	p := Progression{}
+func ParseChordSequence(input string) (ChordSequence, error) {
+	p := ChordSequence{}
 	// hack to keep scanning simple, TODO
 	splitable := strings.Replace(input, groupOpen, " "+groupOpen+" ", -1)
 	splitable = strings.Replace(splitable, groupClose, " "+groupClose+" ", -1)
@@ -48,7 +48,7 @@ func ParseProgression(input string) (Progression, error) {
 	return p, nil
 }
 
-func (p Progression) S() Sequence {
+func (p ChordSequence) S() Sequence {
 	notes := [][]Note{}
 	for _, eachGroup := range p.Chords {
 		if len(eachGroup) == 1 {
@@ -66,16 +66,16 @@ func (p Progression) S() Sequence {
 }
 
 // Replaced is part of Replaceable
-func (p Progression) Replaced(from, to Sequenceable) Sequenceable {
+func (p ChordSequence) Replaced(from, to Sequenceable) Sequenceable {
 	if IsIdenticalTo(from, p) {
 		return to
 	}
 	return p
 }
 
-func (p Progression) Storex() string {
+func (p ChordSequence) Storex() string {
 	var b bytes.Buffer
-	fmt.Fprint(&b, "progression('")
+	fmt.Fprint(&b, "chordsequence('")
 	for i, each := range p.Chords {
 		if i > 0 {
 			fmt.Fprint(&b, " ")
@@ -97,6 +97,6 @@ func (p Progression) Storex() string {
 	return b.String()
 }
 
-func (p Progression) Inspect(i Inspection) {
+func (p ChordSequence) Inspect(i Inspection) {
 	i.Properties[""] = p.S().String()
 }

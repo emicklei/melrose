@@ -8,8 +8,8 @@ func TestInspection_Markdown_Chord(t *testing.T) {
 	t.Log(i.Markdown())
 }
 
-func TestInspection_Markdown_Progression(t *testing.T) {
-	c := MustParseProgression("b3#/m/1 = c3/2")
+func TestInspection_Markdown_ChordSequence(t *testing.T) {
+	c := MustParseChordSequence("b3#/m/1 = c3/2")
 	i := NewInspect(testContext(), c)
 	t.Log(i.Markdown())
 }

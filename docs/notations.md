@@ -101,7 +101,18 @@ b7 = chord('b/7')
 sf = scale(2,'f')
 ```
 
-## Progression<a name="progression-not"></a>
+## Chord Progression <a name="progression-not"></a>
+
+| Notation    | Description
+|-------------|---
+| I IV V      | TODO
+
+```javascript
+p = progression('I V',note('c'))
+```
+
+
+## Chord Sequence <a name="chordsequence-not"></a>
 
 | Notation    | Description
 |-------------|---
@@ -110,5 +121,5 @@ sf = scale(2,'f')
 | E =         | E major followed by a quarter rest note
 
 ```javascript
-p = progression('c f g')
+cs = chordsequence('c f g')
 ```
