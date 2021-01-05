@@ -3,7 +3,7 @@
 n = note('16.e_++').S() // computes sequence
 s = sequence('(c 8d#--) c0').S()
 c = chord('c#/m').S()
-p = progression('b_/M').S()
+p = chordsequence('b_/M').S()
 
 i = iterator(1,2,3)
 pitch(i,n).S()
