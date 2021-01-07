@@ -103,12 +103,15 @@ sf = scale(2,'f')
 
 ## Chord Progression <a name="progression-not"></a>
 
-| Notation    | Description
-|-------------|---
-| I IV V      | TODO
+| Notation    | Alternative | Description
+|-------------|---|--
+| I           | i | first chord in scale ; if scale is "C" then sequence is "(C E G)"
+| V7          | v7| (G B D5 F5)
+| Imaj7       | imaj7 | (C E G B)
+| viidim      | VIIdim | (B D5 F5)
 
 ```javascript
-p = progression('I V',note('c'))
+p = progression('C', 'ii V I') // (D F A) (G B D5) (C E G)
 ```
 
 

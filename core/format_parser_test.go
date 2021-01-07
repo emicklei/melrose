@@ -24,6 +24,41 @@ func Test_formatParser_ParseSequence(t *testing.T) {
 	}
 }
 
+func Test_formatParser_ParseChordProgression(t *testing.T) {
+	for _, each := range []struct {
+		root string
+		in   string
+		out  string
+	}{
+		{"C", "viidim", "sequence('(B D5 F5)')"},
+		{"C", "I", "sequence('(C E G)')"},
+		{"C", "Idim7", "sequence('(C E♭ G♭ A)')"}, // A -> B♭♭
+		{"C", "Im7", "sequence('(C E♭ G B♭)')"},
+		{"C", "IM7", "sequence('(C E G B)')"},
+		{"C", "ii", "sequence('(D F A)')"},
+		{"C", "iii", "sequence('(E G B)')"},
+		{"C", "IV", "sequence('(F A C5)')"},
+		{"C", "V", "sequence('(G B D5)')"},
+		{"C", "V7", "sequence('(G B D5 F5)')"}, // G/7
+		{"C", "vi", "sequence('(A C5 E5)')"},
+		{"C", "vii", "sequence('(B E♭5 G♭5)')"},
+		{"C", "Imaj7", "sequence('(C E G B)')"},
+	} {
+		p := newFormatParser(each.in)
+		sc, err := NewScale(1, each.root)
+		if err != nil {
+			t.Fatal(err)
+		}
+		cs, err := p.parseChordProgression(sc)
+		if err != nil {
+			t.Error(err)
+		}
+		if got, want := cs[0].S().Storex(), each.out; got != want {
+			t.Errorf("[%s] got [%v:%T] want [%v:%T]", each.in, got, got, want, want)
+		}
+	}
+}
+
 func Test_formatParser_ParseNote(t *testing.T) {
 	for i, each := range []struct {
 		in  string

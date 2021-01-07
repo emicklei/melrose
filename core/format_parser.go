@@ -3,6 +3,7 @@ package core
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 	"text/scanner"
@@ -65,6 +66,32 @@ func (f *formatParser) parseSequence() (Sequence, error) {
 	return stm.sequence()
 }
 
+func (f *formatParser) parseChordProgression(s Scale) ([]Chord, error) {
+	var err error
+	// capture scan errors
+	f.scanner.Error = func(s *scanner.Scanner, m string) {
+		err = errors.New(m)
+	}
+	f.scanner.Mode = scanner.ScanIdents | scanner.ScanInts
+	//f.scanner.Whitespace = 1 << ' '
+	stm := new(chordprogressionSTM)
+	stm.scale = s
+	for {
+		ch := f.scanner.Scan()
+		if err != nil {
+			return []Chord{}, err
+		}
+		if ch == scanner.EOF {
+			break
+		}
+		if err := stm.accept(f.scanner.TokenText()); err != nil {
+			return []Chord{}, err
+		}
+	}
+	stm.endChord()
+	return stm.chords, nil
+}
+
 type sequenceSTM struct {
 	groups  [][]Note
 	ingroup bool
@@ -79,6 +106,77 @@ type noteSTM struct {
 	accidental int
 	octave     int
 	velocity   string
+}
+
+type chordprogressionSTM struct {
+	scale    Scale
+	chords   []Chord
+	index    int
+	interval int
+	quality  int
+}
+
+var romanChordRegex = regexp.MustCompile("([iIvV]{1,3})([Mmaj]{0,3})([dim]{0,3})(7?)")
+
+func (s *chordprogressionSTM) accept(lit string) error {
+	if lit == " " {
+		s.endChord()
+		return nil
+	}
+	matches := romanChordRegex.FindStringSubmatch(lit)
+	if matches == nil {
+		return fmt.Errorf("illegal chord: %s", lit)
+	}
+	switch matches[1] {
+	case "I", "i":
+		s.index = 1
+	case "II", "ii":
+		s.index = 2
+	case "III", "iii":
+		s.index = 3
+	case "IV", "iv":
+		s.index = 4
+	case "V", "v":
+		s.index = 5
+	case "VI", "vi":
+		s.index = 6
+	case "VII", "vii":
+		s.index = 7
+	default:
+		return fmt.Errorf("illegal roman chord: [%s]", lit)
+	}
+	if maj := matches[2]; len(maj) > 0 {
+		if maj == "maj" {
+			s.quality = Major
+		}
+		if maj == "m" {
+			s.quality = Minor
+		}
+		if maj == "M" {
+			s.quality = Major
+		}
+	}
+	if dim := matches[3]; dim == "dim" {
+		s.quality = Diminished
+	}
+	if seventh := matches[4]; seventh == "7" {
+		if s.index == 5 {
+			s.quality = Dominant
+		}
+		s.interval = Seventh
+	}
+	return nil
+}
+
+func (s *chordprogressionSTM) endChord() {
+	ch := s.scale.ChordAt(s.index)
+	if s.interval > 0 {
+		ch = ch.WithInterval(s.interval)
+	}
+	if s.quality > 0 {
+		ch = ch.WithQuality(s.quality)
+	}
+	s.chords = append(s.chords, ch)
 }
 
 const allowedNoteNames = "abcdefgABCDEFG=<^>"

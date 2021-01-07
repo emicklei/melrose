@@ -26,6 +26,21 @@ func (c Chord) Inspect(i Inspection) {
 	i.Properties[""] = c.S().String()
 }
 
+func (c Chord) WithInterval(i int) Chord {
+	c.interval = i
+	return c
+}
+
+func (c Chord) WithInversion(i int) Chord {
+	c.inversion = i
+	return c
+}
+
+func (c Chord) WithQuality(q int) Chord {
+	c.quality = q
+	return c
+}
+
 func (c Chord) String() string {
 	if c.start.IsRest() {
 		return c.start.String()

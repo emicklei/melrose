@@ -3,6 +3,8 @@ package core
 import (
 	"fmt"
 	"strings"
+
+	"github.com/emicklei/melrose/notify"
 )
 
 type Scale struct {
@@ -45,7 +47,22 @@ func ParseScale(s string) (Scale, error) {
 var (
 	majorScale        = [7]int{0, 2, 4, 5, 7, 9, 11}
 	naturalMinorScale = [7]int{0, 1, 3, 5, 7, 8, 10}
+	romans            = [7]int{Major, Minor, Minor, Major, Major, Minor, Major}
 )
+
+// ChordAt uses one-based index
+func (s Scale) ChordAt(index int) Chord {
+	if index < 1 || index > 7 {
+		notify.Warningf("invalid index for ChordAt, got %d", index)
+		return zeroChord()
+	}
+	if s.variant == Major {
+		offset := majorScale[index-1]
+		return Chord{start: s.start.Pitched(offset), inversion: Ground, interval: Triad, quality: romans[index-1]}
+	}
+	// TODO
+	return zeroChord()
+}
 
 func (s Scale) S() Sequence {
 	notes := []Note{}
@@ -62,5 +79,6 @@ func (s Scale) S() Sequence {
 }
 
 func (s Scale) At(index int) interface{} {
+	// TODO
 	return s.start
 }

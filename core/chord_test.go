@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// https://muzieknotatie.nl/wiki/Akkoordsymbool
 // go test -timeout 30s github.com/emicklei/melrose -v -run "^(TestParseChord)$"
 func TestParseChord(t *testing.T) {
 	type args struct {
@@ -89,7 +90,7 @@ func TestParseChord(t *testing.T) {
 			false,
 		},
 		{
-			"C 7",
+			"C dominant 7",
 			args{"C/7"},
 			Chord{start: N("C"), quality: Dominant, interval: Seventh, inversion: Ground},
 			"('(C E G B♭)')",
@@ -100,6 +101,14 @@ func TestParseChord(t *testing.T) {
 			args{"D/7"},
 			Chord{start: N("D"), quality: Dominant, interval: Seventh, inversion: Ground},
 			"('(D G♭ A C5)')",
+			false,
+		},
+
+		{
+			"G 7",
+			args{"G/7"},
+			Chord{start: N("G"), quality: Dominant, interval: Seventh, inversion: Ground},
+			"('(G B D5 F5)')",
 			false,
 		},
 		{
