@@ -17,7 +17,7 @@ func init() {
 	}
 	Factory = func() Transporter {
 		if err := portmidi.Initialize(); err != nil {
-			notify.Print(notify.Warningf("%v", tre.New(err, "portmidi.Initialize")))
+			notify.Warnf("%v", tre.New(err, "portmidi.Initialize"))
 		}
 		return new(PortmidiTransporter)
 	}

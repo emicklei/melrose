@@ -67,7 +67,7 @@ func Duration(h Valueable) time.Duration {
 	if vv, ok := val.(Valueable); ok {
 		return Duration(vv)
 	}
-	notify.Print(notify.Warningf("Duration() expected [time.Duration|int] but got [%T], return 0", h.Value()))
+	notify.Warnf("Duration() expected [time.Duration|int] but got [%T], return 0", h.Value())
 	return time.Duration(0)
 }
 
@@ -91,7 +91,7 @@ func getInt(h Valueable, silent bool) int {
 		return getInt(vv, silent)
 	}
 	if !silent {
-		notify.Print(notify.Warningf("Int() expected [int] but got [%T], return 0", h.Value()))
+		notify.Warnf("Int() expected [int] but got [%T], return 0", h.Value())
 	}
 	return 0
 }

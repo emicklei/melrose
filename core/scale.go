@@ -53,7 +53,7 @@ var (
 // ChordAt uses one-based index
 func (s Scale) ChordAt(index int) Chord {
 	if index < 1 || index > 7 {
-		notify.Warningf("invalid index for ChordAt, got %d", index)
+		notify.Warnf("invalid index for ChordAt, got %d", index)
 		return zeroChord()
 	}
 	if s.variant == Major {

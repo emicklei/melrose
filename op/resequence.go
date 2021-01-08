@@ -29,7 +29,7 @@ func (p Resequencer) S() core.Sequence {
 		mappedGroup := []core.Note{}
 		for j, each := range indexEntry {
 			if each < 1 || each > len(seq.Notes) {
-				notify.Print(notify.Warningf("index out of sequence range: %d, len=%d", j+1, len(seq.Notes)))
+				notify.Warnf("index out of sequence range: %d, len=%d", j+1, len(seq.Notes))
 			} else {
 				// TODO what if sequence had a multi note group?
 				mappedGroup = append(mappedGroup, seq.Notes[each-1][0])

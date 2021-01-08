@@ -76,7 +76,7 @@ Fraction can also be an exact float value between 0 and 1.
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
-					notify.Print(notify.Warningf("cannot fraction (%T) %v", p, p))
+					notify.Warnf("cannot fraction (%T) %v", p, p)
 					return nil
 				} else {
 					joined = append(joined, s)
@@ -102,7 +102,7 @@ Fraction can also be an exact float value between 0 and 1.
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
-					notify.Print(notify.Warningf("cannot dynamic (%T) %v", p, p))
+					notify.Warnf("cannot dynamic (%T) %v", p, p)
 					return nil
 				} else {
 					joined = append(joined, s)
@@ -130,7 +130,7 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 			}
 			mapper, err := op.NewDynamicMap(joined, mapping)
 			if err != nil {
-				notify.Print(notify.Warningf("cannot create dynamic mapping %v", err))
+				notify.Warningf("cannot create dynamic mapping %v", err)
 				return nil
 			}
 			return mapper
@@ -550,7 +550,7 @@ next(num)`,
 				if s, ok := getSequenceable(p); ok { // unwrap var
 					list = append(list, s)
 				} else {
-					notify.Print(notify.Warningf("cannot play (%T) %v", p, p))
+					notify.Warnf("cannot play (%T) %v", p, p)
 				}
 			}
 			return control.NewPlay(ctx, list, false)
@@ -584,7 +584,7 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
-					notify.Print(notify.Warningf("cannot ungroup (%T) %v", p, p))
+					notify.Warningf("cannot ungroup (%T) %v", p, p)
 					return nil
 				} else {
 					joined = append(joined, s)
@@ -604,7 +604,7 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 			list := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
-					notify.Print(notify.Warningf("cannot octave (%T) %v", p, p))
+					notify.Warningf("cannot octave (%T) %v", p, p)
 					return nil
 				} else {
 					list = append(list, s)
@@ -702,7 +702,7 @@ lp_cb = loop(cb,reverse(cb))`,
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
-					notify.Print(notify.Warningf("cannot loop (%T) %v", p, p))
+					notify.Warnf("cannot loop (%T) %v", p, p)
 					return nil
 				} else {
 					joined = append(joined, s)
@@ -723,7 +723,7 @@ begin(lp_cb) // end(lp_cb)`,
 			for _, each := range vars {
 				l, ok := each.Value().(*core.Loop)
 				if !ok {
-					notify.Print(notify.Warningf("cannot begin (%T) %v", l, l))
+					notify.Warnf("cannot begin (%T) %v", l, l)
 					continue
 				}
 				_ = l.Play(ctx, time.Now())
@@ -751,7 +751,7 @@ end() // stop all playables`,
 					notify.Print(notify.Infof("ending %s", each.Name))
 					_ = l.Stop(ctx)
 				} else {
-					notify.Print(notify.Warningf("cannot end (%T) %v", each.Value(), each.Value()))
+					notify.Warnf("cannot end (%T) %v", each.Value(), each.Value())
 				}
 			}
 			return nil

@@ -32,23 +32,23 @@ func (c ChordProgression) Storex() string {
 func (c ChordProgression) S() Sequence {
 	cs, ok := c.root.Value().(string)
 	if !ok {
-		notify.Warningf("chord progression root must be string, got %T", c.root.Value())
+		notify.Warnf("chord progression root must be string, type: %T", c.root.Value())
 		return EmptySequence
 	}
 	sc, err := ParseScale(cs)
 	if err != nil {
-		notify.Warningf("chord progression root must use scale notation, got %v", err)
+		notify.Warnf("chord progression root must use scale notation, error: %v", err)
 		return EmptySequence
 	}
 	input, ok := c.sequence.Value().(string)
 	if !ok {
-		notify.Warningf("chord progression must be string, got %T", c.sequence.Value())
+		notify.Warnf("chord progression must be string, type: %T", c.sequence.Value())
 		return EmptySequence
 	}
 	p := newFormatParser(input)
 	chords, err := p.parseChordProgression(sc)
 	if err != nil {
-		notify.Warningf("parsing progression failed, got %v", err)
+		notify.Warnf("parsing progression failed, error: %v", err)
 		return EmptySequence
 	}
 	j := EmptySequence

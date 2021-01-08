@@ -54,7 +54,7 @@ func (j JoinMap) S() core.Sequence {
 
 func (j JoinMap) check(index, subindex, value, length int) bool { // indices are zero-based
 	if value < 1 || value > length {
-		notify.Print(notify.Warningf("index out of join range: [%d][%d]=%d, len=%d, using a rest(=) instead", index+1, subindex+1, value, length))
+		notify.Warnf("index out of join range: [%d][%d]=%d, len=%d, using a rest(=) instead", index+1, subindex+1, value, length)
 		return false
 	}
 	return true
