@@ -15,7 +15,7 @@ type Chord struct {
 	start     Note
 	inversion int // Ground,Inversion1,Inversion2,Inversion3
 	interval  int // Triad,Seventh,Sixth
-	quality   int // Major,Minor,Dominant,Augmented,Diminished
+	quality   int // Major,Minor,Dominant,Augmented,Diminished,Suspended2,Suspended4
 }
 
 func zeroChord() Chord {
@@ -47,12 +47,12 @@ func (c Chord) String() string {
 	}
 	var b bytes.Buffer
 	fmt.Fprint(&b, c.start.String())
-	endsWithColon := false
+	endsWithSlash := false
 	emitSeparator := func() {
-		if !endsWithColon {
+		if !endsWithSlash {
 			io.WriteString(&b, "/")
 		}
-		endsWithColon = false
+		endsWithSlash = false
 	}
 
 	if c.quality != Major {
@@ -66,12 +66,19 @@ func (c Chord) String() string {
 		case Diminished:
 			emitSeparator()
 			io.WriteString(&b, "dim")
-		case Dominant:
+		case Septiem:
 			emitSeparator()
 		case Augmented:
 			emitSeparator()
-			io.WriteString(&b, "aug")
+			io.WriteString(&b, "aug") // OR +  TODO
+		case Suspended2:
+			emitSeparator()
+			io.WriteString(&b, "sus2")
+		case Suspended4:
+			emitSeparator()
+			io.WriteString(&b, "sus4")
 		}
+
 	}
 	if c.interval != Triad {
 		switch c.interval {
@@ -132,10 +139,14 @@ func (c Chord) Notes() []Note {
 			semitones = []int{4, 8}
 		} else if c.quality == Diminished {
 			semitones = []int{3, 6}
-		} else if Major == c.quality {
+		} else if c.quality == Major {
 			semitones = []int{4, 7}
-		} else if Minor == c.quality {
+		} else if c.quality == Minor {
 			semitones = []int{3, 7}
+		} else if c.quality == Suspended2 {
+			semitones = []int{2, 7}
+		} else if c.quality == Suspended4 {
+			semitones = []int{5, 7}
 		}
 	}
 	if c.interval == Seventh {
@@ -143,11 +154,11 @@ func (c Chord) Notes() []Note {
 			semitones = []int{4, 8, 10}
 		} else if c.quality == Diminished {
 			semitones = []int{3, 6, 9}
-		} else if Minor == c.quality {
+		} else if c.quality == Minor {
 			semitones = []int{3, 7, 10}
-		} else if Major == c.quality {
+		} else if c.quality == Major {
 			semitones = []int{4, 7, 11}
-		} else if Dominant == c.quality {
+		} else if c.quality == Septiem {
 			semitones = []int{4, 7, 10}
 		}
 	}
@@ -169,7 +180,7 @@ func (c Chord) Notes() []Note {
 	return notes
 }
 
-var chordRegexp = regexp.MustCompile("([Mmdimaugo+]*)([67]?)")
+var chordRegexp = regexp.MustCompile("([Mmdijaugo+su]*)([2467]?)")
 
 //  C/D7/2 = C dominant 7, 2nd inversion
 func ParseChord(s string) (Chord, error) {
@@ -195,7 +206,7 @@ func ParseChord(s string) (Chord, error) {
 		return Chord{}, fmt.Errorf("illegal chord: [%s]", s)
 	}
 	switch matches[1] {
-	case "M":
+	case "maj":
 		chord.quality = Major
 	case "m":
 		chord.quality = Minor
@@ -207,19 +218,26 @@ func ParseChord(s string) (Chord, error) {
 		chord.quality = Augmented
 	case "+":
 		chord.quality = Augmented
-	default:
+	case "sus":
+		chord.quality = Suspended2
+	case "":
 		chord.quality = Major
+	default:
+		return Chord{}, fmt.Errorf("illegal chord quality: [%s]", matches[1])
 	}
+	chord.interval = Triad
 	switch matches[2] {
+	case "2":
+		chord.quality = Suspended2
+	case "4":
+		chord.quality = Suspended4
 	case "6":
 		chord.interval = Sixth
 	case "7":
 		if len(matches[1]) == 0 {
-			chord.quality = Dominant
+			chord.quality = Septiem
 		}
 		chord.interval = Seventh
-	default:
-		chord.interval = Triad
 	}
 
 	// parts > 2

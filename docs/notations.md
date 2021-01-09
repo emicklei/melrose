@@ -75,7 +75,7 @@ Usable in `sequence` or `note`.
 |-------------|---
 | C#5/m/2     | C sharp triad, Octave 5, Minor, 2nd inversion
 | A/7         | A Dominant seventh chord
-| E/M7        | E Major seventh chord
+| E/maj7      | E Major seventh chord
 | G/m7        | G minor seventh chord
 | 1=          | No chord, a whole rest note
 | D/dim       | D diminished triad
@@ -95,7 +95,7 @@ b7 = chord('b/7')
 |-------------|---
 | C5          | C major scale, Octave 5
 | E/m         | E natural minor scale, Octave 4
-| G/M7        | G major 7 scale, Octave 4
+| G/maj7      | G major 7 scale, Octave 4
 
 ```javascript
 sf = scale(2,'f')
@@ -104,16 +104,15 @@ sf = scale(2,'f')
 ## Chord Progression <a name="progression-not"></a>
 
 | Notation    | Alternative | Description
-|-------------|---|--
-| I           | i | first chord in scale ; if scale is "C" then sequence is "(C E G)"
-| V7          | v7| (G B D5 F5)
-| Imaj7       | imaj7 | (C E G B)
+|-------------|--------|--
+| I           | i      | first chord in scale ; if scale is "C" then sequence is "(C E G)"
+| V7          | v7     | (G B D5 F5)
+| Imaj7       | imaj7  | (C E G B)
 | viidim      | VIIdim | (B D5 F5)
 
 ```javascript
-p = progression('C', 'ii V I') // (D F A) (G B D5) (C E G)
+p = progression('C', 'ii V I') // Major C scale, (D F A) (G B D5) (C E G)
 ```
-
 
 ## Chord Sequence <a name="chordsequence-not"></a>
 

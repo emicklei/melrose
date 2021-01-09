@@ -137,12 +137,12 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 		}}
 
 	eval["progression"] = Function{
-		Title:       "Chord progression creator",
-		Description: `create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>`,
-		Prefix:      "pro",
-		IsCore:      true,
-		Template:    `progression('${1:scale}','${2:space-separated-roman-chords}')`,
-		Samples:     `progression('C','II V I') // => (D F A) (G B D5) (C E G)`,
+		Title: "Chord progression creator",
+		//Description: `create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>`,
+		Prefix:   "pro",
+		IsCore:   true,
+		Template: `progression('${1:scale}','${2:space-separated-roman-chords}')`,
+		Samples:  `progression('C','II V I') // => (D F A) (G B D5) (C E G)`,
 		Func: func(scale, chords interface{}) interface{} {
 			return core.NewChordProgression(getValueable(scale), getValueable(chords))
 		}}

@@ -73,7 +73,7 @@ func (f *formatParser) parseChordProgression(s Scale) ([]Chord, error) {
 		err = errors.New(m)
 	}
 	f.scanner.Mode = scanner.ScanIdents | scanner.ScanInts
-	//f.scanner.Whitespace = 1 << ' '
+	f.scanner.Whitespace = 1 << ' '
 	stm := new(chordprogressionSTM)
 	stm.scale = s
 	for {
@@ -87,8 +87,8 @@ func (f *formatParser) parseChordProgression(s Scale) ([]Chord, error) {
 		if err := stm.accept(f.scanner.TokenText()); err != nil {
 			return []Chord{}, err
 		}
+		stm.endChord()
 	}
-	stm.endChord()
 	return stm.chords, nil
 }
 
@@ -161,7 +161,7 @@ func (s *chordprogressionSTM) accept(lit string) error {
 	}
 	if seventh := matches[4]; seventh == "7" {
 		if s.index == 5 {
-			s.quality = Dominant
+			s.quality = Septiem
 		}
 		s.interval = Seventh
 	}

@@ -59,6 +59,24 @@ func Test_formatParser_ParseChordProgression(t *testing.T) {
 	}
 }
 
+func Test_formatParser_ParseMultipleChordProgression(t *testing.T) {
+	p := newFormatParser(` I  VI  II  V `)
+	sc, err := NewScale(1, "E")
+	if err != nil {
+		t.Fatal(err)
+	}
+	cs, err := p.parseChordProgression(sc)
+	if got, want := len(cs), 4; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := cs[0].start.Name, "E"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := cs[3].start.Name, "B"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}
+
 func Test_formatParser_ParseNote(t *testing.T) {
 	for i, each := range []struct {
 		in  string

@@ -38,9 +38,6 @@ clean:
 	rm -rf target
 	mkdir target
 
-vsc:
-	cd ../melrose-for-vscode && vsce package
-
 APP := /Applications/Melrose
 package: clean build  
 	# prepare target

@@ -16,9 +16,12 @@ const (
 
 	Major
 	Minor // Natural
-	Dominant
+	Septiem
 	Augmented
 	Diminished
+	Suspended2
+	Suspended4
+
 	// https://en.wikipedia.org/wiki/Chord_(music)#Common_types_of_chords
 	Triad
 	Seventh

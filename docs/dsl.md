@@ -28,7 +28,6 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#chordsequence">chordsequence</a>
 - <a href="#midi">midi</a>
 - <a href="#note">note</a>
-- <a href="#progression">progression</a>
 - <a href="#scale">scale</a>
 - <a href="#sequence">sequence</a>
 
@@ -513,16 +512,6 @@ Prints an object when evaluated (play,loop).
 #### examples	
 ```javascript
 
-```
-
-### progression<a name="progression"></a>
-Create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>.
-
-> progression('scale','space-separated-roman-chords')
-
-#### examples	
-```javascript
-progression('C','II V I') // => (D F A) (G B D5) (C E G)
 ```
 
 ### random<a name="random"></a>
