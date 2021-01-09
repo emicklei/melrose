@@ -22,6 +22,8 @@ title: Melrōse Language
 
 # Language
 
+Note: until version 1.0.0 of melrōse, the documented syntax is implemented by the last git commit on the master branch
+
 ### expressions
 
 Musical objects are created, composed and played using the <strong>melrõse</strong> tool by evaluating expressions.
