@@ -66,8 +66,6 @@ func (c Chord) String() string {
 		case Diminished:
 			emitSeparator()
 			io.WriteString(&b, "dim")
-		case Septiem:
-			emitSeparator()
 		case Augmented:
 			emitSeparator()
 			io.WriteString(&b, "aug") // OR +  TODO
