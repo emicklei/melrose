@@ -75,6 +75,20 @@ func Int(h Valueable) int {
 	return getInt(h, false)
 }
 
+func ToSequenceable(v Valueable) Sequenceable {
+	if v == nil {
+		return EmptySequence
+	}
+	val := v.Value()
+	if val == nil {
+		return EmptySequence
+	}
+	if seq, ok := val.(Sequenceable); ok {
+		return seq
+	}
+	return EmptySequence
+}
+
 func getInt(h Valueable, silent bool) int {
 	if h == nil {
 		return 0

@@ -163,6 +163,17 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 			return p
 		}}
 
+	eval["prob"] = Function{
+		Title:    "Probabilistic note or sequenceable.",
+		Prefix:   "prob",
+		IsCore:   true,
+		Template: `prob(${1:perc},${2:note-or-sequenceable})`,
+		Samples: `prob(50,note('c')) // 50% chance of playing the note C, otherwise a rest
+prob(0.8,sequence('(c e g)')) // 80% chance of playing the chord C, otherwise nothing`,
+		Func: func(prec interface{}, noteOrSeq interface{}) interface{} {
+			return op.NewProbability(getValueable(prec), getValueable(noteOrSeq))
+		}}
+
 	eval["joinmap"] = Function{
 		Title:       "Join Map creator",
 		Description: "creates a new join by mapping elements. 1-index-based mapping",
