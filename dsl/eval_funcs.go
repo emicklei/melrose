@@ -164,12 +164,12 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 		}}
 
 	eval["prob"] = Function{
-		Title:    "Probabilistic note or sequenceable.",
+		Title:    "Probabilistic music object.",
 		Prefix:   "prob",
 		IsCore:   true,
 		Template: `prob(${1:perc},${2:note-or-sequenceable})`,
-		Samples: `prob(50,note('c')) // 50% chance of playing the note C, otherwise a rest
-prob(0.8,sequence('(c e g)')) // 80% chance of playing the chord C, otherwise nothing`,
+		Samples: `prob(50,note('c')) // 50% chance of playing the note C, otherwise a quarter rest
+prob(0.8,sequence('(c e g)')) // 80% chance of playing the chord C, otherwise a quarter rest`,
 		Func: func(prec interface{}, noteOrSeq interface{}) interface{} {
 			return op.NewProbability(getValueable(prec), getValueable(noteOrSeq))
 		}}

@@ -1,6 +1,7 @@
 package op
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -27,20 +28,27 @@ func NewProbability(chance, target core.Valueable) *Probability {
 }
 
 func (p *Probability) ToNote() (core.Note, error) {
-	if p.hit() {
-		v := p.target.Value()
-		if n, ok := v.(core.NoteConvertable); ok {
-			return n.ToNote()
-		}
+	v := p.target.Value()
+	nc, ok := v.(core.NoteConvertable)
+	if !ok {
+		return core.Rest4, fmt.Errorf("expect a Note but got %T", v)
 	}
-	return core.Rest4, nil
+	note, err := nc.ToNote()
+	if err != nil {
+		return core.Rest4, err
+	}
+	if p.hit() {
+		return note, nil
+	}
+	return note.ToRest(), nil
 }
 
 func (p *Probability) S() core.Sequence {
+	seq := core.ToSequenceable(p.target).S()
 	if p.hit() {
-		return core.ToSequenceable(p.target).S()
+		return seq
 	}
-	return core.EmptySequence
+	return seq.ToRest()
 }
 
 func (p *Probability) hit() bool {
