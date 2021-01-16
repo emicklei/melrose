@@ -2,6 +2,7 @@ package midi
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 	"time"
 
@@ -106,6 +107,21 @@ func (d *DeviceRegistry) Close() error {
 
 func (r *DeviceRegistry) HasInputCapability() bool {
 	return r.streamRegistry.transport.HasInputCapability()
+}
+
+func (r *DeviceRegistry) OnKey(ctx core.Context, deviceID int, note core.Note, fun core.Valueable) error {
+	in, err := r.Input(deviceID)
+	if err != nil {
+		return fmt.Errorf("input creation failed:%v", err)
+	}
+	in.listener.Start()
+	if fun == nil {
+		in.listener.OnKey(note, nil)
+		return nil
+	}
+	trigger := NewKeyTrigger(ctx, note, fun)
+	in.listener.OnKey(note, trigger)
+	return nil
 }
 
 func (r *DeviceRegistry) Listen(deviceID int, who core.NoteListener, startOrStop bool) {

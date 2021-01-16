@@ -1,6 +1,7 @@
 package dsl
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"math"
@@ -783,18 +784,38 @@ end() // stop all playables`,
 			return core.NewChannelSelector(list, getValueable(midiChannel))
 		}}
 
-	eval["trigger"] = Function{
-		Title:         "Trigger creator",
-		Description:   "Assign a playable to a note. If pressed this note the play will start. If pressed again, the play will stop.",
+	eval["onkey"] = Function{
+		Title:         "Key trigger creator",
+		Description:   "Assign a playable to a key. If this key is pressed the playable will start. If pressed again, the play will stop.",
 		ControlsAudio: true,
-		Template:      `trigger(${1:note},${2:playable})`,
-		Func: func(triggerNote core.Note, playable interface{}) interface{} {
-			_, ok := getValue(playable).(core.Playable)
-			if !ok {
-				return notify.Panic(fmt.Errorf("cannot trigger and call (%T) %s", playable, core.Storex(playable)))
+		Prefix:        "onk",
+		Template:      `onkey('${1:note-name}',${2:playable-or-evaluatable})`,
+		Func: func(noteInput string, playOrEval interface{}) interface{} {
+			note, err := core.ParseNote(noteInput)
+			if err != nil {
+				return notify.Panic(err)
 			}
-			// TODO detect device selector
-			return control.NewTrigger(ctx, 1, triggerNote, getValueable(playable))
+			if !ctx.Device().HasInputCapability() {
+				return notify.Panic(errors.New("Input is not available for this device"))
+			}
+			in, _ := ctx.Device().DefaultDeviceIDs()
+			if playOrEval == nil {
+				ctx.Device().OnKey(ctx, in, note, nil)
+				return nil
+			}
+			// allow playable and evaluatable
+			_, ok := getValue(playOrEval).(core.Playable)
+			if !ok {
+				_, ok = getValue(playOrEval).(core.Evaluatable)
+				if !ok {
+					return notify.Panic(fmt.Errorf("cannot trigger key and call (%T) %s", playOrEval, core.Storex(playOrEval)))
+				}
+			}
+			err = ctx.Device().OnKey(ctx, in, note, getValueable(playOrEval))
+			if err != nil {
+				return notify.Panic(fmt.Errorf("cannot install trigger key because error:%v", err))
+			}
+			return nil
 		}}
 
 	eval["device"] = Function{

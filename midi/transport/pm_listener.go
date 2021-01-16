@@ -18,14 +18,32 @@ type listener struct {
 
 	mutex         *sync.RWMutex
 	noteListeners []core.NoteListener
+	keyListeners  map[int]core.NoteListener
 }
 
 func newListener(inputStream *portmidi.Stream) *listener {
 	return &listener{
-		stream: inputStream,
-		noteOn: map[int]portmidi.Event{},
-		mutex:  new(sync.RWMutex),
+		stream:       inputStream,
+		noteOn:       map[int]portmidi.Event{},
+		keyListeners: map[int]core.NoteListener{},
+		mutex:        new(sync.RWMutex),
 	}
+}
+
+func (l *listener) OnKey(note core.Note, handler core.NoteListener) {
+	nr := note.MIDI()
+	// remove existing for the key
+	old, ok := l.keyListeners[nr]
+	if ok {
+		l.Remove(old)
+		delete(l.keyListeners, nr)
+	}
+	if handler == nil {
+		return
+	}
+	// add to map and list
+	l.keyListeners[nr] = handler
+	l.Add(handler)
 }
 
 func (l *listener) Add(lis core.NoteListener) {

@@ -39,6 +39,9 @@ type AudioDevice interface {
 	HasInputCapability() bool
 	Listen(deviceID int, who NoteListener, startOrStop bool)
 
+	// if a key is pressed on a device then play or stop a function
+	OnKey(ctx Context, deviceID int, note Note, fun Valueable) error
+
 	// Schedule put an event on the timeline at a begin
 	Schedule(event TimelineEvent, beginAt time.Time)
 

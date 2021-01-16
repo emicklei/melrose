@@ -27,6 +27,7 @@ type MIDIIn interface {
 type MIDIListener interface {
 	Add(core.NoteListener)
 	Remove(core.NoteListener)
+	OnKey(core.Note, core.NoteListener)
 	Start()
 	Stop()
 }
