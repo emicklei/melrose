@@ -783,6 +783,20 @@ end() // stop all playables`,
 			return core.NewChannelSelector(list, getValueable(midiChannel))
 		}}
 
+	eval["trigger"] = Function{
+		Title:         "Trigger creator",
+		Description:   "Assign a playable to a note. If pressed this note the play will start. If pressed again, the play will stop.",
+		ControlsAudio: true,
+		Template:      `trigger(${1:note},${2:playable})`,
+		Func: func(triggerNote core.Note, playable interface{}) interface{} {
+			_, ok := getValue(playable).(core.Playable)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot trigger and call (%T) %s", playable, core.Storex(playable)))
+			}
+			// TODO detect device selector
+			return control.NewTrigger(ctx, 1, triggerNote, getValueable(playable))
+		}}
+
 	eval["device"] = Function{
 		Title:         "MIDI device selector",
 		Description:   "select a MIDI device from the available device IDs; must become before channel",

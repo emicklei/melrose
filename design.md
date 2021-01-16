@@ -8,3 +8,11 @@ if the implicit creation of sequences fails while playing, any error will result
 ### map
 
 use key:value pairs, separated by comma
+
+# trigger start and stop of a playable by pressing a note
+trigger('c1',play(sequence('c e f')))
+fun = play(sequence('c e f'))
+trigger(device(2,'c1'),fun)
+
+fun = loop(scale(2,'c4'))
+trigger('d1',fun)
