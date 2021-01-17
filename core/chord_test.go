@@ -183,6 +183,12 @@ func TestParseChord(t *testing.T) {
 			false,
 		},
 		{
+			"E flat 3, 2nd inversion",
+			args{"e_3/2"},
+			"('(B♭3 E♭ G)')",
+			false,
+		},
+		{
 			"Rest",
 			args{"1="},
 			"('1=')",

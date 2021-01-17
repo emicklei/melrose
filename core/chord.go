@@ -226,7 +226,10 @@ func ParseChord(s string) (Chord, error) {
 	chord.interval = Triad
 	switch matches[2] {
 	case "2":
-		chord.quality = Suspended2
+		// TODO fix hack
+		if matches[1] != "" { // do not overwrite 2nd invertion
+			chord.quality = Suspended2
+		}
 	case "4":
 		chord.quality = Suspended4
 	case "6":
