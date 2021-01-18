@@ -12,11 +12,6 @@ type OctaveMap struct {
 	IndexOffsets []int2int // one-based
 }
 
-type int2int struct {
-	from int
-	to   int
-}
-
 func NewOctaveMap(target core.Sequenceable, indices string) OctaveMap {
 	return OctaveMap{
 		Target:       target,

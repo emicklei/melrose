@@ -14,7 +14,7 @@
 - not supported
     - legato
     - staccato
-- fractionmap missing
+- fractionmap missing (half way)
 - somehow show current BPM and BIAB in plugins
 - the :m command must become function to be useable in a script
 

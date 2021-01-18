@@ -127,3 +127,12 @@ func InList(s Sequenceable) []Sequenceable {
 	}
 	return []Sequenceable{s}
 }
+
+func ContainsInt(list []int, value int) bool {
+	for _, each := range list {
+		if each == value {
+			return true
+		}
+	}
+	return false
+}

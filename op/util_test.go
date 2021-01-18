@@ -26,3 +26,22 @@ func Test_parseIndexOffsets(t *testing.T) {
 		})
 	}
 }
+
+func Test_parseIndexFloats(t *testing.T) {
+	m := parseIndexFloats("1:1, 2:1.0, 3:0.5, 4:0.01625, 1:2, 1:4, 1:8, 1:16")
+	if got, want := m[0].at, 1; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := m[0].float, float32(1.0); got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := m[1].float, float32(1.0); got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := m[2].float, float32(0.5); got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := m[3].float, float32(0.01625); got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}

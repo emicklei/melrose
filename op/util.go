@@ -10,6 +10,15 @@ import (
 	"github.com/emicklei/melrose/core"
 )
 
+type int2float32 struct {
+	at    int
+	float float32
+}
+type int2int struct {
+	from int
+	to   int
+}
+
 // "1 (4 5 6) 2 (4 5 6) 3 (4 5 6) 2 (4 5 6)"
 func parseIndices(src string) [][]int {
 	ii := [][]int{}
@@ -97,6 +106,24 @@ func parseIndexOffsets(s string) (m []int2int) {
 			continue
 		}
 		m = append(m, int2int{from: ik, to: iv})
+	}
+	return
+}
+
+// 1:1, 2:1.0, 3:0.5, 4:0.01625, 1:2, 1:4, 1:8, 1:16
+func parseIndexFloats(s string) (m []int2float32) {
+	entries := strings.Split(s, ",")
+	for _, each := range entries {
+		kv := strings.Split(each, ":")
+		ik, err := strconv.Atoi(strings.TrimSpace(kv[0]))
+		if err != nil {
+			continue
+		}
+		iv, err := strconv.ParseFloat(strings.TrimSpace(kv[1]), 32)
+		if err != nil {
+			continue
+		}
+		m = append(m, int2float32{at: ik, float: float32(iv)})
 	}
 	return
 }
