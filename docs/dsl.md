@@ -78,6 +78,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#end">end</a>
 - <a href="#loop">loop</a>
 - <a href="#multitrack">multitrack</a>
+- <a href="#onkey">onkey</a>
 - <a href="#play">play</a>
 - <a href="#sync">sync</a>
 
@@ -470,6 +471,16 @@ Puts a musical object on a track to start at a specific bar.
 #### examples	
 ```javascript
 tr = track("solo",2, onbar(1,soloSequence)) // 2 = channel
+```
+
+### onkey<a name="onkey"></a>
+Assign a playable to a key. If this key is pressed the playable will start. If pressed again, the play will stop.
+
+> onkey('note-name',playable-or-evaluatable)
+
+#### examples	
+```javascript
+
 ```
 
 ### pitch<a name="pitch"></a>
