@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 	"github.com/rakyll/portmidi"
 )
 
@@ -91,19 +92,30 @@ stop:
 func (l *listener) handle(event portmidi.Event) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
+	if core.IsDebug() {
+		notify.Debugf("portmidi.handle %v", event)
+	}
 	nr := int(event.Data1)
-	if (event.Status & noteOn) == noteOn {
+	isNoteOn := (event.Status & noteOn) == noteOn
+	velocity := int(event.Data2)
+	if isNoteOn && velocity > 0 {
 		if _, ok := l.noteOn[nr]; ok {
 			return
 		}
 		// replace with now in nanos
 		event.Timestamp = portmidi.Timestamp(time.Now().UnixNano())
 		l.noteOn[nr] = event
-		onNote, _ := core.MIDItoNote(0.25, nr, int(event.Data2))
+		onNote, _ := core.MIDItoNote(0.25, nr, velocity)
 		for _, each := range l.noteListeners {
 			each.NoteOn(onNote)
 		}
-	} else if (event.Status & noteOff) == noteOff {
+	}
+	isNoteOff := (event.Status & noteOff) == noteOff
+	// for devices that support aftertouch, a noteOn with velocity 0 is also handled as a noteOff
+	if !isNoteOff {
+		isNoteOff = isNoteOn && velocity == 0
+	}
+	if isNoteOff {
 		on, ok := l.noteOn[nr]
 		if !ok {
 			return
@@ -114,7 +126,7 @@ func (l *listener) handle(event portmidi.Event) {
 		// compute delta
 		ms := time.Duration(event.Timestamp-on.Timestamp) * time.Nanosecond
 		frac := core.DurationToFraction(120.0, ms) // TODO
-		offNote, _ := core.MIDItoNote(frac, nr, int(on.Data2))
+		offNote, _ := core.MIDItoNote(frac, nr, velocity)
 		for _, each := range l.noteListeners {
 			each.NoteOff(offNote)
 		}
