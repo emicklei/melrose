@@ -37,6 +37,7 @@ func NewListen(ctx core.Context, deviceID int, variableName string, target core.
 // Inspect implements Inspectable
 func (l *Listen) Inspect(i core.Inspection) {
 	i.Properties["running"] = l.isRunning
+	i.Properties["device"] = l.deviceID
 }
 
 // Target is for replacing functions
