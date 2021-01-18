@@ -1,6 +1,8 @@
 package core
 
 import (
+	"time"
+
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -20,7 +22,16 @@ type Watch struct {
 	Target  interface{}
 }
 
-func (w Watch) Evaluate(c Condition) error {
+func (w Watch) Play(ctx Context, at time.Time) error {
+	w.S()
+	return nil
+}
+
+func (w Watch) Stop(ctx Context) error {
+	return nil
+}
+
+func (w Watch) Evaluate(ctx Context) error {
 	// TODO check c?
 	w.S()
 	return nil
