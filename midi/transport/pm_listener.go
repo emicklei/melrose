@@ -109,6 +109,7 @@ func (l *listener) handle(event portmidi.Event) {
 		for _, each := range l.noteListeners {
 			each.NoteOn(onNote)
 		}
+		return
 	}
 	isNoteOff := (event.Status & noteOff) == noteOff
 	// for devices that support aftertouch, a noteOn with velocity 0 is also handled as a noteOff
@@ -130,6 +131,7 @@ func (l *listener) handle(event portmidi.Event) {
 		for _, each := range l.noteListeners {
 			each.NoteOff(offNote)
 		}
+		return
 	}
 }
 

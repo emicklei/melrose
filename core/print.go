@@ -17,28 +17,28 @@ func ToggleDebug() bool {
 	return debugEnabled
 }
 
-type Watch struct {
+type Print struct {
 	Context Context
 	Target  interface{}
 }
 
-func (w Watch) Play(ctx Context, at time.Time) error {
+func (w Print) Play(ctx Context, at time.Time) error {
 	w.S()
 	return nil
 }
 
-func (w Watch) Stop(ctx Context) error {
+func (w Print) Stop(ctx Context) error {
 	return nil
 }
 
-func (w Watch) Evaluate(ctx Context) error {
+func (w Print) Evaluate(ctx Context) error {
 	// TODO check c?
 	w.S()
 	return nil
 }
 
 // S is part of Sequenceable
-func (w Watch) S() Sequence {
+func (w Print) S() Sequence {
 	beats, bars := w.Context.Control().BeatsAndBars()
 	in := NewInspect(w.Context, w.Target)
 	in.Properties["bar"] = bars

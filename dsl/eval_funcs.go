@@ -278,7 +278,7 @@ midi(16,36,70) // => 16C2 (kick)`,
 		Title:       "Printer creator",
 		Description: "prints an object when evaluated (play,loop)",
 		Func: func(m interface{}) interface{} {
-			return core.Watch{Context: ctx, Target: m}
+			return core.Print{Context: ctx, Target: m}
 		}}
 
 	eval["chord"] = Function{
@@ -298,21 +298,6 @@ chord('g/M/2') // Major G second inversion`,
 		}}
 
 	eval["octavemap"] = Function{
-		Title:       "Octave Map operator",
-		Description: "create a sequence with notes for which the order and the octaves are changed. 1-based indexing",
-		Prefix:      "octavem",
-		Template:    `octavemap('${1:int2int}',${2:object})`,
-		IsComposer:  true,
-		Samples:     `octavemap('1:-1,2:0,3:1',chord('c')) // => (C3 E G5)`,
-		Func: func(indices string, m interface{}) interface{} {
-			s, ok := getSequenceable(m)
-			if !ok {
-				return notify.Panic(fmt.Errorf("cannot octavemap (%T) %v", m, m))
-			}
-			return op.NewOctaveMap(s, indices)
-		}}
-
-	eval["pitchmap"] = Function{
 		Title:       "Pitch Map operator",
 		Description: "create a sequence with notes for which the order and the pitch are changed. 1-based indexing",
 		Prefix:      "pitchm",
@@ -784,19 +769,37 @@ end() // stop all playables`,
 			return core.NewChannelSelector(list, getValueable(midiChannel))
 		}}
 
+	eval["fractionmap"] = Function{
+		Title:       "Fraction Map operator",
+		Description: "create a sequence with notes for which the fractions are changed. 1-based indexing. use space or comma as separator",
+		Prefix:      "frm",
+		Template:    `fractionmap('${1:fraction-mapping}',${2:object})`,
+		IsComposer:  true,
+		Samples:     `fractionmap('3:. 2:4,1:2',sequence('c e g')) // => .G E ½C`,
+		Func: func(indices interface{}, m interface{}) interface{} {
+			s, ok := getSequenceable(m)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot fractionmap (%T) %v", m, m))
+			}
+			return op.NewFractionMap(getValueable(indices), s)
+		}}
+
 	eval["onkey"] = Function{
-		Title:         "Key trigger creator",
-		Description:   "Assign a playable to a key. If this key is pressed the playable will start. If pressed again, the play will stop.",
+		Title: "Key trigger creator",
+		Description: `Assign a playable to a key.
+If this key is pressed the playable will start. 
+If pressed again, the play will stop.
+Remove the assignment using the value nil for the playable`,
 		ControlsAudio: true,
 		Prefix:        "onk",
-		Template:      `onkey('${1:note-name}',${2:playable-or-evaluatable})`,
+		Template:      `onkey('${1:note-name}',${2:playable-or-evaluatable-or-nil})`,
 		Func: func(noteInput string, playOrEval interface{}) interface{} {
+			if !ctx.Device().HasInputCapability() {
+				return notify.Panic(errors.New("Input is not available for this device"))
+			}
 			note, err := core.ParseNote(noteInput)
 			if err != nil {
 				return notify.Panic(err)
-			}
-			if !ctx.Device().HasInputCapability() {
-				return notify.Panic(errors.New("Input is not available for this device"))
 			}
 			in, _ := ctx.Device().DefaultDeviceIDs()
 			if playOrEval == nil {

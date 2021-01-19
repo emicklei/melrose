@@ -7,14 +7,14 @@ import (
 )
 
 func TestFractionMap(t *testing.T) {
-	pm := NewFractionMap(core.On(" 1:1 , 2:2,3:4 "), core.MustParseSequence("c (e 4f) 8g"))
+	pm := NewFractionMap(core.On(" 1:1 , 2:2, 3:4 "), core.MustParseSequence("c (e 4f) 8g"))
 	if got, want := pm.S().Storex(), "sequence('1C (½E ½F) G')"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
 
 func Test_parseIndexFractions(t *testing.T) {
-	m, err := parseIndexFractions("1:4, 1:.2, 1:16.")
+	m, err := parseIndexFractions("1:4  1:.2  1:16.")
 	if err != nil {
 		t.Fatal(err)
 	}

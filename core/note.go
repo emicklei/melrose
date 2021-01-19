@@ -311,6 +311,7 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 			io.WriteString(buf, "--")
 		case n.Velocity <= VelocityMP:
 			io.WriteString(buf, "-")
+		case n.Velocity <= Normal:
 		case n.Velocity <= VelocityMF:
 			io.WriteString(buf, "+")
 		case n.Velocity <= VelocityF:

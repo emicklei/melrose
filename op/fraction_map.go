@@ -56,9 +56,9 @@ type int2fractionAndDotted struct {
 	dotted          bool
 }
 
-// 1:1, 2:.2, 3: 8.
+// 1:1 2:.2 3:8.
 func parseIndexFractions(s string) (m []int2fractionAndDotted, err error) {
-	entries := strings.Split(s, ",")
+	entries := strings.Fields(strings.ReplaceAll(s, ",", " "))
 	for _, each := range entries {
 		if !strings.Contains(each, ":") {
 			return m, fmt.Errorf("mapping must use ':' as separated, got %s", each)

@@ -86,6 +86,10 @@ type Playable interface {
 	// IsPlaying() bool
 }
 
+type Stoppable interface {
+	Stop(ctx Context) error
+}
+
 type VariableStorage interface {
 	NameFor(value interface{}) string
 	Get(key string) (interface{}, bool)

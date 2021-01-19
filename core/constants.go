@@ -45,15 +45,15 @@ type quality int
 
 // https://www.cs.cmu.edu/~music/cmsip/readings/MIDI%20tutorial%20for%20programmers.html
 const (
-	VelocityPPPP = 8   // ----
-	VelocityPPP  = 20  // ---
-	VelocityPP   = 31  // --
-	VelocityP    = 42  // -
-	VelocityMP   = 53  // o-
+	VelocityPPPP = 8   // -----
+	VelocityPPP  = 20  // ----
+	VelocityPP   = 31  // ---
+	VelocityP    = 42  // --
+	VelocityMP   = 53  // -
 	Normal       = 59  // o
-	VelocityMF   = 64  // o+
-	VelocityF    = 80  // +
-	VelocityFF   = 96  // ++
-	VelocityFFF  = 112 // +++
-	VelocityFFFF = 127 // ++++
+	VelocityMF   = 64  // +
+	VelocityF    = 80  // ++
+	VelocityFF   = 96  // +++
+	VelocityFFF  = 112 // ++++
+	VelocityFFFF = 127 // +++++
 )

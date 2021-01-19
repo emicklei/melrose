@@ -41,6 +41,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#dynamicmap">dynamicmap</a>
 - <a href="#export">export</a>
 - <a href="#fraction">fraction</a>
+- <a href="#fractionmap">fractionmap</a>
 - <a href="#group">group</a>
 - <a href="#import">import</a>
 - <a href="#interval">interval</a>
@@ -56,7 +57,6 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#octavemap">octavemap</a>
 - <a href="#onbar">onbar</a>
 - <a href="#pitch">pitch</a>
-- <a href="#pitchmap">pitchmap</a>
 - <a href="#print">print</a>
 - <a href="#random">random</a>
 - <a href="#repeat">repeat</a>
@@ -244,6 +244,16 @@ Fraction can also be an exact float value between 0 and 1.
 #### examples	
 ```javascript
 fraction(8,sequence('e f')) // => ⅛E ⅛F , shorten the notes from quarter to eight
+```
+
+### fractionmap<a name="fractionmap"></a>
+Create a sequence with notes for which the fractions are changed. 1-based indexing. use space or comma as separator.
+
+> fractionmap('fraction-mapping',object)
+
+#### examples	
+```javascript
+fractionmap('3:. 2:4,1:2',sequence('c e g')) // => .G E ½C
 ```
 
 ### group<a name="group"></a>
@@ -454,13 +464,13 @@ octave(1,sequence('c d')) // => C5 D5
 ```
 
 ### octavemap<a name="octavemap"></a>
-Create a sequence with notes for which the order and the octaves are changed. 1-based indexing.
+Create a sequence with notes for which the order and the pitch are changed. 1-based indexing.
 
-> octavemap('int2int',object)
+> pitchmap('int2int',object)
 
 #### examples	
 ```javascript
-octavemap('1:-1,2:0,3:1',chord('c')) // => (C3 E G5)
+pitchmap('1:-1,1:0,1:1',note('c')) // => B3 C D
 ```
 
 ### onbar<a name="onbar"></a>
@@ -474,9 +484,12 @@ tr = track("solo",2, onbar(1,soloSequence)) // 2 = channel
 ```
 
 ### onkey<a name="onkey"></a>
-Assign a playable to a key. If this key is pressed the playable will start. If pressed again, the play will stop.
+Assign a playable to a key.
+If this key is pressed the playable will start. 
+If pressed again, the play will stop.
+Remove the assignment using the value nil for the playable.
 
-> onkey('note-name',playable-or-evaluatable)
+> onkey('note-name',playable-or-evaluatable-or-nil)
 
 #### examples	
 ```javascript
@@ -495,16 +508,6 @@ pitch(-1,sequence('c d e'))
 p = interval(-4,4,1)
 
 pitch(p,note('c'))
-```
-
-### pitchmap<a name="pitchmap"></a>
-Create a sequence with notes for which the order and the pitch are changed. 1-based indexing.
-
-> pitchmap('int2int',object)
-
-#### examples	
-```javascript
-pitchmap('1:-1,1:0,1:1',note('c')) // => B3 C D
 ```
 
 ### play<a name="play"></a>
