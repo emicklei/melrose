@@ -26,14 +26,13 @@ var parsetests = []struct {
 	{".F#9", "F", 9, 0.25, 1, true, Normal},
 	{"1C", "C", 4, 1, 0, false, Normal},
 	{"=", "=", 4, 0.25, 0, false, Normal},
-	{"D++", "D", 4, 0.25, 0, false, VelocityFF},
-	{"D+", "D", 4, 0.25, 0, false, VelocityF},
-	{"D+++", "D", 4, 0.25, 0, false, VelocityFFF},
-	{"E-", "E", 4, 0.25, 0, false, VelocityP},
-	{"E--", "E", 4, 0.25, 0, false, VelocityPP},
-	{"E---", "E", 4, 0.25, 0, false, VelocityPPP},
+	{"D++", "D", 4, 0.25, 0, false, VelocityF},
+	{"D+", "D", 4, 0.25, 0, false, VelocityMF},
+	{"D+++", "D", 4, 0.25, 0, false, VelocityFF},
+	{"E-", "E", 4, 0.25, 0, false, VelocityMP},
+	{"E--", "E", 4, 0.25, 0, false, VelocityP},
+	{"E---", "E", 4, 0.25, 0, false, VelocityPP},
 	{"Bo", "B", 4, 0.25, 0, false, Normal},
-	{"Bo-", "B", 4, 0.25, 0, false, VelocityMP},
 	{"<", "<", 0, 0, 0, false, 0},
 	{"^", "^", 0, 0, 0, false, 0},
 }
@@ -60,7 +59,7 @@ func TestParseNote(t *testing.T) {
 			t.Fatal("dot: line,exp,act", i, each.dot, n.Dotted)
 		}
 		if n.Velocity != each.vel {
-			t.Fatal("vel: line,exp,act", i, each.vel, n.Velocity)
+			t.Fatal("vel: line,exp,act", each.in, i, each.vel, n.Velocity)
 		}
 	}
 }
@@ -150,7 +149,7 @@ func ExampleParseNote() {
 
 func TestNote_Storex(t *testing.T) {
 	n, _ := NewNote("A", 4, 0.25, 1, false, 1)
-	if got, want := n.Storex(), `note('A♯----')`; got != want {
+	if got, want := n.Storex(), `note('A♯-----')`; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }

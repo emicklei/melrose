@@ -156,27 +156,27 @@ func ParseNote(input string) (Note, error) {
 
 func ParseVelocity(plusmin string) (velocity int) {
 	switch plusmin {
-	case "-":
-		velocity = VelocityP
 	case "--":
-		velocity = VelocityPP
+		velocity = VelocityP
 	case "---":
-		velocity = VelocityPPP
+		velocity = VelocityPP
 	case "----":
+		velocity = VelocityPPP
+	case "-----":
 		velocity = VelocityPPPP
-	case "+":
-		velocity = VelocityF
 	case "++":
-		velocity = VelocityFF
+		velocity = VelocityF
 	case "+++":
-		velocity = VelocityFFF
+		velocity = VelocityFF
 	case "++++":
+		velocity = VelocityFFF
+	case "+++++":
 		velocity = VelocityFFFF
 	case "o":
 		velocity = Normal
-	case "o-":
+	case "-":
 		velocity = VelocityMP
-	case "o+":
+	case "+":
 		velocity = VelocityMF
 	default:
 		// invalid
@@ -302,25 +302,25 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 	if n.Velocity != Normal {
 		switch {
 		case n.Velocity <= VelocityPPPP:
-			io.WriteString(buf, "----")
+			io.WriteString(buf, "-----")
 		case n.Velocity <= VelocityPPP:
-			io.WriteString(buf, "---")
+			io.WriteString(buf, "----")
 		case n.Velocity <= VelocityPP:
-			io.WriteString(buf, "--")
+			io.WriteString(buf, "---")
 		case n.Velocity <= VelocityP:
-			io.WriteString(buf, "-")
+			io.WriteString(buf, "--")
 		case n.Velocity <= VelocityMP:
-			io.WriteString(buf, "o-")
+			io.WriteString(buf, "-")
 		case n.Velocity <= VelocityMF:
-			io.WriteString(buf, "o+")
-		case n.Velocity <= VelocityF:
 			io.WriteString(buf, "+")
-		case n.Velocity <= VelocityFF:
+		case n.Velocity <= VelocityF:
 			io.WriteString(buf, "++")
-		case n.Velocity <= VelocityFFF:
+		case n.Velocity <= VelocityFF:
 			io.WriteString(buf, "+++")
-		case n.Velocity > VelocityFFF:
+		case n.Velocity <= VelocityFFF:
 			io.WriteString(buf, "++++")
+		case n.Velocity > VelocityFFF:
+			io.WriteString(buf, "+++++")
 		}
 	}
 }

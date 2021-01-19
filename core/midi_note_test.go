@@ -40,13 +40,13 @@ func TestMIDI_ToNote(t *testing.T) {
 	}{
 		{
 			"F+",
-			fields{On(4), On(65), On(80)},
+			fields{On(4), On(65), On(64)},
 			MustParseNote("F+"),
 			ZeroDuration,
 		},
 		{
 			"G3+",
-			fields{On(8), On(55), On(80)},
+			fields{On(8), On(55), On(64)},
 			MustParseNote("8G3+"),
 			ZeroDuration,
 		},
