@@ -127,7 +127,7 @@ func (l *listener) handle(event portmidi.Event) {
 		// compute delta
 		ms := time.Duration(event.Timestamp-on.Timestamp) * time.Nanosecond
 		frac := core.DurationToFraction(120.0, ms) // TODO
-		offNote, _ := core.MIDItoNote(frac, nr, velocity)
+		offNote, _ := core.MIDItoNote(frac, nr, core.Normal)
 		for _, each := range l.noteListeners {
 			each.NoteOff(offNote)
 		}
