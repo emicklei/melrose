@@ -1,6 +1,7 @@
 package core
 
 import (
+	"sync"
 	"time"
 
 	"github.com/emicklei/melrose/notify"
@@ -102,7 +103,7 @@ type Context interface {
 	Control() LoopController
 	Device() AudioDevice
 	Variables() VariableStorage
-	Environment() map[string]string
+	Environment() *sync.Map
 	WithCondition(c Condition) Context
 }
 

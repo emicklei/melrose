@@ -10,11 +10,11 @@ import (
 
 // ImportProgram runs a script from a file
 func ImportProgram(ctx core.Context, filename string) error {
-	pwd, ok := ctx.Environment()[core.WorkingDirectory]
+	pwd, ok := ctx.Environment().Load(core.WorkingDirectory)
 	if !ok {
 		pwd = ""
 	}
-	fullName := filepath.Join(pwd, filename)
+	fullName := filepath.Join(pwd.(string), filename)
 	data, err := ioutil.ReadFile(fullName)
 	if err != nil {
 		abs, _ := filepath.Abs(fullName)

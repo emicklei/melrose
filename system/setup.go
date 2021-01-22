@@ -3,6 +3,7 @@ package system
 import (
 	"flag"
 	"log"
+	"sync"
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/midi"
@@ -24,7 +25,7 @@ func Setup() (core.Context, error) {
 	}
 
 	ctx := new(core.PlayContext)
-	ctx.EnvironmentVars = map[string]string{}
+	ctx.EnvironmentVars = new(sync.Map)
 	ctx.VariableStorage = dsl.NewVariableStore()
 	ctx.LoopControl = core.NewBeatmaster(ctx, 120)
 	reg, err := midi.NewDeviceRegistry()

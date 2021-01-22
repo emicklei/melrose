@@ -24,7 +24,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 	query := r.URL.Query()
-	l.context.Environment()[core.WorkingDirectory] = filepath.Dir(query.Get("file"))
+	l.context.Environment().Store(core.WorkingDirectory, filepath.Dir(query.Get("file")))
 
 	debug := query.Get("debug") == "true" || core.IsDebug()
 	if debug {
