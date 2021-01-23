@@ -111,6 +111,10 @@ func (l *Listen) NoteOff(n core.Note) {
 	delete(l.notesOn, n.MIDI())
 }
 
+func (l *Listen) ControlChange(channel, number, value int) {
+
+}
+
 // Storex is part of core.Storable
 func (l *Listen) Storex() string {
 	return fmt.Sprintf("listen(%d,%s,%s)", l.deviceID, l.variableName, core.Storex(l.callback))

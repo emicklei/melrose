@@ -784,6 +784,23 @@ end() // stop all playables`,
 			return op.NewFractionMap(getValueable(indices), s)
 		}}
 
+	eval["input"] = Function{
+		Title: "MIDI Input device",
+		//Description:   "Look up an input device by name",
+		ControlsAudio: true,
+		Func: func(deviceName string, optionalChannel ...int) interface{} {
+			in, _ := ctx.Device().DefaultDeviceIDs()
+			return control.NewChannelOnDevice(true, deviceName, -1, in)
+		}}
+
+	eval["knob"] = Function{
+		Title: "MIDI controller knob value",
+		//Description:   "Look up an input device by name",
+		ControlsAudio: true,
+		Func: func(deviceID int, number int) interface{} {
+			return control.NewKnob(ctx, deviceID, -1, number)
+		}}
+
 	eval["onkey"] = Function{
 		Title: "Key trigger creator",
 		Description: `Assign a playable to a key.

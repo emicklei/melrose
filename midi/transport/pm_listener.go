@@ -92,10 +92,17 @@ stop:
 func (l *listener) handle(event portmidi.Event) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
-	if core.IsDebug() {
-		notify.Debugf("portmidi.handle %v", event)
-	}
+
 	nr := int(event.Data1)
+	// controlChange before noteOn
+	isControlChange := (event.Status & controlChange) == controlChange
+	if isControlChange {
+		for _, each := range l.noteListeners {
+			// TODO get channel
+			each.ControlChange(0, nr, int(event.Data2))
+		}
+		return
+	}
 	isNoteOn := (event.Status & noteOn) == noteOn
 	velocity := int(event.Data2)
 	if isNoteOn && velocity > 0 {
@@ -132,6 +139,9 @@ func (l *listener) handle(event portmidi.Event) {
 			each.NoteOff(offNote)
 		}
 		return
+	}
+	if core.IsDebug() {
+		notify.Debugf("portmidi.handle %v", event)
 	}
 }
 

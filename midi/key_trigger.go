@@ -64,3 +64,5 @@ func (t *KeyTrigger) NoteOff(n core.Note) {
 	}
 	// key trigger is not interested in this
 }
+
+func (t *KeyTrigger) ControlChange(channel, number, value int) {}

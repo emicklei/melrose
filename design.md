@@ -41,7 +41,11 @@ other names:
 - k = valueof(1,'c3')
 - k = control(1,'c3',0)  // device 1, cc name c3, start with 0
 - k = valueof(1,2,'c3')
-- k = valueof(device(1,channel(2,range('c3'))))
-- k = device(1).channel(2).range('c3')
+- k = valueof(device(1,channel(2,knob(20) ) ) )
+
+axiom = input('CoreMIDI/USB Axiom 25 Port 1')   // any channel
+axiom = input('CoreMIDI/USB Axiom 25 Port 1',1) // channel 1
+k = knob(axiom,20)
+
 
 In the listener, keep a map of knobListeners with the known value.

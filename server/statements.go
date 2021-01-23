@@ -34,6 +34,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	line := 1
 	lineString := query.Get("line")
 	if len(lineString) > 0 {
+		l.context.Environment().Store(core.LineOfCursor, lineString)
 		if i, err := strconv.Atoi(lineString); err == nil {
 			line = i
 		}
