@@ -3,7 +3,6 @@ package dsl
 import (
 	"errors"
 	"fmt"
-	"log"
 	"math"
 	"strings"
 	"time"
@@ -20,40 +19,6 @@ import (
 
 // SyntaxVersion tells what language version this package is supporting.
 const SyntaxVersion = "0.36" // major,minor
-
-func IsCompatibleSyntax(s string) bool {
-	if len(s) == 0 {
-		// ignore syntax ; you are on your own
-		return true
-	}
-	mm := strings.Split(SyntaxVersion, ".")
-	ss := strings.Split(s, ".")
-	return mm[0] == ss[0] && ss[1] <= mm[1]
-}
-
-type Function struct {
-	Title         string
-	Description   string
-	Prefix        string // for autocomplete
-	Alias         string // short notation
-	Template      string // for autocomplete in VSC
-	Samples       string // for doc generation
-	ControlsAudio bool
-	Tags          string // space separated
-	IsCore        bool   // creates a core musical object
-	IsComposer    bool   // can decorate a musical object or other decorations
-	Func          interface{}
-}
-
-func (f Function) HumanizedTemplate() string {
-	r := strings.NewReplacer(
-		"${1:", "",
-		"${2:", "",
-		"${3:", "",
-		"${4:", "",
-		"}", "")
-	return r.Replace(f.Template)
-}
 
 func EvalFunctions(ctx core.Context) map[string]Function {
 	eval := map[string]Function{}
@@ -797,8 +762,18 @@ end() // stop all playables`,
 		Title: "MIDI controller knob value",
 		//Description:   "Look up an input device by name",
 		ControlsAudio: true,
-		Func: func(deviceID int, number int) interface{} {
-			return control.NewKnob(ctx, deviceID, -1, number)
+		Func: func(deviceIDOrVar interface{}, numberOrVar interface{}) interface{} {
+			deviceID, ok := getValue(deviceIDOrVar).(int)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot create knob with device (%T) %v", deviceIDOrVar, deviceIDOrVar))
+			}
+			number, ok := getValue(numberOrVar).(int)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot create knob with number (%T) %v", numberOrVar, numberOrVar))
+			}
+			k := control.NewKnob(deviceID, 0, number)
+			ctx.Device().Listen(deviceID, k, true)
+			return k
 		}}
 
 	eval["onkey"] = Function{
@@ -1024,68 +999,4 @@ alt = listen(device(1,rec),fun) // start a listener for notes from input device 
 	})
 
 	return eval
-}
-
-func registerFunction(m map[string]Function, k string, f Function) {
-	if dup, ok := m[k]; ok {
-		log.Fatal("duplicate function key detected:", dup)
-	}
-	if len(f.Alias) > 0 {
-		if dup, ok := m[f.Alias]; ok {
-			log.Fatal("duplicate function alias key detected:", dup)
-		}
-	}
-	m[k] = f
-	if len(f.Alias) > 0 {
-		// modify title
-		f.Title = fmt.Sprintf("%s [%s]", f.Title, f.Alias)
-		m[f.Alias] = f
-	}
-}
-
-func getSequenceable(v interface{}) (core.Sequenceable, bool) {
-	if s, ok := v.(core.Sequenceable); ok {
-		return s, ok
-	}
-	return nil, false
-}
-
-func getSequenceableList(m ...interface{}) (list []core.Sequenceable, ok bool) {
-	ok = true
-	for _, each := range m {
-		if s, ok := getSequenceable(each); ok {
-			list = append(list, s)
-		} else {
-			return list, false
-		}
-	}
-	return
-}
-
-func getValueable(val interface{}) core.Valueable {
-	if v, ok := val.(core.Valueable); ok {
-		return v
-	}
-	return core.On(val)
-}
-
-// getValue returns the Value() of val iff val is a Valueable, else returns val
-func getValue(val interface{}) interface{} {
-	if v, ok := val.(core.Valueable); ok {
-		return v.Value()
-	}
-	return val
-}
-
-func getLoop(v interface{}) (core.Valueable, bool) {
-	if val, ok := v.(core.Valueable); ok {
-		if _, ok := val.Value().(*core.Loop); ok {
-			return val, true
-		}
-		return val, false
-	}
-	if l, ok := v.(*core.Loop); ok {
-		return core.On(l), true
-	}
-	return core.On(v), false
 }
