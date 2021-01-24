@@ -90,10 +90,10 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 	if value, ok := e.context.Variables().Get(entry); ok {
 		return value, nil
 	}
-	if variable, expression, ok := IsAssignment(entry); ok {
+	if varName, expression, ok := IsAssignment(entry); ok {
 		// variable cannot be named after function
-		if _, conflict := e.funcs[variable]; conflict {
-			return nil, fmt.Errorf("cannot use variable [%s] because it is a defined function", variable)
+		if _, conflict := e.funcs[varName]; conflict {
+			return nil, fmt.Errorf("cannot use variable [%s] because it is a defined function", varName)
 		}
 
 		r, err := e.EvaluateExpression(expression)
@@ -102,7 +102,7 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 		}
 		// check delete
 		if r == nil {
-			e.context.Variables().Delete(variable)
+			e.context.Variables().Delete(varName)
 		} else {
 			// special case for Loop
 			// if the value is a Loop
@@ -111,17 +111,17 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 			//		else store the loop
 			// else store the result
 			if theLoop, ok := r.(*core.Loop); ok {
-				if storedValue, present := e.context.Variables().Get(variable); present {
+				if storedValue, present := e.context.Variables().Get(varName); present {
 					if otherLoop, replaceme := storedValue.(*core.Loop); replaceme {
 						otherLoop.SetTarget(theLoop.Target())
 						r = otherLoop
 					} else {
 						// existing variable but not a Loop
-						e.context.Variables().Put(variable, theLoop)
+						e.context.Variables().Put(varName, theLoop)
 					}
 				} else {
 					// new variable for theLoop
-					e.context.Variables().Put(variable, theLoop)
+					e.context.Variables().Put(varName, theLoop)
 				}
 				return r, nil
 			}
@@ -132,23 +132,26 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 			//		else store the listen
 			// else store the result
 			if theListen, ok := r.(*control.Listen); ok {
-				if storedValue, present := e.context.Variables().Get(variable); present {
+				if storedValue, present := e.context.Variables().Get(varName); present {
 					if otherListen, replaceme := storedValue.(*control.Listen); replaceme {
 						otherListen.SetTarget(theListen.Target())
 						r = otherListen
 					} else {
 						// existing variable but not a Listen
-						e.context.Variables().Put(variable, theListen)
+						e.context.Variables().Put(varName, theListen)
 					}
 				} else {
 					// new variable for theLoop
-					e.context.Variables().Put(variable, theListen)
+					e.context.Variables().Put(varName, theListen)
 				}
 				return r, nil
 			}
 
 			// not a Loop or Listen
-			e.context.Variables().Put(variable, r)
+			e.context.Variables().Put(varName, r)
+			if aware, ok := r.(core.NameAware); ok {
+				aware.VariableName(varName)
+			}
 		}
 		return r, nil
 	}
