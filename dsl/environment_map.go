@@ -49,6 +49,22 @@ func (envMap) Add(l, r interface{}) interface{} {
 	return nil
 }
 
+func (envMap) Mulitply(l, r interface{}) interface{} {
+	if vl, ok := l.(variable); ok {
+		return vl.dispatchMultiply(r)
+	}
+	if vr, ok := r.(variable); ok {
+		return vr.dispatchMultiply(l)
+	}
+	if li, ok := l.(int); ok {
+		if ri, ok := r.(int); ok {
+			return li * ri
+		}
+	}
+	notify.Panic(fmt.Errorf("multiplication failed [%v (%T) + %v (%T)]", l, l, r, r))
+	return nil
+}
+
 var variableType = reflect.TypeOf(variable{})
 
 // indexedAccessPatcher exist to patch expression which use [] on variables.
