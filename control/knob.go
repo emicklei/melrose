@@ -1,12 +1,13 @@
 package control
 
 import (
+	"fmt"
+
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
 )
 
 type Knob struct {
-	vars     core.VariableStorage
 	deviceID int
 	channel  int
 	number   int
@@ -14,10 +15,21 @@ type Knob struct {
 	currentValue int
 }
 
-func NewKnob(ctx core.Context, deviceID, channel, number int) *Knob {
-	k := &Knob{vars: ctx.Variables(), deviceID: deviceID, channel: channel, number: number}
-	ctx.Device().Listen(deviceID, k, true)
-	return k
+func NewKnob(deviceID, channel, number int) *Knob {
+	return &Knob{deviceID: deviceID, channel: channel, number: number}
+}
+
+// Inspect is part of Inspectable
+func (k *Knob) Inspect(i core.Inspection) {
+	i.Properties["device"] = k.deviceID
+	i.Properties["channel"] = k.channel
+	i.Properties["number"] = k.number
+	i.Properties["currentValue"] = k.currentValue
+}
+
+// Storex is part of core.Storable
+func (k *Knob) Storex() string {
+	return fmt.Sprintf("knob(%d,%d)", k.deviceID, k.number)
 }
 
 func (k *Knob) NoteOn(n core.Note) {
