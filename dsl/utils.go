@@ -10,7 +10,7 @@ func StopAllPlayables(context core.Context) {
 	// stop any running playables
 	for k, v := range context.Variables().Variables() {
 		if l, ok := v.(core.Playable); ok {
-			notify.Print(notify.Infof("ending: %s = %s", k, core.Storex(l)))
+			notify.Infof("ending: %s = %s", k, core.Storex(l))
 			_ = l.Stop(context)
 		}
 	}

@@ -28,13 +28,13 @@ func showHelp(ctx core.Context, args []string) notify.Message {
 			fmt.Fprintf(&b, "%s\n----------\n", cmdfunc)
 			fmt.Fprintf(&b, "%s\n\n", cmd.Description)
 			fmt.Fprintf(&b, "%s\n", cmd.Sample)
-			return notify.Infof("%s", b.String())
+			return notify.NewInfof("%s", b.String())
 		}
 		if fun, ok := dsl.EvalFunctions(ctx)[cmdfunc]; ok {
 			fmt.Fprintf(&b, "%s\n----------\n", cmdfunc)
 			fmt.Fprintf(&b, "%s\n\n", fun.Description)
 			fmt.Fprintf(&b, "%s\n", fun.Template)
-			return notify.Infof("%s", b.String())
+			return notify.NewInfof("%s", b.String())
 		}
 	}
 	io.WriteString(&b, "\n")
@@ -96,5 +96,5 @@ func showHelp(ctx core.Context, args []string) notify.Message {
 			fmt.Fprintf(&b, "%s --- %s\n", k, c.Description)
 		}
 	}
-	return notify.Infof("%s", b.String())
+	return notify.NewInfof("%s", b.String())
 }

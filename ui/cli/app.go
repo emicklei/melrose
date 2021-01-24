@@ -34,7 +34,7 @@ func tearDown(line *liner.State, ctx core.Context) {
 	ctx.Control().Reset()
 	ctx.Device().Reset()
 	if f, err := os.Create(history); err != nil {
-		notify.Print(notify.Errorf("error writing history file:%v", err))
+		notify.Print(notify.NewErrorf("error writing history file:%v", err))
 	} else {
 		line.WriteHistory(f)
 		f.Close()
@@ -56,7 +56,7 @@ func repl(line *liner.State, ctx core.Context) {
 	for {
 		entry, err := line.Prompt(notify.Prompt())
 		if err != nil {
-			notify.Print(notify.Error(err))
+			notify.Print(notify.NewError(err))
 			continue
 		}
 		entry = strings.TrimSpace(entry)
@@ -75,7 +75,7 @@ func repl(line *liner.State, ctx core.Context) {
 			}
 		}
 		if result, err := eval.EvaluateStatement(entry); err != nil {
-			notify.Print(notify.Error(err))
+			notify.Print(notify.NewError(err))
 			// even on error, add entry to history so we can edit/fix it
 		} else {
 			core.InspectValue(ctx, result)

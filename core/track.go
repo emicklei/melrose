@@ -128,7 +128,7 @@ func (m MultiTrack) Play(ctx Context, at time.Time) error {
 			}
 		} else {
 			// TODO
-			notify.Errorf("not a track:%v", each)
+			notify.NewErrorf("not a track:%v", each)
 		}
 	}
 	ctx.Control().Start()

@@ -111,12 +111,12 @@ func createMidiTrack(t *core.Track, bpm float64) (*smf.Track, error) {
 	if err != nil {
 		return nil, err
 	}
-	notify.Print(notify.Infof("wrote track [%s] with [%d] MIDI events", t.Title, track.Len()))
+	notify.Infof("wrote track [%s] with [%d] MIDI events", t.Title, track.Len())
 	return track, nil
 }
 
 func exportMultiTrack(fileName string, m core.MultiTrack, bpm float64) error {
-	notify.Print(notify.Infof("exporting multi-track to [%s] ...", fileName))
+	notify.Infof("exporting multi-track to [%s] ...", fileName)
 	// Create division
 	// https://www.recordingblogs.com/wiki/time-division-of-a-midi-file
 	division, err := smf.NewDivision(ticksPerBeat, smf.NOSMTPE)
@@ -161,7 +161,7 @@ func exportMultiTrack(fileName string, m core.MultiTrack, bpm float64) error {
 	if err := smfio.Write(writer, midi); err != nil {
 		return err
 	}
-	notify.Print(notify.Infof("... done exporting to [%s]", fileName))
+	notify.Infof("... done exporting to [%s]", fileName)
 	return writer.Flush()
 }
 

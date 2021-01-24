@@ -18,50 +18,50 @@ func (d *DeviceRegistry) Command(args []string) notify.Message {
 	case "echo":
 		od, _ := d.Output(d.defaultOutputID)
 		od.echo = !od.echo
-		return notify.Infof("printing notes enabled: %v", od.echo)
+		return notify.NewInfof("printing notes enabled: %v", od.echo)
 	case "channel":
 		if len(args) != 3 {
-			return notify.Warningf("missing channel number or device id")
+			return notify.NewWarningf("missing channel number or device id")
 		}
 		id, err := strconv.Atoi(strings.TrimSpace(args[1]))
 		if err != nil {
-			return notify.Errorf("bad device number: %v", err)
+			return notify.NewErrorf("bad device number: %v", err)
 		}
 		nr, err := strconv.Atoi(strings.TrimSpace(args[2]))
 		if err != nil {
-			return notify.Errorf("bad channel number: %v", err)
+			return notify.NewErrorf("bad channel number: %v", err)
 		}
 		if nr < 1 || nr > 16 {
-			return notify.Errorf("bad channel number; must be in [1..16]")
+			return notify.NewErrorf("bad channel number; must be in [1..16]")
 		}
 		out, err := d.Output(id)
 		if err != nil {
-			return notify.Errorf("bad device number: %v", err)
+			return notify.NewErrorf("bad device number: %v", err)
 		}
 		out.defaultChannel = nr
-		return notify.Infof("output device id: %d has current MIDI channel: %d", id, nr)
+		return notify.NewInfof("output device id: %d has current MIDI channel: %d", id, nr)
 	case "in":
 		if len(args) != 2 {
-			return notify.Warningf("missing device number")
+			return notify.NewWarningf("missing device number")
 		}
 		nr, err := strconv.Atoi(strings.TrimSpace(args[1]))
 		if err != nil {
-			return notify.Errorf("bad device number: %v", err)
+			return notify.NewErrorf("bad device number: %v", err)
 		}
 		d.defaultInputID = nr
-		return notify.Infof("current input device id: %d", nr)
+		return notify.NewInfof("current input device id: %d", nr)
 	case "out":
 		if len(args) != 2 {
-			return notify.Warningf("missing device number")
+			return notify.NewWarningf("missing device number")
 		}
 		nr, err := strconv.Atoi(strings.TrimSpace(args[1]))
 		if err != nil {
-			return notify.Errorf("bad device number:%v", err)
+			return notify.NewErrorf("bad device number:%v", err)
 		}
 		d.defaultOutputID = nr
-		return notify.Infof("current output device id: %d", nr)
+		return notify.NewInfof("current output device id: %d", nr)
 	default:
-		return notify.Warningf("unknown device access command: %s", args[0])
+		return notify.NewWarningf("unknown device access command: %s", args[0])
 	}
 }
 
@@ -70,7 +70,7 @@ func (d *DeviceRegistry) printInfo() {
 
 	od, err := d.Output(d.defaultOutputID)
 	if err != nil {
-		notify.Print(notify.Error(err))
+		notify.Print(notify.NewError(err))
 		return
 	}
 	fmt.Printf("[midi] channel %d = default MIDI output channel\n", od.defaultChannel)

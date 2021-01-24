@@ -43,6 +43,6 @@ func (w Print) S() Sequence {
 	in := NewInspect(w.Context, w.Target)
 	in.Properties["bar"] = bars
 	in.Properties["beat"] = beats
-	notify.Print(notify.Infof("%s", in.String()))
+	notify.Infof("%s", in.String())
 	return EmptySequence
 }

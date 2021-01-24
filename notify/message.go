@@ -21,21 +21,21 @@ type Notification struct {
 func (n Notification) Message() string { return n.message }
 func (n Notification) Type() int       { return n.messageType }
 
-func Infof(format string, args ...interface{}) Message {
+func NewInfof(format string, args ...interface{}) Message {
 	return Notification{message: fmt.Sprintf(format, args...), messageType: NotifyInfo}
 }
 
-func Warningf(format string, args ...interface{}) Message {
+func NewWarningf(format string, args ...interface{}) Message {
 	return Notification{message: fmt.Sprintf(format, args...), messageType: NotifyWarning}
 }
 
-func Error(err error) Message {
+func NewError(err error) Message {
 	if err == nil {
 		return nil
 	}
-	return Errorf("%v", err)
+	return NewErrorf("%v", err)
 }
 
-func Errorf(format string, args ...interface{}) Message {
+func NewErrorf(format string, args ...interface{}) Message {
 	return Notification{message: fmt.Sprintf(format, args...), messageType: NotifyError}
 }

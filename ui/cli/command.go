@@ -60,7 +60,7 @@ func handleBeatSetting(ctx core.Context, args []string) notify.Message {
 
 func handleToggleDebug(ctx core.Context, args []string) notify.Message {
 	if core.ToggleDebug() {
-		return notify.Infof("debug enabled")
+		return notify.NewInfof("debug enabled")
 	}
-	return notify.Infof("debug not enabled")
+	return notify.NewInfof("debug not enabled")
 }

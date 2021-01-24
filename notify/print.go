@@ -71,6 +71,14 @@ func Warnf(format string, args ...interface{}) {
 	printWarning(fmt.Sprintf(format, args...))
 }
 
+func Infof(format string, args ...interface{}) {
+	// make sure it ends with newline
+	if !strings.HasSuffix(format, "\n") {
+		format += "\n"
+	}
+	printInfo(fmt.Sprintf(format, args...))
+}
+
 func printInfo(args ...interface{}) {
 	if ansiColorsEnabled {
 		Println(append([]interface{}{"\033[1;32minfo:\033[0m"}, args...)...)

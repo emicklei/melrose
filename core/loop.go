@@ -63,17 +63,6 @@ func (l *Loop) Evaluate(ctx Context) error {
 	return nil
 }
 
-// func (l *Loop) Start(d AudioDevice) *Loop {
-// 	l.mutex.Lock()
-// 	defer l.mutex.Unlock()
-// 	if l.isRunning || d == nil {
-// 		return l
-// 	}
-// 	l.isRunning = true
-// 	l.reschedule(d, time.Now())
-// 	return l
-// }
-
 // Inspect is part of Inspectable
 func (l *Loop) Inspect(i Inspection) {
 	i.Properties["running"] = l.isRunning
