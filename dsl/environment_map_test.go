@@ -69,7 +69,7 @@ func Test_envMap_Add(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.e.Add(tt.args.l, tt.args.r); !reflect.DeepEqual(got, tt.want) {
+			if got := tt.e.Add(tt.args.l, tt.args.r); !reflect.DeepEqual(got.Value(), tt.want) {
 				t.Errorf("envMap.Add() = %v, want %v", got, tt.want)
 			}
 		})
@@ -138,7 +138,7 @@ func Test_envMap_Sub(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.e.Sub(tt.args.l, tt.args.r); !reflect.DeepEqual(got, tt.want) {
+			if got := tt.e.Sub(tt.args.l, tt.args.r); !reflect.DeepEqual(got.Value(), tt.want) {
 				t.Errorf("envMap.Sub() = %v, want %v", got, tt.want)
 			}
 		})
@@ -207,7 +207,7 @@ func Test_envMap_Multiply(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.e.Mulitply(tt.args.l, tt.args.r); !reflect.DeepEqual(got, tt.want) {
+			if got := tt.e.Mulitply(tt.args.l, tt.args.r); !reflect.DeepEqual(got.Value(), tt.want) {
 				t.Errorf("envMap.Mulitply() = %v, want %v", got, tt.want)
 			}
 		})
