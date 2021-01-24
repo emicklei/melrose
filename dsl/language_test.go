@@ -94,7 +94,7 @@ func TestBars(t *testing.T) {
 
 func TestBars_Arithmetic(t *testing.T) {
 	r := eval(t, "1+bars(sequence('a b c d'))")
-	if got, want := r.(int), 2; got != want {
+	if got, want := r.(core.Valueable).Value(), 2; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
