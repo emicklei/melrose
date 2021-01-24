@@ -62,7 +62,7 @@ Fraction can also be an exact float value between 0 and 1.
 		Samples:    `dynamic('++',sequence('e f')) // => E++ F++`,
 		Func: func(emphasis string, playables ...interface{}) interface{} {
 			if err := op.CheckDynamic(emphasis); err != nil {
-				notify.Print(notify.Error(err))
+				notify.Print(notify.NewError(err))
 				return nil
 			}
 			joined := []core.Sequenceable{}
@@ -96,7 +96,7 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 			}
 			mapper, err := op.NewDynamicMap(joined, mapping)
 			if err != nil {
-				notify.Warningf("cannot create dynamic mapping %v", err)
+				notify.NewWarningf("cannot create dynamic mapping %v", err)
 				return nil
 			}
 			return mapper
@@ -451,7 +451,7 @@ note('2.e#--')`,
 			}
 			sc, err := core.NewScale(octaves, s)
 			if err != nil {
-				notify.Print(notify.Error(err))
+				notify.Print(notify.NewError(err))
 				return nil
 			}
 			return sc
@@ -546,7 +546,7 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
-					notify.Warningf("cannot ungroup (%T) %v", p, p)
+					notify.NewWarningf("cannot ungroup (%T) %v", p, p)
 					return nil
 				} else {
 					joined = append(joined, s)
@@ -566,7 +566,7 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 			list := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
-					notify.Warningf("cannot octave (%T) %v", p, p)
+					notify.NewWarningf("cannot octave (%T) %v", p, p)
 					return nil
 				} else {
 					list = append(list, s)
@@ -689,7 +689,7 @@ begin(lp_cb) // end(lp_cb)`,
 					continue
 				}
 				_ = l.Play(ctx, time.Now())
-				notify.Print(notify.Infof("begin %s", each.Name))
+				notify.Infof("begin %s", each.Name)
 			}
 			return nil
 		}}
@@ -710,7 +710,7 @@ end() // stop all playables`,
 			}
 			for _, each := range vars {
 				if l, ok := each.Value().(core.Playable); ok {
-					notify.Print(notify.Infof("ending %s", each.Name))
+					notify.Infof("ending %s", each.Name)
 					_ = l.Stop(ctx)
 				} else {
 					notify.Warnf("cannot end (%T) %v", each.Value(), each.Value())
@@ -759,8 +759,13 @@ end() // stop all playables`,
 		}}
 
 	eval["knob"] = Function{
-		Title: "MIDI controller knob value",
-		//Description:   "Look up an input device by name",
+		Title:       "MIDI controller knob",
+		Description: "Use the knob as an integer value for a parameter in any object",
+		Template:    `knob(${1:device-id},${2:midi-number})`,
+		Samples: `axiom = 1 // device ID for the M-Audio Axiom 25
+B1 = 20 // MIDI number assigned to this knob on the controller
+k = knob(axiom,B1)
+pitch(k,scale(1,'E')) // when played, use the current value of knob "k"`,
 		ControlsAudio: true,
 		Func: func(deviceIDOrVar interface{}, numberOrVar interface{}) interface{} {
 			deviceID, ok := getValue(deviceIDOrVar).(int)
@@ -784,8 +789,11 @@ If pressed again, the play will stop.
 Remove the assignment using the value nil for the playable`,
 		ControlsAudio: true,
 		Prefix:        "onk",
-		Template:      `onkey('${1:note-name}',${2:playable-or-evaluatable-or-nil})`,
-		Func: func(noteInput string, playOrEval interface{}) interface{} {
+		Template:      `onkey(${1:device-id},'${2:note-name}',${3:playable-or-evaluatable-or-nil})`,
+		Samples: `axiom = 1 // device ID for the M-Audio Axiom 25
+fun = play(scale(2,'c')) // what to do when a key is pressed (NoteOn)
+onkey(axiom,'c2', fun) // if C2 is pressed on the axiom device that evaluate the function "fun"`,
+		Func: func(deviceIDOrVar interface{}, noteInput string, playOrEval interface{}) interface{} {
 			if !ctx.Device().HasInputCapability() {
 				return notify.Panic(errors.New("Input is not available for this device"))
 			}
@@ -793,9 +801,9 @@ Remove the assignment using the value nil for the playable`,
 			if err != nil {
 				return notify.Panic(err)
 			}
-			in, _ := ctx.Device().DefaultDeviceIDs()
+			deviceID := core.Int(getValueable(deviceIDOrVar))
 			if playOrEval == nil {
-				ctx.Device().OnKey(ctx, in, note, nil)
+				ctx.Device().OnKey(ctx, deviceID, note, nil)
 				return nil
 			}
 			// allow playable and evaluatable
@@ -803,12 +811,12 @@ Remove the assignment using the value nil for the playable`,
 			if !ok {
 				_, ok = getValue(playOrEval).(core.Evaluatable)
 				if !ok {
-					return notify.Panic(fmt.Errorf("cannot trigger key and call (%T) %s", playOrEval, core.Storex(playOrEval)))
+					return notify.Panic(fmt.Errorf("cannot onkey and call (%T) %s", playOrEval, core.Storex(playOrEval)))
 				}
 			}
-			err = ctx.Device().OnKey(ctx, in, note, getValueable(playOrEval))
+			err = ctx.Device().OnKey(ctx, deviceID, note, getValueable(playOrEval))
 			if err != nil {
-				return notify.Panic(fmt.Errorf("cannot install trigger key because error:%v", err))
+				return notify.Panic(fmt.Errorf("cannot install onkey because error:%v", err))
 			}
 			return nil
 		}}
