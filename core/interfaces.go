@@ -132,3 +132,7 @@ var (
 	NoCondition   Condition = nil
 	TrueCondition Condition = func() bool { return true }
 )
+
+type NameAware interface {
+	VariableName(yours string)
+}

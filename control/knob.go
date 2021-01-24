@@ -11,6 +11,8 @@ type Knob struct {
 	deviceID int
 	channel  int
 	number   int
+	// set when used in assignment
+	variableName string
 	// changes
 	currentValue int
 }
@@ -50,9 +52,15 @@ func (k *Knob) ControlChange(channel, number, value int) {
 	if number != number {
 		return
 	}
+	notify.Infof("knob %s (%d,%d,%d) = %d", k.variableName, k.deviceID, k.channel, k.number, value)
 	k.currentValue = value
 }
 
 func (k *Knob) Value() interface{} {
 	return k.currentValue
+}
+
+// VariableName is part of NameAware
+func (k *Knob) VariableName(yours string) {
+	k.variableName = yours
 }
