@@ -76,6 +76,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#channel">channel</a>
 - <a href="#device">device</a>
 - <a href="#end">end</a>
+- <a href="#knob">knob</a>
 - <a href="#loop">loop</a>
 - <a href="#multitrack">multitrack</a>
 - <a href="#onkey">onkey</a>
@@ -330,6 +331,22 @@ j = join(note('c'), sequence('d e f'))
 jm = joinmap('1 (2 3) 4',j) // => C = D =
 ```
 
+### knob<a name="knob"></a>
+Use the knob as an integer value for a parameter in any object.
+
+> knob(device-id,midi-number)
+
+#### examples	
+```javascript
+axiom = 1 // device ID for the M-Audio Axiom 25
+
+B1 = 20 // MIDI number assigned to this knob on the controller
+
+k = knob(axiom,B1)
+
+pitch(k,scale(1,'E')) // when played, use the current value of knob "k"
+```
+
 ### listen<a name="listen"></a>
 Listen for note(s) from a device and call a playable function to handle.
 
@@ -489,11 +506,15 @@ If this key is pressed the playable will start.
 If pressed again, the play will stop.
 Remove the assignment using the value nil for the playable.
 
-> onkey('note-name',playable-or-evaluatable-or-nil)
+> onkey(device-id,'note-name',playable-or-evaluatable-or-nil)
 
 #### examples	
 ```javascript
+axiom = 1 // device ID for the M-Audio Axiom 25
 
+fun = play(scale(2,'c')) // what to do when a key is pressed (NoteOn)
+
+onkey(axiom,'c2', fun) // if C2 is pressed on the axiom device that evaluate the function "fun"
 ```
 
 ### pitch<a name="pitch"></a>
