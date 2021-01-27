@@ -18,7 +18,7 @@ import (
 )
 
 // SyntaxVersion tells what language version this package is supporting.
-const SyntaxVersion = "0.36" // major,minor
+const SyntaxVersion = "0.37" // major,minor
 
 func EvalFunctions(ctx core.Context) map[string]Function {
 	eval := map[string]Function{}
