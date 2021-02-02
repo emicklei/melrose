@@ -18,6 +18,7 @@ func TestMultiply_Value(t *testing.T) {
 		want   interface{}
 	}{
 		{"3*2", fields{3, 2}, 6},
+		{"3.0*2.0", fields{3.0, 2.0}, 6.0},
 		{"3*[2]", fields{3, core.On(2)}, 6},
 		{"[3]*[2]", fields{core.On(3), core.On(2)}, 6},
 		{"[[3]]*[2]", fields{core.ValueHolder{Any: core.On(3)}, core.On(2)}, 6},

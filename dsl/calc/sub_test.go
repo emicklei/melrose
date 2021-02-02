@@ -18,6 +18,7 @@ func TestSub_Value(t *testing.T) {
 		want   interface{}
 	}{
 		{"1-2", fields{1, 2}, -1},
+		{"1.0-2", fields{1.0, 2.0}, -1.0},
 		{"1-[2]", fields{1, core.On(2)}, -1},
 		{"[1]-[2]", fields{core.On(1), core.On(2)}, -1},
 		{"[[1]]-[2]", fields{core.ValueHolder{Any: core.On(1)}, core.On(2)}, -1},

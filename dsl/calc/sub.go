@@ -18,6 +18,11 @@ func (s Sub) Storex() string {
 func (s Sub) Value() interface{} {
 	l, ok := resolveInt(s.Left)
 	if !ok {
+		// try floats
+		f, ok := s.floatValue()
+		if ok {
+			return f
+		}
 		l = 0
 	}
 	r, ok := resolveInt(s.Right)
@@ -25,4 +30,16 @@ func (s Sub) Value() interface{} {
 		r = 0
 	}
 	return l - r
+}
+
+func (s Sub) floatValue() (float64, bool) {
+	l, ok := resolveFloat(s.Left)
+	if !ok {
+		return 0.0, false
+	}
+	r, ok := resolveFloat(s.Right)
+	if !ok {
+		return 0.0, false
+	}
+	return l - r, true
 }

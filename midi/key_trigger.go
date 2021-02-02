@@ -11,8 +11,8 @@ import (
 type KeyTrigger struct {
 	mutex   *sync.RWMutex
 	playing bool
-	ctx     core.Context // needed?
-	note    core.Note    // or valuabLe?
+	ctx     core.Context
+	note    core.Note
 	fun     core.Valueable
 }
 
