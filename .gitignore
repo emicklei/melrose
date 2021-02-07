@@ -8,3 +8,4 @@ target
 coverage.txt
 *.pkg
 cmd/melrose/melrose-udp
+dsl/debug.test

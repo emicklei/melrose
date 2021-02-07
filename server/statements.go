@@ -79,12 +79,12 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		if query.Get("action") == "play" {
 			// first check Playable
 			if pl, ok := returnValue.(core.Playable); ok {
-				notify.Infof("play %s", displayString(l.context, pl))
+				notify.Infof("play(%s)", displayString(l.context, pl))
 				_ = pl.Play(l.context, time.Now())
 			} else {
 				// any sequenceable is playable
 				if s, ok := returnValue.(core.Sequenceable); ok {
-					notify.Infof("play %s", displayString(l.context, s))
+					notify.Infof("play(%s)", displayString(l.context, s))
 					l.context.Device().Play(
 						core.NoCondition,
 						s,
@@ -96,14 +96,14 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		// loop operation
 		if query.Get("action") == "begin" {
 			if p, ok := returnValue.(core.Playable); ok {
-				notify.Infof("begin %s", displayString(l.context, p))
+				notify.Infof("begin(%s)", displayString(l.context, p))
 				p.Play(l.context, time.Now())
 			}
 		}
 		// loop operation
 		if query.Get("action") == "end" {
 			if p, ok := returnValue.(core.Playable); ok {
-				notify.Infof("ending %s", displayString(l.context, p))
+				notify.Infof("end(%s)", displayString(l.context, p))
 				p.Stop(l.context)
 			}
 		}

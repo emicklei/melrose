@@ -32,6 +32,10 @@ type Function struct {
 	Func          interface{}
 }
 
+func (f Function) Markdown() string {
+	return fmt.Sprintf("%s\n\n%s", f.Description, f.HumanizedTemplate())
+}
+
 func (f Function) HumanizedTemplate() string {
 	r := strings.NewReplacer(
 		"${1:", "",

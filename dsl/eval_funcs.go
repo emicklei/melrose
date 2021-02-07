@@ -725,13 +725,13 @@ end() // stop all playables`,
 		ControlsAudio: true,
 		Prefix:        "chan",
 		Template:      `channel(${1:number},${2:sequenceable})`,
-		Samples:       `channel(2,note('g3'), sequence('c2 e3')) // plays on instrument connected to MIDI channel 2`,
-		Func: func(midiChannel interface{}, m ...interface{}) interface{} {
-			list, ok := getSequenceableList(m...)
+		Samples:       `channel(2,sequence('c2 e3')) // plays on instrument connected to MIDI channel 2`,
+		Func: func(midiChannel interface{}, m interface{}) interface{} {
+			seq, ok := getSequenceable(m)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot decorate with channel (%T) %v", m, m))
 			}
-			return core.NewChannelSelector(list, getValueable(midiChannel))
+			return core.NewChannelSelector(seq, getValueable(midiChannel))
 		}}
 
 	eval["fractionmap"] = Function{
@@ -756,6 +756,44 @@ end() // stop all playables`,
 		Func: func(deviceName string, optionalChannel ...int) interface{} {
 			in, _ := ctx.Device().DefaultDeviceIDs()
 			return control.NewChannelOnDevice(true, deviceName, -1, in)
+		}}
+
+	eval["key"] = Function{
+		//Title:       "MIDI Keyboard key",
+		//Description: "Use the key to trigger the play of musical object",
+		Template: `key('${2:note}')`,
+		Samples: `c2 = key('c2') // C2 key on the default input device and default channel
+c2 = key(device(1,note('c2'))) // C2 key on input device 1
+c2 = key(device(1,channel(2,note('c2'))) // C2 key on input device 1 and channel 2
+c2 = key(channel(3,note('c2')) // C2 key on the default input device and channel 3`,
+		ControlsAudio: true,
+		Func: func(noteEntry interface{}) interface{} {
+			// check string
+			if s, ok := noteEntry.(string); ok {
+				note, err := core.ParseNote(s)
+				if err != nil {
+					return notify.Panic(fmt.Errorf("cannot create Note with input %q", note))
+				}
+				return control.NewKey(1, 1, note)
+			}
+			deviceID, _ := ctx.Device().DefaultDeviceIDs()
+			channel := 1 // TODO
+			note := core.Rest4
+			// check device
+			if d, ok := getValue(noteEntry).(core.DeviceSelector); ok {
+				deviceID = d.DeviceID()
+				noteEntry = d.Target
+			}
+			// check channel
+			if c, ok := getValue(noteEntry).(core.ChannelSelector); ok {
+				channel = c.Channel()
+				noteEntry = c.Target
+			}
+			// check note
+			if n, ok := getValue(noteEntry).(core.Note); ok {
+				note = n // TODO
+			}
+			return control.NewKey(deviceID, channel, note)
 		}}
 
 	eval["knob"] = Function{
@@ -789,22 +827,14 @@ If pressed again, the play will stop.
 Remove the assignment using the value nil for the playable`,
 		ControlsAudio: true,
 		Prefix:        "onk",
-		Template:      `onkey(${1:device-id},'${2:note-name}',${3:playable-or-evaluatable-or-nil})`,
+		Template:      `onkey(${1:key},${2:playable-or-evaluatable-or-nil})`,
 		Samples: `axiom = 1 // device ID for the M-Audio Axiom 25
+c2 = key(axiom,'c2')
 fun = play(scale(2,'c')) // what to do when a key is pressed (NoteOn)
-onkey(axiom,'c2', fun) // if C2 is pressed on the axiom device that evaluate the function "fun"`,
-		Func: func(deviceIDOrVar interface{}, noteInput string, playOrEval interface{}) interface{} {
+onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the function "fun"`,
+		Func: func(keyOrVar interface{}, playOrEval interface{}) interface{} {
 			if !ctx.Device().HasInputCapability() {
 				return notify.Panic(errors.New("Input is not available for this device"))
-			}
-			note, err := core.ParseNote(noteInput)
-			if err != nil {
-				return notify.Panic(err)
-			}
-			deviceID := core.Int(getValueable(deviceIDOrVar))
-			if playOrEval == nil {
-				ctx.Device().OnKey(ctx, deviceID, note, nil)
-				return nil
 			}
 			// allow playable and evaluatable
 			_, ok := getValue(playOrEval).(core.Playable)
@@ -814,7 +844,11 @@ onkey(axiom,'c2', fun) // if C2 is pressed on the axiom device that evaluate the
 					return notify.Panic(fmt.Errorf("cannot onkey and call (%T) %s", playOrEval, core.Storex(playOrEval)))
 				}
 			}
-			err = ctx.Device().OnKey(ctx, deviceID, note, getValueable(playOrEval))
+			key, ok := getValue(keyOrVar).(control.Key)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot install onkey because parameter is not a key (%T) %v", keyOrVar, keyOrVar))
+			}
+			err := ctx.Device().OnKey(ctx, key.DeviceID(), key.Note(), getValueable(playOrEval))
 			if err != nil {
 				return notify.Panic(fmt.Errorf("cannot install onkey because error:%v", err))
 			}
@@ -828,12 +862,12 @@ onkey(axiom,'c2', fun) // if C2 is pressed on the axiom device that evaluate the
 		Prefix:        "dev",
 		Template:      `device(${1:number},${2:sequenceable})`,
 		Samples:       `device(1,channel(2,sequence('c2 e3'), note('g3'))) // plays on connected device 1 through MIDI channel 2`,
-		Func: func(deviceID interface{}, m ...interface{}) interface{} {
-			list, ok := getSequenceableList(m...)
+		Func: func(deviceID interface{}, m interface{}) interface{} {
+			seq, ok := getSequenceable(m)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot decorate with device (%T) %v", m, m))
 			}
-			return core.NewDeviceSelector(list, getValueable(deviceID))
+			return core.NewDeviceSelector(seq, getValueable(deviceID))
 		}}
 
 	eval["interval"] = Function{
@@ -984,10 +1018,7 @@ alt = listen(device(1,rec),fun) // start a listener for notes from input device 
 			deviceID, _ := ctx.Device().DefaultDeviceIDs()
 			if ds, ok := varOrDeviceSelector.(core.DeviceSelector); ok {
 				deviceID = ds.DeviceID()
-				if len(ds.Target) == 0 {
-					return notify.Panic(fmt.Errorf("missing variable parameter"))
-				}
-				first := ds.Target[0]
+				first := ds.Target
 				if v, ok := first.(variable); ok {
 					injectable = v
 				} else {

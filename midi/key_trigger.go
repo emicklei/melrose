@@ -43,13 +43,19 @@ func (t *KeyTrigger) NoteOn(n core.Note) {
 	defer t.mutex.Unlock()
 	// both playable and evaluatable are allowed
 	if play, ok := val.(core.Playable); ok {
-		if t.playing {
-			play.Stop(t.ctx)
-			t.playing = false
-		} else {
-			_ = play.Play(t.ctx, time.Now())
-			t.playing = true
-		}
+		_, stoppable := val.(core.Stoppable)
+		if stoppable {
+			if t.playing {
+				play.Stop(t.ctx)
+				t.playing = false
+			} else {
+				_ = play.Play(t.ctx, time.Now())
+				t.playing = true
+			}
+
+			return
+		} // cannot stop
+		_ = play.Play(t.ctx, time.Now())
 		return
 	}
 	if eval, ok := val.(core.Evaluatable); ok {
@@ -65,4 +71,9 @@ func (t *KeyTrigger) NoteOff(n core.Note) {
 	// key trigger is not interested in this
 }
 
-func (t *KeyTrigger) ControlChange(channel, number, value int) {}
+func (t *KeyTrigger) ControlChange(channel, number, value int) {
+	if core.IsDebug() {
+		notify.Debugf("keytrigger.ControlChange %d %d %d", channel, number, value)
+	}
+	// key trigger is not interested in this
+}

@@ -23,7 +23,7 @@ func zeroChord() Chord {
 }
 
 func (c Chord) Inspect(i Inspection) {
-	i.Properties[""] = c.S().String()
+	i.Properties["sequence"] = c.S().String()
 }
 
 func (c Chord) WithInterval(i int) Chord {

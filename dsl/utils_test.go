@@ -3,13 +3,39 @@ package dsl
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 )
 
 func newTestEvaluator() *Evaluator {
 	return NewEvaluator(testContext())
 }
+
+func testContext() core.Context {
+	return core.PlayContext{
+		VariableStorage: NewVariableStore(),
+		LoopControl:     core.NoLooper,
+		AudioDevice:     testAudioDevice{},
+	}
+}
+
+type testAudioDevice struct{}
+
+func (t testAudioDevice) Command(args []string) notify.Message { return nil }
+func (t testAudioDevice) DefaultDeviceIDs() (int, int)         { return 1, 1 }
+func (t testAudioDevice) Play(condition core.Condition, seq core.Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time) {
+	return time.Now()
+}
+func (t testAudioDevice) HasInputCapability() bool                                     { return true }
+func (t testAudioDevice) Listen(deviceID int, who core.NoteListener, startOrStop bool) {}
+func (t testAudioDevice) OnKey(ctx core.Context, deviceID int, note core.Note, fun core.Valueable) error {
+	return nil
+}
+func (t testAudioDevice) Schedule(event core.TimelineEvent, beginAt time.Time) {}
+func (t testAudioDevice) Reset()                                               {}
+func (t testAudioDevice) Close() error                                         { return nil }
 
 func checkError(t *testing.T, err error) {
 	t.Helper()

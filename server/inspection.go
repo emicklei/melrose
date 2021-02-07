@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/emicklei/melrose/core"
@@ -53,9 +52,10 @@ func (l *LanguageServer) markdownOnInspecting(token string) string {
 	if ok {
 		return core.NewInspect(l.context, value).Markdown()
 	}
+	// inspect as function
 	fun, ok := l.evaluator.LookupFunction(token)
 	if ok {
-		return fmt.Sprintf("%s\n\n%s", fun.Description, fun.HumanizedTemplate())
+		return fun.Markdown()
 	}
 	return ""
 }

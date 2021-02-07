@@ -3,6 +3,7 @@ package dsl
 import (
 	"testing"
 
+	"github.com/emicklei/melrose/control"
 	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/op"
@@ -111,13 +112,6 @@ func TestEvaluateProgram_FirstTab(t *testing.T) {
 	e := NewEvaluator(testContext())
 	if _, err := e.EvaluateProgram(`	a = 1`); err == nil {
 		t.Error(err)
-	}
-}
-
-func testContext() core.Context {
-	return core.PlayContext{
-		VariableStorage: NewVariableStore(),
-		LoopControl:     core.NoLooper,
 	}
 }
 
@@ -231,4 +225,24 @@ func TestLineCommentOnBrokenExpression(t *testing.T) {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 
+}
+
+func TestKeyOnNoteString(t *testing.T) {
+	e := newTestEvaluator()
+	r, err := e.EvaluateProgram(
+		`k = key('c2')`)
+	checkError(t, err)
+	if got, want := r.(control.Key).Storex(), "key(device(1,channel(1,note('C2'))))"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}
+
+func TestKeyOnChannelNote(t *testing.T) {
+	e := newTestEvaluator()
+	r, err := e.EvaluateProgram(
+		`k = key(channel(1,note('c2')))`)
+	checkError(t, err)
+	if got, want := r.(control.Key).Storex(), "key(device(1,channel(1,note('C2'))))"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
 }

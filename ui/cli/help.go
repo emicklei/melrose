@@ -80,7 +80,7 @@ func showHelp(ctx core.Context, args []string) notify.Message {
 		sort.Strings(keys)
 		for _, k := range keys {
 			f := funcs[k]
-			fmt.Fprintf(&b, "%s --- %s\n", strings.Repeat(" ", width-len(k))+k, f.Description)
+			fmt.Fprintf(&b, "%s --- %s\n", strings.Repeat(" ", width-len(k))+k, f.Title)
 		}
 	}
 	io.WriteString(&b, "\n")

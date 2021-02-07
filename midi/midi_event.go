@@ -44,11 +44,14 @@ func (m midiEvent) log(status int64, when time.Time) {
 		onoff = "off"
 	}
 	var echos bytes.Buffer
-	for _, each := range m.which {
-		n, _ := core.MIDItoNote(0.25, int(each), core.Normal)
-		fmt.Fprintf(&echos, "%s ", n.String())
+	for i, each := range m.which {
+		if i > 0 {
+			fmt.Fprintf(&echos, " ")
+		}
+		n, _ := core.MIDItoNote(0.25, int(each), core.Normal) // TODO
+		fmt.Fprintf(&echos, "%s", n.String())
 	}
-	fmt.Fprintf(notify.Console.StandardOut, "midi.note: t=%s dev=%d ch=%d %s %s=%d,%v,%d\n",
+	fmt.Fprintf(notify.Console.StandardOut, "midi.note: t=%s dev=%d ch=%d seq='%s' %s=%d,%v,%d\n",
 		when.Format("04:05.000"), m.device, m.channel, echos.String(), onoff, status, m.which, m.velocity)
 }
 

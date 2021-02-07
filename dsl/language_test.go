@@ -76,13 +76,13 @@ func TestTrack(t *testing.T) {
 }
 
 func TestChannelSelector(t *testing.T) {
-	r := eval(t, "channel(1,note('e'),note('f'))")
-	checkStorex(t, r, "channel(1,note('E'),note('F'))")
+	r := eval(t, "channel(1,note('f'))")
+	checkStorex(t, r, "channel(1,note('F'))")
 }
 
 func TestDeviceSelector(t *testing.T) {
-	r := eval(t, "device(1,note('e'),note('f'))")
-	checkStorex(t, r, "device(1,note('E'),note('F'))")
+	r := eval(t, "device(1,note('f'))")
+	checkStorex(t, r, "device(1,note('F'))")
 }
 
 func TestBars(t *testing.T) {

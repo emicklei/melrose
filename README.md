@@ -11,7 +11,11 @@
 Note sequences in your program can be changed while playing which makes it possible to even use it for live performance.
 For the best experience, use the `melrōse` together with the Visual Studio Code Plugin for Melrōse.
 
-See [documentation](https://emicklei.github.io/melrose/) how to install and use `melrōse`.
+
+Read the [documentation](https://emicklei.github.io/melrose/) on how to use `melrōse`.
+
+Download an installation from [Quickstart in Mac OSX](https://emicklei.github.io/melrose/garageband.html).
+
 
 ### Status
 
@@ -25,7 +29,7 @@ Until `v1.0.0` the language syntax may change in an incompatible way.
 
 ![melrose-port-daw.png](docs/images/melrose-port-daw.png)
 
-### Install
+### Install from source
 
 In order to build and work with `melrose` on your operating system, the following components need to be installed:
 
@@ -36,8 +40,6 @@ In order to build and work with `melrose` on your operating system, the followin
 Depending on your operating system, different steps are required.
 
 #### Mac OSX
-
-Either use a packaged version from [Downloads](https://emicklei.github.io/melrose/garageband.html) or proceed building it from source.
 
     brew install portmidi
 
@@ -95,4 +97,4 @@ Discuss larger ones in the Issues list.
 You can also sponsor Melrōse via [Github Sponsors](https://github.com/sponsors/emicklei).
 
 Software is licensed under [MIT](LICENSE).
-&copy; 2014-2020 [ernestmicklei.com](http://ernestmicklei.com)
+&copy; 2014-2021 [ernestmicklei.com](http://ernestmicklei.com)

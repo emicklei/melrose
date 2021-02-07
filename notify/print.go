@@ -64,18 +64,10 @@ func Debugf(format string, args ...interface{}) {
 }
 
 func Warnf(format string, args ...interface{}) {
-	// make sure it ends with newline
-	if !strings.HasSuffix(format, "\n") {
-		format += "\n"
-	}
 	printWarning(fmt.Sprintf(format, args...))
 }
 
 func Infof(format string, args ...interface{}) {
-	// make sure it ends with newline
-	if !strings.HasSuffix(format, "\n") {
-		format += "\n"
-	}
 	printInfo(fmt.Sprintf(format, args...))
 }
 
