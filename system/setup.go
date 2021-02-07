@@ -7,6 +7,7 @@ import (
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/midi"
+	"github.com/emicklei/melrose/midi/transport"
 
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/server"
@@ -19,10 +20,10 @@ var (
 
 func Setup() (core.Context, error) {
 	flag.Parse()
-
 	if *debugLogging {
 		core.ToggleDebug()
 	}
+	transport.Initializer()
 
 	ctx := new(core.PlayContext)
 	ctx.EnvironmentVars = new(sync.Map)

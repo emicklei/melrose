@@ -4,6 +4,8 @@ import "github.com/emicklei/melrose/core"
 
 var Factory = func() Transporter { return nil }
 
+var Initializer = func() {}
+
 type Transporter interface {
 	HasInputCapability() bool
 	PrintInfo(inID, outID int)

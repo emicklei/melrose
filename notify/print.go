@@ -71,6 +71,10 @@ func Infof(format string, args ...interface{}) {
 	printInfo(fmt.Sprintf(format, args...))
 }
 
+func Errorf(format string, args ...interface{}) {
+	printError(fmt.Sprintf(format, args...))
+}
+
 func printInfo(args ...interface{}) {
 	if ansiColorsEnabled {
 		Println(append([]interface{}{"\033[1;32minfo:\033[0m"}, args...)...)

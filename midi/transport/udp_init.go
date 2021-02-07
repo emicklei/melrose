@@ -6,4 +6,8 @@ import "flag"
 
 var transportUDP = flag.Int("udp", 0, "if set to port > 0 then use UDP transport")
 
-func init() { UseUDPTransport(9000) }
+func init() { Initializer = updInitialize }
+
+func updInitialize() {
+	UseUDPTransport(9000)
+}

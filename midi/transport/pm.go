@@ -11,13 +11,15 @@ import (
 	"github.com/rakyll/portmidi"
 )
 
-func init() {
+func init() { Initializer = portMidiInitialize }
+
+func portMidiInitialize() {
 	if core.IsDebug() {
-		notify.Debugf("transport.init with PortmidiTransporter")
+		notify.Debugf("transport.init: use PortmidiTransporter")
 	}
 	Factory = func() Transporter {
 		if err := portmidi.Initialize(); err != nil {
-			notify.Warnf("%v", tre.New(err, "portmidi.Initialize"))
+			notify.Errorf("%v", tre.New(err, "portmidi.Initialize"))
 		}
 		return new(PortmidiTransporter)
 	}

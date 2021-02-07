@@ -31,7 +31,9 @@ func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
 	}
 	status := m.onoff | int64(m.channel-1)
 	for _, each := range m.which {
-		m.out.WriteShort(status, each, m.velocity)
+		if err := m.out.WriteShort(status, each, m.velocity); err != nil {
+			notify.Errorf("failed to write MIDI data, error:%v", err)
+		}
 	}
 	if core.IsDebug() {
 		m.log(status, when)
