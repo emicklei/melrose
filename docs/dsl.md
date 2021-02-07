@@ -137,7 +137,7 @@ Select a MIDI channel, must be in [1..16]; must be a top-level operator.
 
 #### examples	
 ```javascript
-channel(2,note('g3'), sequence('c2 e3')) // plays on instrument connected to MIDI channel 2
+channel(2,sequence('c2 e3')) // plays on instrument connected to MIDI channel 2
 ```
 
 ### chord<a name="chord"></a>
@@ -506,15 +506,17 @@ If this key is pressed the playable will start.
 If pressed again, the play will stop.
 Remove the assignment using the value nil for the playable.
 
-> onkey(device-id,'note-name',playable-or-evaluatable-or-nil)
+> onkey(key,playable-or-evaluatable-or-nil)
 
 #### examples	
 ```javascript
 axiom = 1 // device ID for the M-Audio Axiom 25
 
+c2 = key(axiom,'c2')
+
 fun = play(scale(2,'c')) // what to do when a key is pressed (NoteOn)
 
-onkey(axiom,'c2', fun) // if C2 is pressed on the axiom device that evaluate the function "fun"
+onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the function "fun"
 ```
 
 ### pitch<a name="pitch"></a>
