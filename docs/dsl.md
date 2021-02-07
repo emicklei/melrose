@@ -76,6 +76,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#channel">channel</a>
 - <a href="#device">device</a>
 - <a href="#end">end</a>
+- <a href="#key">key</a>
 - <a href="#knob">knob</a>
 - <a href="#loop">loop</a>
 - <a href="#multitrack">multitrack</a>
@@ -171,7 +172,7 @@ Select a MIDI device from the available device IDs; must become before channel.
 
 #### examples	
 ```javascript
-device(1,channel(2,sequence('c2 e3'), note('g3'))) // plays on connected device 1 through MIDI channel 2
+device(1,channel(2,sequence('c2 e3'))) // plays on connected device 1 through MIDI channel 2
 ```
 
 ### duration<a name="duration"></a>
@@ -329,6 +330,22 @@ Creates a new join by mapping elements. 1-index-based mapping.
 j = join(note('c'), sequence('d e f'))
 
 jm = joinmap('1 (2 3) 4',j) // => C = D =
+```
+
+### key<a name="key"></a>
+Use the key to trigger the play of musical object.
+
+> key('note')
+
+#### examples	
+```javascript
+c2 = key('c2') // C2 key on the default input device and default channel
+
+c2 = key(device(1,note('c2'))) // C2 key on input device 1
+
+c2 = key(device(1,channel(2,note('c2'))) // C2 key on input device 1 and channel 2
+
+c2 = key(channel(3,note('c2')) // C2 key on the default input device and channel 3
 ```
 
 ### knob<a name="knob"></a>

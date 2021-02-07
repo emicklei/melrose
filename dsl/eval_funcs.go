@@ -759,9 +759,9 @@ end() // stop all playables`,
 		}}
 
 	eval["key"] = Function{
-		//Title:       "MIDI Keyboard key",
-		//Description: "Use the key to trigger the play of musical object",
-		Template: `key('${2:note}')`,
+		Title:       "MIDI Keyboard key",
+		Description: "Use the key to trigger the play of musical object",
+		Template:    `key('${2:note}')`,
 		Samples: `c2 = key('c2') // C2 key on the default input device and default channel
 c2 = key(device(1,note('c2'))) // C2 key on input device 1
 c2 = key(device(1,channel(2,note('c2'))) // C2 key on input device 1 and channel 2
@@ -861,7 +861,7 @@ onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the functio
 		ControlsAudio: true,
 		Prefix:        "dev",
 		Template:      `device(${1:number},${2:sequenceable})`,
-		Samples:       `device(1,channel(2,sequence('c2 e3'), note('g3'))) // plays on connected device 1 through MIDI channel 2`,
+		Samples:       `device(1,channel(2,sequence('c2 e3'))) // plays on connected device 1 through MIDI channel 2`,
 		Func: func(deviceID interface{}, m interface{}) interface{} {
 			seq, ok := getSequenceable(m)
 			if !ok {
