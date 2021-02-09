@@ -48,6 +48,10 @@ func (t *PortmidiTransporter) DefaultOutputDeviceID() int {
 	return int(portmidi.DefaultOutputDeviceID())
 }
 
+func (t *PortmidiTransporter) DefaultInputDeviceID() int {
+	return int(portmidi.DefaultInputDeviceID())
+}
+
 func (t *PortmidiTransporter) NewMIDIListener(in MIDIIn) MIDIListener {
 	return newListener(in.(*portmidi.Stream))
 }
@@ -81,9 +85,17 @@ func (t *PortmidiTransporter) PrintInfo(inID, outID int) {
 
 	notify.PrintHighlighted("current:")
 
-	midiDeviceInfo = portmidi.Info(portmidi.DeviceID(inID))
-	fmt.Printf("[midi] device  %d = default  input, %s/%s\n", inID, midiDeviceInfo.Interface, midiDeviceInfo.Name)
+	if inID == -1 {
+		fmt.Printf("[midi] no input device available\n")
+	} else {
+		midiDeviceInfo = portmidi.Info(portmidi.DeviceID(inID))
+		fmt.Printf("[midi] device  %d = default  input, %s/%s\n", inID, midiDeviceInfo.Interface, midiDeviceInfo.Name)
+	}
 
-	midiDeviceInfo = portmidi.Info(portmidi.DeviceID(outID))
-	fmt.Printf("[midi] device  %d = default output, %s/%s\n", outID, midiDeviceInfo.Interface, midiDeviceInfo.Name)
+	if outID == -1 {
+		fmt.Printf("[midi] no output device available\n")
+	} else {
+		midiDeviceInfo = portmidi.Info(portmidi.DeviceID(outID))
+		fmt.Printf("[midi] device  %d = default output, %s/%s\n", outID, midiDeviceInfo.Interface, midiDeviceInfo.Name)
+	}
 }

@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"strings"
@@ -79,7 +78,7 @@ func repl(line *liner.State, ctx core.Context) {
 			notify.Print(notify.NewError(err))
 			// even on error, add entry to history so we can edit/fix it
 		} else {
-			log.Println("write inspection")
+			//log.Println("write inspection")
 			core.InspectValue(ctx, result)
 		}
 		line.AppendHistory(entry)

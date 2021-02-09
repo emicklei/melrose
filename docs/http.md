@@ -15,7 +15,9 @@ This server is used by the [Melrōse Plugin for Visual Studio Code](https://gith
 
     POST http://localhost:8118/v1/statements?action={action}
 
-## HTTP response
+### example
+
+    curl -d "note('c')" http://localhost:8118/v1/statements?action=play
 
 ### 200 OK
 

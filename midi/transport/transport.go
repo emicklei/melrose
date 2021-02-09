@@ -10,6 +10,7 @@ type Transporter interface {
 	HasInputCapability() bool
 	PrintInfo(inID, outID int)
 	DefaultOutputDeviceID() int
+	DefaultInputDeviceID() int
 	NewMIDIOut(id int) (MIDIOut, error)
 	NewMIDIIn(id int) (MIDIIn, error)
 	Terminate()

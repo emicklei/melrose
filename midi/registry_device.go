@@ -22,10 +22,12 @@ type DeviceRegistry struct {
 
 func NewDeviceRegistry() (*DeviceRegistry, error) {
 	r := &DeviceRegistry{
-		mutex:          new(sync.RWMutex),
-		in:             map[int]*InputDevice{},
-		out:            map[int]*OutputDevice{},
-		streamRegistry: newStreamRegistry(),
+		mutex:           new(sync.RWMutex),
+		in:              map[int]*InputDevice{},
+		out:             map[int]*OutputDevice{},
+		streamRegistry:  newStreamRegistry(),
+		defaultInputID:  -1,
+		defaultOutputID: -1,
 	}
 	if err := r.init(); err != nil {
 		return nil, err
@@ -50,6 +52,9 @@ func (d *DeviceRegistry) Reset() {
 }
 
 func (d *DeviceRegistry) Output(id int) (*OutputDevice, error) {
+	if id == -1 {
+		return nil, errors.New("no output available")
+	}
 	d.mutex.RLock()
 	if m, ok := d.out[id]; ok {
 		d.mutex.RUnlock()
@@ -70,6 +75,9 @@ func (d *DeviceRegistry) Output(id int) (*OutputDevice, error) {
 }
 
 func (d *DeviceRegistry) Input(id int) (*InputDevice, error) {
+	if id == -1 {
+		return nil, errors.New("no input available")
+	}
 	d.mutex.RLock()
 	if m, ok := d.in[id]; ok {
 		d.mutex.RUnlock()
@@ -89,11 +97,8 @@ func (d *DeviceRegistry) Input(id int) (*InputDevice, error) {
 }
 
 func (d *DeviceRegistry) init() error {
-	outputID := d.streamRegistry.transport.DefaultOutputDeviceID()
-	if outputID == -1 {
-		return errors.New("no default output MIDI device available")
-	}
-	d.defaultOutputID = outputID
+	d.defaultOutputID = d.streamRegistry.transport.DefaultOutputDeviceID()
+	d.defaultInputID = d.streamRegistry.transport.DefaultInputDeviceID()
 	return nil
 }
 
