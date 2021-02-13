@@ -1,8 +1,9 @@
 package core
 
 import (
-	"fmt"
 	"time"
+
+	"github.com/emicklei/melrose/notify"
 )
 
 type NoteChange struct {
@@ -26,27 +27,21 @@ func (n NoteChange) Handle(tim *Timeline, when time.Time) {
 type Recording struct {
 	timeline     *Timeline
 	baseVelocity float32
+	variableName string
 }
 
-func NewRecording() *Recording {
+func NewRecording(variableName string) *Recording {
 	tim := NewTimeline()
 	return &Recording{
 		timeline:     tim,
-		baseVelocity: 70.0,
+		baseVelocity: Normal,
+		variableName: variableName,
 	}
-}
-
-func (r *Recording) Add(e NoteChange, when time.Time) {
-	r.timeline.Schedule(e, when)
 }
 
 type noteChangeEvent struct {
 	change NoteChange
 	when   time.Time
-}
-
-func (r *Recording) String() string {
-	return fmt.Sprintf("recording, #notes:%d", r.timeline.Len())
 }
 
 // Sequence is an alias for S()
@@ -74,13 +69,27 @@ func (r *Recording) S() Sequence {
 				// when.Sub(active.when)fraction
 				note, err := MIDItoNote(0.25, int(change.note), int(change.velocity))
 				if err != nil {
-					panic(err)
+					notify.Panic(err)
+				} else {
+					notes = append(notes, note)
+					delete(activeNotes, change.note)
 				}
-				notes = append(notes, note)
-				delete(activeNotes, change.note)
 			}
 		}
 
 	})
 	return BuildSequence(notes)
 }
+
+func (r *Recording) NoteOn(n Note) {
+	change := NewNoteChange(true, int64(n.MIDI()), int64(n.Velocity))
+	r.timeline.Schedule(change, time.Now())
+}
+
+func (r *Recording) NoteOff(n Note) {
+	change := NewNoteChange(false, int64(n.MIDI()), int64(n.Velocity))
+	r.timeline.Schedule(change, time.Now())
+}
+
+// ControlChange is ignored
+func (r *Recording) ControlChange(channel, number, value int) {}

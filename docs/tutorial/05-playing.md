@@ -6,7 +6,7 @@ title: Melrōse Tutorial 05 Playing
 
 ## play a musical object
 
-There are several ways to start listening to your (composed) musical object.
+There are several ways to start listening to your musical object.
 Note that the editor plugin has keyboard shortcuts to play musical objects instead of using functions such as `play`, `begin` and `end`.
 ### play
 
@@ -84,3 +84,8 @@ export("my-project",all)
 
 A multitrack is simply a collection of tracks.
 It can be used to play all tracks at once or to export to a MIDI file.
+
+### stop playing
+
+If you want to stop all playing (including loops and listeners) then use the editor shortcut `cmd+k`.
+You can also stop the `melrose` program using the command `:q` or `:Q`.

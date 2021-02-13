@@ -575,21 +575,36 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 			return op.Octave{Target: list, Offset: core.ToValueable(scalarOrVar)}
 		}}
 
-	// 	eval["record"] = Function{
-	// 		Title:         "Recording creator",
-	// 		Description:   "create a recorded sequence of notes from the current MIDI input device",
-	// 		ControlsAudio: true,
-	// 		Prefix:        "rec",
-	// 		Template:      `record()`,
-	// 		Samples: `r = record() // record notes played on the current input device and stop recording after 5 seconds
-	// s = r.S() // returns the sequence of notes from the recording`,
-	// 		Func: func() interface{} {
-	// 			seq, err := ctx.Device().Record(ctx)
-	// 			if err != nil {
-	// 				return notify.Panic(err)
-	// 			}
-	// 			return seq
-	// 		}}
+	eval["record"] = Function{
+		Title:         "Recording creator",
+		Description:   "create a recorded sequence of notes from the current MIDI input device",
+		ControlsAudio: true,
+		Template:      `record(rec)`,
+		Samples: `rec = sequence('') // variable to store the recorded sequence
+record(rec) // record notes played on the current input device and stop recording after 5 seconds`,
+		Func: func(varOrDeviceSelector interface{}) interface{} {
+			var injectable variable
+			deviceID, _ := ctx.Device().DefaultDeviceIDs()
+			if ds, ok := varOrDeviceSelector.(core.DeviceSelector); ok {
+				deviceID = ds.DeviceID()
+				first := ds.Target
+				if v, ok := first.(variable); ok {
+					injectable = v
+				} else {
+					return notify.Panic(fmt.Errorf("missing variable parameter"))
+				}
+			} else {
+				// must be variable
+				if v, ok := varOrDeviceSelector.(variable); ok {
+					injectable = v
+				} else {
+					return notify.Panic(fmt.Errorf("missing variable parameter"))
+				}
+			}
+			rec := core.NewRecording(injectable.Name)
+			ctx.Device().Listen(deviceID, rec, true)
+			return rec
+		}}
 
 	eval["undynamic"] = Function{
 		Title:       "Undo dynamic operator",

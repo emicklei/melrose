@@ -194,8 +194,17 @@ func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
 	options := []expr.Option{expr.Env(env), expr.Patch(new(indexedAccessPatcher))}
 	program, err := expr.Compile(entry, append(options, env.exprOperators()...)...)
 	if err != nil {
-		// try parsing the entry as a sequence
+		// try parsing the entry as a sequence or chord
 		// this can be requested from the editor to listen to a part of a sequence,chord,note,progression
+		if strings.Contains(entry, "/") {
+			if subchord, suberr := core.ParseChord(entry); suberr == nil {
+				if core.IsDebug() {
+					notify.Debugf("dsl.evaluate:%s", subchord.Storex())
+				}
+				return subchord, nil
+			}
+		}
+		// try parsing the entry as a sequence
 		if subseq, suberr := core.ParseSequence(entry); suberr == nil {
 			if core.IsDebug() {
 				notify.Debugf("dsl.evaluate:%s", subseq.Storex())
