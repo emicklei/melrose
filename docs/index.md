@@ -54,4 +54,4 @@ See [Language](dsl.html) for all supported functions.
 
 
 Software is licensed under [MIT](https://github.com/emicklei/melrose/LICENSE).
-&copy; 2014-2020 [ernestmicklei.com](http://ernestmicklei.com)
+&copy; 2014-2021 [ernestmicklei.com](http://ernestmicklei.com)

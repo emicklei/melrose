@@ -25,14 +25,16 @@ func (n NoteChange) Handle(tim *Timeline, when time.Time) {
 }
 
 type Recording struct {
+	deviceID     int
 	timeline     *Timeline
 	baseVelocity float32
 	variableName string
 }
 
-func NewRecording(variableName string) *Recording {
+func NewRecording(deviceID int, variableName string) *Recording {
 	tim := NewTimeline()
 	return &Recording{
+		deviceID:     deviceID,
 		timeline:     tim,
 		baseVelocity: Normal,
 		variableName: variableName,
@@ -46,6 +48,16 @@ type noteChangeEvent struct {
 
 // Sequence is an alias for S()
 func (r *Recording) Sequence() Sequence { return r.S() }
+
+func (r *Recording) Play(ctx Context, at time.Time) error {
+	ctx.Device().Listen(r.deviceID, r, true)
+	return nil
+}
+
+func (r *Recording) Stop(ctx Context) error {
+	ctx.Device().Listen(r.deviceID, r, false)
+	return nil
+}
 
 func (r *Recording) S() Sequence {
 	activeNotes := map[int64]noteChangeEvent{}
