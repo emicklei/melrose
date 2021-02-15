@@ -34,13 +34,13 @@ The first notes of each musical object will start at the moment of evaluation.
 In this example the `C` and `C5` notes from the sequences `s1` and `s2` are played immediately.
 Using the `play` function, all musical object will be played after each other.
 
-### begin, end loop
+### play, stop loop
 
 ```javascript
 s1 = sequence('C E G')
 lp_s1 = loop(s1)
-begin(lp_s1)
-end(lp_s1)
+play(lp_s1)
+stop(lp_s1)
 ```
 
 The function `begin` and `end` apply to `Loop` and `Listen` objects only.

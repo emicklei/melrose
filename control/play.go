@@ -39,11 +39,6 @@ func (p Play) Play(ctx core.Context, at time.Time) error {
 	return nil
 }
 
-// Stop is part of core.Playable
-func (p Play) Stop(ctx core.Context) error {
-	return nil // cannot stop for now TODO
-}
-
 // Evaluate implements Evaluatable
 // performs the set operation
 func (p Play) Evaluate(ctx core.Context) error {

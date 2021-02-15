@@ -707,26 +707,26 @@ begin(lp_cb) // end(lp_cb)`,
 			return nil
 		}}
 
-	eval["end"] = Function{
-		Title:         "End loop or listen command",
-		Description:   "end running loop(s) or listener(s). Ignore if it was stopped.",
+	eval["stop"] = Function{
+		Title:         "Stop a loop or listen",
+		Description:   "stop running loop(s) or listener(s). Ignore if it was stopped.",
 		ControlsAudio: true,
-		Template:      `end(${1:control})`,
+		Template:      `stop(${1:control})`,
 		Samples: `l1 = loop(sequence('c e g'))
-begin(l1)
-end(l1)
-end() // stop all playables`,
+play(l1)
+stop(l1)
+stop() // stop all playables`,
 		Func: func(vars ...variable) interface{} {
 			if len(vars) == 0 {
 				StopAllPlayables(ctx)
 				return nil
 			}
 			for _, each := range vars {
-				if l, ok := each.Value().(core.Playable); ok {
-					notify.Infof("ending %s", each.Name)
+				if l, ok := each.Value().(core.Stoppable); ok {
+					notify.Infof("stopping %s", each.Name)
 					_ = l.Stop(ctx)
 				} else {
-					notify.Warnf("cannot end (%T) %v", each.Value(), each.Value())
+					notify.Warnf("cannot stop (%T) %v", each.Value(), each.Value())
 				}
 			}
 			return nil

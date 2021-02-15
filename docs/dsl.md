@@ -75,13 +75,14 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#bpm">bpm</a>
 - <a href="#channel">channel</a>
 - <a href="#device">device</a>
-- <a href="#end">end</a>
 - <a href="#key">key</a>
 - <a href="#knob">knob</a>
 - <a href="#loop">loop</a>
 - <a href="#multitrack">multitrack</a>
 - <a href="#onkey">onkey</a>
 - <a href="#play">play</a>
+- <a href="#record">record</a>
+- <a href="#stop">stop</a>
 - <a href="#sync">sync</a>
 
 
@@ -207,22 +208,6 @@ Changes the dynamic of notes from a musical object. 1-index-based mapping.
 dynamicmap('1:++,2:--',sequence('e f')) // => E++ F--
 
 dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++
-```
-
-### end<a name="end"></a>
-End running loop(s) or listener(s). Ignore if it was stopped.
-
-> end(control)
-
-#### examples	
-```javascript
-l1 = loop(sequence('c e g'))
-
-begin(l1)
-
-end(l1)
-
-end() // stop all playables
 ```
 
 ### export<a name="export"></a>
@@ -582,6 +567,18 @@ num = random(1,10)
 next(num)
 ```
 
+### record<a name="record"></a>
+Create a recorded sequence of notes from the current MIDI input device.
+
+> record(rec)
+
+#### examples	
+```javascript
+rec = sequence('') // variable to store the recorded sequence
+
+record(rec) // record notes played on the current input device and stop recording after 5 seconds
+```
+
 ### repeat<a name="repeat"></a>
 Repeat one or more musical objects a number of times.
 
@@ -654,6 +651,22 @@ sequence('c d e')
 sequence('(8c d e)') // => (⅛C D E)
 
 sequence('c (d e f) a =')
+```
+
+### stop<a name="stop"></a>
+Stop running loop(s) or listener(s). Ignore if it was stopped.
+
+> stop(control)
+
+#### examples	
+```javascript
+l1 = loop(sequence('c e g'))
+
+play(l1)
+
+stop(l1)
+
+stop() // stop all playables
 ```
 
 ### stretch<a name="stretch"></a>

@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/emicklei/melrose/notify"
@@ -27,7 +28,6 @@ func (n NoteChange) Handle(tim *Timeline, when time.Time) {
 type Recording struct {
 	deviceID     int
 	timeline     *Timeline
-	baseVelocity float32
 	variableName string
 }
 
@@ -36,7 +36,6 @@ func NewRecording(deviceID int, variableName string) *Recording {
 	return &Recording{
 		deviceID:     deviceID,
 		timeline:     tim,
-		baseVelocity: Normal,
 		variableName: variableName,
 	}
 }
@@ -44,6 +43,12 @@ func NewRecording(deviceID int, variableName string) *Recording {
 type noteChangeEvent struct {
 	change NoteChange
 	when   time.Time
+}
+
+func (r *Recording) GetTargetFrom(other *Recording) {
+	// only overwrite variable
+	// listener may have been started so timeline is not empty, so device is listened to
+	r.variableName = other.variableName
 }
 
 // Sequence is an alias for S()
@@ -55,8 +60,16 @@ func (r *Recording) Play(ctx Context, at time.Time) error {
 }
 
 func (r *Recording) Stop(ctx Context) error {
+	seq := r.S()
+	ctx.Variables().Put(r.variableName, seq)
 	ctx.Device().Listen(r.deviceID, r, false)
+	// flush
+	r.timeline.Reset()
 	return nil
+}
+
+func (r *Recording) Storex() string {
+	return fmt.Sprintf("record(device(%d,%s))", r.deviceID, r.variableName)
 }
 
 func (r *Recording) S() Sequence {

@@ -38,7 +38,7 @@ func (s SyncPlay) Play(ctx core.Context, at time.Time) error {
 func (s SyncPlay) Stop(ctx core.Context) error {
 	for _, each := range s.playables {
 		val := each.Value()
-		if ply, ok := val.(core.Playable); ok {
+		if ply, ok := val.(core.Stoppable); ok {
 			_ = ply.Stop(ctx)
 		}
 	}

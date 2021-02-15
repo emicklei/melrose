@@ -83,8 +83,6 @@ type Inspectable interface {
 
 type Playable interface {
 	Play(ctx Context, at time.Time) error
-	Stop(ctx Context) error
-	// IsPlaying() bool
 }
 
 type Stoppable interface {

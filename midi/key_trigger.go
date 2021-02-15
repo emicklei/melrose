@@ -43,10 +43,10 @@ func (t *KeyTrigger) NoteOn(n core.Note) {
 	defer t.mutex.Unlock()
 	// both playable and evaluatable are allowed
 	if play, ok := val.(core.Playable); ok {
-		_, stoppable := val.(core.Stoppable)
+		stopper, stoppable := val.(core.Stoppable)
 		if stoppable {
 			if t.playing {
-				play.Stop(t.ctx)
+				stopper.Stop(t.ctx)
 				t.playing = false
 			} else {
 				_ = play.Play(t.ctx, time.Now())

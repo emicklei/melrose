@@ -26,15 +26,10 @@ To evaluate a program, you need to select all the source and use `cmd+e`.
 To play a single line statement or expression, use `cmd+3`.
 You can also evaluate the function `play(...)`.
 
-### ⌘+4 : Begin
+### ⌘+5 : Stop
 
-To begin a loop or listener, use `cmd+4`.
-You can also evaluate the function `begin(...)`.
-
-### ⌘+5 : End
-
-To end a running loop or listener, use `cmd+5`.
-You can also evaluate the function `end(...)`.
+To stop a running loop or listener, use `cmd+5`.
+You can also evaluate the function `stop(...)`.
 
 ### ⌘+2 : Inspect
 

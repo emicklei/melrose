@@ -9,9 +9,9 @@ import (
 func StopAllPlayables(context core.Context) {
 	// stop any running playables
 	for k, v := range context.Variables().Variables() {
-		if l, ok := v.(core.Playable); ok {
-			notify.Infof("ending: %s = %s", k, core.Storex(l))
-			_ = l.Stop(context)
+		if s, ok := v.(core.Stoppable); ok {
+			notify.Infof("stopping: %s = %s", k, core.Storex(s))
+			_ = s.Stop(context)
 		}
 	}
 }

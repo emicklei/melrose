@@ -60,7 +60,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		// evaluation failed.
 		w.WriteHeader(http.StatusBadRequest)
-		response = resultFrom(line, err)
+		response = resultFrom(query.Get("file"), line, err)
 	} else {
 		// evaluation was ok.
 
@@ -93,22 +93,21 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 				}
 			}
 		}
-		// loop operation
+		// deprectated
 		if query.Get("action") == "begin" {
 			if p, ok := returnValue.(core.Playable); ok {
 				notify.Infof("begin(%s)", displayString(l.context, p))
 				p.Play(l.context, time.Now())
 			}
 		}
-		// loop operation
-		if query.Get("action") == "end" {
-			if p, ok := returnValue.(core.Playable); ok {
+		if query.Get("action") == "end" || query.Get("action") == "stop" {
+			if p, ok := returnValue.(core.Stoppable); ok {
 				notify.Infof("end(%s)", displayString(l.context, p))
 				p.Stop(l.context)
 			}
 		}
 
-		response = resultFrom(line, returnValue)
+		response = resultFrom(query.Get("file"), line, returnValue)
 	}
 	w.Header().Set("content-type", "application/json")
 	enc := json.NewEncoder(w)
@@ -142,29 +141,32 @@ func displayString(ctx core.Context, v interface{}) string {
 }
 
 type evaluationResult struct {
-	Type     string      `json:"type"`
-	IsError  bool        `json:"is-error"`
-	Message  string      `json:"message"`
-	Filename string      `json:"file"`
-	Line     int         `json:"line"`
-	Column   int         `json:"column"`
-	Object   interface{} `json:"object"`
+	Type         string      `json:"type"`
+	IsError      bool        `json:"is-error"`
+	IsStoppeable bool        `json:"stoppable"`
+	Message      string      `json:"message"`
+	Filename     string      `json:"file"`
+	Line         int         `json:"line"`
+	Column       int         `json:"column"`
+	Object       interface{} `json:"object"`
 }
 
-func resultFrom(line int, val interface{}) evaluationResult {
+func resultFrom(filename string, line int, val interface{}) evaluationResult {
 	t := fmt.Sprintf("%T", val)
+	_, isStoppable := val.(core.Stoppable)
 	if err, ok := val.(error); ok {
 		// patch Location of error
 		if fe, ok := err.(*file.Error); ok {
 			fe.Location.Line = fe.Location.Line - 1 + line
 		}
 		return evaluationResult{
-			Type:     t,
-			IsError:  true,
-			Filename: "yours.mel",
-			Message:  err.Error(),
-			Line:     line,
-			Object:   val,
+			Type:         t,
+			IsError:      true,
+			IsStoppeable: isStoppable,
+			Filename:     filename,
+			Message:      err.Error(),
+			Line:         line,
+			Object:       val,
 		}
 	}
 	// no error
@@ -175,5 +177,11 @@ func resultFrom(line int, val interface{}) evaluationResult {
 		msg = fmt.Sprintf("%v", val)
 	}
 	// no Object if ok
-	return evaluationResult{Type: t, IsError: false, Message: msg}
+	return evaluationResult{
+		Type:         t,
+		IsError:      false,
+		IsStoppeable: isStoppable,
+		Filename:     filename,
+		Line:         line,
+		Message:      msg}
 }

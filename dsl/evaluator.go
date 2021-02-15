@@ -146,6 +146,27 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 				}
 				return r, nil
 			}
+			// special case for Recording
+			// if the value is a Recording
+			// then if the variable refers to an existing recording
+			// 		then change the Target of that recording
+			//		else store the recording
+			// else store the result
+			if theRecording, ok := r.(*core.Recording); ok {
+				if storedValue, present := e.context.Variables().Get(varName); present {
+					if otherRecording, replaceme := storedValue.(*core.Recording); replaceme {
+						otherRecording.GetTargetFrom(theRecording)
+						r = otherRecording
+					} else {
+						// existing variable but not a Listen
+						e.context.Variables().Put(varName, theRecording)
+					}
+				} else {
+					// new variable for theLoop
+					e.context.Variables().Put(varName, theRecording)
+				}
+				return r, nil
+			}
 
 			// not a Loop or Listen
 			e.context.Variables().Put(varName, r)
@@ -161,17 +182,12 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 		return nil, err
 	}
 
-	// special case for Loop
-	if theLoop, ok := r.(*core.Loop); ok {
-		return nil, fmt.Errorf("cannot have an unnamed Loop, use e.g. myLoop = %s", theLoop.Storex())
+	// special case for Loop,Listen,Recording
+	if canStop, ok := r.(core.Stoppable); ok {
+		return nil, fmt.Errorf("this object must assigned to variable name, use e.g. var = %s", canStop.(core.Storable).Storex())
 	}
 
-	// special case for Listen
-	if theListen, ok := r.(*control.Listen); ok {
-		return nil, fmt.Errorf("cannot have an unnamed Listen, use e.g. myListen = %s", theListen.Storex())
-	}
-
-	// special case for Evals, put last because Loop is also Evaluatable
+	// special case for Evals, put last because Stoppables can be also Evaluatable
 	if theEval, ok := r.(core.Evaluatable); ok {
 		if err := theEval.Evaluate(e.context); err != nil { // no condition
 			return nil, err
