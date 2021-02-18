@@ -11,7 +11,7 @@ import (
 	"github.com/rakyll/portmidi"
 )
 
-func init() { Initializer = portMidiInitialize }
+//func init() { Initializer = portMidiInitialize }
 
 func portMidiInitialize() {
 	if core.IsDebug() {
