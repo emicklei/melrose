@@ -41,6 +41,7 @@ type AudioDevice interface {
 	Listen(deviceID int, who NoteListener, startOrStop bool)
 
 	// if a key is pressed on a device then play or stop a function
+	// if fun is nil then uninstall the binding
 	OnKey(ctx Context, deviceID int, note Note, fun Valueable) error
 
 	// Schedule put an event on the timeline at a begin

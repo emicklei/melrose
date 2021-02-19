@@ -4,6 +4,9 @@ import "testing"
 
 func TestHandleCallback(t *testing.T) {
 	lis := newRtListener(nil)
+	if got, want := len(lis.noteListeners), 0; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
 	lis.handleEvent(nil, []byte{0x90, 60, 60}, 0.0)
 	e, ok := lis.noteOn[60]
 	if !ok {

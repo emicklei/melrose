@@ -18,18 +18,16 @@ func rtInitialize() {
 		notify.Debugf("transport.init: use RtmidiTransporter")
 	}
 	Factory = func() Transporter {
-		return &RtmidiTransporter{}
+		return RtmidiTransporter{}
 	}
 }
 
-type RtmidiTransporter struct {
-	mutex sync.RWMutex
-}
+type RtmidiTransporter struct{}
 
-func (t *RtmidiTransporter) HasInputCapability() bool {
+func (t RtmidiTransporter) HasInputCapability() bool {
 	return true
 }
-func (t *RtmidiTransporter) PrintInfo(inID, outID int) {
+func (t RtmidiTransporter) PrintInfo(inID, outID int) {
 	notify.PrintHighlighted("usage:")
 	fmt.Println(":m echo                               --- toggle printing the notes that are send")
 	fmt.Println(":m in      <device-id>                --- change the default MIDI input  device id")
@@ -77,14 +75,14 @@ func (t *RtmidiTransporter) PrintInfo(inID, outID int) {
 	}
 	fmt.Println()
 }
-func (t *RtmidiTransporter) DefaultOutputDeviceID() int {
+func (t RtmidiTransporter) DefaultOutputDeviceID() int {
 	return 0
 }
-func (t *RtmidiTransporter) DefaultInputDeviceID() int {
+func (t RtmidiTransporter) DefaultInputDeviceID() int {
 	return 0
 }
 
-func (t *RtmidiTransporter) NewMIDIOut(id int) (MIDIOut, error) {
+func (t RtmidiTransporter) NewMIDIOut(id int) (MIDIOut, error) {
 	out, err := rtmidi.NewMIDIOutDefault()
 	if err != nil {
 		return nil, err
@@ -95,7 +93,7 @@ func (t *RtmidiTransporter) NewMIDIOut(id int) (MIDIOut, error) {
 	}
 	return RtmidiOut{out: out}, nil
 }
-func (t *RtmidiTransporter) NewMIDIIn(id int) (MIDIIn, error) {
+func (t RtmidiTransporter) NewMIDIIn(id int) (MIDIIn, error) {
 	in, err := rtmidi.NewMIDIInDefault()
 	if err != nil {
 		return nil, err
@@ -106,11 +104,11 @@ func (t *RtmidiTransporter) NewMIDIIn(id int) (MIDIIn, error) {
 	}
 	return RtmidiIn{in: in}, nil
 }
-func (t *RtmidiTransporter) Terminate() {
+func (t RtmidiTransporter) Terminate() {
 	// noop
 }
-func (t *RtmidiTransporter) NewMIDIListener(MIDIIn) MIDIListener {
-	return nil
+func (t RtmidiTransporter) NewMIDIListener(in MIDIIn) MIDIListener {
+	return newRtListener(in.(RtmidiIn).in)
 }
 
 type RtmidiOut struct {
@@ -185,7 +183,7 @@ func (l *RtListener) OnKey(note core.Note, handler core.NoteListener) {
 	}
 	// add to map and list
 	l.keyListeners[nr] = handler
-	l.Add(handler)
+	l.noteListeners = append(l.noteListeners, handler)
 }
 
 func (l *RtListener) Start() {
@@ -195,7 +193,13 @@ func (l *RtListener) Start() {
 		return
 	}
 	l.listening = true
-	l.midiIn.SetCallback(l.handleEvent)
+	// since l.midiIn.SetCallback is blocking on success, there is no meaningful way to get an error
+	// and set the callback non blocking
+	go func() {
+		if err := l.midiIn.SetCallback(l.handleEvent); err != nil {
+			notify.Warnf("failed to set listener callback")
+		}
+	}()
 }
 
 // data = status,data1,data2
@@ -257,6 +261,9 @@ func (l *RtListener) handleEvent(m rtmidi.MIDIIn, data []byte, delta float64) {
 	}
 }
 func (l *RtListener) Stop() {
+	if !l.listening {
+		return
+	}
 	if err := l.midiIn.CancelCallback(); err != nil {
 		notify.Warnf("failed to cancel listener callback")
 	}

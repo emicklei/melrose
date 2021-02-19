@@ -93,7 +93,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 				}
 			}
 		}
-		// deprectated
+		// deprectated TODO
 		if query.Get("action") == "begin" {
 			if p, ok := returnValue.(core.Playable); ok {
 				notify.Infof("begin(%s)", displayString(l.context, p))
@@ -102,7 +102,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		}
 		if query.Get("action") == "end" || query.Get("action") == "stop" {
 			if p, ok := returnValue.(core.Stoppable); ok {
-				notify.Infof("end(%s)", displayString(l.context, p))
+				notify.Infof("stop(%s)", displayString(l.context, p))
 				p.Stop(l.context)
 			}
 		}
