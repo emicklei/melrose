@@ -52,7 +52,7 @@ func (t *RtmidiTransporter) PrintInfo(inID, outID int) {
 		if err != nil {
 			name = ""
 		}
-		fmt.Println(i, name)
+		fmt.Printf("[midi] input device %d: %s\n", i, name)
 	}
 	{
 		// Outs
@@ -71,7 +71,7 @@ func (t *RtmidiTransporter) PrintInfo(inID, outID int) {
 			if err != nil {
 				name = ""
 			}
-			fmt.Println(i, name)
+			fmt.Printf("[midi] output device %d: %s\n", i, name)
 		}
 	}
 	fmt.Println()
@@ -127,3 +127,54 @@ type RtmidiIn struct {
 }
 
 func (i RtmidiIn) Close() error { return i.in.Close() }
+
+type RtListener struct {
+	listening bool
+	midiIn    rtmidi.MIDIIn
+	quit      chan bool
+	noteOn    map[int]interface{}
+
+	mutex         *sync.RWMutex
+	noteListeners []core.NoteListener
+	keyListeners  map[int]core.NoteListener
+}
+
+func (l RtListener) Add(core.NoteListener)    {}
+func (l RtListener) Remove(core.NoteListener) {}
+func (l RtListener) OnKey(note core.Note, handler core.NoteListener) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	nr := note.MIDI()
+	// remove existing for the key
+	old, ok := l.keyListeners[nr]
+	if ok {
+		l.Remove(old)
+		delete(l.keyListeners, nr)
+	}
+	if handler == nil {
+		return
+	}
+	// add to map and list
+	l.keyListeners[nr] = handler
+	l.Add(handler)
+
+}
+func (l RtListener) Start() {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	if l.listening {
+		return
+	}
+	l.listening = true
+	l.midiIn.SetCallback(l.handleEvent)
+}
+func (l RtListener) handleEvent(m rtmidi.MIDIIn, data []byte, delta float64) {
+	if core.IsDebug() {
+		notify.Debugf("transport.RtListener.handleEvent data=%v,f=%v", data, delta)
+	}
+}
+func (l RtListener) Stop() {
+	if err := l.midiIn.CancelCallback(); err != nil {
+		notify.Warnf("failed to cancel listener callback")
+	}
+}
