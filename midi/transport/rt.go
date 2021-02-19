@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"sync"
+	"time"
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
@@ -128,22 +129,50 @@ type RtmidiIn struct {
 
 func (i RtmidiIn) Close() error { return i.in.Close() }
 
+type rtNoteEvent struct {
+	note core.Note
+	when time.Time
+}
 type RtListener struct {
-	listening bool
-	midiIn    rtmidi.MIDIIn
-	quit      chan bool
-	noteOn    map[int]interface{}
+	mutex *sync.RWMutex
 
-	mutex         *sync.RWMutex
+	listening     bool
+	midiIn        rtmidi.MIDIIn
+	noteOn        map[int]rtNoteEvent
 	noteListeners []core.NoteListener
 	keyListeners  map[int]core.NoteListener
 }
 
-func (l RtListener) Add(core.NoteListener)    {}
-func (l RtListener) Remove(core.NoteListener) {}
-func (l RtListener) OnKey(note core.Note, handler core.NoteListener) {
+func newRtListener(in rtmidi.MIDIIn) *RtListener {
+	return &RtListener{
+		midiIn:       in,
+		mutex:        new(sync.RWMutex),
+		noteOn:       map[int]rtNoteEvent{},
+		keyListeners: map[int]core.NoteListener{},
+	}
+}
+
+func (l *RtListener) Add(lis core.NoteListener) {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
+	l.noteListeners = append(l.noteListeners, lis)
+}
+
+func (l *RtListener) Remove(lis core.NoteListener) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	without := []core.NoteListener{}
+	for _, each := range l.noteListeners {
+		if each != lis {
+			without = append(without, each)
+		}
+	}
+	l.noteListeners = without
+}
+func (l *RtListener) OnKey(note core.Note, handler core.NoteListener) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+
 	nr := note.MIDI()
 	// remove existing for the key
 	old, ok := l.keyListeners[nr]
@@ -157,9 +186,9 @@ func (l RtListener) OnKey(note core.Note, handler core.NoteListener) {
 	// add to map and list
 	l.keyListeners[nr] = handler
 	l.Add(handler)
-
 }
-func (l RtListener) Start() {
+
+func (l *RtListener) Start() {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 	if l.listening {
@@ -168,12 +197,66 @@ func (l RtListener) Start() {
 	l.listening = true
 	l.midiIn.SetCallback(l.handleEvent)
 }
-func (l RtListener) handleEvent(m rtmidi.MIDIIn, data []byte, delta float64) {
+
+// data = status,data1,data2
+func (l *RtListener) handleEvent(m rtmidi.MIDIIn, data []byte, delta float64) {
 	if core.IsDebug() {
 		notify.Debugf("transport.RtListener.handleEvent data=%v,f=%v", data, delta)
 	}
+	l.mutex.RLock()
+	defer l.mutex.RUnlock()
+
+	status := int64(data[0])
+	nr := int(data[1])
+	data2 := int(data[2])
+
+	// controlChange before noteOn
+	isControlChange := (status & controlChange) == controlChange
+	if isControlChange {
+		for _, each := range l.noteListeners {
+			// TODO get channel
+			each.ControlChange(0, nr, int(data2))
+		}
+		return
+	}
+	isNoteOn := (status & noteOn) == noteOn
+	velocity := data2
+	if isNoteOn && velocity > 0 {
+		if _, ok := l.noteOn[nr]; ok {
+			return
+		}
+		onNote, _ := core.MIDItoNote(0.25, nr, velocity)
+		l.noteOn[nr] = rtNoteEvent{
+			note: onNote,
+			when: time.Now(),
+		}
+		for _, each := range l.noteListeners {
+			each.NoteOn(onNote)
+		}
+		return
+	}
+	isNoteOff := (status & noteOff) == noteOff
+	// for devices that support aftertouch, a noteOn with velocity 0 is also handled as a noteOff
+	if !isNoteOff {
+		isNoteOff = isNoteOn && velocity == 0
+	}
+	if isNoteOff {
+		on, ok := l.noteOn[nr]
+		if !ok {
+			return
+		}
+		delete(l.noteOn, nr)
+		// compute delta
+		ms := time.Duration(time.Now().UnixNano()-on.when.UnixNano()) * time.Nanosecond
+		frac := core.DurationToFraction(120.0, ms) // TODO
+		offNote, _ := core.MIDItoNote(frac, nr, core.Normal)
+		for _, each := range l.noteListeners {
+			each.NoteOff(offNote)
+		}
+		return
+	}
 }
-func (l RtListener) Stop() {
+func (l *RtListener) Stop() {
 	if err := l.midiIn.CancelCallback(); err != nil {
 		notify.Warnf("failed to cancel listener callback")
 	}
