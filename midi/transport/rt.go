@@ -91,7 +91,7 @@ func (t RtmidiTransporter) NewMIDIOut(id int) (MIDIOut, error) {
 	if err != nil {
 		return nil, err
 	}
-	return RtmidiOut{out: out}, nil
+	return RtmidiOut{out: out, port: id}, nil
 }
 func (t RtmidiTransporter) NewMIDIIn(id int) (MIDIIn, error) {
 	in, err := rtmidi.NewMIDIInDefault()
@@ -102,7 +102,8 @@ func (t RtmidiTransporter) NewMIDIIn(id int) (MIDIIn, error) {
 	if err != nil {
 		return nil, err
 	}
-	return RtmidiIn{in: in}, nil
+	in.IgnoreTypes(false, false, false)
+	return RtmidiIn{in: in, port: id}, nil
 }
 func (t RtmidiTransporter) Terminate() {
 	// noop
@@ -112,20 +113,36 @@ func (t RtmidiTransporter) NewMIDIListener(in MIDIIn) MIDIListener {
 }
 
 type RtmidiOut struct {
-	out rtmidi.MIDIOut
+	out  rtmidi.MIDIOut
+	port int
 }
 
 func (o RtmidiOut) WriteShort(status int64, data1 int64, data2 int64) error {
 	return o.out.SendMessage([]byte{byte(status & 0xFF), byte(data1 & 0xFF), byte(data2 & 0xFF)})
 }
-func (o RtmidiOut) Close() error { return o.out.Close() }
+func (o RtmidiOut) Close() error {
+	if core.IsDebug() {
+		name, _ := o.out.PortName(o.port)
+		notify.Debugf("transport.RtmidiOut.Close: name=%s port=%d", name, o.port)
+	}
+	return o.out.Close()
+}
+
+// TODO
 func (o RtmidiOut) Abort() error { return nil }
 
 type RtmidiIn struct {
-	in rtmidi.MIDIIn
+	in   rtmidi.MIDIIn
+	port int
 }
 
-func (i RtmidiIn) Close() error { return i.in.Close() }
+func (i RtmidiIn) Close() error {
+	if core.IsDebug() {
+		name, _ := i.in.PortName(i.port)
+		notify.Debugf("transport.RtmidiIn.Close: name=%s port=%d", name, i.port)
+	}
+	return i.in.Close()
+}
 
 type rtNoteEvent struct {
 	note core.Note
@@ -261,10 +278,12 @@ func (l *RtListener) handleEvent(m rtmidi.MIDIIn, data []byte, delta float64) {
 	}
 }
 func (l *RtListener) Stop() {
-	if !l.listening {
-		return
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	if l.listening {
+		if err := l.midiIn.CancelCallback(); err != nil {
+			notify.Warnf("failed to cancel listener callback")
+		}
 	}
-	if err := l.midiIn.CancelCallback(); err != nil {
-		notify.Warnf("failed to cancel listener callback")
-	}
+	l.listening = false
 }
