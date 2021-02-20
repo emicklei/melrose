@@ -65,7 +65,6 @@ func (s *streamRegistry) close() error {
 		each.Close()
 	}
 	for _, each := range s.out {
-		each.Abort()
 		each.Close()
 	}
 	s.out = map[int]transport.MIDIOut{}

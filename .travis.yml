@@ -1,12 +1,9 @@
 dist: bionic
 language: go
 go: 
- - 1.x
+ - 1.16.x
 before_install:
 - sudo apt-get update
-- sudo apt-cache policy libportmidi0
-- sudo apt-cache policy libportmidi-dev
-- sudo apt-get install libportmidi-dev
 - sudo apt-get install libasound2-dev
 script:
 - go test -cover ./...

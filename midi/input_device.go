@@ -14,7 +14,7 @@ func NewInputDevice(id int, in transport.MIDIIn, t transport.Transporter) *Input
 	return &InputDevice{
 		id:       id,
 		echo:     false,
-		listener: t.NewMIDIListener(in), /// newListener(in.(*portmidi.Stream)), // TODO
+		listener: t.NewMIDIListener(in),
 	}
 }
 

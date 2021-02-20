@@ -103,7 +103,6 @@ func (d *DeviceRegistry) init() error {
 }
 
 func (d *DeviceRegistry) Close() error {
-	defer d.streamRegistry.transport.Terminate()
 	for _, each := range d.in {
 		each.stopListener()
 	}

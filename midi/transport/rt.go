@@ -105,9 +105,6 @@ func (t RtmidiTransporter) NewMIDIIn(id int) (MIDIIn, error) {
 	in.IgnoreTypes(false, false, false)
 	return RtmidiIn{in: in, port: id}, nil
 }
-func (t RtmidiTransporter) Terminate() {
-	// noop
-}
 func (t RtmidiTransporter) NewMIDIListener(in MIDIIn) MIDIListener {
 	return newRtListener(in.(RtmidiIn).in)
 }
@@ -127,9 +124,6 @@ func (o RtmidiOut) Close() error {
 	}
 	return o.out.Close()
 }
-
-// TODO
-func (o RtmidiOut) Abort() error { return nil }
 
 type RtmidiIn struct {
 	in   rtmidi.MIDIIn
