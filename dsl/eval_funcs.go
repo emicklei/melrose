@@ -849,17 +849,23 @@ onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the functio
 			if !ctx.Device().HasInputCapability() {
 				return notify.Panic(errors.New("Input is not available for this device"))
 			}
-			// allow playable and evaluatable
-			_, ok := getValue(playOrEval).(core.Playable)
+			// key is mandatory
+			key, ok := getValue(keyOrVar).(control.Key)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot install onkey because parameter is not a key (%T) %v", keyOrVar, keyOrVar))
+			}
+			// allow nil, playable and evaluatable
+			if playOrEval == nil {
+				// uninstall binding
+				ctx.Device().OnKey(ctx, key.DeviceID(), key.Note(), nil)
+				return nil
+			}
+			_, ok = getValue(playOrEval).(core.Playable)
 			if !ok {
 				_, ok = getValue(playOrEval).(core.Evaluatable)
 				if !ok {
 					return notify.Panic(fmt.Errorf("cannot onkey and call (%T) %s", playOrEval, core.Storex(playOrEval)))
 				}
-			}
-			key, ok := getValue(keyOrVar).(control.Key)
-			if !ok {
-				return notify.Panic(fmt.Errorf("cannot install onkey because parameter is not a key (%T) %v", keyOrVar, keyOrVar))
 			}
 			err := ctx.Device().OnKey(ctx, key.DeviceID(), key.Note(), getValueable(playOrEval))
 			if err != nil {
