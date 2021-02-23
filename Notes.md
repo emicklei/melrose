@@ -11,6 +11,7 @@
 - https://github.com/dbatbold/beep
 - https://www.basicmusictheory.com/
 - https://schollz.com/blog/portmidi/
+- http://www.music.mcgill.ca/~gary/rtmidi/index.html
 
 ## todos
 

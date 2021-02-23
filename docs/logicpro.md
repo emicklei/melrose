@@ -42,11 +42,11 @@ p2 = pitch(p,y2)
 lp_1 = loop(channel(1,p1))         // Luminous Tines
 lp_2 = loop(channel(2,p2),next(p)) // Plectrum Pad
 
-begin(lp_1)
-begin(lp_2)
+play(lp_1)
+play(lp_2)
 
-// end(lp_1)
-// end(lp_2)
+// stop(lp_1)
+// stop(lp_2)
 ```
 
 ### Create project
@@ -76,7 +76,7 @@ This will evaluate all statments and expressions cause 2 loops to begin at the s
 
 ### stop all
 
-Select the text `end(lp_1)` and this `cmd+3` to stop the first loop. 
+Select the text `stop(lp_1)` and this `cmd+5` to stop the first loop. 
 You must repeat it for the other loop.
 
 ### What's next

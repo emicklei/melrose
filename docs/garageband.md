@@ -24,7 +24,6 @@ Install the latest packaged (unsigned) release of Melrōse for Mac OSX 10+.
 #### versions
 
 - [Melrose-v0.37.0.pkg 2021-01-27](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/versions/Melrose-v0.37.0.pkg)
-- [Melrose-v0.36.0.pkg 2020-12-29](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/versions/Melrose-v0.36.0.pkg)
 
 ### Configure Audio MIDI Setup
 
@@ -124,6 +123,6 @@ Now select the complete script `cmd+A` and press `cmd+3` and you will hear a loo
 
 ### What's next
 
-Visit the [Melrōse documentation](https://emicklei.github.io/melrose/) to find information about the programming language and the program itself. It also offers tutorials, examples and recorded demo videos.
+Visit the [Melrōse documentation](https://melrōse.org) to find information about the programming language and the program itself. It also offers tutorials, examples and recorded demo videos.
 
 Happy music coding!

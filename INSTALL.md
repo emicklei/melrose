@@ -1,4 +1,10 @@
-# Install from source
+# Install 
+
+## Install from prepared packages
+
+See [Melrōse Documentation](https://melrōse.org).
+
+## Build from source
 
 In order to build and work with `melrose` on your operating system, the following components need to be installed:
 
@@ -14,7 +20,7 @@ You need to install the [Go SDK](https://golang.org/dl/) for compiling the progr
 
 	go install github.com/emicklei/melrose/cmd/melrose
 
-After installing both `portmidi` and `melrōse`, you can start the tool in a Terminal using:
+After installing `melrōse`, you can start the tool in a Terminal using:
 
 	$ melrose
 
@@ -38,11 +44,4 @@ If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH
 
 ## Windows
 
-Follow the instructions for installing `portmidi` as documented by [Zack](https://schollz.com/blog/portmidi/).
-Then compile the program on your machine.
-
-	go install github.com/emicklei/melrose/cmd/melrose
-
-After installing both `portmidi` and `melrōse`, you can start the tool in a Terminal using:
-
-	$ melrose
+Look at the build script (`.travis.yml`) of [melrose-windows](https://github.com/emicklei/melrose-windows) for detailed steps to build an executable from source.
