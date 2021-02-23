@@ -45,6 +45,20 @@ func (s SyncPlay) Stop(ctx core.Context) error {
 	return nil
 }
 
+// TODO
+// IsPlaying implements Playable
+// func (s SyncPlay) IsPlaying() bool {
+// 	for _, each := range s.playables {
+// 		val := each.Value()
+// 		if ply, ok := val.(core.Stoppable); ok {
+// 			if ply.IsPlaying() {
+// 				return true
+// 			}
+// 		}
+// 	}
+// 	return false
+// }
+
 func (s SyncPlay) Evaluate(ctx core.Context) error {
 	// if the first is a Loop at start playing the others on the NextPlayAt
 	// if the first is not a Loop then start playing the others now

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"sort"
+
+	"github.com/emicklei/melrose/notify"
 )
 
 type Inspection struct {
@@ -84,7 +86,7 @@ func (i Inspection) String() string {
 
 	for _, k := range keys {
 		v := i.Properties[k]
-		fmt.Fprintf(&b, "\033[94m%s:\033[0m%v ", k, v)
+		notify.PrintKeyValue(&b, k, v)
 	}
 	return b.String()
 }

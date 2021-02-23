@@ -68,6 +68,8 @@ func (r *Recording) Stop(ctx Context) error {
 	return nil
 }
 
+func (r *Recording) IsPlaying() bool { return true }
+
 func (r *Recording) Storex() string {
 	return fmt.Sprintf("record(device(%d,%s))", r.deviceID, r.variableName)
 }

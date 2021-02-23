@@ -2,6 +2,7 @@ package notify
 
 import (
 	"fmt"
+	"io"
 	"strings"
 )
 
@@ -96,5 +97,13 @@ func printWarning(args ...interface{}) {
 		Println(append([]interface{}{"\033[1;33mwarning:\033[0m"}, args...)...)
 	} else {
 		fmt.Fprintf(Console.StandardOut, "WARN: %s\n", args...)
+	}
+}
+
+func PrintKeyValue(b io.Writer, k string, v interface{}) {
+	if ansiColorsEnabled {
+		fmt.Fprintf(b, "\033[94m%s:\033[0m%v ", k, v)
+	} else {
+		fmt.Fprintf(b, "%s:%v ", k, v)
 	}
 }

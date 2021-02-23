@@ -132,3 +132,8 @@ func (l *Loop) Stop(ctx Context) error {
 	l.isRunning = false
 	return nil
 }
+
+// IsPlaying is part of Playable
+func (l *Loop) IsPlaying() bool {
+	return l.isRunning
+}

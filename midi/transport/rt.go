@@ -44,14 +44,14 @@ func (t RtmidiTransporter) PrintInfo(inID, outID int) {
 	defer in.Close()
 	ports, err := in.PortCount()
 	if err != nil {
-		log.Fatalln("can't get number of in ports: ", err.Error())
+		log.Fatalln("can't get number of in ports: ", err)
 	}
 	for i := 0; i < ports; i++ {
 		name, err := in.PortName(i)
 		if err != nil {
 			name = ""
 		}
-		fmt.Printf("[midi] input device %d: %s\n", i, name)
+		fmt.Printf("[midi] input  device %d: %s\n", i, name)
 	}
 	{
 		// Outs
@@ -62,7 +62,7 @@ func (t RtmidiTransporter) PrintInfo(inID, outID int) {
 		defer out.Close()
 		ports, err := out.PortCount()
 		if err != nil {
-			log.Fatalln("can't get number of out ports: ", err.Error())
+			log.Fatalln("can't get number of out ports: ", err)
 		}
 
 		for i := 0; i < ports; i++ {

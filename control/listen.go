@@ -68,6 +68,10 @@ func (l *Listen) Stop(ctx core.Context) error {
 	return nil
 }
 
+func (l *Listen) IsPlaying() bool {
+	return l.isRunning
+}
+
 // NoteOn is part of core.NoteListener
 func (l *Listen) NoteOn(n core.Note) {
 	l.mutex.Lock()

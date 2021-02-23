@@ -27,10 +27,6 @@ func (w Print) Play(ctx Context, at time.Time) error {
 	return nil
 }
 
-func (w Print) Stop(ctx Context) error {
-	return nil
-}
-
 func (w Print) Evaluate(ctx Context) error {
 	// TODO check c?
 	w.S()
