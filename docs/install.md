@@ -11,6 +11,8 @@ A complete `melrose` installation requires:
 - Installation of the extension `melrose-for-vscode`
 - Installation of the `melrose` console application
 
+You can either install the application from source or use the unsigned downloadable packages.
+
 ## Install from source
 
 Instructions to get the source, install the runtime dependencies and compile the program, is documented in the [README](https://github.com/emicklei/melrose) of the project.
@@ -29,10 +31,10 @@ Contact me (see github) if you want a commercial, signed and supported version.
 
 Until we have a proper installer, download the following files for installing `melrose` on Microsoft Windows.
 
-- https://s3.amazonaws.com/public.philemonworks.com/libgcc_s_seh-1.dll
-- https://s3.amazonaws.com/public.philemonworks.com/libstdc%2B%2B-6.dll
-- https://s3.amazonaws.com/public.philemonworks.com/libwinpthread-1.dll
-- https://s3.amazonaws.com/public.philemonworks.com/melrose.exe
+- [libgcc](https://s3.amazonaws.com/public.philemonworks.com/libgcc_s_seh-1.dll)
+- [libstdc](https://s3.amazonaws.com/public.philemonworks.com/libstdc%2B%2B-6.dll)
+- [libwinpthread](https://s3.amazonaws.com/public.philemonworks.com/libwinpthread-1.dll)
+- [latest melrose.exe](https://s3.amazonaws.com/public.philemonworks.com/melrose.exe)
 
 ### Melrose for Ubuntu
 
