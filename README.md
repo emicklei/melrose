@@ -7,7 +7,7 @@
 
 ## Install
 
-See [Build instructions](INSTALL.md).
+See [Download and build instructions](INSTALL.md).
 
 ## Usage
 
@@ -15,10 +15,7 @@ See [Build instructions](INSTALL.md).
 Note sequences in your program can be changed while playing which makes it possible to even use it for live performance.
 For the best experience, use the `melrōse` together with the Visual Studio Code Plugin for Melrōse.
 
-
 Read the [documentation](https://emicklei.github.io/melrose/) on how to use `melrōse`.
-
-Download an installation from [Quickstart in Mac OSX](https://emicklei.github.io/melrose/garageband.html).
 
 ### Status
 
@@ -31,11 +28,6 @@ Until `v1.0.0` the language syntax may change in an incompatible way.
 ### System setup
 
 ![melrose-port-daw.png](docs/images/melrose-port-daw.png)
-
-
-#### Melrōse plugin for Visual Studio Code<a name="plugin"></a>
-
-Search and install the extension from the editor or go to the [Marketplace published package](https://marketplace.visualstudio.com/items?itemName=EMicklei.melrose-for-vscode)
 
 
 ### Contributions
