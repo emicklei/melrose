@@ -5,6 +5,10 @@
 [![GoDoc](https://godoc.org/github.com/emicklei/melrose?status.svg)](https://pkg.go.dev/github.com/emicklei/melrose?tab=doc)
 
 
+## Install
+
+See [Build instructions](INSTALL.md).
+
 ## Usage
 
 `melrōse` is a tool to create music by programming melodies and uses a custom language to compose notes that are played with MIDI.
@@ -15,7 +19,6 @@ For the best experience, use the `melrōse` together with the Visual Studio Code
 Read the [documentation](https://emicklei.github.io/melrose/) on how to use `melrōse`.
 
 Download an installation from [Quickstart in Mac OSX](https://emicklei.github.io/melrose/garageband.html).
-
 
 ### Status
 
