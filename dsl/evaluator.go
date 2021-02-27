@@ -100,82 +100,9 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		// check delete
-		if r == nil {
-			e.context.Variables().Delete(varName)
-		} else {
-			// special case for Loop
-			// if the value is a Loop
-			// then if the variable refers to an existing loop
-			// 		then change to Target of that loop
-			//		else store the loop
-			// else store the result
-			if theLoop, ok := r.(*core.Loop); ok {
-				if storedValue, present := e.context.Variables().Get(varName); present {
-					if otherLoop, replaceme := storedValue.(*core.Loop); replaceme {
-						otherLoop.SetTarget(theLoop.Target())
-						r = otherLoop
-					} else {
-						// existing variable but not a Loop
-						e.context.Variables().Put(varName, theLoop)
-					}
-				} else {
-					// new variable for theLoop
-					e.context.Variables().Put(varName, theLoop)
-				}
-				return r, nil
-			}
-			// special case for Listen
-			// if the value is a Listen
-			// then if the variable refers to an existing listen
-			// 		then change to Target of that listen
-			//		else store the listen
-			// else store the result
-			if theListen, ok := r.(*control.Listen); ok {
-				if storedValue, present := e.context.Variables().Get(varName); present {
-					if otherListen, replaceme := storedValue.(*control.Listen); replaceme {
-						otherListen.SetTarget(theListen.Target())
-						r = otherListen
-					} else {
-						// existing variable but not a Listen
-						e.context.Variables().Put(varName, theListen)
-					}
-				} else {
-					// new variable for theLoop
-					e.context.Variables().Put(varName, theListen)
-				}
-				return r, nil
-			}
-			// special case for Recording
-			// if the value is a Recording
-			// then if the variable refers to an existing recording
-			// 		then change the Target of that recording
-			//		else store the recording
-			// else store the result
-			if theRecording, ok := r.(*core.Recording); ok {
-				if storedValue, present := e.context.Variables().Get(varName); present {
-					if otherRecording, replaceme := storedValue.(*core.Recording); replaceme {
-						otherRecording.GetTargetFrom(theRecording)
-						r = otherRecording
-					} else {
-						// existing variable but not a Listen
-						e.context.Variables().Put(varName, theRecording)
-					}
-				} else {
-					// new variable for theLoop
-					e.context.Variables().Put(varName, theRecording)
-				}
-				return r, nil
-			}
-
-			// not a Loop or Listen
-			e.context.Variables().Put(varName, r)
-			if aware, ok := r.(core.NameAware); ok {
-				aware.VariableName(varName)
-			}
-		}
-		return r, nil
+		return e.handleAssignment(varName, r)
 	}
+
 	// evaluate and print
 	r, err := e.EvaluateExpression(entry)
 	if err != nil {
@@ -194,6 +121,84 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 		}
 	}
 
+	return r, nil
+}
+
+func (e *Evaluator) handleAssignment(varName string, r interface{}) (interface{}, error) {
+	// check delete
+	if r == nil {
+		e.context.Variables().Delete(varName)
+	} else {
+		// special case for Loop
+		// if the value is a Loop
+		// then if the variable refers to an existing loop
+		// 		then change to Target of that loop
+		//		else store the loop
+		// else store the result
+		if theLoop, ok := r.(*core.Loop); ok {
+			if storedValue, present := e.context.Variables().Get(varName); present {
+				if otherLoop, replaceme := storedValue.(*core.Loop); replaceme {
+					otherLoop.SetTarget(theLoop.Target())
+					r = otherLoop
+				} else {
+					// existing variable but not a Loop
+					e.context.Variables().Put(varName, theLoop)
+				}
+			} else {
+				// new variable for theLoop
+				e.context.Variables().Put(varName, theLoop)
+			}
+			return r, nil
+		}
+		// special case for Listen
+		// if the value is a Listen
+		// then if the variable refers to an existing listen
+		// 		then change to Target of that listen
+		//		else store the listen
+		// else store the result
+		if theListen, ok := r.(*control.Listen); ok {
+			if storedValue, present := e.context.Variables().Get(varName); present {
+				if otherListen, replaceme := storedValue.(*control.Listen); replaceme {
+					otherListen.SetTarget(theListen.Target())
+					r = otherListen
+				} else {
+					// existing variable but not a Listen
+					e.context.Variables().Put(varName, theListen)
+				}
+			} else {
+				// new variable for theLoop
+				e.context.Variables().Put(varName, theListen)
+			}
+			return r, nil
+		}
+		// special case for Recording
+		// if the value is a Recording
+		// then if the variable refers to an existing recording
+		// 		then change the Target of that recording
+		//		else store the recording
+		// else store the result
+		if theRecording, ok := r.(*core.Recording); ok {
+			if storedValue, present := e.context.Variables().Get(varName); present {
+				if otherRecording, replaceme := storedValue.(*core.Recording); replaceme {
+					otherRecording.GetTargetFrom(theRecording)
+					r = otherRecording
+				} else {
+					// existing variable but not a Listen
+					e.context.Variables().Put(varName, theRecording)
+				}
+			} else {
+				// new variable for theLoop
+				e.context.Variables().Put(varName, theRecording)
+			}
+			return r, nil
+		}
+
+		// not a Loop or Listen
+		e.context.Variables().Put(varName, r)
+		if aware, ok := r.(core.NameAware); ok {
+			aware.VariableName(varName)
+		}
+	}
 	return r, nil
 }
 

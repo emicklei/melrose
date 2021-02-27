@@ -19,7 +19,7 @@ var (
 )
 
 func StartREPL(ctx core.Context) {
-	notify.PrintWelcome()
+	notify.PrintWelcome(core.BuildTag)
 	// start REPL
 	line := liner.NewLiner()
 	defer line.Close()

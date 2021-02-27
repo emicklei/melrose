@@ -8,11 +8,11 @@ import (
 
 var ansiColorsEnabled = true
 
-func PrintWelcome() {
+func PrintWelcome(version string) {
 	if ansiColorsEnabled {
-		fmt.Println("\033[1;34mmelrōse\033[0m" + " - program your melodies")
+		fmt.Println("\033[1;34mmelrōse\033[0m" + " - program your melodies - " + version)
 	} else {
-		fmt.Fprintf(Console.StandardOut, "melrose - program your melodies\n")
+		fmt.Fprintf(Console.StandardOut, "melrose - program your melodies - "+version+"\n")
 	}
 }
 

@@ -68,11 +68,15 @@ func (d *DeviceRegistry) Command(args []string) notify.Message {
 func (d *DeviceRegistry) printInfo() {
 	d.streamRegistry.transport.PrintInfo(d.defaultInputID, d.defaultOutputID)
 
+	notify.PrintHighlighted("current:")
 	od, err := d.Output(d.defaultOutputID)
-	if err != nil {
-		notify.Print(notify.NewError(err))
-		return
+	if err == nil {
+		fmt.Printf("input device %d, channel %d\n", d.defaultOutputID, od.defaultChannel)
 	}
-	fmt.Printf("[midi] channel %d = default MIDI output channel\n", od.defaultChannel)
-	fmt.Printf("[midi] echo notes = %v\n", od.echo)
+
+	id, err := d.Output(d.defaultInputID)
+	if err == nil {
+		fmt.Printf("output device %d, channel %d\n", d.defaultInputID, id.defaultChannel)
+	}
+	fmt.Printf("echo notes = %v\n", od.echo)
 }
