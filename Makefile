@@ -13,9 +13,8 @@ unused:
 	env GO111MODULE=on go get honnef.co/go/tools/cmd/staticcheck@v0.0.1-2020.1.4
 	staticcheck --unused.whole-program=true -- ./...
 
-build:
-	export LATEST_TAG=$(shell git describe --abbrev=0)
-	cd cmd/melrose && go build -ldflags "-s -w -X core.BuildTag=$(LATEST_TAG)" -o ../../target/melrose
+build: 
+	cd cmd/melrose && go build -ldflags "-s -w -X main.BuildTag=$(LATEST_TAG)" -o ../../target/melrose
 	
 install: test
 	go install github.com/emicklei/melrose/cmd/melrose
@@ -41,7 +40,8 @@ clean:
 APP := /Applications/Melrose
 package: clean build  
 	# prepare target
-	cp /usr/local/opt/portmidi/lib/libportmidi.dylib target 
+	cp /usr/lib/libSystem.B.dylib target
+	cp /usr/lib/libc++.1.dylib target
 	echo "$(LATEST_TAG)" > target/version.txt
 	# copy to APP
 	rm -rf $(APP)
@@ -49,6 +49,7 @@ package: clean build
 	cp target/melrose $(APP)
 	cp packaging/macosx/*.sh $(APP)
 	cp target/version.txt $(APP)
+	cp target/*.dylib $(APP)
 	# package it up
 	/usr/local/bin/packagesbuild --package-version "$(LATEST_TAG)" packaging/macosx/Melrose.pkgproj
 	mv packaging/macosx/Melrose.pkg "packaging/macosx/Melrose-$(LATEST_TAG).pkg"

@@ -18,7 +18,8 @@ var (
 	httpPort     = flag.String("http", ":8118", "address on which to listen for HTTP requests")
 )
 
-func Setup() (core.Context, error) {
+func Setup(buildTag string) (core.Context, error) {
+	core.BuildTag = buildTag
 	flag.Parse()
 	if *debugLogging {
 		core.ToggleDebug()

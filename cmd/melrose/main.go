@@ -7,8 +7,10 @@ import (
 	"github.com/emicklei/melrose/ui/cli"
 )
 
+var BuildTag string
+
 func main() {
-	ctx, err := system.Setup()
+	ctx, err := system.Setup(BuildTag)
 	if err != nil {
 		log.Fatalln(err)
 	}
