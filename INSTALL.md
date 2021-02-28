@@ -8,7 +8,6 @@ See [Melrōse Documentation](https://emicklei.github.io/melrose/install.html).
 
 In order to build and work with `melrose` on your operating system, the following components need to be installed:
 
-- RtMidi library
 - melrose executable program
 - (optionally) Melrōse plugin for Visual Studio Code
 
