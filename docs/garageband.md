@@ -17,13 +17,9 @@ Melrōse can communicate with GarageaBand by exchanging MIDI messages. GarageBan
 
 This article describes the steps to get Melrōse working with GarageBand such that you can play your melodies.
 
-### Install melrōse
+### Install melrose
 
-Install the latest packaged (unsigned) release of Melrōse for Mac OSX 10+.
-
-#### versions
-
-- [Melrose-v0.37.0.pkg 2021-01-27](https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/versions/Melrose-v0.37.0.pkg)
+[Install](install.html) the latest packaged (unsigned) release of Melrōse for Mac OSX 10+.
 
 ### Configure Audio MIDI Setup
 

@@ -52,6 +52,11 @@ See [Language](dsl.html) for all supported functions.
 
 ![screenshot.png](images/screenshot.png)
 
+## Quick starts
+
+- [Using Melrōse with Apple Garageband](https://emicklei.github.io/melrose/garageband.html).
+- [Using Melrōse with Apple Logic Pro](https://emicklei.github.io/melrose/logicpro.html).
+
 
 Software is licensed under [MIT](https://github.com/emicklei/melrose/LICENSE).
 &copy; 2014-2021 [ernestmicklei.com](http://ernestmicklei.com)
