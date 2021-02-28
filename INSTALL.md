@@ -2,7 +2,7 @@
 
 ## Install from prepared packages
 
-See [Melrōse Documentation](https://melrōse.org).
+See [Melrōse Documentation](http://melrōse.org).
 
 ## Build from source
 
