@@ -39,17 +39,15 @@ clean:
 
 APP := /Applications/Melrose
 package: clean build  
-	# prepare target
-	cp /usr/lib/libSystem.B.dylib target
-	cp /usr/lib/libc++.1.dylib target
+	# prepare target, build results is already in target
+	# cp /usr/lib/libSystem.B.dylib target
+	# cp /usr/lib/libc++.1.dylib target
 	echo "$(LATEST_TAG)" > target/version.txt
 	# copy to APP
 	rm -rf $(APP)
 	mkdir -p $(APP)	
-	cp target/melrose $(APP)
 	cp packaging/macosx/*.sh $(APP)
-	cp target/version.txt $(APP)
-	cp target/*.dylib $(APP)
+	cp target/* $(APP)
 	# package it up
 	/usr/local/bin/packagesbuild --package-version "$(LATEST_TAG)" packaging/macosx/Melrose.pkgproj
 	mv packaging/macosx/Melrose.pkg "packaging/macosx/Melrose-$(LATEST_TAG).pkg"
