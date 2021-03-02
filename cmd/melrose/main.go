@@ -7,7 +7,7 @@ import (
 	"github.com/emicklei/melrose/ui/cli"
 )
 
-var BuildTag string
+var BuildTag = "dev"
 
 func main() {
 	ctx, err := system.Setup(BuildTag)

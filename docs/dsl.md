@@ -57,6 +57,7 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#octavemap">octavemap</a>
 - <a href="#onbar">onbar</a>
 - <a href="#pitch">pitch</a>
+- <a href="#pitchmap">pitchmap</a>
 - <a href="#print">print</a>
 - <a href="#random">random</a>
 - <a href="#repeat">repeat</a>
@@ -483,13 +484,13 @@ octave(1,sequence('c d')) // => C5 D5
 ```
 
 ### octavemap<a name="octavemap"></a>
-Create a sequence with notes for which the order and the pitch are changed. 1-based indexing.
+Create a sequence with notes for which the order and the octaves are changed.
 
-> pitchmap('int2int',object)
+> octavemap('int2int',object)
 
 #### examples	
 ```javascript
-pitchmap('1:-1,1:0,1:1',note('c')) // => B3 C D
+octavemap('1:-1,2:0,3:1',chord('c')) // => (C3 E G5)
 ```
 
 ### onbar<a name="onbar"></a>
@@ -533,6 +534,16 @@ pitch(-1,sequence('c d e'))
 p = interval(-4,4,1)
 
 pitch(p,note('c'))
+```
+
+### pitchmap<a name="pitchmap"></a>
+Create a sequence with notes for which the order and the pitch are changed. 1-based indexing.
+
+> pitchmap('int2int',object)
+
+#### examples	
+```javascript
+pitchmap('1:-1,1:0,1:1',note('c')) // => B3 C D
 ```
 
 ### play<a name="play"></a>

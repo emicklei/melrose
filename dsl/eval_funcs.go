@@ -262,7 +262,7 @@ chord('g/M/2') // Major G second inversion`,
 			return c
 		}}
 
-	eval["octavemap"] = Function{
+	eval["pitchmap"] = Function{
 		Title:       "Pitch Map operator",
 		Description: "create a sequence with notes for which the order and the pitch are changed. 1-based indexing",
 		Prefix:      "pitchm",
@@ -275,6 +275,21 @@ chord('g/M/2') // Major G second inversion`,
 				return notify.Panic(fmt.Errorf("cannot pitchmap (%T) %v", m, m))
 			}
 			return op.NewPitchMap(s, indices)
+		}}
+
+	eval["octavemap"] = Function{
+		Title:       "Octave Map operator",
+		Description: "create a sequence with notes for which the order and the octaves are changed",
+		Prefix:      "octavem",
+		Template:    `octavemap('${1:int2int}',${2:object})`,
+		IsComposer:  true,
+		Samples:     `octavemap('1:-1,2:0,3:1',chord('c')) // => (C3 E G5)`,
+		Func: func(indices string, m interface{}) interface{} {
+			s, ok := getSequenceable(m)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot octavemap (%T) %v", m, m))
+			}
+			return op.NewOctaveMap(s, indices)
 		}}
 
 	eval["pitch"] = Function{
