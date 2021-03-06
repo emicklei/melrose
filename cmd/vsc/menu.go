@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -23,4 +24,10 @@ func postProcessMenu(file string, menu string) {
 	replaced := strings.Replace(string(data), "$$menu", menu, -1)
 	err = ioutil.WriteFile(file, []byte(replaced), os.ModePerm)
 	checkErr(err)
+}
+
+func checkErr(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }

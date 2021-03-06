@@ -13,8 +13,6 @@ func main() {
 		grammar()
 	case "snippets":
 		snippets()
-	case "dslmd":
-		dslmarkdown()
 	case "menu":
 		postProcessMenus()
 	default:

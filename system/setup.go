@@ -2,12 +2,15 @@ package system
 
 import (
 	"flag"
+	"io"
 	"log"
+	"net/http"
 	"sync"
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/midi"
 	"github.com/emicklei/melrose/midi/transport"
+	"github.com/emicklei/melrose/notify"
 
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/server"
@@ -25,6 +28,7 @@ func Setup(buildTag string) (core.Context, error) {
 		core.ToggleDebug()
 	}
 	transport.Initializer()
+	checkVersion()
 
 	ctx := new(core.PlayContext)
 	ctx.EnvironmentVars = new(sync.Map)
@@ -42,4 +46,34 @@ func Setup(buildTag string) (core.Context, error) {
 	}
 
 	return ctx, nil
+}
+
+func checkVersion() {
+	v := getVersion()
+	notify.Warnf("you run version:%s, the latest available on http://melrōse.org is:%s", core.BuildTag, v)
+}
+
+func getVersion() string {
+	resp, err := http.Get("https://storage.googleapis.com/downloads.ernestmicklei.com/melrose/versions/version.txt")
+	if err != nil {
+		if core.IsDebug() {
+			notify.Warnf("failed to fetch melrose version:%v", err)
+		}
+		return "?"
+	}
+	if resp.StatusCode != 200 || resp.Body == nil {
+		if core.IsDebug() {
+			notify.Warnf("failed to fetch melrose version:%v", resp)
+		}
+		return "?"
+	}
+	defer resp.Body.Close()
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		if core.IsDebug() {
+			notify.Warnf("failed to fetch melrose version:%v", err)
+		}
+		return "?"
+	}
+	return string(data)
 }
