@@ -23,12 +23,19 @@ func Export(fileName string, m interface{}, bpm float64) error {
 		return exportMultiTrack(fileName, mt, bpm)
 	}
 	if seq, ok := m.(core.Sequenceable); ok {
-		t := core.NewTrack("melrōse-track", 1)
-		t.Add(core.NewSequenceOnTrack(core.On(1), seq))
-		mt := core.MultiTrack{Tracks: []core.Valueable{core.On(t)}}
-		return exportMultiTrack(fileName, mt, bpm)
+		return exportSequence(seq, fileName, bpm)
 	}
-	return fmt.Errorf("cannot export [%v] (%T)", m, m)
+	if lp, ok := m.(*core.Loop); ok {
+		return exportSequence(lp.ToSequence(4), fileName, bpm)
+	}
+	return fmt.Errorf("cannot MIDI export a (%T)", m)
+}
+
+func exportSequence(seq core.Sequenceable, fileName string, bpm float64) error {
+	t := core.NewTrack("melrōse-track", 1)
+	t.Add(core.NewSequenceOnTrack(core.On(1), seq))
+	mt := core.MultiTrack{Tracks: []core.Valueable{core.On(t)}}
+	return exportMultiTrack(fileName, mt, bpm)
 }
 
 func createMidiTrack(t *core.Track, bpm float64) (*smf.Track, error) {
@@ -111,12 +118,13 @@ func createMidiTrack(t *core.Track, bpm float64) (*smf.Track, error) {
 	if err != nil {
 		return nil, err
 	}
-	notify.Infof("wrote track [%s] with [%d] MIDI events", t.Title, track.Len())
+	if core.IsDebug() {
+		notify.Debugf("wrote track [%s] with [%d] MIDI events", t.Title, track.Len())
+	}
 	return track, nil
 }
 
 func exportMultiTrack(fileName string, m core.MultiTrack, bpm float64) error {
-	notify.Infof("exporting multi-track to [%s] ...", fileName)
 	// Create division
 	// https://www.recordingblogs.com/wiki/time-division-of-a-midi-file
 	division, err := smf.NewDivision(ticksPerBeat, smf.NOSMTPE)
@@ -161,7 +169,7 @@ func exportMultiTrack(fileName string, m core.MultiTrack, bpm float64) error {
 	if err := smfio.Write(writer, midi); err != nil {
 		return err
 	}
-	notify.Infof("... done exporting to [%s]", fileName)
+	notify.Infof("exported multi-track to [%s] ...", fileName)
 	return writer.Flush()
 }
 

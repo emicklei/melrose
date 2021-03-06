@@ -137,3 +137,13 @@ func (l *Loop) Stop(ctx Context) error {
 func (l *Loop) IsPlaying() bool {
 	return l.isRunning
 }
+
+func (l *Loop) ToSequence(loopcount int) Sequence {
+	all := Sequence{}
+	for i := 0; i < loopcount; i++ {
+		for _, each := range l.target {
+			all = all.SequenceJoin(each.S())
+		}
+	}
+	return all
+}
