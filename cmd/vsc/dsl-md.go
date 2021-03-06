@@ -15,16 +15,23 @@ import (
 )
 
 var tmplSource = `---
-title: Melrōse Language
+title: "Language"
+description: "All language functions grouped by creation,compostion and audio control."
+lead: "All language functions grouped by creation,compostion and audio control."
+date: 2021-03-05T12:21:01+02:00
+lastmod: 2021-03-05T12:21:01+02:00
+draft: false
+images: []
+menu: 
+  docs:
+    parent: "reference"
+weight: 20
+toc: true
 ---
 
-[Home](https://emicklei.github.io/melrose)
+## Structure
 
-# Language
-
-Note: until version 1.0.0 of melrōse, the documented syntax is implemented by the last git commit on the master branch
-
-### expressions
+### Expressions
 
 Musical objects are created, composed and played using the <strong>melrõse</strong> tool by evaluating expressions.
 Expressions use any of the predefined functions (creation,composition,audio control).
@@ -53,7 +60,8 @@ Use "//" to add comment, either on a new line or and the end of an expression.
 - <a href="#{{.Anchor}}">{{.Title}}</a>{{end}}
 
 {{range .All}}
-### {{.Title}}<a name="{{.Anchor}}"></a>
+### {{.Title}}
+<a name="{{.Anchor}}"></a>
 {{.Description}}
 
 > {{.Syntax}}
