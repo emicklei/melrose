@@ -7,7 +7,7 @@
 
 ## Install
 
-See [Download and build instructions](INSTALL.md).
+See [Download and build instructions](docs/install.md).
 
 ## Usage
 
@@ -15,7 +15,7 @@ See [Download and build instructions](INSTALL.md).
 Note sequences in your program can be changed while playing which makes it possible to even use it for live performance.
 For the best experience, use the `melrōse` together with the Visual Studio Code Plugin for Melrōse.
 
-Read the [documentation](https://emicklei.github.io/melrose/) on how to use `melrōse`.
+Read the [documentation](https://melrōse.org/) on how to use `melrōse`.
 
 ### Status
 
