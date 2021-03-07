@@ -18,7 +18,7 @@ func showHelp(ctx core.Context, args []string) notify.Message {
 
 	if len(args) == 0 {
 		fmt.Fprintf(&b, "\nversion %s, syntax: %s\n", core.BuildTag, dsl.SyntaxVersion)
-		fmt.Fprintf(&b, "https://emicklei.github.io/melrose \n")
+		fmt.Fprintf(&b, "https://melrōse.org \n")
 	}
 
 	// detect help for a command or function

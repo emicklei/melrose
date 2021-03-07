@@ -2,7 +2,7 @@
 
 ## Install from prepared packages
 
-See [Melrōse Documentation](https://emicklei.github.io/melrose/install.html).
+See [Melrōse Documentation](https://melrōse.org).
 
 ## Build from source
 

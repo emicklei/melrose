@@ -2,7 +2,7 @@
 title: Melrōse Command Line Interface (CLI)
 ---
 
-[Home](https://emicklei.github.io/melrose)
+[Home](https://melrōse.org/)
 
 ## Melrōse program
 

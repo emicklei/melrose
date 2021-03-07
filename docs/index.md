@@ -2,17 +2,6 @@
 title: Melrōse
 ---
 
-[Home](https://emicklei.github.io/melrose)
-[Videos](https://emicklei.github.io/melrose/videos)
-[Tutorial](https://emicklei.github.io/melrose/tutorial)
-[Examples](https://emicklei.github.io/melrose/examples)
-[Language](dsl.html)
-[Notations](notations.html)
-[Tool](cli.html)
-[DAW](daw.html)
-[Install](install.html)
-
-
 ## Introduction
 
 `melrōse` is a tool to create and play music by programming melodies.
@@ -51,11 +40,6 @@ Audio control objects such as:
 See [Language](dsl.html) for all supported functions.
 
 ![screenshot.png](images/screenshot.png)
-
-## Quick starts
-
-- [Using Melrōse with Apple Garageband](https://emicklei.github.io/melrose/garageband.html).
-- [Using Melrōse with Apple Logic Pro](https://emicklei.github.io/melrose/logicpro.html).
 
 
 Software is licensed under [MIT](https://github.com/emicklei/melrose/LICENSE).
