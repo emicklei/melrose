@@ -5,6 +5,19 @@
 [![GoDoc](https://godoc.org/github.com/emicklei/melrose?status.svg)](https://pkg.go.dev/github.com/emicklei/melrose?tab=doc)
 
 
+## Introduction
+
+`melrōse` is a tool to create and play music by programming melodies.
+It uses a custom language to compose notes and create loops and tracks to play.
+This is an example of a simple major scale C.
+
+```javascript
+sequence('c d e f g a b c5')
+```
+
+Note sequences in your program can be changed while playing giving you direct audible feedback. 
+For the best experience, use the `melrōse` tool together with the Visual Studio Code Plugin for Melrōse.
+
 ## Install
 
 See [Download and build instructions](docs/install.md).

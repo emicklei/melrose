@@ -1,10 +1,3 @@
----
-title: Melrōse HTTP server
----
-
-[Home](https://emicklei.github.io/melrose)
-
-
 # HTTP API server
 
 Melrōse starts a HTTP server on port 8118 and evaluates expressions or programs providing the source as the payload (HTTP Body).

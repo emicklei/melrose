@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/emicklei/melrose/core"
@@ -50,7 +51,7 @@ func Setup(buildTag string) (core.Context, error) {
 
 func checkVersion() {
 	v := getVersion()
-	notify.Warnf("you run version:%s, the latest available on http://melrōse.org is:%s", core.BuildTag, v)
+	notify.Infof("you are running version %s, a newer version (%s) is available on http://melrōse.org", core.BuildTag, v)
 }
 
 func getVersion() string {
@@ -75,5 +76,5 @@ func getVersion() string {
 		}
 		return "?"
 	}
-	return string(data)
+	return strings.TrimSpace(string(data))
 }
