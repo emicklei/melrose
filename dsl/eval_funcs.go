@@ -103,19 +103,19 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 		}}
 
 	eval["progression"] = Function{
-		Title: "Chord progression creator",
-		//Description: `create a Chord progression using this <a href="/melrose/notations.html#progression-not">format</a>`,
-		Prefix:   "pro",
-		IsCore:   true,
-		Template: `progression('${1:scale}','${2:space-separated-roman-chords}')`,
-		Samples:  `progression('C','II V I') // => (D F A) (G B D5) (C E G)`,
+		Title:       "Chord progression creator",
+		Description: `create a Chord progression using this <a href="/docs/reference/notations/#chordprogression">format</a>`,
+		Prefix:      "pro",
+		IsCore:      true,
+		Template:    `progression('${1:scale}','${2:space-separated-roman-chords}')`,
+		Samples:     `progression('C','II V I') // => (D F A) (G B D5) (C E G)`,
 		Func: func(scale, chords interface{}) interface{} {
 			return core.NewChordProgression(getValueable(scale), getValueable(chords))
 		}}
 
 	eval["chordsequence"] = Function{
 		Title:       "Sequence of chords creator",
-		Description: `create a Chord sequence using this <a href="/melrose/notations.html#chordsequence-not">format</a>`,
+		Description: `create a Chord sequence using this <a href="/docs/reference/notations/#chordsequence">format</a>`,
 		Prefix:      "pro",
 		IsCore:      true,
 		Template:    `chordsequence('${1:chords}')`,
@@ -248,7 +248,7 @@ midi(16,36,70) // => 16C2 (kick)`,
 
 	eval["chord"] = Function{
 		Title:       "Chord creator",
-		Description: `create a Chord from its string <a href="/melrose/notations.html#chord-not">notation</a>`,
+		Description: `create a Chord from its string <a href="/docs/reference/notations/#chord">format</a>`,
 		Prefix:      "cho",
 		Template:    `chord('${1:note}')`,
 		Samples: `chord('c#5/m/1')
@@ -422,7 +422,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 
 	eval["sequence"] = Function{
 		Title:       "Sequence creator",
-		Description: `create a Sequence using this <a href="/melrose/notations.html#sequence-not">format</a>`,
+		Description: `create a Sequence using this <a href="/docs/reference/notations/#sequence">format</a>`,
 		Prefix:      "seq",
 		Template:    `sequence('${1:space-separated-notes}')`,
 		Samples: `sequence('c d e')
@@ -439,7 +439,7 @@ sequence('c (d e f) a =')`,
 
 	eval["note"] = Function{
 		Title:       "Note creator",
-		Description: `create a Note using this <a href="/melrose/notations.html#note-not">format</a>`,
+		Description: `create a Note using this <a href="/docs/reference/notations/#note">format</a>`,
 		Prefix:      "no",
 		Template:    `note('${1:letter}')`,
 		Samples: `note('e')
@@ -455,7 +455,7 @@ note('2.e#--')`,
 
 	eval["scale"] = Function{
 		Title:       "Scale creator",
-		Description: `create a Scale using this <a href="/melrose/notations.html#scale-not">format</a>`,
+		Description: `create a Scale using this <a href="/docs/reference/notations/#scale">format</a>`,
 		Prefix:      "sc",
 		Template:    `scale(${1:octaves},'${2:scale-syntax}')`,
 		IsCore:      true,
@@ -699,27 +699,6 @@ lp_cb = loop(cb,reverse(cb))`,
 				}
 			}
 			return core.NewLoop(ctx, joined)
-		}}
-
-	eval["begin"] = Function{
-		Title:         "Begin loop command",
-		Description:   "begin loop(s). Ignore if it was running.",
-		ControlsAudio: true,
-		Prefix:        "beg",
-		Template:      `begin(${1:loop})`,
-		Samples: `lp_cb = loop(sequence('C D E F G A B'))
-begin(lp_cb) // end(lp_cb)`,
-		Func: func(vars ...variable) interface{} {
-			for _, each := range vars {
-				l, ok := each.Value().(*core.Loop)
-				if !ok {
-					notify.Warnf("cannot begin (%T) %v", l, l)
-					continue
-				}
-				_ = l.Play(ctx, time.Now())
-				notify.Infof("begin %s", each.Name)
-			}
-			return nil
 		}}
 
 	eval["stop"] = Function{
