@@ -50,6 +50,9 @@ func Setup(buildTag string) (core.Context, error) {
 }
 
 func checkVersion() {
+	if core.BuildTag == "dev" {
+		return // ignore dev
+	}
 	v := getVersion()
 	notify.Infof("you are running version %s, a newer version (%s) is available on http://melrōse.org", core.BuildTag, v)
 }

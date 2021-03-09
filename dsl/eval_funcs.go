@@ -191,7 +191,7 @@ jm = joinmap('1 (2 3) 4',j) // => C = D =`,
 		Description: "create a named track for a given MIDI channel with a musical object",
 		Prefix:      "tr",
 		Template:    `track('${1:title}',${2:midi-channel}, onbar(1,${3:object}))`,
-		Samples:     `track("lullaby",1,onbar(2, sequence('c d e'))) // => a new track on MIDI channel 1 with sequence starting at bar`,
+		Samples:     `track("lullaby",1,onbar(2, sequence('c d e'))) // => a new track on MIDI channel 1 with sequence starting at bar 2`,
 		Func: func(title string, channel int, onbars ...core.SequenceOnTrack) interface{} {
 			if len(title) == 0 {
 				return notify.Panic(fmt.Errorf("cannot have a track without title"))
@@ -539,8 +539,8 @@ next(num)`,
 		ControlsAudio: true,
 		Prefix:        "syn",
 		Template:      `sync(${1:object})`,
-		Samples: `sync(s1,s2,s3) // play s1,s2 and s3 at the same time
-sync(loop1,loop2) // begin loop2 at the next start of loop1`,
+		Samples: `s1 = sync(s1,s2,s3) // play s1,s2 and s3 at the same time
+s2 = sync(loop1,loop2) // begin loop2 at the next start of loop1`,
 		Func: func(playables ...interface{}) interface{} {
 			vals := []core.Valueable{}
 			for _, p := range playables {
@@ -687,7 +687,7 @@ stretch(8,note('c'))  // C with length of 2 bars`,
 		Prefix:        "loo",
 		Template:      `lp_${1:object} = loop(${1:object})`,
 		Samples: `cb = sequence('c d e f g a b')
-lp_cb = loop(cb,reverse(cb))`,
+myloop = loop(cb,reverse(cb))`,
 		Func: func(playables ...interface{}) interface{} {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
