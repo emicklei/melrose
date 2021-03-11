@@ -177,23 +177,23 @@ func (e *Evaluator) handleAssignment(varName string, r interface{}) (interface{}
 		// 		then change the Target of that recording
 		//		else store the recording
 		// else store the result
-		if theRecording, ok := r.(*core.Recording); ok {
+		if theRecording, ok := r.(*control.Recording); ok {
 			if storedValue, present := e.context.Variables().Get(varName); present {
-				if otherRecording, replaceme := storedValue.(*core.Recording); replaceme {
-					otherRecording.GetTargetFrom(theRecording)
-					r = otherRecording
+				if storedRecording, replaceme := storedValue.(*control.Recording); replaceme {
+					storedRecording.GetTargetFrom(theRecording)
+					r = storedRecording
 				} else {
-					// existing variable but not a Listen
+					// existing variable but not a Recording
 					e.context.Variables().Put(varName, theRecording)
 				}
 			} else {
-				// new variable for theLoop
+				// new variable for theRecording
 				e.context.Variables().Put(varName, theRecording)
 			}
 			return r, nil
 		}
 
-		// not a Loop or Listen
+		// not a Loop or Listen or Recording
 		e.context.Variables().Put(varName, r)
 		if aware, ok := r.(core.NameAware); ok {
 			aware.VariableName(varName)

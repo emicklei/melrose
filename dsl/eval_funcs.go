@@ -616,7 +616,7 @@ record(rec) // record notes played on the current input device and stop recordin
 					return notify.Panic(fmt.Errorf("missing variable parameter"))
 				}
 			}
-			return core.NewRecording(deviceID, injectable.Name)
+			return control.NewRecording(deviceID, injectable.Name)
 		}}
 
 	eval["undynamic"] = Function{

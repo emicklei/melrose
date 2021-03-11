@@ -100,6 +100,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 				p.Play(l.context, time.Now())
 			}
 		}
+		// deprectated end TODO
 		if query.Get("action") == "end" || query.Get("action") == "stop" {
 			if p, ok := returnValue.(core.Stoppable); ok {
 				notify.Infof("stop(%s)", displayString(l.context, p))
