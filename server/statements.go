@@ -38,7 +38,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		if i, err := strconv.Atoi(lineString); err == nil {
 			line = i
 		}
-		l.context.Environment().Store(core.EditorLineStart, line)
+		l.context.Environment().Store(core.EditorLineEnd, line)
 	}
 	// get expression source
 	data, err := ioutil.ReadAll(r.Body)
@@ -51,9 +51,9 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	// get and store line end
 	breaks := strings.Count(source, "\n")
 	if breaks > 0 {
-		l.context.Environment().Store(core.EditorLineEnd, line+breaks)
+		l.context.Environment().Store(core.EditorLineStart, line-breaks)
 	} else {
-		l.context.Environment().Store(core.EditorLineEnd, line)
+		l.context.Environment().Store(core.EditorLineStart, line)
 	}
 
 	if debug {
