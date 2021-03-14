@@ -129,6 +129,27 @@ func (n Note) WithVelocity(v int) Note {
 }
 
 func (n Note) WithFraction(f float32, dotted bool) Note {
+	// TODO
+	if f == 0.5*1.5 {
+		n.fraction = 0.5
+		n.Dotted = true
+		return n
+	}
+	if f == 0.25*1.5 {
+		n.fraction = 0.25
+		n.Dotted = true
+		return n
+	}
+	if f == 0.125*1.5 {
+		n.fraction = 0.125
+		n.Dotted = true
+		return n
+	}
+	if f == 0.0625*1.5 {
+		n.fraction = 0.0625
+		n.Dotted = true
+		return n
+	}
 	n.fraction = f
 	n.Dotted = dotted
 	return n
