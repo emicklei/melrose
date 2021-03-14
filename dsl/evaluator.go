@@ -111,7 +111,11 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 
 	// special case for Loop,Listen,Recording
 	if canStop, ok := r.(core.Stoppable); ok {
-		return nil, fmt.Errorf("this object must assigned to variable name, use e.g. var = %s", canStop.(core.Storable).Storex())
+		varName := e.newSuggestedVariableName(canStop)
+		if len(varName) == 0 {
+			return nil, fmt.Errorf("this object must assigned to variable name, use e.g. var = %s", canStop.(core.Storable).Storex())
+		}
+		return e.handleAssignment(varName, r)
 	}
 
 	// special case for Evals, put last because Stoppables can be also Evaluatable
@@ -122,6 +126,39 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 	}
 
 	return r, nil
+}
+
+// The last expression returned a Stoppable and was not assigned to a variable.
+// Generate a name based on the combination of the file and the line (if both given).
+func (e *Evaluator) newSuggestedVariableName(stoppable core.Stoppable) string {
+	var line int
+	// var dir string
+	// if v, ok := e.context.Environment().Load(core.WorkingDirectory); ok {
+	// 	dir = v.(string)
+	// } else {
+	// 	return ""
+	// }
+	if v, ok := e.context.Environment().Load(core.EditorLineEnd); ok {
+		line = v.(int)
+	} else {
+		return ""
+	}
+	// use hash
+	//h := fnv.New32a()
+	//h.Write([]byte(fmt.Sprintf("%s%d", dir, line)))
+	return fmt.Sprintf("%s%d", shortTypeName(stoppable), line)
+}
+
+// *core.Loop => loop
+func shortTypeName(v interface{}) string {
+	if v == nil {
+		return "nil"
+	}
+	parts := strings.Split(fmt.Sprintf("%T", v), ".")
+	if len(parts) > 1 {
+		return strings.ToLower(parts[len(parts)-1])
+	}
+	return strings.ToLower(parts[0])
 }
 
 func (e *Evaluator) handleAssignment(varName string, r interface{}) (interface{}, error) {

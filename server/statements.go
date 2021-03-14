@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/antonmedv/expr/file"
@@ -34,19 +35,29 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	line := 1
 	lineString := query.Get("line")
 	if len(lineString) > 0 {
-		l.context.Environment().Store(core.LineOfCursor, lineString)
 		if i, err := strconv.Atoi(lineString); err == nil {
 			line = i
 		}
+		l.context.Environment().Store(core.EditorLineStart, line)
 	}
-	// get expression
+	// get expression source
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	source := string(data)
+
+	// get and store line end
+	breaks := strings.Count(source, "\n")
+	if breaks > 0 {
+		l.context.Environment().Store(core.EditorLineEnd, line+breaks)
+	} else {
+		l.context.Environment().Store(core.EditorLineEnd, line)
+	}
+
 	if debug {
-		notify.Debugf("http.request.body %s", string(data))
+		notify.Debugf("http.request.body %s", source)
 	}
 	defer r.Body.Close()
 	if query.Get("action") == "kill" {
@@ -55,7 +66,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		l.context.Device().Reset()
 		return
 	}
-	returnValue, err := l.evaluator.EvaluateProgram(string(data))
+	returnValue, err := l.evaluator.EvaluateProgram(source)
 	var response evaluationResult
 	if err != nil {
 		// evaluation failed.

@@ -109,7 +109,8 @@ type Context interface {
 
 // WorkingDirectory is a key in a context environment.
 const WorkingDirectory = "shell.pwd"
-const LineOfCursor = "editor.line"
+const EditorLineStart = "editor.line.start"
+const EditorLineEnd = "editor.line.end"
 
 // TODO makue users use Play with a Context that can have a Condition
 type Evaluatable interface {

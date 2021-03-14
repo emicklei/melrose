@@ -292,14 +292,15 @@ chord('g/M/2') // Major G second inversion`,
 			return op.NewOctaveMap(s, indices)
 		}}
 
-	eval["pitch"] = Function{
+	registerFunction(eval, "pitch", Function{
 		Title:       "Pitch operator",
 		Description: "change the pitch with a delta of semitones",
+		Alias:       "transpose",
 		Prefix:      "pit",
 		Template:    `pitch(${1:semitones},${2:sequenceable})`,
 		Samples: `pitch(-1,sequence('c d e'))
 p = interval(-4,4,1)
-pitch(p,note('c'))`,
+transpose(p,note('c'))`,
 		IsComposer: true,
 		Func: func(semitones, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
@@ -307,7 +308,7 @@ pitch(p,note('c'))`,
 				return notify.Panic(fmt.Errorf("cannot pitch (%T) %v", m, m))
 			}
 			return op.Pitch{Target: s, Semitones: getValueable(semitones)}
-		}}
+		}})
 
 	eval["reverse"] = Function{
 		Title:       "Reverse operator",
@@ -539,8 +540,8 @@ next(num)`,
 		ControlsAudio: true,
 		Prefix:        "syn",
 		Template:      `sync(${1:object})`,
-		Samples: `s1 = sync(s1,s2,s3) // play s1,s2 and s3 at the same time
-s2 = sync(loop1,loop2) // begin loop2 at the next start of loop1`,
+		Samples: `sync(s1,s2,s3) // play s1,s2 and s3 at the same time
+sync(loop1,loop2) // begin loop2 at the next start of loop1`,
 		Func: func(playables ...interface{}) interface{} {
 			vals := []core.Valueable{}
 			for _, p := range playables {
@@ -682,7 +683,7 @@ stretch(8,note('c'))  // C with length of 2 bars`,
 	// BEGIN Loop and control
 	eval["loop"] = Function{
 		Title:         "Loop creator",
-		Description:   "create a new loop from one or more musical objects; must be assigned to a variable",
+		Description:   "create a new loop from one or more musical objects",
 		ControlsAudio: true,
 		Prefix:        "loo",
 		Template:      `lp_${1:object} = loop(${1:object})`,
@@ -1020,8 +1021,8 @@ midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1`,
 		Template:    "listen(${1:variable-or-device-selector},${2:function})",
 		Samples: `rec = note('c') // define a variable "rec" with a initial object ; this is a place holder
 fun = play(rec) // define the playable function to call when notes are received ; loop and print are also possible
-ear = listen(rec,fun) // start a listener for notes from default input device, store it in "rec" and call "fun"
-alt = listen(device(1,rec),fun) // start a listener for notes from input device 1`,
+listen(rec,fun) // start a listener for notes from default input device, store it in "rec" and call "fun"
+listen(device(1,rec),fun) // start a listener for notes from input device 1`,
 		Func: func(varOrDeviceSelector interface{}, function interface{}) interface{} {
 			_, ok := getValue(function).(core.Evaluatable)
 			if !ok {
