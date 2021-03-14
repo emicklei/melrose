@@ -686,7 +686,7 @@ stretch(8,note('c'))  // C with length of 2 bars`,
 		Description:   "create a new loop from one or more musical objects",
 		ControlsAudio: true,
 		Prefix:        "loo",
-		Template:      `lp_${1:object} = loop(${1:object})`,
+		Template:      `loop(${1:object})`,
 		Samples: `cb = sequence('c d e f g a b')
 myloop = loop(cb,reverse(cb))`,
 		Func: func(playables ...interface{}) interface{} {
