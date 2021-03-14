@@ -30,8 +30,11 @@ func grammar() {
 	}
 	// collect and sort by length , descending
 	keywords := []string{}
-	for k := range dsl.EvalFunctions(ctx) {
+	for k, f := range dsl.EvalFunctions(ctx) {
 		keywords = append(keywords, k)
+		if len(f.Alias) > 0 {
+			keywords = append(keywords, f.Alias)
+		}
 	}
 	sort.SliceStable(keywords, func(i, j int) bool {
 		return len(keywords[i]) > len(keywords[j])
