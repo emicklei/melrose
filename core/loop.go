@@ -138,6 +138,10 @@ func (l *Loop) IsPlaying() bool {
 	return l.isRunning
 }
 
+func (l *Loop) S() Sequence {
+	return l.ToSequence(1)
+}
+
 func (l *Loop) ToSequence(loopcount int) Sequence {
 	all := Sequence{}
 	for i := 0; i < loopcount; i++ {

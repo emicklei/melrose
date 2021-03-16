@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/op"
 )
 
 type SyncPlay struct {
@@ -43,6 +44,17 @@ func (s SyncPlay) Stop(ctx core.Context) error {
 		}
 	}
 	return nil
+}
+
+func (s SyncPlay) S() core.Sequence {
+	l := []core.Sequenceable{}
+	for _, each := range s.playables {
+		val := each.Value()
+		if s, ok := val.(core.Sequenceable); ok {
+			l = append(l, s)
+		}
+	}
+	return (op.Merge{Target: l}).S()
 }
 
 // TODO
