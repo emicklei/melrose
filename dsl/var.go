@@ -11,6 +11,7 @@ type variable struct {
 	store core.VariableStorage
 }
 
+// Storex is part of Storable
 func (v variable) Storex() string {
 	return v.Name
 }
@@ -33,6 +34,7 @@ func (v variable) Inspect(i core.Inspection) {
 	}
 }
 
+// S is part of Sequenceable
 func (v variable) S() core.Sequence {
 	m, ok := v.store.Get(v.Name)
 	if !ok {
