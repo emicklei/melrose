@@ -525,6 +525,11 @@ next(num)`,
 		Func: func(playables ...interface{}) interface{} {
 			list := []core.Sequenceable{}
 			for _, p := range playables {
+				// first check Playable
+				if pl, ok := getPlayable(p); ok {
+					pl.Play(ctx, time.Now())
+					continue
+				}
 				if s, ok := getSequenceable(p); ok { // unwrap var
 					list = append(list, s)
 				} else {

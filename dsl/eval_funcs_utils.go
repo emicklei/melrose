@@ -70,6 +70,16 @@ func getSequenceable(v interface{}) (core.Sequenceable, bool) {
 	return nil, false
 }
 
+func getPlayable(v interface{}) (core.Playable, bool) {
+	if val, ok := v.(core.Valueable); ok {
+		v = val
+	}
+	if s, ok := v.(core.Playable); ok {
+		return s, ok
+	}
+	return nil, false
+}
+
 func getSequenceableList(m ...interface{}) (list []core.Sequenceable, ok bool) {
 	ok = true
 	for _, each := range m {
