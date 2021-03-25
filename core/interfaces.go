@@ -105,6 +105,7 @@ type Context interface {
 	Variables() VariableStorage
 	Environment() *sync.Map
 	WithCondition(c Condition) Context
+	Capabilities() Capabilities
 }
 
 // WorkingDirectory is a key in a context environment.
