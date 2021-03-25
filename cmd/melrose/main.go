@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/emicklei/melrose/server"
 	"github.com/emicklei/melrose/system"
 	"github.com/emicklei/melrose/ui/cli"
 )
@@ -14,6 +15,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	server.Start(ctx)
 	defer system.TearDown(ctx)
 	cli.StartREPL(ctx)
 }

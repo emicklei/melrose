@@ -13,6 +13,7 @@ func (p PlayContext) Control() LoopController    { return p.LoopControl }
 func (p PlayContext) Device() AudioDevice        { return p.AudioDevice }
 func (p PlayContext) Variables() VariableStorage { return p.VariableStorage }
 func (p PlayContext) Environment() *sync.Map     { return p.EnvironmentVars }
+func (p PlayContext) Capabilities() Capabilities { return Capabilities{} }
 
 type ConditionalPlayContext struct {
 	Context

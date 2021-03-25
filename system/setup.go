@@ -14,12 +14,10 @@ import (
 	"github.com/emicklei/melrose/notify"
 
 	"github.com/emicklei/melrose/dsl"
-	"github.com/emicklei/melrose/server"
 )
 
 var (
 	debugLogging = flag.Bool("d", false, "debug logging")
-	httpPort     = flag.String("http", ":8118", "address on which to listen for HTTP requests")
 )
 
 func Setup(buildTag string) (core.Context, error) {
@@ -40,18 +38,12 @@ func Setup(buildTag string) (core.Context, error) {
 		log.Fatalln("unable to initialize MIDI")
 	}
 	ctx.AudioDevice = reg
-
-	if len(*httpPort) > 0 {
-		// start DSL server
-		go server.NewLanguageServer(ctx, *httpPort).Start()
-	}
-
 	return ctx, nil
 }
 
 func checkVersion() {
-	if core.BuildTag == "dev" {
-		return // ignore dev
+	if core.BuildTag == "dev" || core.BuildTag == "wasm" {
+		return // ignore
 	}
 	v := getVersion()
 	notify.Infof("you are running version %s, a newer version (%s) is available on http://melrōse.org", core.BuildTag, v)
