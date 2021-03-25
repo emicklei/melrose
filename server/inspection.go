@@ -36,7 +36,7 @@ func (l *LanguageServer) inspectHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	w.Header().Set("content-type", "application/json")
 	enc := json.NewEncoder(w)
-	msg := l.markdownOnInspecting(th.Token)
+	msg := l.service.CommandHover(th.Token)
 	err := enc.Encode(markdownHolder{MarkdownString: msg})
 	if debug {
 		notify.Debugf("service.http.response.MarkdownString: %s", msg)
@@ -44,18 +44,4 @@ func (l *LanguageServer) inspectHandler(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		notify.Console.Errorf("inspect failed:%v\n", err)
 	}
-}
-
-func (l *LanguageServer) markdownOnInspecting(token string) string {
-	// inspect as variable
-	value, ok := l.context.Variables().Get(token)
-	if ok {
-		return core.NewInspect(l.context, value).Markdown()
-	}
-	// inspect as function
-	fun, ok := l.evaluator.LookupFunction(token)
-	if ok {
-		return fun.Markdown()
-	}
-	return ""
 }

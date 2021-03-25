@@ -6,15 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"path/filepath"
-	"reflect"
 	"strconv"
-	"strings"
-	"time"
 
 	"github.com/antonmedv/expr/file"
 	"github.com/emicklei/melrose/core"
-	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -25,8 +20,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 	query := r.URL.Query()
-	l.context.Environment().Store(core.WorkingDirectory, filepath.Dir(query.Get("file")))
-
+	file := query.Get("file")
 	debug := query.Get("debug") == "true" || core.IsDebug()
 	if debug {
 		notify.Debugf("service.http: %s", r.URL.String())
@@ -38,7 +32,6 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		if i, err := strconv.Atoi(lineString); err == nil {
 			line = i
 		}
-		l.context.Environment().Store(core.EditorLineEnd, line)
 	}
 	// get expression source
 	data, err := ioutil.ReadAll(r.Body)
@@ -48,79 +41,41 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	}
 	source := string(data)
 
-	// get and store line end
-	breaks := strings.Count(source, "\n")
-	if breaks > 0 {
-		l.context.Environment().Store(core.EditorLineStart, line-breaks)
-	} else {
-		l.context.Environment().Store(core.EditorLineStart, line)
-	}
-
 	if debug {
 		notify.Debugf("http.request.body %s", source)
 	}
 	defer r.Body.Close()
+
+	var evalResult interface{}
 	if query.Get("action") == "kill" {
-		// kill the play and any loop
-		dsl.StopAllPlayables(l.context)
-		l.context.Device().Reset()
-		return
+		l.service.CommandKill()
 	}
-	returnValue, err := l.evaluator.EvaluateProgram(source)
-	var response evaluationResult
-	if err != nil {
+	if query.Get("action") == "inspect" {
+		if ret, err := l.service.CommandInspect(file, line, source); err != nil {
+			evalResult = err
+		} else {
+			evalResult = ret
+		}
+	}
+	if query.Get("action") == "play" {
+		if ret, err := l.service.CommandPlay(file, line, source); err != nil {
+			evalResult = err
+		} else {
+			evalResult = ret
+		}
+	}
+	if query.Get("action") == "stop" {
+		if ret, err := l.service.CommandStop(file, line, source); err != nil {
+			evalResult = err
+		} else {
+			evalResult = ret
+		}
+	}
+	if _, ok := evalResult.(error); ok {
 		// evaluation failed.
 		w.WriteHeader(http.StatusBadRequest)
-		response = resultFrom(query.Get("file"), line, err)
-	} else {
-		// evaluation was ok.
-
-		if query.Get("action") == "inspect" {
-			// check for function
-			if reflect.TypeOf(returnValue).Kind() == reflect.Func {
-				if fn, ok := l.evaluator.LookupFunction(string(data)); ok {
-					fmt.Fprintf(notify.Console.StandardOut, "%s: %s\n", fn.Title, fn.Description)
-				}
-			} else {
-				core.PrintValue(l.context, returnValue)
-			}
-		}
-
-		// check if play was requested and is playable
-		if query.Get("action") == "play" {
-			// first check Playable
-			if pl, ok := returnValue.(core.Playable); ok {
-				notify.Infof("play(%s)", displayString(l.context, pl))
-				_ = pl.Play(l.context, time.Now())
-			} else {
-				// any sequenceable is playable
-				if s, ok := returnValue.(core.Sequenceable); ok {
-					notify.Infof("play(%s)", displayString(l.context, s))
-					l.context.Device().Play(
-						core.NoCondition,
-						s,
-						l.context.Control().BPM(),
-						time.Now())
-				}
-			}
-		}
-		// deprectated TODO
-		if query.Get("action") == "begin" {
-			if p, ok := returnValue.(core.Playable); ok {
-				notify.Infof("begin(%s)", displayString(l.context, p))
-				p.Play(l.context, time.Now())
-			}
-		}
-		// deprectated end TODO
-		if query.Get("action") == "end" || query.Get("action") == "stop" {
-			if p, ok := returnValue.(core.Stoppable); ok {
-				notify.Infof("stop(%s)", displayString(l.context, p))
-				p.Stop(l.context)
-			}
-		}
-
-		response = resultFrom(query.Get("file"), line, returnValue)
 	}
+	response := resultFrom(file, line, evalResult)
 	w.Header().Set("content-type", "application/json")
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "\t")
@@ -142,14 +97,6 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		err = enc.Encode(response)
 		notify.Debugf("http.response: %s error=%v", buf.String(), err)
 	}
-}
-
-func displayString(ctx core.Context, v interface{}) string {
-	name := ctx.Variables().NameFor(v)
-	if len(name) == 0 {
-		name = core.Storex(v)
-	}
-	return name
 }
 
 type evaluationResult struct {
