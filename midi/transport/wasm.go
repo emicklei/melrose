@@ -51,7 +51,7 @@ type WASMMidiOut struct {
 
 func (m WASMMidiOut) WriteShort(status int64, data1 int64, data2 int64) error {
 	// MIDI_send(deviceID, status, pitch, velocity)
-	js.Global().Call("MIDI_send", m.id, uint8(status), uint8(data1), uint8(data2))
+	js.Global().Call("melrose_send", m.id, uint8(status), uint8(data1), uint8(data2))
 	return nil
 }
 func (m WASMMidiOut) Close() error {
