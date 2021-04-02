@@ -7,4 +7,5 @@ type Service interface {
 	CommandEvaluate(file string, lineEnd int, source string) (interface{}, error)
 	CommandKill() error
 	CommandHover(source string) string
+	ChangeDefaultDeviceAndChannel(isInput bool, deviceID int, channel int) error
 }

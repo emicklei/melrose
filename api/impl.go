@@ -1,9 +1,11 @@
 package api
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,14 +23,33 @@ func NewService(ctx core.Context) Service {
 	return &ServiceImpl{context: ctx, evaluator: dsl.NewEvaluator(ctx)}
 }
 
+func (s *ServiceImpl) ChangeDefaultDeviceAndChannel(isInput bool, deviceID int, channel int) error {
+	// TODO handle channel
+	var msg notify.Message
+	if isInput {
+		msg = s.context.Device().Command([]string{"in", strconv.Itoa(deviceID)})
+	} else {
+		msg = s.context.Device().Command([]string{"out", strconv.Itoa(deviceID)})
+	}
+	if msg.Type() == notify.NotifyError {
+		return errors.New(msg.Message())
+	} else {
+		notify.Print(msg)
+	}
+	return nil
+}
+
 func (s *ServiceImpl) updateMetadata(file string, lineEnd int, source string) error {
+	if core.IsDebug() {
+		notify.Debugf("api.updateMetadata file:%s lineEnd:%d, source:%s", file, lineEnd, source)
+	}
 	s.context.Environment().Store(core.WorkingDirectory, filepath.Dir(file))
 	// get and store lineEnd end
 	breaks := strings.Count(source, "\n")
 	if breaks > 0 {
 		s.context.Environment().Store(core.EditorLineStart, lineEnd-breaks)
 	} else {
-		s.context.Environment().Store(core.EditorLineStart, lineEnd)
+		s.context.Environment().Store(core.EditorLineEnd, lineEnd)
 	}
 	return nil
 }
