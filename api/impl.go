@@ -40,17 +40,15 @@ func (s *ServiceImpl) ChangeDefaultDeviceAndChannel(isInput bool, deviceID int, 
 }
 
 func (s *ServiceImpl) updateMetadata(file string, lineEnd int, source string) error {
-	if core.IsDebug() {
-		notify.Debugf("api.updateMetadata file:%s lineEnd:%d, source:%s", file, lineEnd, source)
-	}
 	s.context.Environment().Store(core.WorkingDirectory, filepath.Dir(file))
 	// get and store lineEnd end
 	breaks := strings.Count(source, "\n")
 	if breaks > 0 {
 		s.context.Environment().Store(core.EditorLineStart, lineEnd-breaks)
 	} else {
-		s.context.Environment().Store(core.EditorLineEnd, lineEnd)
+		s.context.Environment().Store(core.EditorLineStart, lineEnd)
 	}
+	s.context.Environment().Store(core.EditorLineEnd, lineEnd)
 	return nil
 }
 
@@ -106,7 +104,7 @@ func (s *ServiceImpl) CommandStop(file string, lineEnd int, source string) (inte
 
 	if p, ok := returnValue.(core.Stoppable); ok {
 		notify.Infof("stop(%s)", displayString(s.context, p))
-		return p.Stop(s.context), nil
+		return returnValue, p.Stop(s.context)
 	}
 
 	return returnValue, nil

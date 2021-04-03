@@ -132,20 +132,11 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
 // Generate a name based on the combination of the file and the line (if both given).
 func (e *Evaluator) newSuggestedVariableName(stoppable core.Stoppable) string {
 	var line int
-	// var dir string
-	// if v, ok := e.context.Environment().Load(core.WorkingDirectory); ok {
-	// 	dir = v.(string)
-	// } else {
-	// 	return ""
-	// }
 	if v, ok := e.context.Environment().Load(core.EditorLineEnd); ok {
 		line = v.(int)
 	} else {
 		return ""
 	}
-	// use hash
-	//h := fnv.New32a()
-	//h.Write([]byte(fmt.Sprintf("%s%d", dir, line)))
 	return fmt.Sprintf("%s%d", shortTypeName(stoppable), line)
 }
 

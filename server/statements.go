@@ -47,29 +47,37 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	defer r.Body.Close()
 
 	var evalResult interface{}
-	if query.Get("action") == "kill" {
-		l.service.CommandKill()
-	}
-	if query.Get("action") == "inspect" {
+	action := query.Get("action")
+	switch action {
+	case "kill":
+		evalResult = l.service.CommandKill()
+	case "inspect":
 		if ret, err := l.service.CommandInspect(file, line, source); err != nil {
 			evalResult = err
 		} else {
 			evalResult = ret
 		}
-	}
-	if query.Get("action") == "play" {
+	case "play":
 		if ret, err := l.service.CommandPlay(file, line, source); err != nil {
 			evalResult = err
 		} else {
 			evalResult = ret
 		}
-	}
-	if query.Get("action") == "stop" {
+	case "stop":
 		if ret, err := l.service.CommandStop(file, line, source); err != nil {
 			evalResult = err
 		} else {
 			evalResult = ret
 		}
+	case "eval":
+		if ret, err := l.service.CommandEvaluate(file, line, source); err != nil {
+			evalResult = err
+		} else {
+			evalResult = ret
+		}
+	default:
+		notify.Errorf("unknown command:%s", query.Get("action"))
+		w.WriteHeader(http.StatusBadRequest)
 	}
 	if _, ok := evalResult.(error); ok {
 		// evaluation failed.
