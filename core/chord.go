@@ -204,7 +204,7 @@ func ParseChord(s string) (Chord, error) {
 		return Chord{}, fmt.Errorf("illegal chord: [%s]", s)
 	}
 	switch matches[1] {
-	case "maj":
+	case "maj", "M":
 		chord.quality = Major
 	case "m":
 		chord.quality = Minor
@@ -227,7 +227,7 @@ func ParseChord(s string) (Chord, error) {
 	switch matches[2] {
 	case "2":
 		// TODO fix hack
-		if matches[1] != "" { // do not overwrite 2nd invertion
+		if matches[1] != "" { // do not overwrite 2nd inversion
 			chord.quality = Suspended2
 		}
 	case "4":

@@ -89,6 +89,12 @@ func TestParseChord_C(t *testing.T) {
 			"('(C E A♭ B♭)')",
 			false,
 		},
+		{
+			"G Major second inv",
+			args{"g/M/2"},
+			"('(D5 G5 B5)')",
+			false,
+		},
 		// Fifth
 	}
 	for _, tt := range tests {

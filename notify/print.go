@@ -77,11 +77,7 @@ func Errorf(format string, args ...interface{}) {
 }
 
 func printInfo(args ...interface{}) {
-	if ansiColorsEnabled {
-		Println(append([]interface{}{"\033[1;32minfo:\033[0m"}, args...)...)
-	} else {
-		fmt.Fprintf(Console.StandardOut, "INFO: %s\n", args...)
-	}
+	fmt.Fprintf(Console.StandardOut, "%s\n", args...)
 }
 
 func printError(args ...interface{}) {
