@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/antonmedv/expr/file"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
@@ -57,7 +58,7 @@ func (s *ServiceImpl) CommandInspect(file string, lineEnd int, source string) (i
 
 	returnValue, err := s.evaluator.EvaluateProgram(source)
 	if err != nil {
-		return nil, err
+		return nil, patchFilelocation(err, lineEnd)
 	}
 	// check for function
 	if reflect.TypeOf(returnValue).Kind() == reflect.Func {
@@ -74,7 +75,7 @@ func (s *ServiceImpl) CommandPlay(file string, lineEnd int, source string) (inte
 
 	returnValue, err := s.evaluator.EvaluateProgram(source)
 	if err != nil {
-		return nil, err
+		return nil, patchFilelocation(err, lineEnd)
 	}
 
 	if pl, ok := returnValue.(core.Playable); ok {
@@ -99,7 +100,7 @@ func (s *ServiceImpl) CommandStop(file string, lineEnd int, source string) (inte
 
 	returnValue, err := s.evaluator.EvaluateProgram(source)
 	if err != nil {
-		return nil, err
+		return nil, patchFilelocation(err, lineEnd)
 	}
 
 	if p, ok := returnValue.(core.Stoppable); ok {
@@ -114,7 +115,7 @@ func (s *ServiceImpl) CommandEvaluate(file string, lineEnd int, source string) (
 
 	returnValue, err := s.evaluator.EvaluateProgram(source)
 	if err != nil {
-		return nil, err
+		return nil, patchFilelocation(err, lineEnd)
 	}
 	return returnValue, nil
 }
@@ -145,4 +146,13 @@ func displayString(ctx core.Context, v interface{}) string {
 		name = core.Storex(v)
 	}
 	return name
+}
+
+func patchFilelocation(err error, lineEnd int) error {
+	// patch Location of error
+	if fe, ok := err.(*file.Error); ok {
+		fe.Location.Line = fe.Location.Line - 1 + lineEnd
+		return fe
+	}
+	return err
 }

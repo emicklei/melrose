@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/antonmedv/expr/file"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
 )
@@ -122,10 +121,6 @@ func resultFrom(filename string, line int, val interface{}) evaluationResult {
 	t := fmt.Sprintf("%T", val)
 	_, isStoppable := val.(core.Stoppable)
 	if err, ok := val.(error); ok {
-		// patch Location of error
-		if fe, ok := err.(*file.Error); ok {
-			fe.Location.Line = fe.Location.Line - 1 + line
-		}
 		return evaluationResult{
 			Type:         t,
 			IsError:      true,
