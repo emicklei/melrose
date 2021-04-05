@@ -14,7 +14,7 @@ type Merge struct {
 
 func (m Merge) Storex() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "join(")
+	fmt.Fprintf(&b, "merge(")
 	core.AppendStorexList(&b, true, m.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
