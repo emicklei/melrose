@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 	"github.com/antonmedv/expr/file"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/dsl"
+	midifile "github.com/emicklei/melrose/midi/file"
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -138,6 +140,21 @@ func (s *ServiceImpl) CommandHover(source string) string {
 		return fun.Markdown()
 	}
 	return ""
+}
+
+func (s *ServiceImpl) CommandMIDISample(filename string, lineEnd int, source string) ([]byte, error) {
+	s.updateMetadata(filename, lineEnd, source)
+
+	returnValue, err := s.evaluator.EvaluateProgram(source)
+	if err != nil {
+		return []byte{}, patchFilelocation(err, lineEnd)
+	}
+	buffer := new(bytes.Buffer)
+	err = midifile.ExportOn(buffer, returnValue, s.context.Control().BPM())
+	if err != nil {
+		return []byte{}, err
+	}
+	return buffer.Bytes(), nil
 }
 
 func displayString(ctx core.Context, v interface{}) string {

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"math"
 	"os"
 	"time"
@@ -17,25 +18,36 @@ import (
 
 const ticksPerBeat uint16 = 960
 
-// Export creates (overwrites) a SMF multi-track Midi file
 func Export(fileName string, m interface{}, bpm float64) error {
+	// Save to new midi source file
+	outputMidi, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer outputMidi.Close()
+	notify.Infof("exporting multi-track to [%s] ...", fileName)
+	return ExportOn(outputMidi, m, bpm)
+}
+
+// Export creates (overwrites) a SMF multi-track Midi file
+func ExportOn(w io.Writer, m interface{}, bpm float64) error {
 	if mt, ok := m.(core.MultiTrack); ok {
-		return exportMultiTrack(fileName, mt, bpm)
+		return exportMultiTrack(w, mt, bpm)
 	}
 	if seq, ok := m.(core.Sequenceable); ok {
-		return exportSequence(seq, fileName, bpm)
+		return exportSequence(seq, w, bpm)
 	}
 	if lp, ok := m.(*core.Loop); ok {
-		return exportSequence(lp.ToSequence(4), fileName, bpm)
+		return exportSequence(lp.ToSequence(4), w, bpm)
 	}
 	return fmt.Errorf("cannot MIDI export a (%T)", m)
 }
 
-func exportSequence(seq core.Sequenceable, fileName string, bpm float64) error {
+func exportSequence(seq core.Sequenceable, w io.Writer, bpm float64) error {
 	t := core.NewTrack("melrōse-track", 1)
 	t.Add(core.NewSequenceOnTrack(core.On(1), seq))
 	mt := core.MultiTrack{Tracks: []core.Valueable{core.On(t)}}
-	return exportMultiTrack(fileName, mt, bpm)
+	return exportMultiTrack(w, mt, bpm)
 }
 
 func createMidiTrack(t *core.Track, bpm float64) (*smf.Track, error) {
@@ -122,8 +134,7 @@ func createMidiTrack(t *core.Track, bpm float64) (*smf.Track, error) {
 	return track, nil
 }
 
-func exportMultiTrack(fileName string, m core.MultiTrack, bpm float64) error {
-	notify.Infof("exporting multi-track to [%s] ...", fileName)
+func exportMultiTrack(w io.Writer, m core.MultiTrack, bpm float64) error {
 	// Create division
 	// https://www.recordingblogs.com/wiki/time-division-of-a-midi-file
 	division, err := smf.NewDivision(ticksPerBeat, smf.NOSMTPE)
@@ -155,16 +166,8 @@ func exportMultiTrack(fileName string, m core.MultiTrack, bpm float64) error {
 		}
 	}
 
-	// Actual write
-	// Save to new midi source file
-	outputMidi, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer outputMidi.Close()
-
 	// Create buffering stream
-	writer := bufio.NewWriter(outputMidi)
+	writer := bufio.NewWriter(w)
 	if err := smfio.Write(writer, midi); err != nil {
 		return err
 	}

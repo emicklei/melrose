@@ -8,4 +8,5 @@ type Service interface {
 	CommandKill() error
 	CommandHover(source string) string
 	ChangeDefaultDeviceAndChannel(isInput bool, deviceID int, channel int) error
+	CommandMIDISample(file string, lineEnd int, source string) ([]byte, error)
 }
