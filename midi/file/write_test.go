@@ -1,9 +1,10 @@
 package file
 
 import (
-	"github.com/emicklei/melrose/core"
 	"testing"
 	"time"
+
+	"github.com/emicklei/melrose/core"
 )
 
 func Test_microsecondsFromBPM(t *testing.T) {
@@ -44,7 +45,7 @@ func Test_ticksFromDuration(t *testing.T) {
 
 func Test_Export(t *testing.T) {
 	s := core.MustParseSequence("C")
-	if err := Export("Test_Export.mid", s, 120.0); err != nil {
+	if err := Export("Test_Export.mid", s, 120.0, 4); err != nil {
 		t.Fatal(err)
 	}
 }

@@ -981,7 +981,7 @@ begin(lp_pi)`,
 			if !strings.HasSuffix(filename, "mid") {
 				filename += ".mid"
 			}
-			return file.Export(filename, getValue(m), ctx.Control().BPM())
+			return file.Export(filename, getValue(m), ctx.Control().BPM(), ctx.Control().BIAB())
 		}}
 
 	eval["replace"] = Function{

@@ -43,6 +43,17 @@ func (s Sequence) NotesDo(block func(Note)) {
 	}
 }
 
+// RestSequence returns a sequence with rest notes up to <bars> respecting <biab>.
+func RestSequence(bars, biab int) Sequence {
+	groups := [][]Note{}
+	for b := 0; b < bars; b++ {
+		for c := 0; c < biab; c++ {
+			groups = append(groups, []Note{Rest4})
+		}
+	}
+	return Sequence{Notes: groups}
+}
+
 // BuildSequence creates a Sequence from a slice of Note
 func BuildSequence(notes []Note) Sequence {
 	groups := [][]Note{}

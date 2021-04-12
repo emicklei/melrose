@@ -11,6 +11,7 @@ import (
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
+	"github.com/emicklei/melrose/op"
 
 	"github.com/Try431/EasyMIDI/smf"
 	"github.com/Try431/EasyMIDI/smfio"
@@ -18,7 +19,7 @@ import (
 
 const ticksPerBeat uint16 = 960
 
-func Export(fileName string, m interface{}, bpm float64) error {
+func Export(fileName string, m interface{}, bpm float64, biab int) error {
 	// Save to new midi source file
 	outputMidi, err := os.Create(fileName)
 	if err != nil {
@@ -26,31 +27,31 @@ func Export(fileName string, m interface{}, bpm float64) error {
 	}
 	defer outputMidi.Close()
 	notify.Infof("exporting multi-track to [%s] ...", fileName)
-	return ExportOn(outputMidi, m, bpm)
+	return ExportOn(outputMidi, m, bpm, biab)
 }
 
 // Export creates (overwrites) a SMF multi-track Midi file
-func ExportOn(w io.Writer, m interface{}, bpm float64) error {
+func ExportOn(w io.Writer, m interface{}, bpm float64, biab int) error {
 	if mt, ok := m.(core.MultiTrack); ok {
-		return exportMultiTrack(w, mt, bpm)
+		return exportMultiTrack(w, mt, bpm, biab)
 	}
 	if seq, ok := m.(core.Sequenceable); ok {
-		return exportSequence(seq, w, bpm)
+		return exportSequence(seq, w, bpm, biab)
 	}
 	if lp, ok := m.(*core.Loop); ok {
-		return exportSequence(lp.ToSequence(4), w, bpm)
+		return exportSequence(lp.ToSequence(4), w, bpm, biab) // TODO 4 can be setting
 	}
 	return fmt.Errorf("cannot MIDI export a (%T)", m)
 }
 
-func exportSequence(seq core.Sequenceable, w io.Writer, bpm float64) error {
+func exportSequence(seq core.Sequenceable, w io.Writer, bpm float64, biab int) error {
 	t := core.NewTrack("melrōse-track", 1)
 	t.Add(core.NewSequenceOnTrack(core.On(1), seq))
 	mt := core.MultiTrack{Tracks: []core.Valueable{core.On(t)}}
-	return exportMultiTrack(w, mt, bpm)
+	return exportMultiTrack(w, mt, bpm, biab)
 }
 
-func createMidiTrack(t *core.Track, bpm float64) (*smf.Track, error) {
+func createMidiTrack(t *core.Track, bpm float64, biab int) (*smf.Track, error) {
 	// Create track struct
 	track := new(smf.Track)
 
@@ -73,7 +74,7 @@ func createMidiTrack(t *core.Track, bpm float64) (*smf.Track, error) {
 	wholeNoteDuration := time.Duration(int(math.Round(4*60*1000/bpm))) * time.Millisecond // 4 = signature TODO create func
 	var moment time.Duration
 	var lastTicks uint32 = 0
-	for _, group := range t.S().Notes { // TODO
+	for _, group := range buildSequenceFromTrack(t, biab).Notes {
 		if len(group) == 0 {
 			continue
 		}
@@ -134,7 +135,7 @@ func createMidiTrack(t *core.Track, bpm float64) (*smf.Track, error) {
 	return track, nil
 }
 
-func exportMultiTrack(w io.Writer, m core.MultiTrack, bpm float64) error {
+func exportMultiTrack(w io.Writer, m core.MultiTrack, bpm float64, biab int) error {
 	// Create division
 	// https://www.recordingblogs.com/wiki/time-division-of-a-midi-file
 	division, err := smf.NewDivision(ticksPerBeat, smf.NOSMTPE)
@@ -152,7 +153,7 @@ func exportMultiTrack(w io.Writer, m core.MultiTrack, bpm float64) error {
 		if each, ok := eachVal.Value().(*core.Track); ok {
 
 			// Create track struct
-			track, err := createMidiTrack(each, bpm)
+			track, err := createMidiTrack(each, bpm, biab)
 			if err != nil {
 				return err
 			}
@@ -184,4 +185,13 @@ func ticksFromDuration(dur time.Duration, quarterUSFromBPM uint32) uint32 {
 func quarterUSFromBPM(bpm float64) uint32 {
 	// 120 bpm -> 500000 usec/quarter note
 	return uint32(60000000.0 / bpm)
+}
+
+func buildSequenceFromTrack(t *core.Track, biab int) core.Sequence {
+	target := []core.Sequenceable{}
+	for bar, seq := range t.Content {
+		each := core.RestSequence(bar-1, biab).SequenceJoin(seq.S())
+		target = append(target, each)
+	}
+	return op.Merge{Target: target}.S()
 }

@@ -150,7 +150,7 @@ func (s *ServiceImpl) CommandMIDISample(filename string, lineEnd int, source str
 		return []byte{}, patchFilelocation(err, lineEnd)
 	}
 	buffer := new(bytes.Buffer)
-	err = midifile.ExportOn(buffer, returnValue, s.context.Control().BPM())
+	err = midifile.ExportOn(buffer, returnValue, s.context.Control().BPM(), s.context.Control().BIAB())
 	if err != nil {
 		return []byte{}, err
 	}

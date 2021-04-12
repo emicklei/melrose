@@ -22,15 +22,6 @@ func NewTrack(title string, channel int) *Track {
 	}
 }
 
-// S is part of Sequenceable
-func (t *Track) S() Sequence {
-	// TODO
-	if one, ok := t.Content[1]; ok {
-		return one.S()
-	}
-	return EmptySequence
-}
-
 func (t *Track) Play(ctx Context, now time.Time) error {
 	bpm := ctx.Control().BPM()
 	biab := ctx.Control().BIAB()

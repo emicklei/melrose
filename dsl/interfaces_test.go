@@ -18,7 +18,6 @@ func TestImplements(t *testing.T) {
 		{source: core.Scale{}},
 		{source: core.ChordSequence{}},
 		{source: core.ChordProgression{}},
-		{source: new(core.Track)},
 		{source: new(core.MultiTrack), notSequenceable: true},
 	} {
 		if !each.notSequenceable {
