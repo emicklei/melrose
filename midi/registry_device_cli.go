@@ -8,6 +8,55 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
+func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error {
+	switch name {
+	case "midi.in":
+		if len(values) != 1 {
+			return fmt.Errorf("one argument expected")
+		}
+		id, ok := values[0].(int)
+		if !ok {
+			return fmt.Errorf("integer device argument expected")
+		}
+		_, err := d.Input(id)
+		if err != nil {
+			return fmt.Errorf("bad input device number: %v", err)
+		}
+		d.defaultInputID = id
+	case "midi.out.channel":
+		if len(values) != 2 {
+			return fmt.Errorf("two argument expected")
+		}
+		id, ok := values[0].(int)
+		if !ok {
+			return fmt.Errorf("integer device argument expected")
+		}
+		ch, ok := values[1].(int)
+		if !ok {
+			return fmt.Errorf("integer channel argument expected")
+		}
+		out, err := d.Output(id)
+		if err != nil {
+			return fmt.Errorf("bad input device number: %v", err)
+		}
+		out.defaultChannel = ch
+	case "midi.out":
+		if len(values) != 1 {
+			return fmt.Errorf("one argument expected")
+		}
+		id, ok := values[0].(int)
+		if !ok {
+			return fmt.Errorf("integer device argument expected")
+		}
+		_, err := d.Output(id)
+		if err != nil {
+			return fmt.Errorf("bad output device number: %v", err)
+		}
+		d.defaultOutputID = id
+	}
+	return nil
+}
+
 // Command is part of melrose.AudioDevice
 func (d *DeviceRegistry) Command(args []string) notify.Message {
 	if len(args) == 0 {

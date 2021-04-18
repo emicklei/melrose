@@ -169,6 +169,22 @@ dm = dynamicmap(' 1:+ , 2:-- ,3:o,4:o',s,t)`)
 		"sequence('C+ E-- G B')")
 }
 
+func TestDynamic_String(t *testing.T) {
+	r := eval(t, `d = dynamic('+',note('c'))`)
+	checkStorex(t, r, "dynamic('+',note('C'))")
+}
+
+func TestDynamic_Number(t *testing.T) {
+	r := eval(t, `d = dynamic(55,note('c'))`)
+	checkStorex(t, r, "dynamic(55,note('C'))")
+}
+
+func TestDynamic_Var(t *testing.T) {
+	r := eval(t, `v = 55
+d = dynamic(v,note('c'))`)
+	checkStorex(t, r, "dynamic(v,note('C'))")
+}
+
 func TestProcessLanguageTest(t *testing.T) {
 	src, _ := ioutil.ReadFile("language_test.mel")
 	defer func() {

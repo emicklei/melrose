@@ -33,6 +33,9 @@ type AudioDevice interface {
 	// Per device specific commands
 	Command(args []string) notify.Message
 
+	// Handle generic setting
+	HandleSetting(name string, values []interface{}) error
+
 	// Play schedules all the notes on the timeline using a BPM (beats-per-minute).
 	// Returns the end time of the last played Note.
 	Play(condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time)

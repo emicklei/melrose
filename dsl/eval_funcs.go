@@ -54,17 +54,14 @@ Fraction can also be an exact float value between 0 and 1.
 	eval["dynamic"] = Function{
 		Title: "Dynamic operator",
 		Description: `Creates a new modified musical object for which the dynamics of all notes are changed.
-	The first parameter controls the emphasis the note, e.g. + (mezzoforte,mf), -- (piano,p).
+	The first parameter controls the emphasis the note, e.g. + (mezzoforte,mf), -- (piano,p) or a velocity [0..127].
 	`,
 		Prefix:     "dy",
 		IsComposer: true,
 		Template:   `dynamic(${1:emphasis},${2:object})`,
-		Samples:    `dynamic('++',sequence('e f')) // => E++ F++`,
-		Func: func(emphasis string, playables ...interface{}) interface{} {
-			if err := op.CheckDynamic(emphasis); err != nil {
-				notify.Print(notify.NewError(err))
-				return nil
-			}
+		Samples: `dynamic('++',sequence('e f')) // => E++ F++
+dynamic(112,note('a')) // => A++++`,
+		Func: func(emphasis interface{}, playables ...interface{}) interface{} {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -74,7 +71,7 @@ Fraction can also be an exact float value between 0 and 1.
 					joined = append(joined, s)
 				}
 			}
-			return op.Dynamic{Target: joined, Emphasis: emphasis}
+			return op.Dynamic{Target: joined, Emphasis: getValueable(emphasis)}
 		}}
 
 	eval["dynamicmap"] = Function{
@@ -1019,6 +1016,21 @@ midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1`,
 		Func: func(deviceID int, status int, channel, data1, data2 interface{}) interface{} {
 			return midi.NewMessage(ctx.Device(), core.On(deviceID), status, core.On(channel), core.On(data1), core.On(data2))
 		}}
+
+	registerFunction(eval, "set", Function{
+		Title:       "Change a setting",
+		Description: "Generic function to change a default setting",
+		Template:    "set(${1:setting-name},${2:setting-value})",
+		Samples: `set('midi.in',1) // default MIDI input device is 1
+set('midi.in.channel',2,10) // default MIDI channel for device 2 is 10
+set('midi.out',3) // default MIDI output device is 3`,
+		Func: func(settingName string, settingValues ...interface{}) interface{} {
+			if err := ctx.Device().HandleSetting(settingName, settingValues); err != nil {
+				notify.Errorf("%v", err)
+			}
+			return nil
+		},
+	})
 
 	registerFunction(eval, "listen", Function{
 		Title:       "Start a MIDI listener",
