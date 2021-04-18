@@ -36,7 +36,7 @@ Until `v1.0.0` the language syntax may change in an incompatible way.
 
 ### Programming music
 
-![screenshot.png](docs/images/screenshot.png)
+![riboluta-melrose](docs/images/riboluta-melrose.png)
 
 ### System setup
 
