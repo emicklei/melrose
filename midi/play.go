@@ -119,6 +119,9 @@ func scheduleOneNote(device *OutputDevice, condition core.Condition, channel int
 			out:        device.stream,
 			mustHandle: condition,
 		}
+		if device.echo {
+			event.echoString = note.String()
+		}
 		return scheduleOnOffEvents(device, event, fixed, moment)
 	}
 	// normal note
@@ -130,6 +133,9 @@ func scheduleOneNote(device *OutputDevice, condition core.Condition, channel int
 		velocity:   int64(note.Velocity),
 		out:        device.stream,
 		mustHandle: condition,
+	}
+	if device.echo {
+		event.echoString = note.String()
 	}
 	actualDuration := time.Duration(float32(whole) * note.DurationFactor())
 	return scheduleOnOffEvents(device, event, actualDuration, moment)
