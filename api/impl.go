@@ -2,7 +2,6 @@ package api
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"path/filepath"
 	"reflect"
@@ -28,16 +27,14 @@ func NewService(ctx core.Context) Service {
 
 func (s *ServiceImpl) ChangeDefaultDeviceAndChannel(isInput bool, deviceID int, channel int) error {
 	// TODO handle channel
-	var msg notify.Message
+	var err error
 	if isInput {
-		msg = s.context.Device().Command([]string{"in", strconv.Itoa(deviceID)})
+		err = s.context.Device().HandleSetting("midi.in", []interface{}{strconv.Itoa(deviceID)})
 	} else {
-		msg = s.context.Device().Command([]string{"out", strconv.Itoa(deviceID)})
+		err = s.context.Device().HandleSetting("midi.out", []interface{}{strconv.Itoa(deviceID)})
 	}
-	if msg.Type() == notify.NotifyError {
-		return errors.New(msg.Message())
-	} else {
-		notify.Print(msg)
+	if err != nil {
+		notify.Errorf("change device/channel failed:%s", err.Error())
 	}
 	return nil
 }

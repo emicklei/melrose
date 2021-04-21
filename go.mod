@@ -7,6 +7,7 @@ require (
 	github.com/antonmedv/expr v1.8.9
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/tre v1.2.0
+	github.com/jonasfj/go-localtunnel v0.0.0-20170326223115-8a804488f275 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
 	github.com/peterh/liner v1.2.1
 	gitlab.com/gomidi/rtmididrv/imported/rtmidi v0.0.0-20210208101652-7be3f3dfd782

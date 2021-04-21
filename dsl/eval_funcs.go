@@ -1018,9 +1018,10 @@ midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1`,
 		}}
 
 	registerFunction(eval, "set", Function{
-		Title:       "Change a setting",
-		Description: "Generic function to change a default setting",
-		Template:    "set(${1:setting-name},${2:setting-value})",
+		Title:         "Change a setting",
+		Description:   "Generic function to change a default setting",
+		ControlsAudio: true,
+		Template:      "set(${1:setting-name},${2:setting-value})",
 		Samples: `set('midi.in',1) // default MIDI input device is 1
 set('midi.in.channel',2,10) // default MIDI channel for device 2 is 10
 set('midi.out',3) // default MIDI output device is 3`,
