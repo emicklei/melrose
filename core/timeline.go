@@ -147,7 +147,7 @@ func (t *Timeline) schedule(event *scheduledTimelineEvent) {
 		return
 	}
 	if t.tail.when == event.when {
-		// event on the same time as head, put it after! tail
+		// event on the same time as tail, put it after! tail
 		t.tail.next = event
 		t.tail = event
 		return
