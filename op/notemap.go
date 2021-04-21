@@ -69,9 +69,9 @@ func convertDotsAndBangs(format string) string {
 	return b.String()
 }
 
-func (n NoteMap) formattedIndices() string {
+func (n NoteMap) formattedIndices(format int) string {
 	var b bytes.Buffer
-	if n.indicesFormat == formatDotAndBangs {
+	if format == formatDotAndBangs {
 		for i := 1; i <= n.maxIndex; i++ {
 			found := false
 			for _, each := range n.Indices {
@@ -103,9 +103,19 @@ func (n NoteMap) Storex() string {
 		st, ok = n.Target.Value().(core.Storable)
 	}
 	if ok {
-		return fmt.Sprintf("notemap('%s',%s)", n.formattedIndices(), st.Storex())
+		return fmt.Sprintf("notemap('%s',%s)", n.formattedIndices(n.indicesFormat), st.Storex())
 	}
 	return ""
+}
+
+// Inspect implements Inspectable
+func (n NoteMap) Inspect(i core.Inspection) {
+	if n.indicesFormat == formatDotAndBangs {
+		i.Properties["nrs"] = n.formattedIndices(formatNumbers)
+	} else {
+		i.Properties["dots"] = n.formattedIndices(formatDotAndBangs)
+	}
+	n.S().Inspect(i)
 }
 
 func sliceMax(indices []int) int {
