@@ -7,6 +7,7 @@ import (
 	"github.com/emicklei/melrose/api"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
+	"github.com/jonasfj/go-localtunnel"
 )
 
 // LanguageServer can execute DSL statements received over HTTP
@@ -30,13 +31,32 @@ func (l *LanguageServer) Start() error {
 	return http.ListenAndServe(l.address, nil)
 }
 
+var localTunnelSubdomain = flag.String("tunnel", "", "use this as a subdomain to route all commands")
+
 var httpPort = flag.String("http", ":8118", "address on which to listen for HTTP requests")
 
 func Start(ctx core.Context) {
+	ls := NewLanguageServer(ctx, *httpPort)
 	if len(*httpPort) > 0 {
 		// start DSL server
-		go NewLanguageServer(ctx, *httpPort).Start()
+		go ls.Start()
 	} else {
 		notify.Warnf("empty http flag, skip starting HTTP server")
+	}
+	if len(*localTunnelSubdomain) > 0 {
+		// start local tunnel
+		listener, err := localtunnel.Listen(localtunnel.Options{Subdomain: *localTunnelSubdomain})
+		if err != nil {
+			notify.Errorf("unable to create localtunnel listener:%v", err)
+			return
+		}
+		mux := new(http.ServeMux)
+		mux.HandleFunc("/v1/statements", ls.statementHandler)
+		mux.HandleFunc("/v1/inspect", ls.inspectHandler)
+		mux.HandleFunc("/version", ls.versionHandler)
+		server := http.Server{Handler: mux}
+		// Handle request from localtunnel
+		go server.Serve(listener)
+		notify.Infof("opened local tunnel with public address: https://%s.loca.lt", *localTunnelSubdomain)
 	}
 }

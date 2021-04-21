@@ -75,8 +75,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 			evalResult = ret
 		}
 	default:
-		notify.Errorf("unknown command:%s", query.Get("action"))
-		w.WriteHeader(http.StatusBadRequest)
+		evalResult = fmt.Errorf("unknown command:%s", query.Get("action"))
 	}
 	if _, ok := evalResult.(error); ok {
 		// evaluation failed.
