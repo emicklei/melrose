@@ -10,11 +10,11 @@ Although it is possible to program directly using the command line interface of 
 You can start the program `melrōse` without any flags. 
 You can use the following flags to change its behavior.
 
-    -http string
+    -http <address>
         address on which to listen for HTTP requests (default ":8118")
-    -cli
-        use the command line interface
-    -v  boolean
+    -tunnel <subdomain>
+        offers a public subdomain.loca.lt address to server HTTP request
+    -v
         verbose logging
 
 ### CLI control
