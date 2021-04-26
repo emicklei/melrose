@@ -18,6 +18,11 @@ func NewInputDevice(id int, in transport.MIDIIn, t transport.Transporter) *Input
 	}
 }
 
+func (i *InputDevice) Listener() transport.MIDIListener {
+	return i.listener
+}
+
+// TODO deprecated?
 func (i *InputDevice) stopListener() {
 	i.listener.Stop()
 }

@@ -12,8 +12,8 @@
 - not supported
     - legato
     - staccato 
-- the :m command must become function to be useable in a script
 - decreasing velocity , each note(group) gets a lower velocity, linear of fixed, or log. increasing too?
     crescendo(10,127,seq)
     decrescendo(127,10,seq)
-        dynamicrange('++++','----'seq)
+        dynamicrange('++++','----',seq)
+        fader(algo,sequence('c d e'))

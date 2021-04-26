@@ -14,7 +14,7 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 		}
 		enable, ok := values[0].(bool)
 		if !ok {
-			return fmt.Errorf("boolean device argument expected")
+			return fmt.Errorf("boolean device argument expected, got %T", values[0])
 		}
 		od, _ := d.Output(d.defaultOutputID)
 		od.echo = enable
@@ -32,13 +32,14 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 		}
 		id, ok := values[0].(int)
 		if !ok {
-			return fmt.Errorf("integer device argument expected")
+			return fmt.Errorf("integer device argument expected, got %T", values[0])
 		}
 		_, err := d.Input(id)
 		if err != nil {
 			return fmt.Errorf("bad input device number: %v", err)
 		}
 		d.defaultInputID = id
+		notify.Infof("Set default input device id: %d", id)
 	case "midi.out.channel":
 		if len(values) != 2 {
 			return fmt.Errorf("two argument expected")
@@ -56,7 +57,7 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 			return fmt.Errorf("bad input device number: %v", err)
 		}
 		out.defaultChannel = ch
-		notify.Infof("output device id: %d has default MIDI channel: %d", id, ch)
+		notify.Infof("Set default output device id: %d with default channel: %d", id, ch)
 	case "midi.out":
 		if len(values) != 1 {
 			return fmt.Errorf("one argument expected")
@@ -70,7 +71,7 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 			return fmt.Errorf("bad output device number: %v", err)
 		}
 		d.defaultOutputID = id
-		notify.Infof("output device id: %d has default MIDI channel: %d", id, out.defaultChannel)
+		notify.Infof("Set default output device id: %d with default channel: %d", id, out.defaultChannel)
 	default:
 		return fmt.Errorf("unknown setting:%s", name)
 	}

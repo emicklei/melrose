@@ -23,7 +23,7 @@ func wasmInitialize() {
 type WASMmidiTransporter struct{}
 
 func (t WASMmidiTransporter) HasInputCapability() bool {
-	return false
+	return true
 }
 func (t WASMmidiTransporter) PrintInfo(inID, outID int) {
 
@@ -39,10 +39,12 @@ func (t WASMmidiTransporter) NewMIDIOut(id int) (MIDIOut, error) {
 
 }
 func (t WASMmidiTransporter) NewMIDIIn(id int) (MIDIIn, error) {
-	return WASMMidiIn{}, nil
+	return WASMMidiIn{id: id}, nil
 }
-func (t WASMmidiTransporter) NewMIDIListener(MIDIIn) MIDIListener {
-	return nil
+func (t WASMmidiTransporter) NewMIDIListener(m MIDIIn) MIDIListener {
+	return &WASMListener{
+		mListener: newMListener(),
+	}
 }
 
 type WASMMidiOut struct {
@@ -58,8 +60,39 @@ func (m WASMMidiOut) Close() error {
 	return nil
 }
 
-type WASMMidiIn struct{}
+type WASMMidiIn struct {
+	id int
+}
 
 func (m WASMMidiIn) Close() error {
 	return nil
+}
+
+type WASMListener struct {
+	*mListener
+}
+
+func (l *WASMListener) Start() {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	if l.listening {
+		return
+	}
+	l.listening = true
+}
+
+func (l *WASMListener) Stop() {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	if l.listening {
+		return
+	}
+	l.listening = false
+}
+
+func (l *WASMListener) HandleMIDIMessage(status int16, nr int, data2 int) {
+	if !l.listening {
+		return
+	}
+	l.mListener.HandleMIDIMessage(status, nr, data2)
 }

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"path/filepath"
 	"reflect"
-	"strconv"
 	"strings"
 	"time"
 
@@ -25,13 +24,15 @@ func NewService(ctx core.Context) Service {
 	return &ServiceImpl{context: ctx, evaluator: dsl.NewEvaluator(ctx)}
 }
 
+func (s *ServiceImpl) Context() core.Context { return s.context }
+
 func (s *ServiceImpl) ChangeDefaultDeviceAndChannel(isInput bool, deviceID int, channel int) error {
 	// TODO handle channel
 	var err error
 	if isInput {
-		err = s.context.Device().HandleSetting("midi.in", []interface{}{strconv.Itoa(deviceID)})
+		err = s.context.Device().HandleSetting("midi.in", []interface{}{deviceID})
 	} else {
-		err = s.context.Device().HandleSetting("midi.out", []interface{}{strconv.Itoa(deviceID)})
+		err = s.context.Device().HandleSetting("midi.out", []interface{}{deviceID})
 	}
 	if err != nil {
 		notify.Errorf("change device/channel failed:%s", err.Error())

@@ -1,6 +1,9 @@
 package api
 
+import "github.com/emicklei/melrose/core"
+
 type Service interface {
+	Context() core.Context
 	CommandInspect(file string, lineEnd int, source string) (interface{}, error)
 	CommandPlay(file string, lineEnd int, source string) (interface{}, error)
 	CommandStop(file string, lineEnd int, source string) (interface{}, error)
