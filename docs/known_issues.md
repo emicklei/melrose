@@ -17,3 +17,4 @@
     decrescendo(127,10,seq)
         dynamicrange('++++','----',seq)
         fader(algo,sequence('c d e'))
+- group only takes one sequenceable

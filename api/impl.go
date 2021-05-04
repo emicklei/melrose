@@ -56,19 +56,23 @@ func (s *ServiceImpl) updateMetadata(file string, lineEnd int, source string) er
 func (s *ServiceImpl) CommandInspect(file string, lineEnd int, source string) (interface{}, error) {
 	s.updateMetadata(file, lineEnd, source)
 
-	returnValue, err := s.evaluator.EvaluateProgram(source)
+	lastValue, err := s.evaluator.EvaluateProgram(source)
 	if err != nil {
 		return nil, patchFilelocation(err, lineEnd)
 	}
+	if lastValue == nil {
+		core.PrintValue(s.context, nil)
+		return lastValue, nil
+	}
 	// check for function
-	if reflect.TypeOf(returnValue).Kind() == reflect.Func {
+	if reflect.TypeOf(lastValue).Kind() == reflect.Func {
 		if fn, ok := s.evaluator.LookupFunction(source); ok {
 			fmt.Fprintf(notify.Console.StandardOut, "%s: %s\n", fn.Title, fn.Description)
 		}
 	} else {
-		core.PrintValue(s.context, returnValue)
+		core.PrintValue(s.context, lastValue)
 	}
-	return returnValue, nil
+	return lastValue, nil
 }
 func (s *ServiceImpl) CommandPlay(file string, lineEnd int, source string) (interface{}, error) {
 	s.updateMetadata(file, lineEnd, source)
