@@ -25,7 +25,6 @@ func (k Key) Inspect(i core.Inspection) {
 
 func (k Key) DeviceID() int   { return k.deviceID }
 func (k Key) Note() core.Note { return k.note }
-func (k Key) Channel() int    { return k.channel }
 
 // Storex is part of core.Storable
 func (k Key) Storex() string {

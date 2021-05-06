@@ -77,8 +77,3 @@ func (s Scale) S() Sequence {
 	}
 	return BuildSequence(notes)
 }
-
-func (s Scale) At(index int) interface{} {
-	// TODO
-	return s.start
-}

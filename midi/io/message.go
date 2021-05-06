@@ -22,10 +22,6 @@ type Message struct {
 	parameter2 byte
 }
 
-func (m Message) Status() int64 { return int64(m.command | m.channel) }
-func (m Message) Data1() int64  { return int64(m.parameter1) }
-func (m Message) Data2() int64  { return int64(m.parameter2) }
-
 var noMessage = Message{}
 
 func WriteMessage(status int64, data1 int64, data2 int64, w io.Writer) error {

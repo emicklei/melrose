@@ -14,7 +14,6 @@ type Listen struct {
 	mutex           *sync.RWMutex
 	ctx             core.Context
 	deviceID        int
-	variableStore   core.VariableStorage
 	variableName    string
 	isRunning       bool
 	callback        core.Valueable
@@ -52,7 +51,7 @@ func (l *Listen) Play(ctx core.Context, at time.Time) error {
 		return nil
 	}
 	if !ctx.Device().HasInputCapability() {
-		return errors.New("Input is not available for this device")
+		return errors.New("input is not available for this device")
 	}
 	l.isRunning = true
 	ctx.Device().Listen(l.deviceID, l, l.isRunning)

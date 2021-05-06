@@ -10,7 +10,7 @@ import (
 
 // Note represents a musical note.
 // Notations:
-// 		½.C♯3 = half duration, pitch C, sharp, octave 3, velocity default (70)
+// 		½.C♯3 = half duration, pitch C, sharp, octave 3, velocity default
 //		D     = quarter duration, pitch D, octave 4, no accidental
 //      ⅛B♭  = eigth duration, pitch B, octave 4, flat
 //		=     = quarter rest

@@ -106,16 +106,3 @@ func getValue(val interface{}) interface{} {
 	}
 	return val
 }
-
-func getLoop(v interface{}) (core.Valueable, bool) {
-	if val, ok := v.(core.Valueable); ok {
-		if _, ok := val.Value().(*core.Loop); ok {
-			return val, true
-		}
-		return val, false
-	}
-	if l, ok := v.(*core.Loop); ok {
-		return core.On(l), true
-	}
-	return core.On(v), false
-}

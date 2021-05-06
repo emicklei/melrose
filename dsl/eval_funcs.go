@@ -844,7 +844,7 @@ fun = play(scale(2,'c')) // what to do when a key is pressed (NoteOn)
 onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the function "fun"`,
 		Func: func(keyOrVar interface{}, playOrEval interface{}) interface{} {
 			if !ctx.Device().HasInputCapability() {
-				return notify.Panic(errors.New("Input is not available for this device"))
+				return notify.Panic(errors.New("input is not available for this device"))
 			}
 			// key is mandatory
 			key, ok := getValue(keyOrVar).(control.Key)

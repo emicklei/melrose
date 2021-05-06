@@ -49,9 +49,9 @@ func (k *Knob) ControlChange(channel, number, value int) {
 		notify.Debugf("knob.ControlChange ch=%d,nr=%d,val=%d", channel, number, value)
 	}
 	// TODO check channel
-	if number != number {
-		return
-	}
+	// if number != number {
+	// 	return
+	// }
 	notify.Infof("knob %s (%d,%d,%d) = %d", k.variableName, k.deviceID, k.channel, k.number, value)
 	k.currentValue = value
 }

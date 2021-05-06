@@ -99,24 +99,24 @@ func (v variable) dispatchAdd(r interface{}) interface{} {
 	return nil
 }
 
-func (v variable) dispatchMultiply(r interface{}) interface{} {
-	if vr, ok := r.(core.Valueable); ok {
-		// int
-		il, lok := resolveInt(v)
-		ir, rok := resolveInt(vr)
-		if lok && rok {
-			return il * ir
-		}
-	}
-	if ir, ok := r.(int); ok {
-		il, lok := resolveInt(v)
-		if lok {
-			return il * ir
-		}
-	}
-	notify.Panic(fmt.Errorf("multiplication failed [%v (%T) * %v (%T)]", r, r, v, v))
-	return nil
-}
+// func (v variable) dispatchMultiply(r interface{}) interface{} {
+// 	if vr, ok := r.(core.Valueable); ok {
+// 		// int
+// 		il, lok := resolveInt(v)
+// 		ir, rok := resolveInt(vr)
+// 		if lok && rok {
+// 			return il * ir
+// 		}
+// 	}
+// 	if ir, ok := r.(int); ok {
+// 		il, lok := resolveInt(v)
+// 		if lok {
+// 			return il * ir
+// 		}
+// 	}
+// 	notify.Panic(fmt.Errorf("multiplication failed [%v (%T) * %v (%T)]", r, r, v, v))
+// 	return nil
+// }
 
 func resolveInt(v core.Valueable) (int, bool) {
 	vv := v.Value()

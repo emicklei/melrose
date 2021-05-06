@@ -10,7 +10,7 @@ test:
 	go test -race -cover ./...
 
 unused:
-	env GO111MODULE=on go get honnef.co/go/tools/cmd/staticcheck@v0.0.1-2020.1.4
+	# env GO111MODULE=on go get honnef.co/go/tools/cmd/staticcheck@v0.0.1-2020.1.4
 	staticcheck --unused.whole-program=true -- ./...
 
 build: 
