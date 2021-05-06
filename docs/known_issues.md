@@ -18,3 +18,4 @@
         dynamicrange('++++','----',seq)
         fader(algo,sequence('c d e'))
 - group only takes one sequenceable
+- volume for offsetting the velocity

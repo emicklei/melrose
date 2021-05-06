@@ -259,19 +259,19 @@ chord('g/M/2') // Major G second inversion`,
 			return c
 		}}
 
-	eval["pitchmap"] = Function{
-		Title:       "Pitch Map operator",
+	eval["transposemap"] = Function{
+		Title:       "Transpose Map operator",
 		Description: "create a sequence with notes for which the order and the pitch are changed. 1-based indexing",
-		Prefix:      "pitchm",
-		Template:    `pitchmap('${1:int2int}',${2:object})`,
+		Alias:       "pitchmap",
+		Template:    `transposemap('${1:int2int}',${2:object})`,
 		IsComposer:  true,
-		Samples:     `pitchmap('1:-1,1:0,1:1',note('c')) // => B3 C D`,
+		Samples:     `transposemap('1:-1,1:0,1:1',note('c')) // => B3 C D`,
 		Func: func(indices string, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
-				return notify.Panic(fmt.Errorf("cannot pitchmap (%T) %v", m, m))
+				return notify.Panic(fmt.Errorf("cannot transposemap (%T) %v", m, m))
 			}
-			return op.NewPitchMap(s, indices)
+			return op.NewTransposeMap(s, indices)
 		}}
 
 	eval["octavemap"] = Function{
@@ -289,22 +289,22 @@ chord('g/M/2') // Major G second inversion`,
 			return op.NewOctaveMap(s, indices)
 		}}
 
-	registerFunction(eval, "pitch", Function{
-		Title:       "Pitch operator",
+	registerFunction(eval, "transpose", Function{
+		Title:       "Transpose operator",
 		Description: "change the pitch with a delta of semitones",
-		Alias:       "transpose",
-		Prefix:      "pit",
-		Template:    `pitch(${1:semitones},${2:sequenceable})`,
-		Samples: `pitch(-1,sequence('c d e'))
+		Alias:       "pitch",
+		Prefix:      "tran",
+		Template:    `transpose(${1:semitones},${2:sequenceable})`,
+		Samples: `transpose(-1,sequence('c d e'))
 p = interval(-4,4,1)
 transpose(p,note('c'))`,
 		IsComposer: true,
 		Func: func(semitones, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
-				return notify.Panic(fmt.Errorf("cannot pitch (%T) %v", m, m))
+				return notify.Panic(fmt.Errorf("cannot transpose (%T) %v", m, m))
 			}
-			return op.Pitch{Target: s, Semitones: getValueable(semitones)}
+			return op.Transpose{Target: s, Semitones: getValueable(semitones)}
 		}})
 
 	eval["reverse"] = Function{
@@ -643,7 +643,7 @@ record(rec) // record notes played on the current input device and stop recordin
 		Prefix:      "it",
 		Template:    `iterator(${1:array-element})`,
 		Samples: `i = iterator(1,3,5,7,9)
-p = pitch(i,note('c'))
+p = transpose(i,note('c'))
 lp = loop(p,next(i))
 		`,
 		Func: func(values ...interface{}) *core.Iterator {
@@ -659,7 +659,7 @@ lp = loop(p,next(i))
 		Template:    `stretch(${1:factor},${2:object})`,
 		Samples: `stretch(2,note('c'))  // 2C
 stretch(0.25,sequence('(c e g)'))  // (16C 16E 16G)
-stretch(8,note('c'))  // C with length of 2 bars`,
+stretch(8,note('c'))  // C with length of 8 x 0.25 (quarter) = 2 bars`,
 		Func: func(factor interface{}, m ...interface{}) interface{} {
 			list, ok := getSequenceableList(m...)
 			if !ok {
@@ -671,7 +671,7 @@ stretch(8,note('c'))  // C with length of 2 bars`,
 	eval["group"] = Function{
 		Title:       "Group operator",
 		Description: "create a new sequence in which all notes of a musical object are grouped",
-		Prefix:      "par",
+		Prefix:      "gro",
 		Template:    `group(${1:sequenceable})`,
 		Samples:     `group(sequence('c d e')) // => (C D E)`,
 		IsComposer:  true,
@@ -690,7 +690,7 @@ stretch(8,note('c'))  // C with length of 2 bars`,
 		Prefix:        "loo",
 		Template:      `loop(${1:object})`,
 		Samples: `cb = sequence('c d e f g a b')
-myloop = loop(cb,reverse(cb))`,
+loop(cb,reverse(cb))`,
 		Func: func(playables ...interface{}) interface{} {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
@@ -759,14 +759,14 @@ stop() // stop all playables`,
 			return op.NewFractionMap(getValueable(indices), s)
 		}}
 
-	eval["input"] = Function{
-		Title: "MIDI Input device",
-		//Description:   "Look up an input device by name",
-		ControlsAudio: true,
-		Func: func(deviceName string, optionalChannel ...int) interface{} {
-			in, _ := ctx.Device().DefaultDeviceIDs()
-			return control.NewChannelOnDevice(true, deviceName, -1, in)
-		}}
+	// eval["input"] = Function{
+	// 	Title: "MIDI Input device",
+	// 	//Description:   "Look up an input device by name",
+	// 	ControlsAudio: true,
+	// 	Func: func(deviceName string, optionalChannel ...int) interface{} {
+	// 		in, _ := ctx.Device().DefaultDeviceIDs()
+	// 		return control.NewChannelOnDevice(true, deviceName, -1, in)
+	// 	}}
 
 	eval["key"] = Function{
 		Title:       "MIDI Keyboard key",
@@ -810,10 +810,10 @@ c2 = key(channel(3,note('c2')) // C2 key on the default input device and channel
 		Title:       "MIDI controller knob",
 		Description: "Use the knob as an integer value for a parameter in any object",
 		Template:    `knob(${1:device-id},${2:midi-number})`,
-		Samples: `axiom = 1 // device ID for the M-Audio Axiom 25
+		Samples: `axiom = 1 // device ID for my connected M-Audio Axiom 25
 B1 = 20 // MIDI number assigned to this knob on the controller
 k = knob(axiom,B1)
-pitch(k,scale(1,'E')) // when played, use the current value of knob "k"`,
+transpose(k,scale(1,'E')) // when played, use the current value of knob "k"`,
 		ControlsAudio: true,
 		Func: func(deviceIDOrVar interface{}, numberOrVar interface{}) interface{} {
 			deviceID, ok := getValue(deviceIDOrVar).(int)
@@ -892,7 +892,7 @@ onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the functio
 		Prefix:      "int",
 		Template:    `interval(${1:from},${2:to},${3:by})`,
 		Samples: `int1 = interval(-2,4,1)
-lp_cdef = loop(pitch(int1,sequence('c d e f')), next(int1))`,
+lp_cdef = loop(transpose(int1,sequence('c d e f')), next(int1))`,
 		IsComposer: true,
 		Func: func(from, to, by interface{}) *core.Interval {
 			return core.NewInterval(core.ToValueable(from), core.ToValueable(to), core.ToValueable(by), core.RepeatFromTo)
@@ -955,7 +955,7 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 		Title:       "Next operator",
 		Description: `is used to produce the next value in a generator such as random, iterator and interval`,
 		Samples: `i = interval(-4,4,2)
-pi = pitch(i,sequence('c d e f g a b')) // current value of "i" is used
+pi = transpose(i,sequence('c d e f g a b')) // current value of "i" is used
 lp_pi = loop(pi,next(i)) // "i" will advance to the next value
 begin(lp_pi)`,
 		Func: func(v interface{}) interface{} {
@@ -987,7 +987,7 @@ begin(lp_pi)`,
 		Template:    `replace(${1:target},${2:from},${3:to})`,
 		Samples: `c = note('c')
 d = note('d')
-pitchA = pitch(1,c)
+pitchA = transpose(1,c)
 pitchD = replace(pitchA, c, d) // c -> d in pitchA`,
 		Func: func(target interface{}, from, to interface{}) interface{} {
 			targetS, ok := getSequenceable(target)

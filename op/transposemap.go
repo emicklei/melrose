@@ -7,23 +7,23 @@ import (
 	"github.com/emicklei/melrose/core"
 )
 
-type PitchMap struct {
+type TransposeMap struct {
 	IndexOffsets []int2int // one-based
 	Target       core.Sequenceable
 }
 
-func NewPitchMap(target core.Sequenceable, indices string) PitchMap {
-	return PitchMap{
+func NewTransposeMap(target core.Sequenceable, indices string) TransposeMap {
+	return TransposeMap{
 		Target:       target,
 		IndexOffsets: parseIndexOffsets(indices),
 	}
 }
 
-func (p PitchMap) S() core.Sequence {
+func (p TransposeMap) S() core.Sequence {
 	return core.Sequence{Notes: p.Notes()}
 }
 
-func (p PitchMap) Notes() [][]core.Note {
+func (p TransposeMap) Notes() [][]core.Note {
 	source := p.Target.S().Notes
 	target := [][]core.Note{}
 	for _, entry := range p.IndexOffsets {
@@ -47,9 +47,9 @@ func (p PitchMap) Notes() [][]core.Note {
 }
 
 // Storex is part of Storable
-func (p PitchMap) Storex() string {
+func (p TransposeMap) Storex() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "pitchmap('")
+	fmt.Fprintf(&b, "transposemap('")
 	for i, each := range p.IndexOffsets {
 		if i > 0 {
 			fmt.Fprintf(&b, ",")
@@ -62,15 +62,15 @@ func (p PitchMap) Storex() string {
 }
 
 // Replaced is part of Replaceable
-func (p PitchMap) Replaced(from, to core.Sequenceable) core.Sequenceable {
+func (p TransposeMap) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	if core.IsIdenticalTo(p, from) {
 		return to
 	}
 	if core.IsIdenticalTo(p.Target, from) {
-		return PitchMap{Target: to, IndexOffsets: p.IndexOffsets}
+		return TransposeMap{Target: to, IndexOffsets: p.IndexOffsets}
 	}
 	if rep, ok := p.Target.(core.Replaceable); ok {
-		return PitchMap{Target: rep.Replaced(from, to), IndexOffsets: p.IndexOffsets}
+		return TransposeMap{Target: rep.Replaced(from, to), IndexOffsets: p.IndexOffsets}
 	}
 	return p
 }

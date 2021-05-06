@@ -19,7 +19,7 @@ func TestImplements(t *testing.T) {
 		{source: NoteMap{}},
 		{source: Dynamic{}},
 		{source: DynamicMap{}},
-		{source: PitchMap{}},
+		{source: TransposeMap{}},
 		{source: OctaveMap{}},
 		{source: Merge{}},
 		{source: Stretch{}},

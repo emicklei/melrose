@@ -58,14 +58,21 @@ func TestScale(t *testing.T) {
 
 func TestPitch_Scale(t *testing.T) {
 	r := eval(t, "pitch(1,scale(2,'16e2'))")
-	checkStorex(t, r, "pitch(1,scale(2,'16E2'))")
+	checkStorex(t, r, "transpose(1,scale(2,'16E2'))")
 	checkStorex(t, r.(core.Sequenceable).S(),
 		"sequence('16F2 16G2 16A2 16B♭2 16C3 16D3 16E3 16F3 16G3 16A3 16B♭3 16C 16D 16E')")
 }
 
-func TestPitch_ChordSequence(t *testing.T) {
-	r := eval(t, "pitch(1,chordsequence('c/m (d7 e g) ='))")
-	checkStorex(t, r, "pitch(1,chordsequence('C/m (D7 E G) ='))")
+func TestTranspose_Scale(t *testing.T) {
+	r := eval(t, "transpose(1,scale(2,'16e2'))")
+	checkStorex(t, r, "transpose(1,scale(2,'16E2'))")
+	checkStorex(t, r.(core.Sequenceable).S(),
+		"sequence('16F2 16G2 16A2 16B♭2 16C3 16D3 16E3 16F3 16G3 16A3 16B♭3 16C 16D 16E')")
+}
+
+func TestTranspose_ChordSequence(t *testing.T) {
+	r := eval(t, "transpose(1,chordsequence('c/m (d7 e g) ='))")
+	checkStorex(t, r, "transpose(1,chordsequence('C/m (D7 E G) ='))")
 	checkStorex(t, r.(core.Sequenceable).S(),
 		"sequence('(D♭ E A♭) (E♭7 G7 B♭7 F A C5 A♭ C5 E♭5) =')")
 }
