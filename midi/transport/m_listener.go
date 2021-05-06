@@ -40,6 +40,11 @@ func (l *mListener) Add(lis core.NoteListener) {
 func (l *mListener) Remove(lis core.NoteListener) {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
+	l.safeRemove(lis)
+}
+
+// safeRemove require acquired lock
+func (l *mListener) safeRemove(lis core.NoteListener) {
 	without := []core.NoteListener{}
 	for _, each := range l.noteListeners {
 		if each != lis {
@@ -57,7 +62,7 @@ func (l *mListener) OnKey(note core.Note, handler core.NoteListener) {
 	// remove existing for the key
 	old, ok := l.keyListeners[nr]
 	if ok {
-		l.Remove(old)
+		l.safeRemove(old)
 		delete(l.keyListeners, nr)
 	}
 	if handler == nil {

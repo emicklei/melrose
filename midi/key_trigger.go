@@ -49,15 +49,16 @@ func (t *KeyTrigger) NoteOn(n core.Note) {
 				stopper.Stop(t.ctx)
 				t.playing = false
 			} else {
-				_ = play.Play(t.ctx, time.Now())
 				t.playing = true
+				_ = play.Play(t.ctx, time.Now())
 			}
-
 			return
-		} // cannot stop
+		}
+		// cannot stop
 		_ = play.Play(t.ctx, time.Now())
 		return
 	}
+	// not playable, maybe evaluatable
 	if eval, ok := val.(core.Evaluatable); ok {
 		eval.Evaluate(t.ctx)
 	}

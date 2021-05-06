@@ -117,6 +117,9 @@ func (l *RtListener) Start() {
 }
 
 func (l *RtListener) handleRtEvent(m rtmidi.MIDIIn, data []byte, delta float64) {
+	if len(data) != 3 {
+		return
+	}
 	status := int16(data[0])
 	nr := int(data[1])
 	data2 := int(data[2])
