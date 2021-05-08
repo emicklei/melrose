@@ -410,6 +410,9 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Template:      `import(${1:filename})`,
 		Samples:       `import('drumpatterns.mel')`,
 		Func: func(f string) interface{} {
+			if !ctx.Capabilities().ImportMelrose {
+				return notify.NewWarningf("import not available")
+			}
 			err := ImportProgram(ctx, f)
 			if err != nil {
 				return notify.Panic(fmt.Errorf("failed to import [%s], %v", f, err))
@@ -968,6 +971,9 @@ begin(lp_pi)`,
 		Template:    `export(${1:filename},${2:sequenceable})`,
 		Samples:     `export('myMelody-v1',myObject)`,
 		Func: func(filename string, m interface{}) interface{} {
+			if !ctx.Capabilities().ExportMIDI {
+				return notify.NewWarningf("export MIDI not available")
+			}
 			if len(filename) == 0 {
 				return notify.Panic(fmt.Errorf("missing filename to export MIDI %v", m))
 			}

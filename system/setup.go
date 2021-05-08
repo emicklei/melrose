@@ -33,6 +33,7 @@ func Setup(buildTag string) (core.Context, error) {
 	ctx.EnvironmentVars = new(sync.Map)
 	ctx.VariableStorage = dsl.NewVariableStore()
 	ctx.LoopControl = core.NewBeatmaster(ctx, 120)
+	ctx.CapabilityFlags = core.NewCapabilities()
 	reg, err := midi.NewDeviceRegistry()
 	if err != nil {
 		log.Fatalln("unable to initialize MIDI")

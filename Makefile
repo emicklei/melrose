@@ -2,9 +2,6 @@ LATEST_TAG := $(shell git describe --abbrev=0)
 
 all: installl snippets grammar
 
-udp:
-	cd cmd/melrose/ && go build -tags=udp -o melrose-udp 
-
 test:
 	go vet ./...
 	go test -race -cover ./...
@@ -26,9 +23,6 @@ grammar:
 	cd cmd/vsc && go run *.go grammar  \
 		../../../melrose-for-vscode/syntaxes/melrose.tmGrammar.json.template \
 		../../../melrose-for-vscode/syntaxes/melrose.tmGrammar.json
-
-menu:
-	cd cmd/vsc && go run *.go menu
 
 clean:
 	rm -rf target
