@@ -72,7 +72,7 @@ func (l *Listen) IsPlaying() bool {
 }
 
 // NoteOn is part of core.NoteListener
-func (l *Listen) NoteOn(n core.Note) {
+func (l *Listen) NoteOn(channel int, n core.Note) {
 	l.mutex.Lock()
 	if core.IsDebug() {
 		notify.Debugf("control.listen ON %v", n)
@@ -105,7 +105,7 @@ func (l *Listen) isNoteOnCount(nr, countCheck int) bool {
 }
 
 // NoteOff is part of core.NoteListener
-func (l *Listen) NoteOff(n core.Note) {
+func (l *Listen) NoteOff(channel int, n core.Note) {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 	if core.IsDebug() {

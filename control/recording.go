@@ -116,7 +116,7 @@ func (r *Recording) S() core.Sequence {
 	return core.BuildSequence(notes)
 }
 
-func (r *Recording) NoteOn(n core.Note) {
+func (r *Recording) NoteOn(channel int, n core.Note) {
 	if core.IsDebug() {
 		notify.Debugf("recording.noteon note:%v", n)
 	}
@@ -124,7 +124,7 @@ func (r *Recording) NoteOn(n core.Note) {
 	r.timeline.Schedule(change, time.Now())
 }
 
-func (r *Recording) NoteOff(n core.Note) {
+func (r *Recording) NoteOff(channel int, n core.Note) {
 	if core.IsDebug() {
 		notify.Debugf("recording.noteoff note:%v", n)
 	}

@@ -34,12 +34,12 @@ func (k *Knob) Storex() string {
 	return fmt.Sprintf("knob(%d,%d)", k.deviceID, k.number)
 }
 
-func (k *Knob) NoteOn(n core.Note) {
+func (k *Knob) NoteOn(channel int, n core.Note) {
 	if core.IsDebug() {
 		notify.Debugf("knob.NoteOn %v", n)
 	}
 }
-func (k *Knob) NoteOff(n core.Note) {
+func (k *Knob) NoteOff(channel int, n core.Note) {
 	if core.IsDebug() {
 		notify.Debugf("knob.NoteOff %v", n)
 	}

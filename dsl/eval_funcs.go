@@ -854,7 +854,7 @@ onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the functio
 			// allow nil, playable and evaluatable
 			if playOrEval == nil {
 				// uninstall binding
-				ctx.Device().OnKey(ctx, key.DeviceID(), key.Note(), nil)
+				ctx.Device().OnKey(ctx, key.DeviceID(), key.Channel(), key.Note(), nil)
 				return nil
 			}
 			_, ok = getValue(playOrEval).(core.Playable)
@@ -864,7 +864,7 @@ onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the functio
 					return notify.Panic(fmt.Errorf("cannot onkey and call (%T) %s", playOrEval, core.Storex(playOrEval)))
 				}
 			}
-			err := ctx.Device().OnKey(ctx, key.DeviceID(), key.Note(), getValueable(playOrEval))
+			err := ctx.Device().OnKey(ctx, key.DeviceID(), key.Channel(), key.Note(), getValueable(playOrEval))
 			if err != nil {
 				return notify.Panic(fmt.Errorf("cannot install onkey because error:%v", err))
 			}

@@ -31,7 +31,7 @@ func (t testAudioDevice) Play(condition core.Condition, seq core.Sequenceable, b
 func (t testAudioDevice) HandleSetting(name string, values []interface{}) error        { return nil }
 func (t testAudioDevice) HasInputCapability() bool                                     { return true }
 func (t testAudioDevice) Listen(deviceID int, who core.NoteListener, startOrStop bool) {}
-func (t testAudioDevice) OnKey(ctx core.Context, deviceID int, note core.Note, fun core.Valueable) error {
+func (t testAudioDevice) OnKey(ctx core.Context, deviceID int, channel int, note core.Note, fun core.Valueable) error {
 	return nil
 }
 func (t testAudioDevice) Schedule(event core.TimelineEvent, beginAt time.Time) {}

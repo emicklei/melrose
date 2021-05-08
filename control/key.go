@@ -23,6 +23,7 @@ func (k Key) Inspect(i core.Inspection) {
 	i.Properties["note"] = k.note
 }
 
+func (k Key) Channel() int    { return k.channel }
 func (k Key) DeviceID() int   { return k.deviceID }
 func (k Key) Note() core.Note { return k.note }
 

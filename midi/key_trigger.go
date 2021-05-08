@@ -12,22 +12,27 @@ type KeyTrigger struct {
 	mutex   *sync.RWMutex
 	playing bool
 	ctx     core.Context
+	channel int
 	note    core.Note
 	fun     core.Valueable
 }
 
-func NewKeyTrigger(ctx core.Context, onNote core.Note, startStop core.Valueable) *KeyTrigger {
+func NewKeyTrigger(ctx core.Context, channel int, onNote core.Note, startStop core.Valueable) *KeyTrigger {
 	return &KeyTrigger{
-		mutex: new(sync.RWMutex),
-		ctx:   ctx,
-		note:  onNote,
-		fun:   startStop}
+		mutex:   new(sync.RWMutex),
+		ctx:     ctx,
+		channel: channel,
+		note:    onNote,
+		fun:     startStop}
 }
 
 // NoteOn is part of core.NoteListener
-func (t *KeyTrigger) NoteOn(n core.Note) {
+func (t *KeyTrigger) NoteOn(channel int, n core.Note) {
 	if core.IsDebug() {
-		notify.Debugf("keytrigger.NoteOn %v", n)
+		notify.Debugf("keytrigger.NoteOn ch=%d note=%v", channel, n)
+	}
+	if channel != t.channel {
+		return
 	}
 	if n.Name != t.note.Name {
 		return
@@ -65,9 +70,9 @@ func (t *KeyTrigger) NoteOn(n core.Note) {
 }
 
 // NoteOff is part of core.NoteListener
-func (t *KeyTrigger) NoteOff(n core.Note) {
+func (t *KeyTrigger) NoteOff(channel int, n core.Note) {
 	if core.IsDebug() {
-		notify.Debugf("keytrigger.NoteOff %v", n)
+		notify.Debugf("keytrigger.NoteOff ch=%d note=%v", channel, n)
 	}
 	// key trigger is not interested in this
 }

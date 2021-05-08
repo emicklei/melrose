@@ -45,7 +45,7 @@ type AudioDevice interface {
 
 	// if a key is pressed on a device then play or stop a function
 	// if fun is nil then uninstall the binding
-	OnKey(ctx Context, deviceID int, note Note, fun Valueable) error
+	OnKey(ctx Context, deviceID int, channel int, note Note, fun Valueable) error
 
 	// Schedule put an event on the timeline at a begin
 	Schedule(event TimelineEvent, beginAt time.Time)
@@ -122,8 +122,8 @@ type Evaluatable interface {
 }
 
 type NoteListener interface {
-	NoteOn(Note)
-	NoteOff(Note)
+	NoteOn(channel int, note Note)
+	NoteOff(channel int, note Note)
 	ControlChange(channel, number, value int)
 }
 

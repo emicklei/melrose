@@ -77,12 +77,13 @@ func (l *mListener) HandleMIDIMessage(status int16, nr int, data2 int) {
 	l.mutex.RLock()
 	defer l.mutex.RUnlock()
 
+	ch := int(int16(0x0F)&status) + 1
+
 	// controlChange before noteOn
 	isControlChange := (status & controlChange) == controlChange
 	if isControlChange {
 		for _, each := range l.noteListeners {
-			// TODO get channel
-			each.ControlChange(0, nr, int(data2))
+			each.ControlChange(ch, nr, int(data2))
 		}
 		return
 	}
@@ -98,7 +99,7 @@ func (l *mListener) HandleMIDIMessage(status int16, nr int, data2 int) {
 			when: time.Now(),
 		}
 		for _, each := range l.noteListeners {
-			each.NoteOn(onNote)
+			each.NoteOn(ch, onNote)
 		}
 		return
 	}
@@ -118,7 +119,7 @@ func (l *mListener) HandleMIDIMessage(status int16, nr int, data2 int) {
 		frac := core.DurationToFraction(120.0, ms) // TODO
 		offNote, _ := core.MIDItoNote(frac, nr, core.Normal)
 		for _, each := range l.noteListeners {
-			each.NoteOff(offNote)
+			each.NoteOff(ch, offNote)
 		}
 		return
 	}
