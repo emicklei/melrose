@@ -201,3 +201,10 @@ func TestProcessLanguageTest(t *testing.T) {
 	}()
 	eval(t, string(src))
 }
+
+func TestVelocityMap(t *testing.T) {
+	r := eval(t, "velocitymap('1:30,2:60,2:0',sequence('c g'))")
+	checkStorex(t, r, "velocitymap('1:30,2:60,2:0',sequence('C G'))")
+	checkStorex(t, r.(core.Sequenceable).S(),
+		"sequence('C--- G+ G')")
+}

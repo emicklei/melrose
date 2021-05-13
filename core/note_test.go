@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 var parsetests = []struct {
@@ -201,5 +202,56 @@ func TestNoteWithDynamic(t *testing.T) {
 		if got, want := nout.Storex(), each.out; got != want {
 			t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 		}
+	}
+}
+
+func TestQuantizeNote(t *testing.T) {
+	bpm := 120.0
+	w := WholeNoteDuration(bpm)
+	w16 := w / 16
+	t.Log(w16)
+}
+
+func TestComputeFraction(t *testing.T) {
+	t.Skip()
+	type args struct {
+		length time.Duration
+		whole  time.Duration
+	}
+	tests := []struct {
+		name         string
+		args         args
+		wantFraction float32
+		wantDotted   bool
+		wantOk       bool
+	}{
+		{
+			"100",
+			args{length: time.Duration(100 * time.Millisecond), whole: WholeNoteDuration(120.0)},
+			0.0625,
+			false,
+			true,
+		},
+		{
+			"150",
+			args{length: time.Duration(150 * time.Millisecond), whole: WholeNoteDuration(120.0)},
+			0.0625,
+			false,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotFraction, gotDotted, gotOk := ComputeFraction(tt.args.length, tt.args.whole)
+			if gotFraction != tt.wantFraction {
+				t.Errorf("ComputeFraction() gotFraction = %v, want %v", gotFraction, tt.wantFraction)
+			}
+			if gotDotted != tt.wantDotted {
+				t.Errorf("ComputeFraction() gotDotted = %v, want %v", gotDotted, tt.wantDotted)
+			}
+			if gotOk != tt.wantOk {
+				t.Errorf("ComputeFraction() gotOk = %v, want %v", gotOk, tt.wantOk)
+			}
+		})
 	}
 }

@@ -37,8 +37,12 @@ func (w Print) Evaluate(ctx Context) error {
 func (w Print) S() Sequence {
 	beats, bars := w.Context.Control().BeatsAndBars()
 	in := NewInspect(w.Context, w.Target)
-	in.Properties["bar"] = bars
-	in.Properties["beat"] = beats
+	if bars > 0 {
+		in.Properties["bar"] = bars
+	}
+	if beats > 0 {
+		in.Properties["beat"] = beats
+	}
 	notify.Infof("%s", in.String())
 	return EmptySequence
 }

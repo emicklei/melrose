@@ -289,6 +289,21 @@ chord('g/M/2') // Major G second inversion`,
 			return op.NewOctaveMap(s, indices)
 		}}
 
+	eval["velocitymap"] = Function{
+		Title:       "Velocity Map operator",
+		Description: "create a sequence with notes for which the order and the velocities are changed. Velocity 0 means no change.",
+		Prefix:      "velocitym",
+		Template:    `velocitymap('${1:int2int}',${2:object})`,
+		IsComposer:  true,
+		Samples:     `velocitymap('1:30,2:0,3:60',chord('c')) // => (C3--- E G5+)`,
+		Func: func(indices string, m interface{}) interface{} {
+			s, ok := getSequenceable(m)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot velocitymap (%T) %v", m, m))
+			}
+			return op.NewVelocityMap(s, indices)
+		}}
+
 	registerFunction(eval, "transpose", Function{
 		Title:       "Transpose operator",
 		Description: "change the pitch with a delta of semitones",

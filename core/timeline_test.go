@@ -51,4 +51,18 @@ func TestScheduleAdd(t *testing.T) {
 	if got, want := tim.head.next.next.next.event, e3; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
+
+	zs := tim.ZeroStarting()
+	if got, want := zs.head.when.Second(), 0; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := zs.head.next.when.Second(), 0; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := zs.head.next.next.when.Second(), 2; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := zs.head.next.next.next.when.Second(), 4; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
 }

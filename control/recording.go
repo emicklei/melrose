@@ -52,9 +52,6 @@ func (r *Recording) GetTargetFrom(other *Recording) {
 	r.variableName = other.variableName
 }
 
-// Sequence is an alias for S()
-func (r *Recording) Sequence() core.Sequence { return r.S() }
-
 func (r *Recording) Play(ctx core.Context, at time.Time) error {
 	ctx.Device().Listen(r.deviceID, r, true)
 	return nil
@@ -82,38 +79,8 @@ func (r *Recording) Storex() string {
 	return fmt.Sprintf("record(device(%d,%s))", r.deviceID, r.variableName)
 }
 
-func (r *Recording) S() core.Sequence {
-	activeNotes := map[int64]noteChangeEvent{}
-	notes := []core.Note{}
-	r.timeline.EventsDo(func(event core.TimelineEvent, when time.Time) {
-		change := event.(NoteChange)
-		if change.isOn {
-			_, ok := activeNotes[change.note]
-			if ok {
-				// note was on ?
-			} else {
-				// new
-				activeNotes[change.note] = noteChangeEvent{change: change, when: when}
-			}
-		} else {
-			// note off
-			_, ok := activeNotes[change.note]
-			if !ok {
-				// note was never on ?
-			} else {
-				// when.Sub(active.when)fraction
-				note, err := core.MIDItoNote(0.25, int(change.note), int(change.velocity))
-				if err != nil {
-					notify.Warnf("core.miditonote error:%v", err)
-				} else {
-					notes = append(notes, note)
-					delete(activeNotes, change.note)
-				}
-			}
-		}
-
-	})
-	return core.BuildSequence(notes)
+func (r *Recording) S() core.Sequenceable {
+	return buildExpressionFromTimeline(r.timeline)
 }
 
 func (r *Recording) NoteOn(channel int, n core.Note) {
@@ -134,3 +101,45 @@ func (r *Recording) NoteOff(channel int, n core.Note) {
 
 // ControlChange is ignored
 func (r *Recording) ControlChange(channel, number, value int) {}
+
+func buildExpressionFromTimeline(t *core.Timeline) core.Sequenceable {
+	activeNotes := map[int64]noteChangeEvent{}
+	notes := []core.Note{}
+	t.EventsDo(func(event core.TimelineEvent, when time.Time) {
+		change := event.(NoteChange)
+		if change.isOn {
+			_, ok := activeNotes[change.note]
+			if ok {
+				// note was on ?
+			} else {
+				// new
+				activeNotes[change.note] = noteChangeEvent{change: change, when: when}
+			}
+		} else {
+			// note off
+			hit, ok := activeNotes[change.note]
+			if !ok {
+				// note was never on ?
+			} else {
+				// when.Sub(active.when)fraction
+				note, err := core.MIDItoNote(0.25, int(hit.change.note), int(hit.change.velocity))
+				if err != nil {
+					notify.Warnf("core.MIDItoNote error:%v", err)
+				} else {
+					notes = append(notes, note)
+					delete(activeNotes, change.note)
+				}
+			}
+		}
+
+	})
+	return core.BuildSequence(notes)
+}
+
+type recordedNote struct {
+	start, end time.Time
+	number     int
+	velocity   int
+}
+
+func (r recordedNote) Handle(tim *core.Timeline, when time.Time) {}

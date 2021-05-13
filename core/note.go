@@ -346,3 +346,11 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 		}
 	}
 }
+
+func ComputeFraction(length, whole time.Duration) (fraction float32, dotted bool, ok bool) {
+	r := whole / 16 // start with shortest
+	if length <= r {
+		return 0.0625, false, true
+	}
+	return 1.0, false, false
+}

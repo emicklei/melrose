@@ -174,3 +174,20 @@ func (t *Timeline) EventsDo(block func(event TimelineEvent, when time.Time)) {
 		here = here.next
 	}
 }
+
+// ZeroStarting returns a new one in which all events are shifted back in time starting at time 0.
+func (t *Timeline) ZeroStarting() *Timeline {
+	if t.Len() == 0 {
+		return t
+	}
+	result := NewTimeline()
+	zero := time.Time{}
+	t.EventsDo(func(event TimelineEvent, when time.Time) {
+		d := when.Sub(t.head.when)
+		result.schedule(&scheduledTimelineEvent{
+			when:  zero.Add(d),
+			event: event,
+		})
+	})
+	return result
+}
