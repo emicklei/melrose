@@ -212,45 +212,72 @@ func TestQuantizeNote(t *testing.T) {
 	t.Log(w16)
 }
 
-func TestComputeFraction(t *testing.T) {
-	t.Skip()
+func TestQuantizedFractions(t *testing.T) {
+	s := MustParseSequence("16c 16.c 8c 8.c 4c 4.c 2c 2.c 1c 1.c")
+	for _, each := range s.Notes {
+		t.Log(each[0].String(), each[0].DurationFactor())
+	}
+}
+
+func TestQuantizeFraction(t *testing.T) {
 	type args struct {
 		length time.Duration
 		whole  time.Duration
 	}
 	tests := []struct {
 		name         string
-		args         args
+		df           float32
 		wantFraction float32
 		wantDotted   bool
 		wantOk       bool
 	}{
 		{
-			"100",
-			args{length: time.Duration(100 * time.Millisecond), whole: WholeNoteDuration(120.0)},
+			"1/32",
+			1.0 / 32.0,
+			0.0,
+			false,
+			false,
+		},
+		{
+			"1/16",
+			1.0 / 16.0,
 			0.0625,
 			false,
 			true,
 		},
 		{
-			"150",
-			args{length: time.Duration(150 * time.Millisecond), whole: WholeNoteDuration(120.0)},
-			0.0625,
+			"3/32",
+			3.0 / 32.0,
+			0.09375,
+			true,
+			true,
+		},
+		{
+			"1/8",
+			1.0 / 8.0,
+			0.125,
 			false,
+			true,
+		},
+		{
+			"1.75",
+			7.0 / 4.0,
+			1.5,
+			true,
 			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotFraction, gotDotted, gotOk := ComputeFraction(tt.args.length, tt.args.whole)
+			gotFraction, gotDotted, gotOk := QuantizeFraction(tt.df)
 			if gotFraction != tt.wantFraction {
-				t.Errorf("ComputeFraction() gotFraction = %v, want %v", gotFraction, tt.wantFraction)
+				t.Errorf("QuantizeFraction() gotFraction = %v, want %v", gotFraction, tt.wantFraction)
 			}
 			if gotDotted != tt.wantDotted {
-				t.Errorf("ComputeFraction() gotDotted = %v, want %v", gotDotted, tt.wantDotted)
+				t.Errorf("QuantizeFraction() gotDotted = %v, want %v", gotDotted, tt.wantDotted)
 			}
 			if gotOk != tt.wantOk {
-				t.Errorf("ComputeFraction() gotOk = %v, want %v", gotOk, tt.wantOk)
+				t.Errorf("QuantizeFraction() gotOk = %v, want %v", gotOk, tt.wantOk)
 			}
 		})
 	}

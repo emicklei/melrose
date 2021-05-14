@@ -270,12 +270,8 @@ func (n Note) Inspect(i Inspection) {
 }
 
 func (n Note) String() string {
-	return n.PrintString(PrintAsSpecified)
-}
-
-func (n Note) PrintString(sharpOrFlatKey int) string {
 	var buf bytes.Buffer
-	n.printOn(&buf, sharpOrFlatKey)
+	n.printOn(&buf, PrintAsSpecified)
 	return buf.String()
 }
 
@@ -347,10 +343,36 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 	}
 }
 
-func ComputeFraction(length, whole time.Duration) (fraction float32, dotted bool, ok bool) {
-	r := whole / 16 // start with shortest
-	if length <= r {
-		return 0.0625, false, true
+var fractionRanges = []struct {
+	fraction float32
+	dotted   bool
+}{
+	{0.0625, false}, // 1/16
+	{0.09375, true},
+	{0.125, false},
+	{0.1875, true},
+	{0.25, false},
+	{0.375, true},
+	{0.5, false},
+	{0.75, true},
+	{1.0, false},
+	{1.5, true},
+	{2.0, false}, // non-exist
+}
+
+func QuantizeFraction(durationFactor float32) (fraction float32, dotted bool, ok bool) {
+	last := float32(0.0)
+	for i := 0; i < len(fractionRanges); i++ {
+		next := fractionRanges[i]
+		halfway := (last + next.fraction) / 2.0
+		if durationFactor <= halfway {
+			if i == 0 {
+				return 0.0, false, false
+			}
+			prev := fractionRanges[i-1]
+			return prev.fraction, prev.dotted, true
+		}
+		last = next.fraction
 	}
-	return 1.0, false, false
+	return 0.0, false, false
 }
