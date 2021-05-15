@@ -52,6 +52,12 @@ func (t *Timeline) Len() int64 {
 	return count
 }
 
+// Period returns the start and end time of the first and last note.
+// Pre: len > 0
+func (t *Timeline) Period() (start time.Time, end time.Time) {
+	return t.head.when, t.tail.when
+}
+
 // Play runs a loop to handle all the events in time. This is blocking.
 func (t *Timeline) Play() {
 	t.resume = make(chan bool)
@@ -190,4 +196,32 @@ func (t *Timeline) ZeroStarting() *Timeline {
 		})
 	})
 	return result
+}
+
+func (t *Timeline) NoteEvents() (list []NoteEvent) {
+	activeNotes := map[int64]NoteEvent{}
+	t.EventsDo(func(event TimelineEvent, when time.Time) {
+		change := event.(NoteChange)
+		if change.isOn {
+			_, ok := activeNotes[change.note]
+			if ok {
+				// note was on ?
+				// TODO warn?
+			} else {
+				// new
+				activeNotes[change.note] = NoteEvent{Start: when, Number: change.Number(), Velocity: change.Velocity()}
+			}
+		} else {
+			// note off
+			hit, ok := activeNotes[change.note]
+			if !ok {
+				// note was never on ?
+				// TODO warn?
+			} else {
+				list = append(list, hit.WithEnd(when))
+				delete(activeNotes, change.note)
+			}
+		}
+	})
+	return
 }

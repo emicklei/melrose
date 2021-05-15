@@ -10,3 +10,4 @@ coverage.txt
 cmd/melrose/melrose-udp
 dsl/debug.test
 core/debug.test
+out.png

@@ -8,24 +8,6 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-type NoteChange struct {
-	isOn     bool
-	note     int64
-	velocity int64
-}
-
-func NewNoteChange(isOn bool, midiNr int64, velocity int64) NoteChange {
-	return NoteChange{
-		isOn:     isOn,
-		note:     midiNr,
-		velocity: velocity,
-	}
-}
-
-func (n NoteChange) Handle(tim *core.Timeline, when time.Time) {
-	// NOP
-}
-
 type Recording struct {
 	deviceID     int
 	timeline     *core.Timeline
@@ -42,7 +24,7 @@ func NewRecording(deviceID int, variableName string) *Recording {
 }
 
 type noteChangeEvent struct {
-	change NoteChange
+	change core.NoteChange
 	when   time.Time
 }
 
@@ -87,7 +69,7 @@ func (r *Recording) NoteOn(channel int, n core.Note) {
 	if core.IsDebug() {
 		notify.Debugf("recording.noteon note:%v", n)
 	}
-	change := NewNoteChange(true, int64(n.MIDI()), int64(n.Velocity))
+	change := core.NewNoteChange(true, int64(n.MIDI()), int64(n.Velocity))
 	r.timeline.Schedule(change, time.Now())
 }
 
@@ -95,7 +77,7 @@ func (r *Recording) NoteOff(channel int, n core.Note) {
 	if core.IsDebug() {
 		notify.Debugf("recording.noteoff note:%v", n)
 	}
-	change := NewNoteChange(false, int64(n.MIDI()), int64(n.Velocity))
+	change := core.NewNoteChange(false, int64(n.MIDI()), int64(n.Velocity))
 	r.timeline.Schedule(change, time.Now())
 }
 
@@ -103,31 +85,31 @@ func (r *Recording) NoteOff(channel int, n core.Note) {
 func (r *Recording) ControlChange(channel, number, value int) {}
 
 func buildExpressionFromTimeline(t *core.Timeline) core.Sequenceable {
-	activeNotes := map[int64]noteChangeEvent{}
+	activeNotes := map[int]noteChangeEvent{}
 	notes := []core.Note{}
 	t.EventsDo(func(event core.TimelineEvent, when time.Time) {
-		change := event.(NoteChange)
-		if change.isOn {
-			_, ok := activeNotes[change.note]
+		change := event.(core.NoteChange)
+		if change.IsOn() {
+			_, ok := activeNotes[change.Number()]
 			if ok {
 				// note was on ?
 			} else {
 				// new
-				activeNotes[change.note] = noteChangeEvent{change: change, when: when}
+				activeNotes[change.Number()] = noteChangeEvent{change: change, when: when}
 			}
 		} else {
 			// note off
-			hit, ok := activeNotes[change.note]
+			hit, ok := activeNotes[change.Number()]
 			if !ok {
 				// note was never on ?
 			} else {
 				// when.Sub(active.when)fraction
-				note, err := core.MIDItoNote(0.25, int(hit.change.note), int(hit.change.velocity))
+				note, err := core.MIDItoNote(0.25, hit.change.Number(), int(hit.change.Velocity()))
 				if err != nil {
 					notify.Warnf("core.MIDItoNote error:%v", err)
 				} else {
 					notes = append(notes, note)
-					delete(activeNotes, change.note)
+					delete(activeNotes, change.Number())
 				}
 			}
 		}
@@ -135,11 +117,3 @@ func buildExpressionFromTimeline(t *core.Timeline) core.Sequenceable {
 	})
 	return core.BuildSequence(notes)
 }
-
-type recordedNote struct {
-	start, end time.Time
-	number     int
-	velocity   int
-}
-
-func (r recordedNote) Handle(tim *core.Timeline, when time.Time) {}

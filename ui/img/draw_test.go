@@ -1,4 +1,4 @@
-package control
+package img
 
 import (
 	"testing"
@@ -7,22 +7,7 @@ import (
 	"github.com/emicklei/melrose/core"
 )
 
-func TestRecordingStop(t *testing.T) {
-	var r interface{}
-	r = new(Recording)
-	_, ok := r.(core.Stoppable)
-	if !ok {
-		t.Fail()
-	}
-}
-
-type testEvent struct {
-	id int
-}
-
-func (e testEvent) Handle(t *core.Timeline, w time.Time) {}
-
-func sampleRecording() *Recording {
+func sampleTimeline() *core.Timeline {
 	tim := core.NewTimeline()
 	now := time.Now()
 	tim.Schedule(core.NewNoteChange(true, 1, 1), now.Add(0*time.Second))
@@ -47,10 +32,10 @@ func sampleRecording() *Recording {
 	tim.Schedule(core.NewNoteChange(false, 5, 1), now.Add(18*time.Second))
 	tim.Schedule(core.NewNoteChange(false, 1, 1), now.Add(19*time.Second))
 
-	return &Recording{timeline: tim.ZeroStarting()}
+	return tim.ZeroStarting()
 }
 
-func TestRecordingSequence(t *testing.T) {
-	rec := sampleRecording()
-	t.Log(rec.timeline.Len())
+func TestDraw(t *testing.T) {
+	tl := sampleTimeline()
+	Draw(tl.NoteEvents())
 }
