@@ -1,8 +1,6 @@
 package img
 
 import (
-	"fmt"
-
 	"github.com/emicklei/melrose/core"
 	"github.com/fogleman/gg"
 )
@@ -16,17 +14,17 @@ func Draw(ncl []core.NoteEvent) {
 
 	bottom := float64(dc.Height())
 
-	start := ncl[0].Start
-	end := ncl[len(ncl)-1].End
+	stats := core.NoteStatistics(ncl)
+	//fmt.Println(stats)
 
-	xscale := float64(1000.0) / float64(end.Sub(start).Milliseconds())
+	xscale := float64(dc.Width()) / float64(stats.End.Sub(stats.Start).Milliseconds())
+	yscale := float64(dc.Height())/float64(stats.Highest) - float64(stats.Lowest)
 
 	for _, each := range ncl {
-		fmt.Println(each)
-		xs := float64(each.Start.Sub(start).Milliseconds()) * xscale
-		xe := float64(each.End.Sub(start).Milliseconds()) * xscale
-		dc.DrawRectangle(float64(xs), bottom-float64(each.Number)*100, xe-xs, 10)
-		dc.Stroke()
+		xs := float64(each.Start.Sub(stats.Start).Milliseconds()) * xscale
+		xe := float64(each.End.Sub(stats.Start).Milliseconds()) * xscale
+		dc.DrawRectangle(xs, bottom-float64(each.Number)*yscale, xe-xs, yscale)
+		dc.Fill()
 	}
 	dc.SavePNG("out.png")
 }

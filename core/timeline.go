@@ -52,12 +52,6 @@ func (t *Timeline) Len() int64 {
 	return count
 }
 
-// Period returns the start and end time of the first and last note.
-// Pre: len > 0
-func (t *Timeline) Period() (start time.Time, end time.Time) {
-	return t.head.when, t.tail.when
-}
-
 // Play runs a loop to handle all the events in time. This is blocking.
 func (t *Timeline) Play() {
 	t.resume = make(chan bool)
