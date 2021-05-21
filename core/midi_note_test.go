@@ -51,9 +51,9 @@ func TestMIDI_ToNote(t *testing.T) {
 			ZeroDuration,
 		},
 		{
-			"E♭5",
+			"E_5",
 			fields{On(16), On(75), On(Normal)},
-			MustParseNote("16E♭5"),
+			MustParseNote("16E_5"),
 			ZeroDuration,
 		},
 		{
@@ -91,6 +91,29 @@ func TestMIDI_ToNote(t *testing.T) {
 			}
 			if got, want := n.duration, tt.duration; got != want {
 				t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+			}
+		})
+	}
+}
+
+func TestIsBlackKey(t *testing.T) {
+	type args struct {
+		nr int
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{"A0", args{21}, false},
+		{"A#1", args{34}, true},
+		{"C#2", args{37}, true},
+		{"G9", args{127}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsBlackKey(tt.args.nr); got != tt.want {
+				t.Errorf("IsBlackKey() = %v, want %v", got, tt.want)
 			}
 		})
 	}

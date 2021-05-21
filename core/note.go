@@ -10,9 +10,9 @@ import (
 
 // Note represents a musical note.
 // Notations:
-// 		½.C♯3 = half duration, pitch C, sharp, octave 3, velocity default
+// 		2.C#3 = half duration, pitch C, sharp, octave 3, velocity default
 //		D     = quarter duration, pitch D, octave 4, no accidental
-//      ⅛B♭  = eigth duration, pitch B, octave 4, flat
+//      8B_   = eigth duration, pitch B, octave 4, flat
 //		=     = quarter rest
 //      -/+   = velocity number
 // http://en.wikipedia.org/wiki/Musical_Note
@@ -213,14 +213,14 @@ func (n Note) accidentalf(encoded bool) string {
 		if encoded {
 			return "b"
 		} else {
-			return "♭"
+			return "_"
 		}
 	}
 	if n.Accidental == 1 {
 		if encoded {
 			return "#"
 		} else {
-			return "♯"
+			return "#"
 		}
 	}
 	return ""
@@ -233,28 +233,16 @@ func (n Note) NonFractionBasedDuration() (time.Duration, bool) {
 	return ZeroDuration, false
 }
 
-func (n Note) durationf(encoded bool) string {
+func (n Note) durationf() string {
 	switch n.fraction {
 	case 0.0625:
 		return "16"
 	case 0.125:
-		if encoded {
-			return "8"
-		} else {
-			return "⅛"
-		}
+		return "8"
 	case 0.25:
-		if encoded {
-			return "4"
-		} else {
-			return "¼"
-		}
+		return "4"
 	case 0.5:
-		if encoded {
-			return "2"
-		} else {
-			return "½"
-		}
+		return "2"
 	case 1.0:
 		return "1"
 	}
@@ -290,7 +278,7 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 	}
 
 	if n.fraction != 0.25 {
-		buf.WriteString(n.durationf(false))
+		buf.WriteString(n.durationf())
 	}
 
 	if n.Dotted {
@@ -303,10 +291,10 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 	}
 	if Sharp == sharpOrFlatKey && n.Accidental == -1 { // want Sharp, specified in Flat
 		buf.WriteString(n.Pitched(-1).Name)
-		buf.WriteString("♯")
+		buf.WriteString("#")
 	} else if Flat == sharpOrFlatKey && n.Accidental == 1 { // want Flat, specified in Sharp
 		buf.WriteString(n.Pitched(1).Name)
-		buf.WriteString("♭")
+		buf.WriteString("_")
 	} else { // PrintAsSpecified
 		buf.WriteString(n.Name)
 		if n.Accidental != 0 {

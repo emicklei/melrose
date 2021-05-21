@@ -40,14 +40,14 @@ func TestScale_MinorC(t *testing.T) {
 
 func TestScale_MajorG(t *testing.T) {
 	s, _ := ParseScale("G")
-	if got, want := s.S().Storex(), "sequence('G A B C5 D5 E5 G♭5')"; got != want {
+	if got, want := s.S().Storex(), "sequence('G A B C5 D5 E5 G_5')"; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
 
 func TestScale_TwoOctaves(t *testing.T) {
 	s, _ := NewScale(2, "e")
-	if got, want := s.S().Storex(), "sequence('E G♭ A♭ A B D♭5 E♭5 E5 G♭5 A♭5 A5 B5 D♭6 E♭6')"; got != want {
+	if got, want := s.S().Storex(), "sequence('E G_ A_ A B D_5 E_5 E5 G_5 A_5 A5 B5 D_6 E_6')"; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }

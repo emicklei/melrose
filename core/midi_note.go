@@ -76,3 +76,9 @@ func (m MIDINote) Inspect(i Inspection) {
 	}
 	i.Properties["velocity"] = m.velocity
 }
+
+func IsBlackKey(nr int) bool {
+	// https://www.inspiredacoustics.com/en/MIDI_note_numbers_and_center_frequencies
+	i := (nr - 21) % 12
+	return i == 1 || i == 4 || i == 6 || i == 9 || i == 11
+}

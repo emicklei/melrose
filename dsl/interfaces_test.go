@@ -5,6 +5,7 @@ import (
 
 	"github.com/emicklei/melrose/control"
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/op"
 )
 
 func TestImplements(t *testing.T) {
@@ -46,6 +47,21 @@ func TestImplementsPlayable(t *testing.T) {
 			if _, ok := each.source.(core.Playable); !ok {
 				t.Errorf("%T does not implement Playable", each.source)
 			}
+		}
+	}
+}
+
+func TestImplementsReplaceable(t *testing.T) {
+	for _, each := range []struct {
+		source interface{}
+	}{
+		{source: op.Repeat{}},
+		{source: op.Fraction{}},
+		{source: op.Serial{}},
+		{source: op.Reverse{}},
+	} {
+		if _, ok := each.source.(core.Replaceable); !ok {
+			t.Errorf("%T does not implement Replaceable", each.source)
 		}
 	}
 }

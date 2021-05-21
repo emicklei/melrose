@@ -19,6 +19,18 @@ func (i *Iterator) Value() interface{} {
 	return i.Target[i.Index]
 }
 
+//  S is part of Sequenceable
+func (i *Iterator) S() Sequence {
+	if len(i.Target) == 0 {
+		return EmptySequence
+	}
+	v := i.Target[i.Index]
+	if s, ok := v.(Sequenceable); ok {
+		return s.S()
+	}
+	return EmptySequence
+}
+
 // Next is part of Nextable
 func (i *Iterator) Next() interface{} { // TODO return value needed?
 	if len(i.Target) == 0 {

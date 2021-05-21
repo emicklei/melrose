@@ -15,14 +15,14 @@ func TestParseChordSequence(t *testing.T) {
 	if got, want := len(two.Chords), 2; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
-	if got, want := two.S().Storex(), "sequence('(C E G) (D G♭ A)')"; got != want {
+	if got, want := two.S().Storex(), "sequence('(C E G) (D G_ A)')"; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
 
 func TestParseChordSequence_ParallelChords(t *testing.T) {
 	par := MustParseChordSequence("(E F)")
-	if got, want := par.S().Storex(), "sequence('(E A♭ B F A C5)')"; got != want {
+	if got, want := par.S().Storex(), "sequence('(E A_ B F A C5)')"; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }

@@ -9,9 +9,9 @@ import (
     play_test.go:13: bpm 120
     play_test.go:15: whole 2s
     play_test.go:19: 1C 2s
-    play_test.go:19: ½C 1s
+    play_test.go:19: 2C 1s
     play_test.go:19: C 500ms
-    play_test.go:19: ⅛C 250ms
+    play_test.go:19: 8C 250ms
 	play_test.go:19: 16C 125ms
 **/
 func TestDurationToFraction(t *testing.T) {

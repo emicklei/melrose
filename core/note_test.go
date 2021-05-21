@@ -108,7 +108,7 @@ var pitchers = []struct {
 	{"D", -2, "C"},
 	{"C", 12, "C5"},
 	{"C5", 2, "D5"},
-	{"C#3", 0, "C♯3"},
+	{"C#3", 0, "C#3"},
 }
 
 func TestModifiedPitch(t *testing.T) {
@@ -125,10 +125,10 @@ func ExampleParseNote() {
 	n1, _ := ParseNote("2C#3")
 	n2, _ := ParseNote("2.E_2")
 	n3, _ := ParseNote(".F_2++")
-	e1, _ := ParseNote("½C♯")
-	e2, _ := ParseNote("⅛B♭")
-	e3, _ := ParseNote("¼.D")
-	e4, _ := ParseNote("E♭")
+	e1, _ := ParseNote("2C#")
+	e2, _ := ParseNote("8B_")
+	e3, _ := ParseNote("4.D")
+	e4, _ := ParseNote("E_")
 	fmt.Println(e1)
 	fmt.Println(e2)
 	fmt.Println(e3)
@@ -137,20 +137,20 @@ func ExampleParseNote() {
 	fmt.Println(n2)
 	fmt.Println(n3)
 	// Output:
-	// ½C♯
-	// ⅛B♭
+	// 2C#
+	// 8B_
 	// .D
-	// E♭
-	// ½C♯3
-	// ½.E♭2
-	// .F♭2++
+	// E_
+	// 2C#3
+	// 2.E_2
+	// .F_2++
 }
 
 // Failures
 
 func TestNote_Storex(t *testing.T) {
 	n, _ := NewNote("A", 4, 0.25, 1, false, 1)
-	if got, want := n.Storex(), `note('A♯-----')`; got != want {
+	if got, want := n.Storex(), `note('A#-----')`; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
 }
@@ -190,7 +190,7 @@ func TestNoteWithDynamic(t *testing.T) {
 		out     string
 	}{
 		{"c", "-", "note('C-')"},
-		{"2.c#2", "--", "note('½.C♯2--')"},
+		{"2.c#2", "--", "note('2.C#2--')"},
 	} {
 		nin := MustParseNote(each.in)
 		before := nin.Storex()

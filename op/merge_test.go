@@ -10,14 +10,14 @@ func TestMerge(t *testing.T) {
 	for _, each := range []struct {
 		top, bottom, result string
 	}{
-		{"⅛F♯3 ⅛= ⅛F♯3", "16C♯5 16C♯ 16F♯ ⅛A 16A", "sequence('(⅛F♯3 16C♯5) 16C♯ 16F♯ (16= ⅛A) (⅛F♯3 16=) 16A')"},
-		{"8a 8a", "16d 16d 16d 16d", "sequence('(⅛A 16D) 16D (⅛A 16D) 16D')"},
+		{"8F#3 8= 8F#3", "16C#5 16C# 16F# 8A 16A", "sequence('(8F#3 16C#5) 16C# 16F# (16= 8A) (8F#3 16=) 16A')"},
+		{"8a 8a", "16d 16d 16d 16d", "sequence('(8A 16D) 16D (8A 16D) 16D')"},
 		{"c", "d", "sequence('(C D)')"},
-		{"c", "1d", "sequence('(C 1D) ½.=')"},
+		{"c", "1d", "sequence('(C 1D) 2.=')"},
 		{"=", "d", "sequence('D')"},
 		{"= = C (D E)", "= F = F F", "sequence('= F C (D E F) F')"},
 		{"> e <", "f", "sequence('> (E F) <')"},
-		{"> 8c 8= <", "16d 16d 16e 16e", "sequence('> (⅛C 16D) 16D 16E 16E <')"},
+		{"> 8c 8= <", "16d 16d 16e 16e", "sequence('> (8C 16D) 16D 16E 16E <')"},
 	} {
 		s1 := core.MustParseSequence(each.top)
 		s2 := core.MustParseSequence(each.bottom)
@@ -34,8 +34,8 @@ func Test_compactGroup(t *testing.T) {
 	}{
 		{"(C)", "sequence('C')"},
 		{"(C =)", "sequence('C')"},
-		{"(16= 16C♯)", "sequence('16C♯')"},
-		{"(16= ⅛A)", "sequence('(16= ⅛A)')"},
+		{"(16= 16C#)", "sequence('16C#')"},
+		{"(16= 8A)", "sequence('(16= 8A)')"},
 	} {
 		g := core.MustParseSequence(each.in)
 		c := core.Sequence{Notes: [][]core.Note{compactGroup(g.Notes[0])}}

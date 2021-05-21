@@ -8,10 +8,10 @@ import (
 
 func TestNewNoteMapper(t *testing.T) {
 	m, _ := NewNoteMap("1 2 4", core.On(core.MustParseNote("8c")))
-	if got, want := storex(m.S()), "sequence('⅛C ⅛C ⅛= ⅛C')"; got != want {
+	if got, want := storex(m.S()), "sequence('8C 8C 8= 8C')"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
-	if got, want := storex(m), "notemap('1 2 4',note('⅛C'))"; got != want {
+	if got, want := storex(m), "notemap('1 2 4',note('8C'))"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }

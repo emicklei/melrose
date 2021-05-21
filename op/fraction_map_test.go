@@ -8,7 +8,7 @@ import (
 
 func TestFractionMap(t *testing.T) {
 	pm := NewFractionMap(core.On(" 1:1 , 2:2, 3:4 "), core.MustParseSequence("c (e 4f) 8g"))
-	if got, want := pm.S().Storex(), "sequence('1C (½E ½F) G')"; got != want {
+	if got, want := pm.S().Storex(), "sequence('1C (2E 2F) G')"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }

@@ -33,7 +33,7 @@ Fraction can also be an exact float value between 0 and 1.
 		Prefix:     "fra",
 		IsComposer: true,
 		Template:   `fraction(${1:object},${2:object})`,
-		Samples:    `fraction(8,sequence('e f')) // => ⅛E ⅛F , shorten the notes from quarter to eight`,
+		Samples:    `fraction(8,sequence('e f')) // => 8E 8F , shorten the notes from quarter to eight`,
 		Func: func(param float64, playables ...interface{}) interface{} {
 			// if err := op.CheckFraction(param); err != nil {
 			// 	notify.Print(notify.Error(err))
@@ -116,8 +116,8 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 		Prefix:      "pro",
 		IsCore:      true,
 		Template:    `chordsequence('${1:chords}')`,
-		Samples: `chordsequence('e f') // => (E A♭ B) (F A C5)
-		chordsequence('(c d)') // => (C E G D G♭ A)`,
+		Samples: `chordsequence('e f') // => (E A_ B) (F A C5)
+		chordsequence('(c d)') // => (C E G D G_ A)`,
 		Func: func(chords string) interface{} {
 			p, err := core.ParseChordSequence(chords)
 			if err != nil {
@@ -363,7 +363,7 @@ transpose(p,note('c'))`,
 		Template:    `join(${1:first},${2:second})`,
 		Samples: `a = chord('a')
 b = sequence('(c e g)')
-ab = join(a,b) // => (A D♭5 E5) (C E G)`,
+ab = join(a,b) // => (A D_5 E5) (C E G)`,
 		IsComposer: true,
 		Func: func(playables ...interface{}) interface{} {
 			joined := []core.Sequenceable{}
@@ -442,7 +442,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Prefix:      "seq",
 		Template:    `sequence('${1:space-separated-notes}')`,
 		Samples: `sequence('c d e')
-sequence('(8c d e)') // => (⅛C D E)
+sequence('(8c d e)') // => (8C D E)
 sequence('c (d e f) a =')`,
 		IsCore: true,
 		Func: func(s string) interface{} {
@@ -768,7 +768,7 @@ stop() // stop all playables`,
 		Prefix:      "frm",
 		Template:    `fractionmap('${1:fraction-mapping}',${2:object})`,
 		IsComposer:  true,
-		Samples:     `fractionmap('3:. 2:4,1:2',sequence('c e g')) // => .G E ½C`,
+		Samples:     `fractionmap('3:. 2:4,1:2',sequence('c e g')) // => .G E 2C`,
 		Func: func(indices interface{}, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {

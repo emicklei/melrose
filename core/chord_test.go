@@ -25,25 +25,25 @@ func TestParseChord_C(t *testing.T) {
 		{
 			"C minor",
 			args{"C/m"},
-			"('(C E♭ G)')",
+			"('(C E_ G)')",
 			false,
 		},
 		{
 			"C augmented",
 			args{"C/aug"},
-			"('(C E A♭)')",
+			"('(C E A_)')",
 			false,
 		},
 		{
 			"C +",
 			args{"C/+"},
-			"('(C E A♭)')",
+			"('(C E A_)')",
 			false,
 		},
 		{
 			"C diminished",
 			args{"C/dim"},
-			"('(C E♭ G♭)')",
+			"('(C E_ G_)')",
 			false,
 		},
 		{
@@ -68,25 +68,25 @@ func TestParseChord_C(t *testing.T) {
 		{
 			"C dominant 7",
 			args{"C/7"},
-			"('(C E G B♭)')",
+			"('(C E G B_)')",
 			false,
 		},
 		// {
 		// 	"C minor major 7",
 		// 	args{"C/mmaj7"},
-		// 	"('(C E♭ G B♭)')",
+		// 	"('(C E_ G B_)')",
 		// 	false, // TODO
 		// },
 		{
 			"C minor 7",
 			args{"C/m7"},
-			"('(C E♭ G B♭)')",
+			"('(C E_ G B_)')",
 			false,
 		},
 		{
 			"C augmented seventh",
 			args{"C/aug7"},
-			"('(C E A♭ B♭)')",
+			"('(C E A_ B_)')",
 			false,
 		},
 		{
@@ -128,32 +128,32 @@ func TestParseChord(t *testing.T) {
 		{
 			"A augmented",
 			args{"a/+"},
-			"('(A D♭5 F5)')",
+			"('(A D_5 F5)')",
 			false,
 		},
 		{
-			"E♭ augmented seventh",
-			args{"E♭/aug7"},
-			"('(E♭ G B D♭5)')",
+			"E_ augmented seventh",
+			args{"E_/aug7"},
+			"('(E_ G B D_5)')",
 			false,
 		},
 
 		{
 			"D diminished",
 			args{"d/dim"},
-			"('(D F A♭)')",
+			"('(D F A_)')",
 			false,
 		},
 		{
 			"E diminished",
 			args{"e/o"},
-			"('(E G B♭)')",
+			"('(E G B_)')",
 			false,
 		},
 		{
 			"D 7",
 			args{"D/7"},
-			"('(D G♭ A C5)')",
+			"('(D G_ A C5)')",
 			false,
 		},
 
@@ -166,7 +166,7 @@ func TestParseChord(t *testing.T) {
 		{
 			"E 7",
 			args{"E/7"},
-			"('(E A♭ B D5)')",
+			"('(E A_ B D5)')",
 			false,
 		},
 		{
@@ -179,7 +179,7 @@ func TestParseChord(t *testing.T) {
 		{
 			"C sharp major 1nd inversion",
 			args{"C#/1"},
-			"('(F A♭ C♯5)')",
+			"('(F A_ C#5)')",
 			false,
 		},
 		{
@@ -191,7 +191,7 @@ func TestParseChord(t *testing.T) {
 		{
 			"E flat 3, 2nd inversion",
 			args{"e_3/2"},
-			"('(B♭3 E♭ G)')",
+			"('(B_3 E_ G)')",
 			false,
 		},
 		{

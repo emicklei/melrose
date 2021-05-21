@@ -20,9 +20,9 @@ func TestNote_Invalid(t *testing.T) {
 
 func TestChord(t *testing.T) {
 	r := eval(t, "chord('C#/m')")
-	checkStorex(t, r, "chord('C♯/m')")
+	checkStorex(t, r, "chord('C#/m')")
 	checkStorex(t, r.(core.Sequenceable).S(),
-		"sequence('(C♯ E A♭)')")
+		"sequence('(C# E A_)')")
 }
 
 func TestChord_Invalid(t *testing.T) {
@@ -42,7 +42,7 @@ func TestProgression(t *testing.T) {
 	r := eval(t, "chordsequence('c/m (d7 e g) =')")
 	checkStorex(t, r, "chordsequence('C/m (D7 E G) =')")
 	checkStorex(t, r.(core.Sequenceable).S(),
-		"sequence('(C E♭ G) (D7 G♭7 A7 E A♭ B G B D5) =')")
+		"sequence('(C E_ G) (D7 G_7 A7 E A_ B G B D5) =')")
 }
 
 func TestChordSequence_Invalid(t *testing.T) {
@@ -53,28 +53,28 @@ func TestScale(t *testing.T) {
 	r := eval(t, "scale(2,'16e2')")
 	checkStorex(t, r, "scale(2,'16E2')")
 	checkStorex(t, r.(core.Sequenceable).S(),
-		"sequence('16E2 16G♭2 16A♭2 16A2 16B2 16D♭3 16E♭3 16E3 16G♭3 16A♭3 16A3 16B3 16D♭ 16E♭')")
+		"sequence('16E2 16G_2 16A_2 16A2 16B2 16D_3 16E_3 16E3 16G_3 16A_3 16A3 16B3 16D_ 16E_')")
 }
 
 func TestPitch_Scale(t *testing.T) {
 	r := eval(t, "pitch(1,scale(2,'16e2'))")
 	checkStorex(t, r, "transpose(1,scale(2,'16E2'))")
 	checkStorex(t, r.(core.Sequenceable).S(),
-		"sequence('16F2 16G2 16A2 16B♭2 16C3 16D3 16E3 16F3 16G3 16A3 16B♭3 16C 16D 16E')")
+		"sequence('16F2 16G2 16A2 16B_2 16C3 16D3 16E3 16F3 16G3 16A3 16B_3 16C 16D 16E')")
 }
 
 func TestTranspose_Scale(t *testing.T) {
 	r := eval(t, "transpose(1,scale(2,'16e2'))")
 	checkStorex(t, r, "transpose(1,scale(2,'16E2'))")
 	checkStorex(t, r.(core.Sequenceable).S(),
-		"sequence('16F2 16G2 16A2 16B♭2 16C3 16D3 16E3 16F3 16G3 16A3 16B♭3 16C 16D 16E')")
+		"sequence('16F2 16G2 16A2 16B_2 16C3 16D3 16E3 16F3 16G3 16A3 16B_3 16C 16D 16E')")
 }
 
 func TestTranspose_ChordSequence(t *testing.T) {
 	r := eval(t, "transpose(1,chordsequence('c/m (d7 e g) ='))")
 	checkStorex(t, r, "transpose(1,chordsequence('C/m (D7 E G) ='))")
 	checkStorex(t, r.(core.Sequenceable).S(),
-		"sequence('(D♭ E A♭) (E♭7 G7 B♭7 F A C5 A♭ C5 E♭5) =')")
+		"sequence('(D_ E A_) (E_7 G7 B_7 F A C5 A_ C5 E_5) =')")
 }
 
 func TestTrack(t *testing.T) {
@@ -137,7 +137,7 @@ func TestChordSequenceWithSustain(t *testing.T) {
 	r := eval(t, "chordsequence('> 1g/m/2 ^ 1d5 <')")
 	checkStorex(t, r, "chordsequence('> 1G/m/2 ^ 1D5 <')")
 	checkStorex(t, r.(core.Sequenceable).S(),
-		"sequence('> (1D5 1G5 1B♭5) ^ (1D5 1G♭5 1A5) <')")
+		"sequence('> (1D5 1G5 1B_5) ^ (1D5 1G_5 1A5) <')")
 }
 
 func TestNotemapDots(t *testing.T) {

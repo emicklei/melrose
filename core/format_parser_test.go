@@ -9,8 +9,8 @@ func Test_formatParser_ParseSequence(t *testing.T) {
 		in  string
 		out string
 	}{
-		{"16.A#++ .C_-( A B ) C (D) ", "sequence('16.A♯++ .C♭- (A B) C D')"},
-		{"8c#5-", "sequence('⅛C♯5-')"},
+		{"16.A#++ .C_-( A B ) C (D) ", "sequence('16.A#++ .C_- (A B) C D')"},
+		{"8c#5-", "sequence('8C#5-')"},
 		{" ", "sequence('')"},
 	} {
 		p := newFormatParser(each.in)
@@ -32,8 +32,8 @@ func Test_formatParser_ParseChordProgression(t *testing.T) {
 	}{
 		{"C", "viidim", "sequence('(B D5 F5)')"},
 		{"C", "I", "sequence('(C E G)')"},
-		{"C", "Idim7", "sequence('(C E♭ G♭ A)')"}, // A -> B♭♭
-		{"C", "Im7", "sequence('(C E♭ G B♭)')"},
+		{"C", "Idim7", "sequence('(C E_ G_ A)')"}, // A -> B__
+		{"C", "Im7", "sequence('(C E_ G B_)')"},
 		{"C", "IM7", "sequence('(C E G B)')"},
 		{"C", "ii", "sequence('(D F A)')"},
 		{"C", "iii", "sequence('(E G B)')"},
@@ -41,7 +41,7 @@ func Test_formatParser_ParseChordProgression(t *testing.T) {
 		{"C", "V", "sequence('(G B D5)')"},
 		{"C", "V7", "sequence('(G B D5 F5)')"}, // G/7
 		{"C", "vi", "sequence('(A C5 E5)')"},
-		{"C", "vii", "sequence('(B E♭5 G♭5)')"},
+		{"C", "vii", "sequence('(B E_5 G_5)')"},
 		{"C", "Imaj7", "sequence('(C E G B)')"},
 	} {
 		p := newFormatParser(each.in)
@@ -82,7 +82,7 @@ func Test_formatParser_ParseNote(t *testing.T) {
 		in  string
 		out string
 	}{
-		{"16.A#++", "note('16.A♯++')"},
+		{"16.A#++", "note('16.A#++')"},
 		{"^", "note('^')"},
 		{"<", "note('<')"},
 		{">", "note('>')"},
@@ -91,12 +91,12 @@ func Test_formatParser_ParseNote(t *testing.T) {
 		{"16.=", "note('16.=')"},
 		{".=", "note('.=')"},
 		{"4c-", "note('C-')"},
-		{"8.f_", "note('⅛.F♭')"},
+		{"8.f_", "note('8.F_')"},
 		{"d8", "note('D8')"},
-		{"8.d+8", "note('⅛.D8+')"},
-		{".e_-", "note('.E♭-')"},
-		{"2e10", "note('½E10')"},
-		{".2a", "note('½.A')"},
+		{"8.d+8", "note('8.D8+')"},
+		{".e_-", "note('.E_-')"},
+		{"2e10", "note('2E10')"},
+		{".2a", "note('2.A')"},
 	} {
 		p := newFormatParser(each.in)
 		s, err := p.parseNote()

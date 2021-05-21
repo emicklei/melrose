@@ -224,11 +224,11 @@ func (s *noteSTM) accept(lit string) error {
 		switch lit {
 		case "16":
 			f = 0.0625
-		case "⅛", "8":
+		case "8", "⅛":
 			f = 0.125
-		case "¼", "4":
+		case "4", "¼":
 			f = 0.25
-		case "½", "2":
+		case "2", "½":
 			f = 0.5
 		case "1":
 			f = 1
@@ -252,9 +252,9 @@ func (s *noteSTM) accept(lit string) error {
 			accidental = 1
 		case "♯":
 			accidental = 1
-		case "♭":
-			accidental = -1
 		case "_":
+			accidental = -1
+		case "♭":
 			accidental = -1
 		}
 		if accidental != 0 {
