@@ -117,7 +117,7 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 		IsCore:      true,
 		Template:    `chordsequence('${1:chords}')`,
 		Samples: `chordsequence('e f') // => (E A_ B) (F A C5)
-		chordsequence('(c d)') // => (C E G D G_ A)`,
+chordsequence('(c d)') // => (C E G D G_ A)`,
 		Func: func(chords string) interface{} {
 			p, err := core.ParseChordSequence(chords)
 			if err != nil {
@@ -970,8 +970,9 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 		}}
 
 	eval["next"] = Function{
-		Title:       "Next operator",
-		Description: `is used to produce the next value in a generator such as random, iterator and interval`,
+		Title: "Next operator",
+		Description: `is used to produce the next value in a generator such as random, iterator and interval.
+The function itself does not return the value; use the generator for that.`,
 		Samples: `i = interval(-4,4,2)
 pi = transpose(i,sequence('c d e f g a b')) // current value of "i" is used
 lp_pi = loop(pi,next(i)) // "i" will advance to the next value

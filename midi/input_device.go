@@ -18,10 +18,10 @@ func NewInputDevice(id int, in transport.MIDIIn, t transport.Transporter) *Input
 	}
 }
 
-// TODO
-// func (i *InputDevice) Listener() transport.MIDIListener {
-// 	return i.listener
-// }
+// This is needed by WASM
+func (i *InputDevice) Listener() transport.MIDIListener {
+	return i.listener
+}
 
 // TODO deprecated?
 func (i *InputDevice) stopListener() {
