@@ -117,6 +117,14 @@ func ToValueable(v interface{}) Valueable {
 	return &ValueHolder{Any: v}
 }
 
+// ValueOf returns the non Valuable value of v
+func ValueOf(v interface{}) interface{} {
+	if w, ok := v.(Valueable); ok {
+		return ValueOf(w.Value())
+	}
+	return v
+}
+
 func On(v interface{}) Valueable {
 	return ToValueable(v)
 }
@@ -143,4 +151,17 @@ func (h ValueHolder) Storex() string {
 // TODO used?
 func (h ValueHolder) String() string {
 	return h.Storex()
+}
+
+type ValueFunction struct {
+	StoreString string
+	Function    func() interface{}
+}
+
+func (v ValueFunction) Storex() string {
+	return v.StoreString
+}
+
+func (v ValueFunction) Value() interface{} {
+	return v.Function()
 }

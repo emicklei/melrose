@@ -969,6 +969,41 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 			return op.Merge{Target: s}
 		}}
 
+	eval["if"] = Function{
+		Title:       "Conditional operator",
+		Description: "Supports conditions with operators: <,<=,>,>=,!=,==",
+		Samples:     ``,
+		Func: func(c interface{}, thenelse ...interface{}) interface{} {
+			if len(thenelse) == 0 {
+				notify.Panic(fmt.Errorf("requires at least a <then>"))
+			}
+			if len(thenelse) > 2 {
+				notify.Panic(fmt.Errorf("requires at most a <then> and an <else>"))
+			}
+			thenarg, ok := getSequenceable(thenelse[0])
+			if !ok {
+				notify.Panic(fmt.Errorf("cannot conditional use (%T) %v", thenelse[0], thenelse[0]))
+			}
+			ifop := op.IfCondition{Condition: getValueable(c), Then: thenarg, Else: core.EmptySequence}
+			if len(thenelse) == 2 {
+				elsearg, ok := getSequenceable(thenelse[1])
+				if !ok {
+					notify.Panic(fmt.Errorf("cannot conditional use (%T) %v", thenelse[1], thenelse[1]))
+				}
+				ifop.Else = elsearg
+			}
+			return ifop
+		},
+	}
+
+	eval["value"] = Function{
+		Title:       "Value operator",
+		Description: "returns the actual value of a variable",
+		Func: func(v interface{}) interface{} {
+			return core.ValueOf(v)
+		},
+	}
+
 	eval["next"] = Function{
 		Title: "Next operator",
 		Description: `is used to produce the next value in a generator such as random, iterator and interval.

@@ -141,3 +141,7 @@ var (
 type NameAware interface {
 	VariableName(yours string)
 }
+
+type HasIndex interface {
+	Index() Valueable
+}
