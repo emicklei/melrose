@@ -125,6 +125,17 @@ func ValueOf(v interface{}) interface{} {
 	return v
 }
 
+// IndexOf returns the non Valuable value of v
+func IndexOf(v interface{}) interface{} {
+	if i, ok := v.(HasIndex); ok {
+		return i.Index()
+	}
+	if w, ok := v.(Valueable); ok {
+		return IndexOf(w.Value())
+	}
+	return 0 // no index
+}
+
 func On(v interface{}) Valueable {
 	return ToValueable(v)
 }

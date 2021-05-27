@@ -9,13 +9,13 @@ import (
 
 type Fraction struct {
 	Target    []core.Sequenceable
-	Parameter float64
+	Parameter core.Valueable
 }
 
-func NewFraction(checkedParameter float64, target []core.Sequenceable) Fraction {
+func NewFraction(parameter core.Valueable, target []core.Sequenceable) Fraction {
 	return Fraction{
 		Target:    target,
-		Parameter: checkedParameter,
+		Parameter: parameter,
 	}
 }
 
@@ -27,11 +27,16 @@ func (d Fraction) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	return Fraction{Target: replacedAll(d.Target, from, to), Parameter: d.Parameter}
 }
 
-func (d Fraction) S() core.Sequence {
-	f := float32(d.Parameter)
+func (d Fraction) floatParameter() float32 {
+	f := core.Float(d.Parameter)
 	if f > 1.0 {
 		f = 1.0 / f
 	}
+	return f
+}
+
+func (d Fraction) S() core.Sequence {
+	f := d.floatParameter()
 	target := [][]core.Note{}
 	source := Join{Target: d.Target}.S().Notes
 	for _, eachGroup := range source {
@@ -46,7 +51,7 @@ func (d Fraction) S() core.Sequence {
 
 func (d Fraction) Storex() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "fraction(%v", d.Parameter)
+	fmt.Fprintf(&b, "fraction(%s", core.Storex(d.Parameter))
 	core.AppendStorexList(&b, false, d.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
@@ -64,23 +69,5 @@ func (d Fraction) ToNote() (core.Note, error) {
 	if err != nil {
 		return not, err
 	}
-	return not.WithFraction(1.0/float32(d.Parameter), not.Dotted), nil
-}
-
-// TODO used?
-var validFractionParameterValues = []float64{1, 2, 4, 8, 16, 0.5, 0.25, 0.125, 0.0625, 0.1666}
-
-// TODO used?
-func CheckFraction(param float64) error {
-	match := false
-	for _, each := range validFractionParameterValues {
-		if each == param {
-			match = true
-			break
-		}
-	}
-	if !match {
-		return fmt.Errorf("fraction parameter [%v] must in %v", param, validFractionParameterValues)
-	}
-	return nil
+	return not.WithFraction(d.floatParameter(), not.Dotted), nil
 }

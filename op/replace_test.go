@@ -57,7 +57,7 @@ func TestReplace_Operators(t *testing.T) {
 	{
 		s := &core.Iterator{Target: []interface{}{c, d}}
 		cn := core.MustParseNote("c")
-		f := Fraction{Target: []core.Sequenceable{cn}, Parameter: 1.0}
+		f := Fraction{Target: []core.Sequenceable{cn}, Parameter: core.On(1.0)}
 		r := Replace{Target: f, From: cn, To: s}
 		s.Next()
 		if got, want := fmt.Sprintf("%v", r.S()), "1D"; got != want {

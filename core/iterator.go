@@ -24,9 +24,11 @@ func (i *Iterator) Index() Valueable {
 	return ValueFunction{
 		StoreString: ".Index()",
 		Function: func() interface{} {
-			return i.index + 1
+			return i.getindex() + 1
 		}}
 }
+
+func (i *Iterator) getindex() int { return i.index }
 
 //  S is part of Sequenceable
 func (i *Iterator) S() Sequence {

@@ -89,6 +89,9 @@ func Storex(v interface{}) string {
 	if s, ok := v.(Storable); ok {
 		return s.Storex()
 	}
+	if s, ok := v.(string); ok {
+		return fmt.Sprintf("'%s'", s)
+	}
 	return fmt.Sprintf("%v", v)
 }
 

@@ -34,11 +34,7 @@ Fraction can also be an exact float value between 0 and 1.
 		IsComposer: true,
 		Template:   `fraction(${1:object},${2:object})`,
 		Samples:    `fraction(8,sequence('e f')) // => 8E 8F , shorten the notes from quarter to eight`,
-		Func: func(param float64, playables ...interface{}) interface{} {
-			// if err := op.CheckFraction(param); err != nil {
-			// 	notify.Print(notify.Error(err))
-			// 	return nil
-			// }
+		Func: func(param interface{}, playables ...interface{}) interface{} {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -48,7 +44,7 @@ Fraction can also be an exact float value between 0 and 1.
 					joined = append(joined, s)
 				}
 			}
-			return op.NewFraction(param, joined)
+			return op.NewFraction(getValueable(param), joined)
 		}}
 
 	eval["dynamic"] = Function{
@@ -1004,6 +1000,19 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 				StoreString: fmt.Sprintf("value(%s)", core.Storex(v)),
 				Function: func() interface{} {
 					return core.ValueOf(v)
+				},
+			}
+		},
+	}
+
+	eval["index"] = Function{
+		Title:       "Index operator",
+		Description: "returns the current index of an object (e.g. iterator,interval,repeat)",
+		Func: func(v interface{}) interface{} {
+			return core.ValueFunction{
+				StoreString: fmt.Sprintf("index(%s)", core.Storex(v)),
+				Function: func() interface{} {
+					return core.IndexOf(v)
 				},
 			}
 		},
