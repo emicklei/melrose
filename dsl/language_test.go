@@ -208,3 +208,13 @@ func TestVelocityMap(t *testing.T) {
 	checkStorex(t, r.(core.Sequenceable).S(),
 		"sequence('C--- G+ G')")
 }
+
+func TestValueOfVar(t *testing.T) {
+	r := eval(t, `
+i = iterator(1)
+v = value(i)`)
+	checkStorex(t, r, "value(i)")
+	if got, want := core.ValueOf(r), 1; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}

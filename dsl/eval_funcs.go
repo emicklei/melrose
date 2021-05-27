@@ -998,9 +998,14 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 
 	eval["value"] = Function{
 		Title:       "Value operator",
-		Description: "returns the actual value of a variable",
+		Description: "returns the current value of a variable",
 		Func: func(v interface{}) interface{} {
-			return core.ValueOf(v)
+			return core.ValueFunction{
+				StoreString: fmt.Sprintf("value(%s)", core.Storex(v)),
+				Function: func() interface{} {
+					return core.ValueOf(v)
+				},
+			}
 		},
 	}
 
