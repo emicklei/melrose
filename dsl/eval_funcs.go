@@ -255,7 +255,7 @@ chord('g/M/2') // Major G second inversion`,
 			return c
 		}}
 
-	eval["transposemap"] = Function{
+	registerFunction(eval, "transposemap", Function{
 		Title:       "Transpose Map operator",
 		Description: "create a sequence with notes for which the order and the pitch are changed. 1-based indexing",
 		Alias:       "pitchmap",
@@ -268,7 +268,7 @@ chord('g/M/2') // Major G second inversion`,
 				return notify.Panic(fmt.Errorf("cannot transposemap (%T) %v", m, m))
 			}
 			return op.NewTransposeMap(s, indices)
-		}}
+		}})
 
 	eval["octavemap"] = Function{
 		Title:       "Octave Map operator",
