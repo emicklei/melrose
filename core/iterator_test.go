@@ -14,7 +14,7 @@ func TestIterator_Value(t *testing.T) {
 	if got, want := i.Value(), "D"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
-	if got, want := i.Index().Value(), 2; got != want {
+	if got, want := i.Index("this").Value(), 2; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 	i.Next()

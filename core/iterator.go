@@ -20,9 +20,10 @@ func (i *Iterator) Value() interface{} {
 }
 
 // Index returns the current index of the iterator as a Valueable ; 1-based
-func (i *Iterator) Index() Valueable {
+// TODO or implement NameAware interface and remove the parameter?
+func (i *Iterator) Index(receiver string) Valueable {
 	return ValueFunction{
-		StoreString: ".Index()",
+		StoreString: fmt.Sprintf("%s.Index()", receiver),
 		Function: func() interface{} {
 			return i.getindex() + 1
 		}}

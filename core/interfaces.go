@@ -143,5 +143,5 @@ type NameAware interface {
 }
 
 type HasIndex interface {
-	Index() Valueable
+	Index(receiver string) Valueable
 }
