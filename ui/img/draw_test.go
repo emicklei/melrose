@@ -38,30 +38,11 @@ func sampleTimeline() *core.Timeline {
 
 func TestDraw(t *testing.T) {
 	tl := sampleTimeline()
-	gc := gg.NewContext(1000, 400)
+	gc := gg.NewContext(500, 50)
 
-	vp := NewViewPort(10, 390, 990, 10)
+	vp := NewViewPort(2, 48, 498, 2)
 	evts := tl.NoteEvents()
 	nv := NotesView{Events: evts}
 	nv.DrawOn(gc, vp)
-	gc.SavePNG("out.png")
-}
-
-func TestPianoRoll(t *testing.T) {
-	gc := gg.NewContext(1000, 400)
-	gc.SetRGB(1.0, 1.0, 1.0)
-	p := PianoView{Low: 30, High: 62}
-	vp := NewViewPort(10, 390, 100, 10)
-	p.DrawOn(gc, vp)
-	gc.SetRGB(1.0, 0, 0)
-	gc.DrawString("C#", 500, 200)
-	gc.SavePNG("out.png")
-}
-
-func TestAxis(t *testing.T) {
-	gc := gg.NewContext(100, 100)
-	gc.SetRGB(1.0, 1.0, 1.0)
-	gc.DrawRectangle(10, 50, 20, 40)
-	gc.Fill()
-	gc.SavePNG("out.png")
+	gc.SavePNG("TestDraw.png")
 }

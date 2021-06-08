@@ -967,7 +967,7 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 
 	eval["if"] = Function{
 		Title:       "Conditional operator",
-		Description: "Supports conditions with operators: <,<=,>,>=,!=,==",
+		Description: "Supports conditions with operators on numbers: <,<=,>,>=,!=,==",
 		Samples:     ``,
 		Func: func(c interface{}, thenelse ...interface{}) interface{} {
 			if len(thenelse) == 0 {
