@@ -81,7 +81,8 @@ func InspectValue(ctx Context, v interface{}) {
 	if v == nil {
 		return
 	}
-	i := NewInspect(ctx, v)
+	varname := ctx.Variables().NameFor(v)
+	i := NewInspect(ctx, varname, v)
 	fmt.Fprintf(notify.Console.StandardOut, "%s\n", i.String())
 }
 

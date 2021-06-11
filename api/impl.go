@@ -134,7 +134,7 @@ func (s *ServiceImpl) CommandHover(source string) string {
 	// inspect as variable
 	value, ok := s.context.Variables().Get(source)
 	if ok {
-		return core.NewInspect(s.context, value).Markdown()
+		return core.NewInspect(s.context, source, value).Markdown()
 	}
 	// inspect as function
 	fun, ok := s.evaluator.LookupFunction(source)

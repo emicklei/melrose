@@ -9,19 +9,21 @@ import (
 )
 
 type Inspection struct {
-	Context    Context
-	Type       string
-	Text       string
-	Properties map[string]interface{}
+	Context      Context
+	Type         string
+	Text         string
+	VariableName string
+	Properties   map[string]interface{}
 }
 
 const maxTextLength = 40
 
-func NewInspect(ctx Context, value interface{}) Inspection {
+func NewInspect(ctx Context, varname string, value interface{}) Inspection {
 	i := Inspection{
-		Context:    ctx,
-		Type:       fmt.Sprintf("%T", value),
-		Properties: map[string]interface{}{},
+		Context:      ctx,
+		VariableName: varname,
+		Type:         fmt.Sprintf("%T", value),
+		Properties:   map[string]interface{}{},
 	}
 	if s, ok := value.(Storable); ok {
 		i.Text = s.Storex()
@@ -66,6 +68,11 @@ func (i Inspection) Markdown() string {
 			}
 		}
 		fmt.Fprintf(&b, "- %v %s\n", v, k)
+	}
+	// only if we know the variable and have a http service listening
+	if len(i.VariableName) > 0 && i.Context.Capabilities().HttpService {
+		fmt.Fprintln(&b)
+		fmt.Fprintf(&b, `[more...](http://localhost:8118/v1/notes?var=%s)`, i.VariableName)
 	}
 	return b.String()
 }

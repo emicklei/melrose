@@ -36,7 +36,7 @@ func (w Print) Evaluate(ctx Context) error {
 // S is part of Sequenceable
 func (w Print) S() Sequence {
 	beats, bars := w.Context.Control().BeatsAndBars()
-	in := NewInspect(w.Context, w.Target)
+	in := NewInspect(w.Context, "", w.Target)
 	if bars > 0 {
 		in.Properties["bar"] = bars
 	}

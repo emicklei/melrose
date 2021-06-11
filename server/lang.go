@@ -27,6 +27,7 @@ func NewLanguageServer(ctx core.Context, addr string) *LanguageServer {
 func (l *LanguageServer) Start() error {
 	http.HandleFunc("/v1/statements", l.statementHandler)
 	http.HandleFunc("/v1/inspect", l.inspectHandler)
+	http.HandleFunc("/v1/notes", l.notesPageHandler)
 	http.HandleFunc("/version", l.versionHandler)
 	return http.ListenAndServe(l.address, nil)
 }
@@ -53,6 +54,7 @@ func Start(ctx core.Context) {
 		mux := new(http.ServeMux)
 		mux.HandleFunc("/v1/statements", ls.statementHandler)
 		mux.HandleFunc("/v1/inspect", ls.inspectHandler)
+		http.HandleFunc("/v1/notes", ls.notesPageHandler)
 		mux.HandleFunc("/version", ls.versionHandler)
 		server := http.Server{Handler: mux}
 		// Handle request from localtunnel
