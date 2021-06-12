@@ -18,7 +18,8 @@ type testEvent struct {
 	id int
 }
 
-func (e testEvent) Handle(t *Timeline, w time.Time) {}
+func (e testEvent) NoteChangesDo(block func(NoteChange)) {}
+func (e testEvent) Handle(t *Timeline, w time.Time)      {}
 
 func TestScheduleAdd(t *testing.T) {
 	tim := NewTimeline()

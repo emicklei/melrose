@@ -68,7 +68,7 @@ func (d *DeviceRegistry) Output(id int) (*OutputDevice, error) {
 	if err != nil {
 		return nil, tre.New(err, "Output", "id", id)
 	}
-	od := NewOutputDevice(id, midiOut, 1)
+	od := NewOutputDevice(id, midiOut, 1, core.NewTimeline())
 	d.out[id] = od
 	od.Start() // play outgoing notes
 	return od, nil

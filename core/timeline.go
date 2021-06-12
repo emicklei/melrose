@@ -27,6 +27,7 @@ func NewTimeline() *Timeline {
 // TimelineEvent describe an event that can be scheduled on a Timeline.
 type TimelineEvent interface {
 	Handle(tim *Timeline, when time.Time)
+	NoteChangesDo(block func(NoteChange))
 }
 
 type scheduledTimelineEvent struct {
@@ -195,27 +196,28 @@ func (t *Timeline) ZeroStarting() *Timeline {
 func (t *Timeline) NoteEvents() (list []NoteEvent) {
 	activeNotes := map[int64]NoteEvent{}
 	t.EventsDo(func(event TimelineEvent, when time.Time) {
-		change := event.(NoteChange)
-		if change.isOn {
-			_, ok := activeNotes[change.note]
-			if ok {
-				// note was on ?
-				// TODO warn?
+		event.NoteChangesDo(func(change NoteChange) {
+			if change.isOn {
+				_, ok := activeNotes[change.note]
+				if ok {
+					// note was on ?
+					// TODO warn?
+				} else {
+					// new
+					activeNotes[change.note] = NoteEvent{Start: when, Number: change.Number(), Velocity: change.Velocity()}
+				}
 			} else {
-				// new
-				activeNotes[change.note] = NoteEvent{Start: when, Number: change.Number(), Velocity: change.Velocity()}
+				// note off
+				hit, ok := activeNotes[change.note]
+				if !ok {
+					// note was never on ?
+					// TODO warn?
+				} else {
+					list = append(list, hit.WithEnd(when))
+					delete(activeNotes, change.note)
+				}
 			}
-		} else {
-			// note off
-			hit, ok := activeNotes[change.note]
-			if !ok {
-				// note was never on ?
-				// TODO warn?
-			} else {
-				list = append(list, hit.WithEnd(when))
-				delete(activeNotes, change.note)
-			}
-		}
+		})
 	})
 	return
 }

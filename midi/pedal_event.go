@@ -15,6 +15,8 @@ type pedalEvent struct {
 	mustHandle core.Condition
 }
 
+func (p pedalEvent) NoteChangesDo(block func(core.NoteChange)) {}
+
 func (p pedalEvent) Handle(tim *core.Timeline, when time.Time) {
 	if p.mustHandle != nil && !p.mustHandle() {
 		return
@@ -26,7 +28,7 @@ func (p pedalEvent) Handle(tim *core.Timeline, when time.Time) {
 	}
 	// MIDI CC 64	Damper Pedal /Sustain Pedal
 	status := controlChange | int64(p.channel-1)
-	p.out.WriteShort(status, sustainPedal, onoff)
+	_ = p.out.WriteShort(status, sustainPedal, onoff)
 	if core.IsDebug() {
 		msg := "down"
 		if !p.goingDown {

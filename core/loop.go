@@ -110,6 +110,8 @@ func (l *Loop) Handle(tim *Timeline, when time.Time) {
 	l.reschedule(l.ctx.Device(), when)
 }
 
+func (l *Loop) NoteChangesDo(block func(NoteChange)) {}
+
 // Play is part of Playable
 func (l *Loop) Play(ctx Context, at time.Time) error {
 	l.mutex.Lock()

@@ -21,6 +21,12 @@ type midiEvent struct {
 	mustHandle core.Condition
 }
 
+func (m midiEvent) NoteChangesDo(block func(core.NoteChange)) {
+	for _, each := range m.which {
+		block(core.NewNoteChange(m.onoff == noteOn, each, m.velocity))
+	}
+}
+
 func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
 	// TODO not sure if the noteOn check is correct
 	if m.mustHandle != nil && m.onoff == noteOn && !m.mustHandle() {
@@ -68,6 +74,8 @@ type restEvent struct {
 	echoString string
 	mustHandle core.Condition
 }
+
+func (r restEvent) NoteChangesDo(block func(core.NoteChange)) {}
 
 func (r restEvent) Handle(tim *core.Timeline, when time.Time) {
 	if r.mustHandle != nil && !r.mustHandle() {

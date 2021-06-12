@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/midi"
 	"github.com/fogleman/gg"
 )
 
@@ -40,9 +41,22 @@ func TestDraw(t *testing.T) {
 	tl := sampleTimeline()
 	gc := gg.NewContext(500, 50)
 
-	vp := NewViewPort(2, 48, 498, 2)
 	evts := tl.NoteEvents()
 	nv := NotesView{Events: evts}
-	nv.DrawOn(gc, vp)
+	nv.DrawOn(gc)
 	gc.SavePNG("TestDraw.png")
+}
+
+func TestScale(t *testing.T) {
+	tim := core.NewTimeline()
+	d := midi.NewOutputDevice(0, nil, 0, tim)
+	s, _ := core.NewScale(2, "C")
+	d.Play(core.NoCondition, s, 120.0, time.Now())
+
+	gc := gg.NewContext(500, 50)
+
+	evts := tim.NoteEvents()
+	nv := NotesView{Events: evts}
+	nv.DrawOn(gc)
+	gc.SavePNG("TestScale.png")
 }
