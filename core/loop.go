@@ -9,12 +9,16 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
+// todo: protect with mutex
+var runningLoop *Loop
+
 type Loop struct {
 	ctx        Context
 	target     []Sequenceable
 	isRunning  bool
 	mutex      sync.RWMutex
 	condition  Condition
+	startedAt  time.Time
 	nextPlayAt time.Time
 }
 
@@ -66,6 +70,9 @@ func (l *Loop) Evaluate(ctx Context) error {
 // Inspect is part of Inspectable
 func (l *Loop) Inspect(i Inspection) {
 	i.Properties["running"] = l.isRunning
+	if runningLoop == l {
+		i.Properties["leader"] = true
+	}
 }
 
 // in mutex
@@ -119,8 +126,19 @@ func (l *Loop) Play(ctx Context, at time.Time) error {
 	if l.isRunning {
 		return nil
 	}
+	when := at
+	if runningLoop != nil {
+		// only if loops do want to start at the same time
+		// we delay this loop until the last loop finished
+		if at.Sub(runningLoop.startedAt).Milliseconds() > 100 {
+			when = runningLoop.nextPlayAt
+		}
+	} else {
+		runningLoop = l
+	}
 	l.isRunning = true
-	l.reschedule(l.ctx.Device(), at)
+	l.startedAt = when
+	l.reschedule(l.ctx.Device(), when)
 	return nil
 }
 
@@ -132,6 +150,11 @@ func (l *Loop) Stop(ctx Context) error {
 		return nil
 	}
 	l.isRunning = false
+
+	if l == runningLoop {
+		runningLoop = nil
+	}
+
 	return nil
 }
 

@@ -782,6 +782,29 @@ stop() // stop all playables`,
 	// 		return control.NewChannelOnDevice(true, deviceName, -1, in)
 	// 	}}
 
+	// 	eval["onpress"] = Function{
+	// 		Title: "Computer keyboard key press",
+	// 		Description: `Use the key to trigger playing.
+	// If this key is pressed the playable will start.
+	// If pressed again, the play will stop.
+	// Remove the assignment using the value nil for the playable`,
+	// 		Template: `onpress(${1:key},${2:playable-or-evaluatable-or-nil})`,
+	// 		Samples: `loopA = loop(scale(2,'c'))
+	// onpress('a',loopA)`,
+	// 		ControlsAudio: true,
+	// 		Func: func(char string, playOrEval interface{}) interface{} {
+	// 			if len(char) == 0 {
+	// 				return notify.Panic(fmt.Errorf("key cannot be empty"))
+	// 			}
+	// 			// allow nil, playable and evaluatable
+	// 			if playOrEval == nil {
+	// 				// uninstall binding
+	// 				// TODO
+	// 				return nil
+	// 			}
+	// 			return nil
+	// 		}}
+
 	eval["key"] = Function{
 		Title:       "MIDI Keyboard key",
 		Description: "Use the key to trigger the play of musical object",
@@ -853,7 +876,7 @@ Remove the assignment using the value nil for the playable`,
 		Prefix:        "onk",
 		Template:      `onkey(${1:key},${2:playable-or-evaluatable-or-nil})`,
 		Samples: `axiom = 1 // device ID for the M-Audio Axiom 25
-c2 = key(axiom,'c2')
+c2 = key(device(axiom,note('c2')))
 fun = play(scale(2,'c')) // what to do when a key is pressed (NoteOn)
 onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the function "fun"`,
 		Func: func(keyOrVar interface{}, playOrEval interface{}) interface{} {

@@ -36,7 +36,7 @@ func (s SyncPlay) Play(ctx core.Context, at time.Time) error {
 }
 
 // Stop implements Playable
-func (s SyncPlay) Stop(ctx core.Context) error {
+func (s SyncPlay) _Stop(ctx core.Context) error {
 	for _, each := range s.playables {
 		val := each.Value()
 		if ply, ok := val.(core.Stoppable); ok {
@@ -72,44 +72,14 @@ func (s SyncPlay) S() core.Sequence {
 // }
 
 func (s SyncPlay) Evaluate(ctx core.Context) error {
-	// if the first is a Loop at start playing the others on the NextPlayAt
-	// if the first is not a Loop then start playing the others now
-	if len(s.playables) == 0 {
-		return nil
-	}
-	first := s.playables[0].Value()
-	playfirst, ok := first.(core.Playable)
-	if !ok {
-		// play all right now as sequenceables
-		for _, each := range s.playables {
-			val := each.Value()
-			if ply, ok := val.(core.Sequenceable); ok {
-				_ = ctx.Device().Play(core.NoCondition, ply, ctx.Control().BPM(), time.Now())
-			}
-		}
-		return nil
-	}
-	loopfirst, ok := playfirst.(*core.Loop)
-	if !ok {
-		// play all right now
-		for _, each := range s.playables {
-			val := each.Value()
-			if ply, ok := val.(core.Playable); ok {
-				_ = ply.Play(ctx, time.Now())
-			}
-		}
-		return nil
-	}
-	// handle first loop
-	next := loopfirst.NextPlayAt()
-	// running?
-	if next.IsZero() {
-		next = time.Now()
-	}
 	for _, each := range s.playables {
 		val := each.Value()
 		if ply, ok := val.(core.Playable); ok {
-			_ = ply.Play(ctx, next)
+			_ = ply.Play(ctx, time.Now())
+		} else {
+			if seq, ok := val.(core.Sequenceable); ok {
+				_ = ctx.Device().Play(core.NoCondition, seq, ctx.Control().BPM(), time.Now())
+			}
 		}
 	}
 	return nil
