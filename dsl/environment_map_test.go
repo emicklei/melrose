@@ -207,8 +207,8 @@ func Test_envMap_Multiply(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.e.Mulitply(tt.args.l, tt.args.r); !reflect.DeepEqual(got.Value(), tt.want) {
-				t.Errorf("envMap.Mulitply() = %v, want %v", got, tt.want)
+			if got := tt.e.Multiply(tt.args.l, tt.args.r); !reflect.DeepEqual(got.Value(), tt.want) {
+				t.Errorf("envMap. Multiply() = %v, want %v", got, tt.want)
 			}
 		})
 	}

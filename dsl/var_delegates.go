@@ -55,7 +55,7 @@ func (v variable) dispatchSub(r interface{}) interface{} {
 			return il - ir
 		}
 	}
-	notify.Panic(fmt.Errorf("substraction failed [%v (%T) - %v (%T)]", v, v, r, r))
+	notify.Panic(fmt.Errorf("subtraction failed [%v (%T) - %v (%T)]", v, v, r, r))
 	return nil
 }
 
@@ -76,7 +76,7 @@ func (v variable) dispatchSubFrom(l interface{}) interface{} {
 			return il - ir
 		}
 	}
-	notify.Panic(fmt.Errorf("substraction failed [%v (%T) - %v (%T)]", l, l, v, v))
+	notify.Panic(fmt.Errorf("subtraction failed [%v (%T) - %v (%T)]", l, l, v, v))
 	return nil
 }
 

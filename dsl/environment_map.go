@@ -15,7 +15,7 @@ func (envMap) exprOperators() []expr.Option {
 	return []expr.Option{
 		expr.Operator("-", "Sub"),
 		expr.Operator("+", "Add"),
-		expr.Operator("*", "Mulitply"),
+		expr.Operator("*", "Multiply"),
 		expr.Operator("<", "LessThan"),
 		expr.Operator("<=", "LessEqualThan"),
 		expr.Operator(">", "GreaterThan"),
@@ -32,7 +32,7 @@ func (envMap) Add(l, r interface{}) core.HasValue {
 	return calc.Add{Left: l, Right: r}
 }
 
-func (envMap) Mulitply(l, r interface{}) core.HasValue {
+func (envMap) Multiply(l, r interface{}) core.HasValue {
 	return calc.Multiply{Left: l, Right: r}
 }
 
