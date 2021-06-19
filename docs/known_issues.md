@@ -2,12 +2,11 @@
 
 - cannot use variable for indices in 
     - dynamicmap
-    - pitchmap
+    - transposemap
     - octavemap
     - notemap
     - sequencemap
-- group cannot have multiple sequences
-- ? no longer use special unicode character, because of copy from output resuability ? 
+- group cannot have multiple sequences 
 - rotated not used 
 - not supported
     - legato

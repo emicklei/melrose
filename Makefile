@@ -16,6 +16,11 @@ build:
 install: test
 	go install github.com/emicklei/melrose/cmd/melrose
 
+restart: 
+	# ps | awk '/melrose$$/ {print $$1}' | xargs kill
+	go install github.com/emicklei/melrose/cmd/melrose
+	melrose
+
 snippets:
 	cd cmd/vsc && go run *.go snippets > ../../../melrose-for-vscode/snippets/snippets.json
 
