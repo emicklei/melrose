@@ -15,13 +15,13 @@ const (
 	RepeatFromToFrom
 )
 
-// Interval is a Valueable that has a Value between [from..to] and increments with [by].
+// Interval is a HasValue that has a Value between [from..to] and increments with [by].
 // If the end of the interval is reached then the Value is set to [from].
-// The fields of an Interval are also Valueable.
+// The fields of an Interval are also HasValue.
 type Interval struct {
-	from     Valueable
-	to       Valueable
-	by       Valueable
+	from     HasValue
+	to       HasValue
+	by       HasValue
 	strategy intervalStrategy
 	value    int
 }
@@ -56,7 +56,7 @@ func (i *Interval) Next() interface{} {
 }
 
 // NewInterval creates new Interval. The initial Value is set to [from]. Specify the repeat strategy.
-func NewInterval(from, to, by Valueable, strategy int) *Interval {
+func NewInterval(from, to, by HasValue, strategy int) *Interval {
 	start := Int(from)
 	return &Interval{from: from, to: to, by: by, value: start, strategy: asIntervalStrategy(strategy)}
 }

@@ -14,10 +14,10 @@ type KeyTrigger struct {
 	ctx     core.Context
 	channel int
 	note    core.Note
-	fun     core.Valueable
+	fun     core.HasValue
 }
 
-func NewKeyTrigger(ctx core.Context, channel int, onNote core.Note, startStop core.Valueable) *KeyTrigger {
+func NewKeyTrigger(ctx core.Context, channel int, onNote core.Note, startStop core.HasValue) *KeyTrigger {
 	return &KeyTrigger{
 		mutex:   new(sync.RWMutex),
 		ctx:     ctx,

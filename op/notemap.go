@@ -16,7 +16,7 @@ const (
 )
 
 type NoteMap struct {
-	Target        core.Valueable
+	Target        core.HasValue
 	Indices       []int
 	indicesFormat int
 	maxIndex      int
@@ -26,7 +26,7 @@ type NoteMap struct {
 // The format of indices can be one of:
 // 1 2 4 ; each number is an index in the sequence where the note is present; rest notes are placed in the gaps.
 // ! . ! ; each dot is a rest, each exclamation mark is a presence of a note.
-func NewNoteMap(indices string, note core.Valueable) (NoteMap, error) {
+func NewNoteMap(indices string, note core.HasValue) (NoteMap, error) {
 	idx := []int{}
 	// check for dots and bangs first
 	var parsed [][]int

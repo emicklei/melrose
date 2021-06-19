@@ -9,10 +9,10 @@ import (
 
 type Fraction struct {
 	Target    []core.Sequenceable
-	Parameter core.Valueable
+	Parameter core.HasValue
 }
 
-func NewFraction(parameter core.Valueable, target []core.Sequenceable) Fraction {
+func NewFraction(parameter core.HasValue, target []core.Sequenceable) Fraction {
 	return Fraction{
 		Target:    target,
 		Parameter: parameter,

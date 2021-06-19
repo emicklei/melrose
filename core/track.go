@@ -63,11 +63,11 @@ func (t *Track) Storex() string {
 }
 
 type SequenceOnTrack struct {
-	Bar    Valueable
+	Bar    HasValue
 	Target Sequenceable
 }
 
-func NewSequenceOnTrack(bar Valueable, seq Sequenceable) SequenceOnTrack {
+func NewSequenceOnTrack(bar HasValue, seq Sequenceable) SequenceOnTrack {
 	return SequenceOnTrack{Bar: bar, Target: seq}
 }
 
@@ -84,7 +84,7 @@ func (s SequenceOnTrack) Storex() string {
 }
 
 type MultiTrack struct {
-	Tracks []Valueable
+	Tracks []HasValue
 }
 
 // Storex implements Storable

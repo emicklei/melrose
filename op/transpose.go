@@ -8,7 +8,7 @@ import (
 
 type Transpose struct {
 	Target    core.Sequenceable
-	Semitones core.Valueable
+	Semitones core.HasValue
 }
 
 func (p Transpose) S() core.Sequence {

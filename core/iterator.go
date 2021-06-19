@@ -11,7 +11,7 @@ func (i *Iterator) String() string {
 	return fmt.Sprintf("core.Iterator(index=%d,target=%v)", i.index+1, i.Target) // public index is 1-based
 }
 
-//  Value is part of Valueable
+//  Value is part of HasValue
 func (i *Iterator) Value() interface{} {
 	if len(i.Target) == 0 {
 		return nil
@@ -19,9 +19,9 @@ func (i *Iterator) Value() interface{} {
 	return i.Target[i.index]
 }
 
-// Index returns the current index of the iterator as a Valueable ; 1-based
+// Index returns the current index of the iterator as a HasValue ; 1-based
 // TODO or implement NameAware interface and remove the parameter?
-func (i *Iterator) Index(receiver string) Valueable {
+func (i *Iterator) Index(receiver string) HasValue {
 	return ValueFunction{
 		StoreString: fmt.Sprintf("%s.Index()", receiver),
 		Function: func() interface{} {

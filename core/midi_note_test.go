@@ -28,9 +28,9 @@ func TestMIDI_Failures(t *testing.T) {
 
 func TestMIDI_ToNote(t *testing.T) {
 	type fields struct {
-		duration Valueable
-		number   Valueable
-		velocity Valueable
+		duration HasValue
+		number   HasValue
+		velocity HasValue
 	}
 	tests := []struct {
 		name     string

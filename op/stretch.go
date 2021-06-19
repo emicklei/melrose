@@ -9,10 +9,10 @@ import (
 
 type Stretch struct {
 	target []core.Sequenceable
-	factor core.Valueable
+	factor core.HasValue
 }
 
-func NewStretch(factor core.Valueable, target []core.Sequenceable) Stretch {
+func NewStretch(factor core.HasValue, target []core.Sequenceable) Stretch {
 	return Stretch{
 		target: target,
 		factor: factor,

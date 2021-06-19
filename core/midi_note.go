@@ -9,9 +9,9 @@ import (
 )
 
 type MIDINote struct {
-	duration Valueable // faction number or number in milliseconds or time.Duration
-	number   Valueable
-	velocity Valueable
+	duration HasValue // faction number or number in milliseconds or time.Duration
+	number   HasValue
+	velocity HasValue
 }
 
 // ToNote() is part of NoteConvertable
@@ -50,7 +50,7 @@ func (m MIDINote) S() Sequence {
 	return n.S()
 }
 
-func NewMIDI(duration Valueable, number Valueable, velocity Valueable) MIDINote {
+func NewMIDI(duration HasValue, number HasValue, velocity HasValue) MIDINote {
 	return MIDINote{duration: duration, number: number, velocity: velocity}
 }
 

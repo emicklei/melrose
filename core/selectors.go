@@ -7,10 +7,10 @@ import (
 
 type ChannelSelector struct {
 	Target Sequenceable
-	Number Valueable
+	Number HasValue
 }
 
-func NewChannelSelector(target Sequenceable, channel Valueable) ChannelSelector {
+func NewChannelSelector(target Sequenceable, channel HasValue) ChannelSelector {
 	return ChannelSelector{Target: target, Number: channel}
 }
 
@@ -35,10 +35,10 @@ func (c ChannelSelector) Storex() string {
 
 type DeviceSelector struct {
 	Target Sequenceable
-	ID     Valueable
+	ID     HasValue
 }
 
-func NewDeviceSelector(target Sequenceable, deviceID Valueable) DeviceSelector {
+func NewDeviceSelector(target Sequenceable, deviceID HasValue) DeviceSelector {
 	return DeviceSelector{Target: target, ID: deviceID}
 }
 

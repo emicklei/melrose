@@ -8,8 +8,8 @@ import (
 )
 
 type JoinMap struct {
-	target  core.Valueable
-	pattern core.Valueable
+	target  core.HasValue
+	pattern core.HasValue
 }
 
 func (j JoinMap) Storex() string {
@@ -60,7 +60,7 @@ func (j JoinMap) check(index, subindex, value, length int) bool { // indices are
 	return true
 }
 
-func NewJoinMap(v core.Valueable, indices core.Valueable) JoinMap {
+func NewJoinMap(v core.HasValue, indices core.HasValue) JoinMap {
 	return JoinMap{target: v, pattern: indices}
 }
 

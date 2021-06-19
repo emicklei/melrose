@@ -10,11 +10,11 @@ import (
 )
 
 type FractionMap struct {
-	fraction core.Valueable
+	fraction core.HasValue
 	target   core.Sequenceable
 }
 
-func NewFractionMap(fraction core.Valueable, target core.Sequenceable) FractionMap {
+func NewFractionMap(fraction core.HasValue, target core.Sequenceable) FractionMap {
 	return FractionMap{fraction: fraction, target: target}
 }
 

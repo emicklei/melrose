@@ -45,7 +45,7 @@ type AudioDevice interface {
 
 	// if a key is pressed on a device then play or stop a function
 	// if fun is nil then uninstall the binding
-	OnKey(ctx Context, deviceID int, channel int, note Note, fun Valueable) error
+	OnKey(ctx Context, deviceID int, channel int, note Note, fun HasValue) error
 
 	// Schedule put an event on the timeline at a begin
 	Schedule(event TimelineEvent, beginAt time.Time)
@@ -77,7 +77,7 @@ type Replaceable interface {
 	Replaced(from, to Sequenceable) Sequenceable
 }
 
-type Valueable interface {
+type HasValue interface {
 	Value() interface{}
 }
 
@@ -143,5 +143,5 @@ type NameAware interface {
 }
 
 type HasIndex interface {
-	Index(receiver string) Valueable
+	Index(receiver string) HasValue
 }

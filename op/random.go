@@ -9,13 +9,13 @@ import (
 )
 
 type RandomInteger struct {
-	From core.Valueable
-	To   core.Valueable
+	From core.HasValue
+	To   core.HasValue
 	rnd  *rand.Rand
 	last int
 }
 
-func NewRandomInteger(from, to core.Valueable) *RandomInteger {
+func NewRandomInteger(from, to core.HasValue) *RandomInteger {
 	rnd := &RandomInteger{
 		From: from,
 		To:   to,
@@ -30,7 +30,7 @@ func (r RandomInteger) Storex() string {
 	return fmt.Sprintf("random(%s,%s)", core.Storex(r.From), core.Storex(r.To))
 }
 
-// Value is part of Valueable
+// Value is part of HasValue
 func (r *RandomInteger) Value() interface{} {
 	return r.last
 }

@@ -47,7 +47,7 @@ func ExportOn(w io.Writer, m interface{}, bpm float64, biab int) error {
 func exportSequence(seq core.Sequenceable, w io.Writer, bpm float64, biab int) error {
 	t := core.NewTrack("melrōse-track", 1)
 	t.Add(core.NewSequenceOnTrack(core.On(1), seq))
-	mt := core.MultiTrack{Tracks: []core.Valueable{core.On(t)}}
+	mt := core.MultiTrack{Tracks: []core.HasValue{core.On(t)}}
 	return exportMultiTrack(w, mt, bpm, biab)
 }
 

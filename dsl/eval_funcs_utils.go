@@ -71,7 +71,7 @@ func getSequenceable(v interface{}) (core.Sequenceable, bool) {
 }
 
 func getPlayable(v interface{}) (core.Playable, bool) {
-	if val, ok := v.(core.Valueable); ok {
+	if val, ok := v.(core.HasValue); ok {
 		v = val
 	}
 	if s, ok := v.(core.Playable); ok {
@@ -92,16 +92,16 @@ func getSequenceableList(m ...interface{}) (list []core.Sequenceable, ok bool) {
 	return
 }
 
-func getValueable(val interface{}) core.Valueable {
-	if v, ok := val.(core.Valueable); ok {
+func getHasValue(val interface{}) core.HasValue {
+	if v, ok := val.(core.HasValue); ok {
 		return v
 	}
 	return core.On(val)
 }
 
-// getValue returns the Value() of val iff val is a Valueable, else returns val
+// getValue returns the Value() of val iff val is a HasValue, else returns val
 func getValue(val interface{}) interface{} {
-	if v, ok := val.(core.Valueable); ok {
+	if v, ok := val.(core.HasValue); ok {
 		return v.Value()
 	}
 	return val

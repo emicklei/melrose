@@ -10,7 +10,7 @@ import (
 
 type Dynamic struct {
 	Target   []core.Sequenceable
-	Emphasis core.Valueable
+	Emphasis core.HasValue
 }
 
 // Replaced returns a new Dynamic in which any occurrences of "from" are replaced by "to".

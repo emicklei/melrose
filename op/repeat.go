@@ -9,7 +9,7 @@ import (
 
 type Repeat struct {
 	Target []core.Sequenceable
-	Times  core.Valueable
+	Times  core.HasValue
 }
 
 func (r Repeat) S() core.Sequence {

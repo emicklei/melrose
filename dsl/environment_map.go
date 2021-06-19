@@ -24,39 +24,39 @@ func (envMap) exprOperators() []expr.Option {
 		expr.Operator("==", "Equal"),
 	}
 }
-func (envMap) Sub(l, r interface{}) core.Valueable {
+func (envMap) Sub(l, r interface{}) core.HasValue {
 	return calc.Sub{Left: l, Right: r}
 }
 
-func (envMap) Add(l, r interface{}) core.Valueable {
+func (envMap) Add(l, r interface{}) core.HasValue {
 	return calc.Add{Left: l, Right: r}
 }
 
-func (envMap) Mulitply(l, r interface{}) core.Valueable {
+func (envMap) Mulitply(l, r interface{}) core.HasValue {
 	return calc.Multiply{Left: l, Right: r}
 }
 
-func (envMap) LessThan(l, r interface{}) core.Valueable {
+func (envMap) LessThan(l, r interface{}) core.HasValue {
 	return calc.NumberCompare{Left: l, Right: r, Operator: "<"}
 }
 
-func (envMap) LessEqualThan(l, r interface{}) core.Valueable {
+func (envMap) LessEqualThan(l, r interface{}) core.HasValue {
 	return calc.NumberCompare{Left: l, Right: r, Operator: "<="}
 }
 
-func (envMap) GreaterThan(l, r interface{}) core.Valueable {
+func (envMap) GreaterThan(l, r interface{}) core.HasValue {
 	return calc.NumberCompare{Left: l, Right: r, Operator: ">"}
 }
 
-func (envMap) GreaterEqualThan(l, r interface{}) core.Valueable {
+func (envMap) GreaterEqualThan(l, r interface{}) core.HasValue {
 	return calc.NumberCompare{Left: l, Right: r, Operator: ">="}
 }
 
-func (envMap) NotEqual(l, r interface{}) core.Valueable {
+func (envMap) NotEqual(l, r interface{}) core.HasValue {
 	return calc.NumberCompare{Left: l, Right: r, Operator: "!="}
 }
 
-func (envMap) Equal(l, r interface{}) core.Valueable {
+func (envMap) Equal(l, r interface{}) core.HasValue {
 	return calc.NumberCompare{Left: l, Right: r, Operator: "=="}
 }
 

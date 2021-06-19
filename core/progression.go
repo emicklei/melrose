@@ -7,11 +7,11 @@ import (
 )
 
 type ChordProgression struct {
-	root     Valueable
-	sequence Valueable
+	root     HasValue
+	sequence HasValue
 }
 
-func NewChordProgression(root, sequence Valueable) ChordProgression {
+func NewChordProgression(root, sequence HasValue) ChordProgression {
 	return ChordProgression{root: root, sequence: sequence}
 }
 

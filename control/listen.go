@@ -16,12 +16,12 @@ type Listen struct {
 	deviceID        int
 	variableName    string
 	isRunning       bool
-	callback        core.Valueable
+	callback        core.HasValue
 	notesOn         map[int]int
 	noteChangeCount int
 }
 
-func NewListen(ctx core.Context, deviceID int, variableName string, target core.Valueable) *Listen {
+func NewListen(ctx core.Context, deviceID int, variableName string, target core.HasValue) *Listen {
 	return &Listen{
 		mutex:           new(sync.RWMutex),
 		ctx:             ctx,
@@ -40,10 +40,10 @@ func (l *Listen) Inspect(i core.Inspection) {
 }
 
 // Target is for replacing functions
-func (l *Listen) Target() core.Valueable { return l.callback }
+func (l *Listen) Target() core.HasValue { return l.callback }
 
 // SetTarget is for replacing functions
-func (l *Listen) SetTarget(c core.Valueable) { l.callback = c }
+func (l *Listen) SetTarget(c core.HasValue) { l.callback = c }
 
 // Play is part of core.Playable
 func (l *Listen) Play(ctx core.Context, at time.Time) error {

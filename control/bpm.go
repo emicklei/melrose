@@ -8,11 +8,11 @@ import (
 )
 
 type SetBPM struct {
-	bpm core.Valueable
+	bpm core.HasValue
 	ctx core.Context
 }
 
-func NewBPM(bpm core.Valueable, ctx core.Context) SetBPM {
+func NewBPM(bpm core.HasValue, ctx core.Context) SetBPM {
 	return SetBPM{bpm: bpm, ctx: ctx}
 }
 

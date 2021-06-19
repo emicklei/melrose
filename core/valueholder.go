@@ -7,7 +7,7 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-func String(h Valueable) string {
+func String(h HasValue) string {
 	if h == nil {
 		return ""
 	}
@@ -18,14 +18,14 @@ func String(h Valueable) string {
 	if v, ok := val.(string); ok {
 		return v
 	}
-	// maybe the value is a Valueable
-	if vv, ok := val.(Valueable); ok {
+	// maybe the value is a HasValue
+	if vv, ok := val.(HasValue); ok {
 		return String(vv)
 	}
 	return ""
 }
 
-func Float(h Valueable) float32 {
+func Float(h HasValue) float32 {
 	if h == nil {
 		return 0.0
 	}
@@ -42,14 +42,14 @@ func Float(h Valueable) float32 {
 	if v, ok := val.(int); ok {
 		return float32(v)
 	}
-	// maybe the value is a Valueable
-	if vv, ok := val.(Valueable); ok {
+	// maybe the value is a HasValue
+	if vv, ok := val.(HasValue); ok {
 		return Float(vv)
 	}
 	return 0.0
 }
 
-func Duration(h Valueable) time.Duration {
+func Duration(h HasValue) time.Duration {
 	if h == nil {
 		return time.Duration(0)
 	}
@@ -63,19 +63,19 @@ func Duration(h Valueable) time.Duration {
 	if v, ok := val.(time.Duration); ok {
 		return v
 	}
-	// maybe the value is a Valueable
-	if vv, ok := val.(Valueable); ok {
+	// maybe the value is a HasValue
+	if vv, ok := val.(HasValue); ok {
 		return Duration(vv)
 	}
 	notify.Warnf("Duration() expected [time.Duration|int] but got [%T], return 0", h.Value())
 	return time.Duration(0)
 }
 
-func Int(h Valueable) int {
+func Int(h HasValue) int {
 	return getInt(h, false)
 }
 
-func ToSequenceable(v Valueable) Sequenceable {
+func ToSequenceable(v HasValue) Sequenceable {
 	if v == nil {
 		return EmptySequence
 	}
@@ -89,7 +89,7 @@ func ToSequenceable(v Valueable) Sequenceable {
 	return EmptySequence
 }
 
-func getInt(h Valueable, silent bool) int {
+func getInt(h HasValue, silent bool) int {
 	if h == nil {
 		return 0
 	}
@@ -100,8 +100,8 @@ func getInt(h Valueable, silent bool) int {
 	if v, ok := val.(int); ok {
 		return v
 	}
-	// maybe the value is a Valueable
-	if vv, ok := val.(Valueable); ok {
+	// maybe the value is a HasValue
+	if vv, ok := val.(HasValue); ok {
 		return getInt(vv, silent)
 	}
 	if !silent {
@@ -110,37 +110,37 @@ func getInt(h Valueable, silent bool) int {
 	return 0
 }
 
-func ToValueable(v interface{}) Valueable {
-	if w, ok := v.(Valueable); ok {
+func ToHasValue(v interface{}) HasValue {
+	if w, ok := v.(HasValue); ok {
 		return w
 	}
 	return &ValueHolder{Any: v}
 }
 
-// ValueOf returns the non Valuable value of v
+// ValueOf returns the non HasValue value of v
 func ValueOf(v interface{}) interface{} {
-	if w, ok := v.(Valueable); ok {
+	if w, ok := v.(HasValue); ok {
 		return ValueOf(w.Value())
 	}
 	return v
 }
 
-// IndexOf returns the non Valuable value of v
+// IndexOf returns the non HasValue value of v
 func IndexOf(v interface{}) interface{} {
 	if i, ok := v.(HasIndex); ok {
 		return i.Index("?")
 	}
-	if w, ok := v.(Valueable); ok {
+	if w, ok := v.(HasValue); ok {
 		return IndexOf(w.Value())
 	}
 	return 0 // no index
 }
 
-func On(v interface{}) Valueable {
-	return ToValueable(v)
+func On(v interface{}) HasValue {
+	return ToHasValue(v)
 }
 
-// ValueHolder is decorate any object to become a Valueable.
+// ValueHolder is decorate any object to become a HasValue.
 type ValueHolder struct {
 	Any interface{}
 }

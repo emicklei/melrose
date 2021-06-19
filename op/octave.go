@@ -9,7 +9,7 @@ import (
 
 type Octave struct {
 	Target []core.Sequenceable
-	Offset core.Valueable
+	Offset core.HasValue
 }
 
 func (o Octave) S() core.Sequence {

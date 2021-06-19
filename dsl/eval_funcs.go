@@ -44,7 +44,7 @@ Fraction can also be an exact float value between 0 and 1.
 					joined = append(joined, s)
 				}
 			}
-			return op.NewFraction(getValueable(param), joined)
+			return op.NewFraction(getHasValue(param), joined)
 		}}
 
 	eval["dynamic"] = Function{
@@ -67,7 +67,7 @@ dynamic(112,note('a')) // => A++++`,
 					joined = append(joined, s)
 				}
 			}
-			return op.Dynamic{Target: joined, Emphasis: getValueable(emphasis)}
+			return op.Dynamic{Target: joined, Emphasis: getHasValue(emphasis)}
 		}}
 
 	eval["dynamicmap"] = Function{
@@ -103,7 +103,7 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 		Template:    `progression('${1:scale}','${2:space-separated-roman-chords}')`,
 		Samples:     `progression('C','II V I') // => (D F A) (G B D5) (C E G)`,
 		Func: func(scale, chords interface{}) interface{} {
-			return core.NewChordProgression(getValueable(scale), getValueable(chords))
+			return core.NewChordProgression(getHasValue(scale), getHasValue(chords))
 		}}
 
 	eval["chordsequence"] = Function{
@@ -130,7 +130,7 @@ chordsequence('(c d)') // => (C E G D G_ A)`,
 		Samples: `prob(50,note('c')) // 50% chance of playing the note C, otherwise a quarter rest
 prob(0.8,sequence('(c e g)')) // 80% chance of playing the chord C, otherwise a quarter rest`,
 		Func: func(prec interface{}, noteOrSeq interface{}) interface{} {
-			return op.NewProbability(getValueable(prec), getValueable(noteOrSeq))
+			return op.NewProbability(getHasValue(prec), getHasValue(noteOrSeq))
 		}}
 
 	eval["joinmap"] = Function{
@@ -142,12 +142,12 @@ prob(0.8,sequence('(c e g)')) // 80% chance of playing the chord C, otherwise a 
 		Samples: `j = join(note('c'), sequence('d e f'))
 jm = joinmap('1 (2 3) 4',j) // => C = D =`,
 		Func: func(indices interface{}, join interface{}) interface{} { // allow multiple seq?
-			v := getValueable(join)
+			v := getHasValue(join)
 			vNow := v.Value()
 			if _, ok := vNow.(op.Join); !ok {
 				return notify.Panic(fmt.Errorf("cannot joinmap (%T) %v, must be a join", join, join))
 			}
-			p := getValueable(indices)
+			p := getHasValue(indices)
 			return op.NewJoinMap(v, p)
 		}}
 
@@ -207,9 +207,9 @@ jm = joinmap('1 (2 3) 4',j) // => C = D =`,
 		Samples:       `multitrack(track1,track2,track3) // 3 tracks in one multi-track object`,
 		ControlsAudio: true,
 		Func: func(varOrTrack ...interface{}) interface{} {
-			tracks := []core.Valueable{}
+			tracks := []core.HasValue{}
 			for _, each := range varOrTrack {
-				tracks = append(tracks, getValueable(each))
+				tracks = append(tracks, getHasValue(each))
 			}
 			return core.MultiTrack{Tracks: tracks}
 		}}
@@ -226,9 +226,9 @@ The third parameter is the velocity (~ loudness) and must be one of [0..127]`,
 midi(16,36,70) // => 16C2 (kick)`,
 		IsCore: true,
 		Func: func(dur, nr, velocity interface{}) interface{} {
-			durVal := getValueable(dur)
-			nrVal := getValueable(nr)
-			velVal := getValueable(velocity)
+			durVal := getHasValue(dur)
+			nrVal := getHasValue(nr)
+			velVal := getHasValue(velocity)
 			return core.NewMIDI(durVal, nrVal, velVal)
 		}}
 
@@ -315,7 +315,7 @@ transpose(p,note('c'))`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot transpose (%T) %v", m, m))
 			}
-			return op.Transpose{Target: s, Semitones: getValueable(semitones)}
+			return op.Transpose{Target: s, Semitones: getHasValue(semitones)}
 		}})
 
 	eval["reverse"] = Function{
@@ -349,7 +349,7 @@ transpose(p,note('c'))`,
 					joined = append(joined, s)
 				}
 			}
-			return op.Repeat{Target: joined, Times: getValueable(howMany)}
+			return op.Repeat{Target: joined, Times: getHasValue(howMany)}
 		}}
 
 	registerFunction(eval, "join", Function{
@@ -491,7 +491,7 @@ note('2.e#--')`,
 		Template:    `at(${1:index},${2:object})`,
 		Samples:     `at(1,scale('e/m')) // => E`,
 		Func: func(index interface{}, object interface{}) interface{} {
-			indexVal := getValueable(index)
+			indexVal := getHasValue(index)
 			objectSeq, ok := getSequenceable(object)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot index (%T) %v", object, object))
@@ -510,7 +510,7 @@ note('2.e#--')`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot put on track (%T) %v", seq, seq))
 			}
-			return core.NewSequenceOnTrack(getValueable(bar), s)
+			return core.NewSequenceOnTrack(getHasValue(bar), s)
 		}}
 
 	eval["random"] = Function{
@@ -521,8 +521,8 @@ note('2.e#--')`,
 		Samples: `num = random(1,10)
 next(num)`,
 		Func: func(from interface{}, to interface{}) interface{} {
-			fromVal := getValueable(from)
-			toVal := getValueable(to)
+			fromVal := getHasValue(from)
+			toVal := getHasValue(to)
 			return op.NewRandomInteger(fromVal, toVal)
 		}}
 
@@ -559,9 +559,9 @@ next(num)`,
 		Samples: `sync(s1,s2,s3) // play s1,s2 and s3 at the same time
 sync(loop1,loop2) // begin loop2 at the next start of loop1`,
 		Func: func(playables ...interface{}) interface{} {
-			vals := []core.Valueable{}
+			vals := []core.HasValue{}
 			for _, p := range playables {
-				vals = append(vals, getValueable(p))
+				vals = append(vals, getHasValue(p))
 			}
 			return control.NewSyncPlay(vals)
 		}}
@@ -604,7 +604,7 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 					list = append(list, s)
 				}
 			}
-			return op.Octave{Target: list, Offset: core.ToValueable(scalarOrVar)}
+			return op.Octave{Target: list, Offset: core.ToHasValue(scalarOrVar)}
 		}}
 
 	eval["record"] = Function{
@@ -679,7 +679,7 @@ stretch(8,note('c'))  // C with length of 8 x 0.25 (quarter) = 2 bars`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot stretch (%T) %v", m, m))
 			}
-			return op.NewStretch(getValueable(factor), list)
+			return op.NewStretch(getHasValue(factor), list)
 		}})
 
 	eval["group"] = Function{
@@ -755,7 +755,7 @@ stop() // stop all playables`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot decorate with channel (%T) %v", m, m))
 			}
-			return core.NewChannelSelector(seq, getValueable(midiChannel))
+			return core.NewChannelSelector(seq, getHasValue(midiChannel))
 		}}
 
 	eval["fractionmap"] = Function{
@@ -770,7 +770,7 @@ stop() // stop all playables`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot fractionmap (%T) %v", m, m))
 			}
-			return op.NewFractionMap(getValueable(indices), s)
+			return op.NewFractionMap(getHasValue(indices), s)
 		}}
 
 	// eval["input"] = Function{
@@ -901,7 +901,7 @@ onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the functio
 					return notify.Panic(fmt.Errorf("cannot onkey and call (%T) %s", playOrEval, core.Storex(playOrEval)))
 				}
 			}
-			err := ctx.Device().OnKey(ctx, key.DeviceID(), key.Channel(), key.Note(), getValueable(playOrEval))
+			err := ctx.Device().OnKey(ctx, key.DeviceID(), key.Channel(), key.Note(), getHasValue(playOrEval))
 			if err != nil {
 				return notify.Panic(fmt.Errorf("cannot install onkey because error:%v", err))
 			}
@@ -920,7 +920,7 @@ onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the functio
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot decorate with device (%T) %v", m, m))
 			}
-			return core.NewDeviceSelector(seq, getValueable(deviceID))
+			return core.NewDeviceSelector(seq, getHasValue(deviceID))
 		}}
 
 	eval["interval"] = Function{
@@ -932,7 +932,7 @@ onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the functio
 lp_cdef = loop(transpose(int1,sequence('c d e f')), next(int1))`,
 		IsComposer: true,
 		Func: func(from, to, by interface{}) *core.Interval {
-			return core.NewInterval(core.ToValueable(from), core.ToValueable(to), core.ToValueable(by), core.RepeatFromTo)
+			return core.NewInterval(core.ToHasValue(from), core.ToHasValue(to), core.ToHasValue(by), core.RepeatFromTo)
 		}}
 
 	eval["resequence"] = Function{
@@ -949,7 +949,7 @@ i2 = resequence('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot create resequencer on (%T) %v", m, m))
 			}
-			return op.NewResequencer(s, core.ToValueable(pattern))
+			return op.NewResequencer(s, core.ToHasValue(pattern))
 		}}
 
 	eval["notemap"] = Function{
@@ -960,7 +960,7 @@ i2 = resequence('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)`,
 		Samples: `m1 = notemap('..!..!..!', note('c2'))
 m2 = notemap('3 6 9', octave(-1,note('d2')))`,
 		Func: func(indices string, note interface{}) interface{} {
-			m, err := op.NewNoteMap(indices, getValueable(note))
+			m, err := op.NewNoteMap(indices, getHasValue(note))
 			if err != nil {
 				return notify.Panic(fmt.Errorf("cannot create notemap, error:%v", err))
 			}
@@ -1003,7 +1003,7 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 			if !ok {
 				notify.Panic(fmt.Errorf("cannot conditional use (%T) %v", thenelse[0], thenelse[0]))
 			}
-			ifop := op.IfCondition{Condition: getValueable(c), Then: thenarg, Else: core.EmptySequence}
+			ifop := op.IfCondition{Condition: getHasValue(c), Then: thenarg, Else: core.EmptySequence}
 			if len(thenelse) == 2 {
 				elsearg, ok := getSequenceable(thenelse[1])
 				if !ok {
@@ -1050,7 +1050,7 @@ pi = transpose(i,sequence('c d e f g a b')) // current value of "i" is used
 lp_pi = loop(pi,next(i)) // "i" will advance to the next value
 begin(lp_pi)`,
 		Func: func(v interface{}) interface{} {
-			return core.Nexter{Target: getValueable(v)}
+			return core.Nexter{Target: getHasValue(v)}
 		}}
 
 	eval["export"] = Function{
@@ -1158,8 +1158,8 @@ listen(device(1,rec),fun) // start a listener for notes from input device 1`,
 					return notify.Panic(fmt.Errorf("missing variable parameter"))
 				}
 			}
-			// use function as Valueable and not the Evaluatable to allow redefinition of the callback function in the script
-			return control.NewListen(ctx, deviceID, injectable.Name, getValueable(function))
+			// use function as HasValue and not the Evaluatable to allow redefinition of the callback function in the script
+			return control.NewListen(ctx, deviceID, injectable.Name, getHasValue(function))
 		},
 	})
 

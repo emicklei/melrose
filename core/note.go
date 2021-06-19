@@ -12,7 +12,7 @@ import (
 // Notations:
 // 		2.C#3 = half duration, pitch C, sharp, octave 3, velocity default
 //		D     = quarter duration, pitch D, octave 4, no accidental
-//      8B_   = eigth duration, pitch B, octave 4, flat
+//      8B_   = eighth duration, pitch B, octave 4, flat
 //		=     = quarter rest
 //      -/+   = velocity number
 // http://en.wikipedia.org/wiki/Musical_Note

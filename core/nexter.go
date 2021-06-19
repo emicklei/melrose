@@ -6,7 +6,7 @@ import (
 
 // Nexter is an empty Sequence that has a sideeffect to call Value().Next() on its target when asked for the Sequence.
 type Nexter struct {
-	Target Valueable
+	Target HasValue
 }
 
 // S is part of Sequenceable

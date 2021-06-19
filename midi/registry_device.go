@@ -113,7 +113,7 @@ func (r *DeviceRegistry) HasInputCapability() bool {
 	return r.streamRegistry.transport.HasInputCapability()
 }
 
-func (r *DeviceRegistry) OnKey(ctx core.Context, deviceID int, channel int, note core.Note, fun core.Valueable) error {
+func (r *DeviceRegistry) OnKey(ctx core.Context, deviceID int, channel int, note core.Note, fun core.HasValue) error {
 	in, err := r.Input(deviceID)
 	if err != nil {
 		return fmt.Errorf("input creation failed:%v", err)

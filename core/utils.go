@@ -116,7 +116,7 @@ func AppendStorexList(b *bytes.Buffer, isFirstParameter bool, list []Sequenceabl
 }
 
 func UnValue(v Sequenceable) Sequenceable {
-	if s, ok := v.(Valueable); ok {
+	if s, ok := v.(HasValue); ok {
 		if seq, ok := s.Value().(Sequenceable); ok {
 			return seq
 		}

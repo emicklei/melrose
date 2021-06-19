@@ -10,10 +10,10 @@ import (
 )
 
 type SyncPlay struct {
-	playables []core.Valueable
+	playables []core.HasValue
 }
 
-func NewSyncPlay(list []core.Valueable) SyncPlay {
+func NewSyncPlay(list []core.HasValue) SyncPlay {
 	return SyncPlay{playables: list}
 }
 

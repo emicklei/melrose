@@ -8,7 +8,7 @@ import (
 )
 
 type IfCondition struct {
-	Condition core.Valueable
+	Condition core.HasValue
 	Then      core.Sequenceable
 	Else      core.Sequenceable
 }

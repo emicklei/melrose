@@ -14,12 +14,12 @@ prob(0.8,note('c')) =  a sequence with 80% chance of playing C
 
 **/
 type Probability struct {
-	chance core.Valueable
+	chance core.HasValue
 	seed   *rand.Rand
-	target core.Valueable
+	target core.HasValue
 }
 
-func NewProbability(chance, target core.Valueable) *Probability {
+func NewProbability(chance, target core.HasValue) *Probability {
 	return &Probability{
 		chance: chance,
 		seed:   rand.New(rand.NewSource(time.Now().Unix())),

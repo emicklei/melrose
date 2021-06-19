@@ -8,7 +8,7 @@ import (
 
 type AtIndex struct {
 	Target core.Sequenceable
-	Index  core.Valueable
+	Index  core.HasValue
 }
 
 func (a AtIndex) S() core.Sequence {
@@ -27,6 +27,6 @@ func (a AtIndex) Storex() string {
 	return fmt.Sprintf("at(%v,%s)", core.Storex(a.Index), core.Storex(a.Target))
 }
 
-func NewAtIndex(index core.Valueable, target core.Sequenceable) AtIndex {
+func NewAtIndex(index core.HasValue, target core.Sequenceable) AtIndex {
 	return AtIndex{Target: target, Index: index}
 }

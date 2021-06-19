@@ -21,13 +21,13 @@ const (
 type Message struct {
 	audioDevices core.AudioDevice
 	status       int
-	deviceID     core.Valueable
-	channel      core.Valueable
-	data1        core.Valueable
-	data2        core.Valueable
+	deviceID     core.HasValue
+	channel      core.HasValue
+	data1        core.HasValue
+	data2        core.HasValue
 }
 
-func NewMessage(audioDevices core.AudioDevice, id core.Valueable, status int, channel, data1, data2 core.Valueable) Message {
+func NewMessage(audioDevices core.AudioDevice, id core.HasValue, status int, channel, data1, data2 core.HasValue) Message {
 	return Message{audioDevices: audioDevices, deviceID: id, status: status, channel: channel, data1: data1, data2: data2}
 }
 

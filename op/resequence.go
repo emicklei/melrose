@@ -11,7 +11,7 @@ import (
 type Resequencer struct {
 	Target  core.Sequenceable
 	Indices [][]int
-	Pattern core.Valueable
+	Pattern core.HasValue
 }
 
 func (p Resequencer) S() core.Sequence {
@@ -40,7 +40,7 @@ func (p Resequencer) S() core.Sequence {
 	return core.Sequence{Notes: groups}
 }
 
-func NewResequencer(s core.Sequenceable, pattern core.Valueable) Resequencer {
+func NewResequencer(s core.Sequenceable, pattern core.HasValue) Resequencer {
 	return Resequencer{Target: s, Pattern: pattern}
 }
 
