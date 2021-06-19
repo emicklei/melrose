@@ -51,10 +51,12 @@ func (t *KeyTrigger) NoteOn(channel int, n core.Note) {
 		stopper, stoppable := val.(core.Stoppable)
 		if stoppable {
 			if t.playing {
+				notify.Infof("%s -> stop(%s)", t.note.String(), core.Storex(t.fun))
 				stopper.Stop(t.ctx)
 				t.playing = false
 			} else {
 				t.playing = true
+				notify.Infof("%s -> play(%s)", t.note.String(), core.Storex(t.fun))
 				_ = play.Play(t.ctx, time.Now())
 			}
 			return
