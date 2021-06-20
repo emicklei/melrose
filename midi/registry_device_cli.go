@@ -39,7 +39,7 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 			return fmt.Errorf("bad input device number: %v", err)
 		}
 		d.defaultInputID = id
-		notify.Infof("Set default input device id: %d", id)
+		notify.Infof("Set default MIDI input device id: %d", id)
 	case "midi.out.channel":
 		if len(values) != 2 {
 			return fmt.Errorf("two argument expected")
@@ -57,7 +57,7 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 			return fmt.Errorf("bad input device number: %v", err)
 		}
 		out.defaultChannel = ch
-		notify.Infof("Set default output device id: %d with default channel: %d", id, ch)
+		notify.Infof("Set default MIDI output device id: %d with default channel: %d", id, ch)
 	case "midi.out":
 		if len(values) != 1 {
 			return fmt.Errorf("one argument expected")
@@ -71,7 +71,7 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 			return fmt.Errorf("bad output device number: %v", err)
 		}
 		d.defaultOutputID = id
-		notify.Infof("Set default output device id: %d with default channel: %d", id, out.defaultChannel)
+		notify.Infof("Set default MIDI output device id: %d with default channel: %d", id, out.defaultChannel)
 	default:
 		return fmt.Errorf("unknown setting:%s", name)
 	}
@@ -93,20 +93,20 @@ func (d *DeviceRegistry) printInfo() {
 	d.streamRegistry.transport.PrintInfo(d.defaultInputID, d.defaultOutputID)
 
 	notify.PrintHighlighted("current defaults:")
-	od, err := d.Output(d.defaultOutputID)
-	if err == nil {
-		fmt.Printf(" input device = %d, channel = %d\n", d.defaultOutputID, od.defaultChannel)
-	}
-
 	id, err := d.Output(d.defaultInputID)
 	if err == nil {
-		fmt.Printf("output device = %d, channel = %d\n", d.defaultInputID, id.defaultChannel)
+		fmt.Printf(" input device = %d, channel = %d\n", d.defaultInputID, id.defaultChannel)
+	}
+	od, err := d.Output(d.defaultOutputID)
+	if err == nil {
+		fmt.Printf("output device = %d, channel = %d\n", d.defaultOutputID, od.defaultChannel)
 	}
 	fmt.Printf("   echo notes = %v\n", od.echo)
 
 	fmt.Println()
 
 	notify.PrintHighlighted("change:")
+	fmt.Println("set('midi.in',<device-id>)               --- change the default MIDI input device id")
 	fmt.Println("set('midi.out',<device-id>)              --- change the default MIDI output device id")
 	fmt.Println("set('midi.out.channel',<device-id>,<nr>) --- change the default MIDI channel for an output device id")
 	fmt.Println("set('echo.toggle')                       --- toggle printing the notes (or \":m e\" )")

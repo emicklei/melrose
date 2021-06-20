@@ -875,7 +875,9 @@ Remove the assignment using the value nil for the playable`,
 		ControlsAudio: true,
 		Prefix:        "onk",
 		Template:      `onkey(${1:key},${2:playable-or-evaluatable-or-nil})`,
-		Samples: `axiom = 1 // device ID for the M-Audio Axiom 25
+		Samples: `onkey('c',myLoop) // on the default input device, when C4 is pressed then start or stop myLoop
+
+axiom = 1 // device ID for the M-Audio Axiom 25
 c2 = key(device(axiom,note('c2')))
 fun = play(scale(2,'c')) // what to do when a key is pressed (NoteOn)
 onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the function "fun"`,
@@ -883,10 +885,20 @@ onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the functio
 			if !ctx.Device().HasInputCapability() {
 				return notify.Panic(errors.New("input is not available for this device"))
 			}
+			var key control.Key
 			// key is mandatory
-			key, ok := getValue(keyOrVar).(control.Key)
-			if !ok {
-				return notify.Panic(fmt.Errorf("cannot install onkey because parameter is not a key (%T) %v", keyOrVar, keyOrVar))
+			noteName, ok := getValue(keyOrVar).(string)
+			if ok {
+				note := core.MustParseNote(noteName)
+				// it is a note name on the default input device
+				in, _ := ctx.Device().DefaultDeviceIDs()
+				key = control.NewKey(in, 1, note) // TODO what is channel on default input dev?
+			} else {
+				keyVar, ok := getValue(keyOrVar).(control.Key)
+				if !ok {
+					return notify.Panic(fmt.Errorf("cannot install onkey because parameter is not a key (%T) %v", keyOrVar, keyOrVar))
+				}
+				key = keyVar
 			}
 			// allow nil, playable and evaluatable
 			if playOrEval == nil {
