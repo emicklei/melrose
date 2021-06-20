@@ -20,7 +20,7 @@ For the best experience, use the `melrōse` tool together with the Visual Studio
 
 ## Install
 
-See [Download and build instructions](https://melrōse.org/docs/newbies/install/).
+See [Build instructions](docs/install.md).
 
 ## Usage
 
