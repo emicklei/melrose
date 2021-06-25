@@ -12,7 +12,7 @@ type Multiply struct {
 }
 
 func (m Multiply) Storex() string {
-	return fmt.Sprintf("%s + %s", core.Storex(m.Left), core.Storex(m.Right))
+	return fmt.Sprintf("%s * %s", core.Storex(m.Left), core.Storex(m.Right))
 }
 
 func (m Multiply) Value() interface{} {

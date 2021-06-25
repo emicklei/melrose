@@ -1175,5 +1175,21 @@ listen(device(1,rec),fun) // start a listener for notes from input device 1`,
 		},
 	})
 
+	registerFunction(eval, "onoff", Function{
+		Title:       "Note ON/OFF switch",
+		Description: "play will send MIDI Note On, stop will send MIDI Note Off",
+		Template:    "onoff(${2:note})",
+		Samples:     "onkey(key(device(1,note('c4'))),onoff('e')) // if C4 is hit on input device 1 then play (sustain) key E on the default output device. A second hit of C4 will stop it",
+		Func: func(noteSource string) interface{} {
+			// Simple first
+			_, deviceID := ctx.Device().DefaultDeviceIDs()
+			note, err := core.ParseNote(noteSource)
+			if err != nil {
+				notify.Panic(err)
+			}
+			return control.NewOnOff(deviceID, 1, note)
+		},
+	})
+
 	return eval
 }
