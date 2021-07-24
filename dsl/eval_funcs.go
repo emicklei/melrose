@@ -666,6 +666,23 @@ lp = loop(p,next(i))
 			}
 		}})
 
+	registerFunction(eval, "rotate", Function{
+		Title:       "Rotation modifier",
+		Description: "rotates note(groups) in a sequence. count is negative for rotating left",
+		Template:    `rotate(${1:count},${2:object})`,
+		Samples: `rotate(-1,sequence('C E G')) // E G C
+			`,
+		Func: func(count interface{}, m interface{}) interface{} {
+			s, ok := getSequenceable(m)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot rotate (%T) %v", s, s))
+			}
+			return op.Rotate{
+				Times:  getHasValue(count),
+				Target: s,
+			}
+		}})
+
 	registerFunction(eval, "stretch", Function{
 		Title:       "Stretch operator",
 		Description: "stretches the duration of musical object(s) with a factor. If the factor < 1 then duration is shortened",

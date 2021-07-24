@@ -2,21 +2,19 @@ package op
 
 import (
 	"fmt"
+
 	"github.com/emicklei/melrose/core"
 )
 
 type Rotate struct {
 	Target core.Sequenceable
-	Times  int
+	Times  core.HasValue
 }
 
 func (r Rotate) S() core.Sequence {
-	return r.Target.S().RotatedBy(r.Times)
+	return r.Target.S().RotatedBy(core.Int(r.Times))
 }
 
 func (r Rotate) Storex() string {
-	if s, ok := r.Target.(core.Storable); ok {
-		return fmt.Sprintf("rotate(%d,%s)", r.Times, s.Storex())
-	}
-	return ""
+	return fmt.Sprintf("rotate(%s,%s)", core.Storex(r.Times), core.Storex(r.Target))
 }
