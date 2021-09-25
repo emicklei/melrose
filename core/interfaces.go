@@ -91,7 +91,7 @@ type Playable interface {
 
 type Stoppable interface {
 	Stop(ctx Context) error
-	//IsPlaying() bool
+	IsPlaying() bool
 }
 
 type VariableStorage interface {
