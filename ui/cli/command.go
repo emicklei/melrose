@@ -68,23 +68,15 @@ func handleToggleDebug(ctx core.Context, args []string) notify.Message {
 
 func handleListAllRunning(ctx core.Context, args []string) notify.Message {
 	running := []core.Stoppable{}
-	stopped := []core.Stoppable{}
 	for _, v := range ctx.Variables().Variables() {
 		if s, ok := v.(core.Stoppable); ok {
 			if s.IsPlaying() {
 				running = append(running, s)
-			} else {
-				stopped = append(stopped, s)
 			}
 		}
 	}
-	fmt.Printf("[running]\n")
 	for _, each := range running {
-		fmt.Println("\t", core.Storex(each))
-	}
-	fmt.Printf("[stopped]\n")
-	for _, each := range stopped {
-		fmt.Println("\t", core.Storex(each))
+		fmt.Printf("%s = %s\n", ctx.Variables().NameFor(each), core.Storex(each))
 	}
 	return nil
 }

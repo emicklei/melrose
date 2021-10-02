@@ -83,6 +83,9 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	}
 	response := resultFrom(file, line, evalResult)
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("access-control-allow-origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "\t")
 	err = enc.Encode(response)
