@@ -93,15 +93,19 @@ func (d *DeviceRegistry) printInfo() {
 	d.streamRegistry.transport.PrintInfo(d.defaultInputID, d.defaultOutputID)
 
 	notify.PrintHighlighted("current defaults:")
-	id, err := d.Output(d.defaultInputID)
+	id, err := d.Input(d.defaultInputID)
 	if err == nil {
-		fmt.Printf(" input device = %d, channel = %d\n", d.defaultInputID, id.defaultChannel)
+		fmt.Printf(" input device = %d\n", d.defaultInputID)
+	} else {
+		fmt.Printf(" no input device\n")
 	}
 	od, err := d.Output(d.defaultOutputID)
 	if err == nil {
 		fmt.Printf("output device = %d, channel = %d\n", d.defaultOutputID, od.defaultChannel)
+		fmt.Printf("   echo notes = %v\n", od.echo)
+	} else {
+		fmt.Printf(" no output device (restart?)\n")
 	}
-	fmt.Printf("   echo notes = %v\n", od.echo)
 
 	fmt.Println()
 
