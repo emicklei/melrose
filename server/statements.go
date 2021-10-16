@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
@@ -38,7 +39,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	source := string(data)
+	source, line := removeTrailingWhitespace(string(data), line)
 
 	if debug {
 		notify.Debugf("http.request.body %s", source)
@@ -148,4 +149,12 @@ func resultFrom(filename string, line int, val interface{}) evaluationResult {
 		Filename:     filename,
 		Line:         line,
 		Message:      msg}
+}
+
+func removeTrailingWhitespace(source string, lineEnd int) (string, int) {
+	for strings.HasSuffix(source, "\n") {
+		source = strings.TrimSuffix(source, "\n")
+		lineEnd -= 1
+	}
+	return source, lineEnd
 }

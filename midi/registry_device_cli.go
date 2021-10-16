@@ -93,7 +93,7 @@ func (d *DeviceRegistry) printInfo() {
 	d.streamRegistry.transport.PrintInfo(d.defaultInputID, d.defaultOutputID)
 
 	notify.PrintHighlighted("current defaults:")
-	id, err := d.Input(d.defaultInputID)
+	_, err := d.Input(d.defaultInputID)
 	if err == nil {
 		fmt.Printf(" input device = %d\n", d.defaultInputID)
 	} else {
