@@ -1,9 +1,5 @@
 # Install 
 
-## Install from prepared packages
-
-See [Melrōse Documentation](https://melrōse.org).
-
 ## Build from source
 
 In order to build and work with `melrose` on your operating system, the following components need to be installed:
