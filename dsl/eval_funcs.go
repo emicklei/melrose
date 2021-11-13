@@ -1104,6 +1104,22 @@ begin(lp_pi)`,
 			return file.Export(filename, getValue(m), ctx.Control().BPM(), ctx.Control().BIAB())
 		}}
 
+	eval["trim"] = Function{
+		Title:       "Trim notes|groups from start or end",
+		Description: `create a new sequence object with notes trimmed at the start or/and at the end.`,
+		Template:    `trim(${1:remove-from-start},${2:remove-from-end},${3:object})`,
+		Samples:     `t = trim(1,2,sequence('c d e f a') // d e`,
+		Func: func(skipStart, skipEnd, object interface{}) interface{} {
+			s, ok := getSequenceable(object)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot trim non-sequenceable"))
+			}
+			return op.Trim{
+				Start:  getHasValue(skipStart),
+				End:    getHasValue(skipEnd),
+				Target: s}
+		}}
+
 	eval["replace"] = Function{
 		Title:       "Replace operator",
 		Description: `replaces all occurrences of one musical object with another object for a given composed musical object`,
