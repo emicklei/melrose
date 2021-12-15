@@ -1,6 +1,7 @@
 package op
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
 	"strings"
@@ -16,6 +17,12 @@ type FractionMap struct {
 
 func NewFractionMap(fraction core.HasValue, target core.Sequenceable) FractionMap {
 	return FractionMap{fraction: fraction, target: target}
+}
+
+func (f FractionMap) Storex() string {
+	var b bytes.Buffer
+	fmt.Fprintf(&b, "fractionmap(%s,%s)", core.Storex(f.fraction), core.Storex(f.target))
+	return b.String()
 }
 
 // S is part of core.Sequenceable

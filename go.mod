@@ -7,7 +7,7 @@ require (
 	github.com/antonmedv/expr v1.8.9
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/tre v1.2.0
-	github.com/fogleman/gg v1.3.0 // indirect
+	github.com/fogleman/gg v1.3.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/jonasfj/go-localtunnel v0.0.0-20170326223115-8a804488f275
 	github.com/mattn/go-runewidth v0.0.10 // indirect

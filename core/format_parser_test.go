@@ -66,6 +66,9 @@ func Test_formatParser_ParseMultipleChordProgression(t *testing.T) {
 		t.Fatal(err)
 	}
 	cs, err := p.parseChordProgression(sc)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if got, want := len(cs), 4; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}

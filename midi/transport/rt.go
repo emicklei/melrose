@@ -1,3 +1,4 @@
+//go:build !wasm
 // +build !wasm
 
 package transport
@@ -52,7 +53,8 @@ func (t RtmidiTransporter) NewMIDIIn(id int) (MIDIIn, error) {
 	if err != nil {
 		return nil, err
 	}
-	in.IgnoreTypes(false, false, false)
+	// Ignore sysex, timing, or active sensing messages.
+	in.IgnoreTypes(true, true, true)
 	return RtmidiIn{in: in, port: id}, nil
 }
 func (t RtmidiTransporter) NewMIDIListener(in MIDIIn) MIDIListener {

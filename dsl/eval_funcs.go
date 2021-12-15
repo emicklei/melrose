@@ -897,7 +897,7 @@ Remove the assignment using the value nil for the playable`,
 axiom = 1 // device ID for the M-Audio Axiom 25
 c2 = key(device(axiom,note('c2')))
 fun = play(scale(2,'c')) // what to do when a key is pressed (NoteOn)
-onkey(c2, fun) // if C2 is pressed on the axiom device that evaluate the function "fun"`,
+onkey(c2, fun) // if C2 is pressed on the axiom device then evaluate the function "fun"`,
 		Func: func(keyOrVar interface{}, playOrEval interface{}) interface{} {
 			if !ctx.Device().HasInputCapability() {
 				return notify.Panic(errors.New("input is not available for this device"))

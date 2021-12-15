@@ -24,22 +24,22 @@ func Test_parseIndices(t *testing.T) {
 		{
 			"just one",
 			args{src: "1"},
-			[][]int{[]int{1}},
+			[][]int{{1}},
 		},
 		{
 			"eleven",
 			args{src: "11"},
-			[][]int{[]int{11}},
+			[][]int{{11}},
 		},
 		{
 			"one [two three] four",
 			args{src: "1 (2 3) 4"},
-			[][]int{[]int{1}, []int{2, 3}, []int{4}},
+			[][]int{{1}, {2, 3}, {4}},
 		},
 		{
 			"one two three",
 			args{src: "1 2 3"},
-			[][]int{[]int{1}, []int{2}, []int{3}},
+			[][]int{{1}, {2}, {3}},
 		},
 	}
 	for _, tt := range tests {
