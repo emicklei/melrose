@@ -1,6 +1,8 @@
 package img
 
 import (
+	"encoding/json"
+	"os"
 	"testing"
 	"time"
 
@@ -59,4 +61,27 @@ func TestScale(t *testing.T) {
 	nv := NotesView{Events: evts}
 	nv.DrawOn(gc)
 	gc.SavePNG("TestScale.png")
+}
+
+func TestRecordedTimeline(t *testing.T) {
+	in, _ := os.Open("rec.json")
+	defer in.Close()
+	dec := json.NewDecoder(in)
+	list := []core.StorableNoteChange{}
+	if err := dec.Decode(&list); err != nil {
+		t.Fatal(err)
+	}
+	// for _, each := range list {
+	// 	fmt.Printf("%#v\n", each)
+	// }
+
+	gc := gg.NewContext(500, 50)
+	events := core.ConvertToNoteEvents(list)
+	// for _, each := range events {
+	// 	fmt.Printf("%#v\n", each)
+	// }
+
+	nv := NotesView{Events: events}
+	nv.DrawOn(gc)
+	gc.SavePNG("TestRecordedTimeline.png")
 }

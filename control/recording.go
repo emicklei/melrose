@@ -66,25 +66,29 @@ func (r *Recording) S() core.Sequenceable {
 }
 
 func (r *Recording) NoteOn(channel int, n core.Note) {
+	when := time.Now()
 	if core.IsDebug() {
-		notify.Debugf("recording.noteon note:%v", n)
+		notify.Debugf("recording.noteon note:%v", n, " t:", when.Format("04:05.000"))
 	}
 	change := core.NewNoteChange(true, int64(n.MIDI()), int64(n.Velocity))
-	r.timeline.Schedule(change, time.Now())
+	r.timeline.Schedule(change, when)
 }
 
 func (r *Recording) NoteOff(channel int, n core.Note) {
+	when := time.Now()
 	if core.IsDebug() {
-		notify.Debugf("recording.noteoff note:%v", n)
+		notify.Debugf("recording.noteoff note:%v", n, " t:", when.Format("04:05.000"))
 	}
 	change := core.NewNoteChange(false, int64(n.MIDI()), int64(n.Velocity))
-	r.timeline.Schedule(change, time.Now())
+	r.timeline.Schedule(change, when)
 }
 
 // ControlChange is ignored
 func (r *Recording) ControlChange(channel, number, value int) {}
 
 func buildExpressionFromTimeline(t *core.Timeline) core.Sequenceable {
+	//t.ToFile("rec.json")
+
 	activeNotes := map[int]noteChangeEvent{}
 	notes := []core.Note{}
 	t.EventsDo(func(event core.TimelineEvent, when time.Time) {

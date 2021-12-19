@@ -44,10 +44,7 @@ func (s NoteEventStatistics) String() string {
 	return fmt.Sprintf("start=%s,end=%s,low=%d,high=%d", s.Start.Format(eventTimeFormat), s.End.Format(eventTimeFormat), s.Lowest, s.Highest)
 }
 
-var NoNoteChange = NoteChange{isEmpty: true}
-
 type NoteChange struct {
-	isEmpty  bool
 	isOn     bool
 	note     int64
 	velocity int64
@@ -69,7 +66,6 @@ func (n NoteChange) NoteChangesDo(block func(NoteChange)) { block(n) }
 
 func NewNoteChange(isOn bool, midiNr int64, velocity int64) NoteChange {
 	return NoteChange{
-		isEmpty:  false,
 		isOn:     isOn,
 		note:     midiNr,
 		velocity: velocity,

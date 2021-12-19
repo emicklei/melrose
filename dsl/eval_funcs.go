@@ -613,7 +613,7 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 		ControlsAudio: true,
 		Template:      `record(rec)`,
 		Samples: `rec = sequence('') // variable to store the recorded sequence
-record(rec) // record notes played on the current input device and stop recording after 5 seconds`,
+record(rec) // record notes played on the current input device`,
 		Func: func(varOrDeviceSelector interface{}) interface{} {
 			var injectable variable
 			deviceID, _ := ctx.Device().DefaultDeviceIDs()
