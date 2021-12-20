@@ -77,6 +77,7 @@ func (d *OutputDevice) handledPedalChange(condition core.Condition, channel int,
 			channel:    channel,
 			out:        d.stream,
 			mustHandle: condition}, moment)
+		return true
 	}
 	return false
 }
