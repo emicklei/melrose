@@ -2,6 +2,7 @@ package img
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -75,6 +76,7 @@ func TestRecordedTimeline(t *testing.T) {
 	events := []core.NoteEvent{}
 	for _, each := range periods {
 		q := each.Quantized(120.0)
+		fmt.Println(q.Note(120.0))
 		events = append(events, core.NoteEvent{
 			Start:    q.Start(),
 			End:      q.End(),

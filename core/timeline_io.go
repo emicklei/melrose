@@ -60,6 +60,15 @@ func (p NotePeriod) Number() int { return p.number }
 
 func (p NotePeriod) Velocity() int { return p.velocity }
 
+func (p NotePeriod) Note(bpm float64) Note {
+	// TODO assume duration is <= whole note
+	sixteenth := int64(math.Round(4 * 60 * 1000 / bpm / 16))
+	times := (p.endMs - p.startMs) / sixteenth
+	fraction := float32(times) * 0.0625
+	n, _ := MIDItoNote(fraction, p.number, p.velocity)
+	return n
+}
+
 func (p NotePeriod) Quantized(bpm float64) NotePeriod {
 	// snap the start to a multiple of 16th note duration for bpm
 	// snap the length too
