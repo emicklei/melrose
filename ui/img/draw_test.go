@@ -71,16 +71,19 @@ func TestRecordedTimeline(t *testing.T) {
 	if err := dec.Decode(&list); err != nil {
 		t.Fatal(err)
 	}
-	// for _, each := range list {
-	// 	fmt.Printf("%#v\n", each)
-	// }
+	periods := core.ConvertToNotePeriods(list)
+	events := []core.NoteEvent{}
+	for _, each := range periods {
+		q := each.Quantized(120.0)
+		events = append(events, core.NoteEvent{
+			Start:    q.Start(),
+			End:      q.End(),
+			Number:   q.Number(),
+			Velocity: q.Velocity(),
+		})
+	}
 
 	gc := gg.NewContext(500, 50)
-	events := core.ConvertToNoteEvents(list)
-	// for _, each := range events {
-	// 	fmt.Printf("%#v\n", each)
-	// }
-
 	nv := NotesView{Events: events}
 	nv.DrawOn(gc)
 	gc.SavePNG("TestRecordedTimeline.png")

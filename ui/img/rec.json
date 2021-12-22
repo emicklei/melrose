@@ -1,133 +1,133 @@
 [
 	{
 		"when": 1639944945538340000,
-		"onoff": true,
+		"ison": true,
 		"note": 53,
 		"velocity": 54
 	},
 	{
 		"when": 1639944945543558000,
-		"onoff": true,
+		"ison": true,
 		"note": 57,
 		"velocity": 46
 	},
 	{
 		"when": 1639944945741993000,
-		"onoff": false,
+		"ison": false,
 		"note": 53,
 		"velocity": 59
 	},
 	{
 		"when": 1639944945744182000,
-		"onoff": false,
+		"ison": false,
 		"note": 57,
 		"velocity": 59
 	},
 	{
 		"when": 1639944946074510000,
-		"onoff": true,
+		"ison": true,
 		"note": 59,
 		"velocity": 23
 	},
 	{
 		"when": 1639944946078282000,
-		"onoff": true,
+		"ison": true,
 		"note": 55,
 		"velocity": 55
 	},
 	{
 		"when": 1639944946274699000,
-		"onoff": false,
+		"ison": false,
 		"note": 55,
 		"velocity": 59
 	},
 	{
 		"when": 1639944946303831000,
-		"onoff": false,
+		"ison": false,
 		"note": 59,
 		"velocity": 59
 	},
 	{
 		"when": 1639944946547537000,
-		"onoff": true,
+		"ison": true,
 		"note": 60,
 		"velocity": 55
 	},
 	{
 		"when": 1639944946553920000,
-		"onoff": true,
+		"ison": true,
 		"note": 57,
 		"velocity": 58
 	},
 	{
 		"when": 1639944946760642000,
-		"onoff": false,
+		"ison": false,
 		"note": 57,
 		"velocity": 59
 	},
 	{
 		"when": 1639944946786939000,
-		"onoff": false,
+		"ison": false,
 		"note": 60,
 		"velocity": 59
 	},
 	{
 		"when": 1639944947033805000,
-		"onoff": true,
+		"ison": true,
 		"note": 62,
 		"velocity": 58
 	},
 	{
 		"when": 1639944947035640000,
-		"onoff": true,
+		"ison": true,
 		"note": 59,
 		"velocity": 52
 	},
 	{
 		"when": 1639944947229095000,
-		"onoff": false,
+		"ison": false,
 		"note": 59,
 		"velocity": 59
 	},
 	{
 		"when": 1639944947272384000,
-		"onoff": false,
+		"ison": false,
 		"note": 62,
 		"velocity": 59
 	},
 	{
 		"when": 1639944947547947000,
-		"onoff": true,
+		"ison": true,
 		"note": 64,
 		"velocity": 63
 	},
 	{
 		"when": 1639944947778568000,
-		"onoff": false,
+		"ison": false,
 		"note": 64,
 		"velocity": 59
 	},
 	{
 		"when": 1639944948019249000,
-		"onoff": true,
+		"ison": true,
 		"note": 65,
 		"velocity": 58
 	},
 	{
 		"when": 1639944948231039000,
-		"onoff": false,
+		"ison": false,
 		"note": 65,
 		"velocity": 59
 	},
 	{
 		"when": 1639944948469216000,
-		"onoff": true,
+		"ison": true,
 		"note": 67,
 		"velocity": 79
 	},
 	{
 		"when": 1639944948665472000,
-		"onoff": false,
+		"ison": false,
 		"note": 67,
 		"velocity": 59
 	}

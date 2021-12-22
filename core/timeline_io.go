@@ -3,13 +3,14 @@ package core
 import (
 	"encoding/json"
 	"log"
+	"math"
 	"os"
 	"time"
 )
 
 type StorableNoteChange struct {
 	When     int64 `json:"when"`
-	IsOn     bool  `json:"onoff"`
+	IsOn     bool  `json:"ison"`
 	Note     int64 `json:"note"`
 	Velocity int64 `json:"velocity"`
 }
@@ -41,8 +42,40 @@ func (t *Timeline) ToFile(name string) {
 	}
 }
 
-func ConvertToNoteEvents(changes []StorableNoteChange) (events []NoteEvent) {
+type NotePeriod struct {
+	startMs, endMs int64
+	number         int
+	velocity       int
+}
+
+func (p NotePeriod) Start() time.Time {
+	return time.Unix(0, p.startMs*1e6)
+}
+
+func (p NotePeriod) End() time.Time {
+	return time.Unix(0, p.endMs*1e6)
+}
+
+func (p NotePeriod) Number() int { return p.number }
+
+func (p NotePeriod) Velocity() int { return p.velocity }
+
+func (p NotePeriod) Quantized(bpm float64) NotePeriod {
+	// snap the start to a multiple of 16th note duration for bpm
+	// snap the length too
+	sixteenth := int64(math.Round(4 * 60 * 1000 / bpm / 16))
+	startMs := nearest(p.startMs, sixteenth)
+	endMs := nearest(p.endMs, sixteenth)
+	return NotePeriod{startMs: startMs, endMs: endMs, number: p.number, velocity: p.velocity}
+}
+
+func nearest(value int64, delta int64) int64 {
+	return delta * int64(math.RoundToEven((float64(value) / float64(delta))))
+}
+
+func ConvertToNotePeriods(changes []StorableNoteChange) (events []NotePeriod) {
 	noteOn := map[int64]StorableNoteChange{} // which note started when
+	var begin int64 = 0
 	for _, each := range changes {
 		if each.IsOn {
 			noteOn[each.Note] = each
@@ -52,11 +85,15 @@ func ConvertToNoteEvents(changes []StorableNoteChange) (events []NoteEvent) {
 				continue
 			}
 			delete(noteOn, each.Note)
-			event := NoteEvent{
-				Start:    time.Unix(0, on.When),
-				End:      time.Unix(0, each.When),
-				Number:   int(each.Note),
-				Velocity: int(on.Velocity),
+			if begin == 0 {
+				begin = on.When
+			}
+			start := (on.When - begin) / 1e6
+			event := NotePeriod{
+				startMs:  start,
+				endMs:    (each.When - begin) / 1e6,
+				number:   int(each.Note),
+				velocity: int(on.Velocity),
 			}
 			events = append(events, event)
 		}
