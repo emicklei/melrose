@@ -68,15 +68,15 @@ func TestRecordedTimeline(t *testing.T) {
 	in, _ := os.Open("rec.json")
 	defer in.Close()
 	dec := json.NewDecoder(in)
-	list := []core.StorableNoteChange{}
+	list := []core.NoteChangeEvent{}
 	if err := dec.Decode(&list); err != nil {
 		t.Fatal(err)
 	}
 	periods := core.ConvertToNotePeriods(list)
 	events := []core.NoteEvent{}
 	for _, each := range periods {
-		q := each.Quantized(120.0)
-		fmt.Println(q.Note(120.0))
+		q := each.Quantized(100.0)
+		fmt.Println(q.Note(100.0))
 		events = append(events, core.NoteEvent{
 			Start:    q.Start(),
 			End:      q.End(),
@@ -88,5 +88,5 @@ func TestRecordedTimeline(t *testing.T) {
 	gc := gg.NewContext(500, 50)
 	nv := NotesView{Events: events}
 	nv.DrawOn(gc)
-	gc.SavePNG("TestRecordedTimeline.png")
+	gc.SavePNG("TestRecordedTimeline_100bpm.png")
 }
