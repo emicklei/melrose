@@ -89,4 +89,11 @@ func TestRecordedTimeline(t *testing.T) {
 	nv := NotesView{Events: events}
 	nv.DrawOn(gc)
 	gc.SavePNG("TestRecordedTimeline_100bpm.png")
+
+	quantized := []core.NotePeriod{}
+	for _, each := range periods {
+		quantized = append(quantized, each.Quantized(120.0))
+	}
+	b := core.NewSequenceBuilder(quantized)
+	t.Log(b.Build())
 }

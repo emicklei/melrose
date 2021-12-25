@@ -15,7 +15,7 @@ type NoteChangeEvent struct {
 	Velocity int64 `json:"velocity"`
 }
 
-func (t *Timeline) toStorableNoteChanges() (changes []NoteChangeEvent) {
+func (t *Timeline) toNoteChangeEvents() (changes []NoteChangeEvent) {
 	t.EventsDo(func(each TimelineEvent, when time.Time) {
 		change, ok := each.(NoteChange)
 		if !ok {
@@ -37,7 +37,7 @@ func (t *Timeline) ToFile(name string) {
 	defer out.Close()
 	enc := json.NewEncoder(out)
 	enc.SetIndent("", "\t")
-	if err := enc.Encode(t.toStorableNoteChanges()); err != nil {
+	if err := enc.Encode(t.toNoteChangeEvents()); err != nil {
 		log.Println(err)
 	}
 }
@@ -109,4 +109,41 @@ func ConvertToNotePeriods(changes []NoteChangeEvent) (events []NotePeriod) {
 		}
 	}
 	return
+}
+
+type SequenceBuilder struct {
+	periods    []NotePeriod // sorted by startMS, ascending
+	noteGroups [][]Note
+	bpm        float64 // max 300
+}
+
+func NewSequenceBuilder(periods []NotePeriod) *SequenceBuilder {
+	return &SequenceBuilder{
+		periods:    periods,
+		noteGroups: [][]Note{},
+		bpm:        120.0,
+	}
+}
+
+func (s *SequenceBuilder) Build() Sequence {
+	group := []Note{}
+	lastMs := int64(-1)
+	for _, each := range s.periods {
+		if lastMs == -1 {
+			lastMs = each.startMs
+			group = append(group, each.Note(s.bpm))
+			continue
+		}
+		if lastMs == each.startMs {
+			group = append(group, each.Note(s.bpm))
+			continue
+		}
+		s.noteGroups = append(s.noteGroups, group)
+		group = []Note{each.Note(s.bpm)}
+		lastMs = each.startMs
+	}
+
+	return Sequence{
+		Notes: s.noteGroups,
+	}
 }
