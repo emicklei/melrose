@@ -94,6 +94,6 @@ func TestRecordedTimeline(t *testing.T) {
 	for _, each := range periods {
 		quantized = append(quantized, each.Quantized(120.0))
 	}
-	b := core.NewSequenceBuilder(quantized)
+	b := core.NewSequenceBuilder(quantized, 120)
 	t.Log(b.Build())
 }

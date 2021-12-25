@@ -117,15 +117,16 @@ type SequenceBuilder struct {
 	bpm        float64 // max 300
 }
 
-func NewSequenceBuilder(periods []NotePeriod) *SequenceBuilder {
+func NewSequenceBuilder(periods []NotePeriod, bpm float64) *SequenceBuilder {
 	return &SequenceBuilder{
 		periods:    periods,
 		noteGroups: [][]Note{},
-		bpm:        120.0,
+		bpm:        bpm,
 	}
 }
 
 func (s *SequenceBuilder) Build() Sequence {
+	whole := WholeNoteDuration(s.bpm).Milliseconds()
 	group := []Note{}
 	lastMs := int64(-1)
 	for _, each := range s.periods {
@@ -139,6 +140,10 @@ func (s *SequenceBuilder) Build() Sequence {
 			continue
 		}
 		s.noteGroups = append(s.noteGroups, group)
+		// add zero or more rest notes for the gap
+		fraction, dotted := FractionToDurationParts(float64(each.startMs-lastMs) / float64(whole))
+		rest, _ := NewNote("=", 4, fraction, 0, dotted, 0)
+		s.noteGroups = append(s.noteGroups, []Note{rest})
 		group = []Note{each.Note(s.bpm)}
 		lastMs = each.startMs
 	}
