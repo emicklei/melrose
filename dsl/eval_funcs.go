@@ -609,7 +609,7 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 
 	eval["record"] = Function{
 		Title:         "Recording creator",
-		Description:   "create a recorded sequence of notes from the current MIDI input device",
+		Description:   "create a recorded sequence of notes from the current MIDI input device using the currrent BPM",
 		ControlsAudio: true,
 		Template:      `record(rec)`,
 		Samples: `rec = sequence('') // variable to store the recorded sequence
@@ -633,7 +633,7 @@ record(rec) // record notes played on the current input device`,
 					return notify.Panic(fmt.Errorf("missing variable parameter"))
 				}
 			}
-			return control.NewRecording(deviceID, injectable.Name)
+			return control.NewRecording(deviceID, injectable.Name, ctx.Control().BPM())
 		}}
 
 	eval["undynamic"] = Function{

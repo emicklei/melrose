@@ -1,3 +1,4 @@
+//go:build !wasm
 // +build !wasm
 
 package transport
@@ -27,7 +28,7 @@ func (t RtmidiTransporter) PrintInfo(inID, outID int) {
 		if err != nil {
 			name = ""
 		}
-		fmt.Printf("device %d: %s\n", i, name)
+		fmt.Printf(" input device %d: %s\n", i, name)
 	}
 	fmt.Println()
 
@@ -49,7 +50,7 @@ func (t RtmidiTransporter) PrintInfo(inID, outID int) {
 			if err != nil {
 				name = ""
 			}
-			fmt.Printf("device %d: %s\n", i, name)
+			fmt.Printf("output device %d: %s\n", i, name)
 		}
 	}
 	fmt.Println()

@@ -1,9 +1,6 @@
 package img
 
 import (
-	"encoding/json"
-	"fmt"
-	"os"
 	"testing"
 	"time"
 
@@ -65,35 +62,24 @@ func TestScale(t *testing.T) {
 }
 
 func TestRecordedTimeline(t *testing.T) {
-	in, _ := os.Open("rec.json")
-	defer in.Close()
-	dec := json.NewDecoder(in)
-	list := []core.NoteChangeEvent{}
-	if err := dec.Decode(&list); err != nil {
-		t.Fatal(err)
-	}
-	periods := core.ConvertToNotePeriods(list)
-	events := []core.NoteEvent{}
-	for _, each := range periods {
-		q := each.Quantized(100.0)
-		fmt.Println(q.Note(100.0))
-		events = append(events, core.NoteEvent{
-			Start:    q.Start(),
-			End:      q.End(),
-			Number:   q.Number(),
-			Velocity: q.Velocity(),
-		})
-	}
-
+	bpm := 120.0
+	events := core.NoteEventsFromFile("/tmp/melrose-recording.json")
+	periods := core.NoteEventsToPeriods(events)
 	gc := gg.NewContext(500, 50)
-	nv := NotesView{Events: events}
+	nv := NotesView{Events: events, BPM: bpm}
 	nv.DrawOn(gc)
-	gc.SavePNG("TestRecordedTimeline_100bpm.png")
+	gc.SavePNG("TestRecorded_RAW.png")
 
-	quantized := []core.NotePeriod{}
-	for _, each := range periods {
-		quantized = append(quantized, each.Quantized(120.0))
+	{
+		b := core.NewSequenceBuilder(periods, bpm)
+		seq := b.Build()
+		t.Log(seq)
+		tim := core.NewTimeline()
+		d := midi.NewOutputDevice(0, nil, 0, tim)
+		d.Play(core.NoCondition, seq, bpm, time.Now())
+		gc := gg.NewContext(500, 50)
+		nv := NotesView{Events: tim.NoteEvents(), BPM: bpm}
+		nv.DrawOn(gc)
+		gc.SavePNG("TestRecorded_PROCESSED.png")
 	}
-	b := core.NewSequenceBuilder(quantized, 120)
-	t.Log(b.Build())
 }

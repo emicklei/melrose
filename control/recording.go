@@ -12,14 +12,16 @@ type Recording struct {
 	deviceID     int
 	timeline     *core.Timeline
 	variableName string
+	bpm          float64
 }
 
-func NewRecording(deviceID int, variableName string) *Recording {
+func NewRecording(deviceID int, variableName string, bpm float64) *Recording {
 	tim := core.NewTimeline()
 	return &Recording{
 		deviceID:     deviceID,
 		timeline:     tim,
 		variableName: variableName,
+		bpm:          bpm,
 	}
 }
 
@@ -39,6 +41,7 @@ func (r *Recording) Play(ctx core.Context, at time.Time) error {
 	return nil
 }
 
+// Stop is part of Stoppable
 func (r *Recording) Stop(ctx core.Context) error {
 	// nothing there or already stopped
 	if r.timeline.Len() == 0 {
@@ -47,6 +50,7 @@ func (r *Recording) Stop(ctx core.Context) error {
 	seq := r.S()
 	if core.IsDebug() {
 		notify.Debugf("recording.stop seq:%v", seq)
+		core.NotesEventsToFile(r.timeline.NoteEvents(), "/tmp/melrose-recording.json")
 	}
 	ctx.Variables().Put(r.variableName, seq)
 	ctx.Device().Listen(r.deviceID, r, false)
@@ -62,13 +66,15 @@ func (r *Recording) Storex() string {
 }
 
 func (r *Recording) S() core.Sequenceable {
-	return buildExpressionFromTimeline(r.timeline)
+	periods := r.timeline.BuildNotePeriods()
+	builder := core.NewSequenceBuilder(periods, r.bpm)
+	return builder.Build()
 }
 
 func (r *Recording) NoteOn(channel int, n core.Note) {
 	when := time.Now()
 	if core.IsDebug() {
-		notify.Debugf("recording.noteon note:%v", n, " t:", when.Format("04:05.000"))
+		notify.Debugf("recording.noteon note:%v t:%s", when.Format("04:05.000"))
 	}
 	change := core.NewNoteChange(true, int64(n.MIDI()), int64(n.Velocity))
 	r.timeline.Schedule(change, when)
@@ -77,7 +83,7 @@ func (r *Recording) NoteOn(channel int, n core.Note) {
 func (r *Recording) NoteOff(channel int, n core.Note) {
 	when := time.Now()
 	if core.IsDebug() {
-		notify.Debugf("recording.noteoff note:%v", n, " t:", when.Format("04:05.000"))
+		notify.Debugf("recording.noteoff note:%v t:%s", n, when.Format("04:05.000"))
 	}
 	change := core.NewNoteChange(false, int64(n.MIDI()), int64(n.Velocity))
 	r.timeline.Schedule(change, when)
@@ -85,39 +91,3 @@ func (r *Recording) NoteOff(channel int, n core.Note) {
 
 // ControlChange is ignored
 func (r *Recording) ControlChange(channel, number, value int) {}
-
-func buildExpressionFromTimeline(t *core.Timeline) core.Sequenceable {
-	//t.ToFile("rec.json")
-
-	activeNotes := map[int]noteChangeEvent{}
-	notes := []core.Note{}
-	t.EventsDo(func(event core.TimelineEvent, when time.Time) {
-		change := event.(core.NoteChange)
-		if change.IsOn() {
-			_, ok := activeNotes[change.Number()]
-			if ok {
-				// note was on ?
-			} else {
-				// new
-				activeNotes[change.Number()] = noteChangeEvent{change: change, when: when}
-			}
-		} else {
-			// note off
-			hit, ok := activeNotes[change.Number()]
-			if !ok {
-				// note was never on ?
-			} else {
-				// when.Sub(active.when)fraction
-				note, err := core.MIDItoNote(0.25, hit.change.Number(), int(hit.change.Velocity()))
-				if err != nil {
-					notify.Warnf("core.MIDItoNote error:%v", err)
-				} else {
-					notes = append(notes, note)
-					delete(activeNotes, change.Number())
-				}
-			}
-		}
-
-	})
-	return core.BuildSequence(notes)
-}

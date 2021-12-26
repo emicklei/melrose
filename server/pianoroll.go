@@ -45,7 +45,7 @@ func (l *LanguageServer) pianorollImageHandler(w http.ResponseWriter, r *http.Re
 	gc := gg.NewContext(500, 50)
 
 	evts := tim.NoteEvents()
-	nv := img.NotesView{Events: evts}
+	nv := img.NotesView{Events: evts, BPM: l.context.Control().BPM()}
 	nv.DrawOn(gc)
 
 	w.Header().Set("content-type", "image/png")

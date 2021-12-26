@@ -85,6 +85,12 @@ func (d *DeviceRegistry) Command(args []string) notify.Message {
 		d.HandleSetting("echo.toggle", []interface{}{})
 		return nil
 	}
+	if len(args) == 1 && args[0] == "r" {
+		fmt.Println("Reset MIDI device configuration. Stopping all listeners")
+		d.Reset()
+		d.Close()
+		d.init()
+	}
 	d.printInfo()
 	return nil
 }

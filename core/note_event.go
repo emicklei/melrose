@@ -1,18 +1,63 @@
 package core
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"time"
+
+	"github.com/emicklei/melrose/notify"
 )
 
 type NoteEvent struct {
-	Start, End time.Time
-	Number     int
-	Velocity   int
+	Start    time.Time `json:"start"`
+	End      time.Time `json:"end"`
+	Number   int       `json:"number"`
+	Velocity int       `json:"velocity"`
 }
 
 func (e NoteEvent) WithEnd(end time.Time) NoteEvent {
 	return NoteEvent{Start: e.Start, Number: e.Number, Velocity: e.Velocity, End: end}
+}
+
+func NotesEventsToFile(events []NoteEvent, name string) {
+	out, err := os.Create(name)
+	if err != nil {
+		notify.Errorf("NotesEventsToFile:%v", err)
+		return
+	}
+	defer out.Close()
+	enc := json.NewEncoder(out)
+	enc.SetIndent("", "\t")
+	if err := enc.Encode(events); err != nil {
+		notify.Errorf("NotesEventsToFile:%v", err)
+	}
+}
+
+func NoteEventsFromFile(name string) (list []NoteEvent) {
+	in, err := os.Open(name)
+	if err != nil {
+		notify.Errorf("NoteEventsFromFile:%v", err)
+		return
+	}
+	defer in.Close()
+	dec := json.NewDecoder(in)
+	if err := dec.Decode(&list); err != nil {
+		notify.Errorf("NoteEventsFromFile:%v", err)
+	}
+	return
+}
+
+func NoteEventsToPeriods(events []NoteEvent) (list []NotePeriod) {
+	for _, each := range events {
+		list = append(list, NotePeriod{
+			startMs:  each.Start.UnixMilli(),
+			endMs:    each.End.UnixMilli(),
+			number:   each.Number,
+			velocity: each.Velocity,
+		})
+	}
+	return
 }
 
 type NoteEventStatistics struct {

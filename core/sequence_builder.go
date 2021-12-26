@@ -1,10 +1,7 @@
 package core
 
 import (
-	"encoding/json"
-	"log"
 	"math"
-	"os"
 	"time"
 )
 
@@ -32,14 +29,10 @@ func (t *Timeline) toNoteChangeEvents() (changes []NoteChangeEvent) {
 	return
 }
 
-func (t *Timeline) ToFile(name string) {
-	out, _ := os.Create(name)
-	defer out.Close()
-	enc := json.NewEncoder(out)
-	enc.SetIndent("", "\t")
-	if err := enc.Encode(t.toNoteChangeEvents()); err != nil {
-		log.Println(err)
-	}
+func (t *Timeline) BuildNotePeriods() []NotePeriod {
+	events := t.toNoteChangeEvents()
+	periods := ConvertToNotePeriods(events)
+	return periods
 }
 
 type NotePeriod struct {
@@ -83,6 +76,7 @@ func nearest(value int64, delta int64) int64 {
 	return delta * int64(math.RoundToEven((float64(value) / float64(delta))))
 }
 
+// TODO move inside sequencebuilder ?
 func ConvertToNotePeriods(changes []NoteChangeEvent) (events []NotePeriod) {
 	noteOn := map[int64]NoteChangeEvent{} // which note started when
 	var begin int64 = 0
@@ -126,26 +120,40 @@ func NewSequenceBuilder(periods []NotePeriod, bpm float64) *SequenceBuilder {
 }
 
 func (s *SequenceBuilder) Build() Sequence {
+	quantized := []NotePeriod{}
+	for _, each := range s.periods {
+		quantized = append(quantized, each.Quantized(s.bpm))
+	}
+
 	whole := WholeNoteDuration(s.bpm).Milliseconds()
 	group := []Note{}
-	lastMs := int64(-1)
-	for _, each := range s.periods {
-		if lastMs == -1 {
-			lastMs = each.startMs
+	lastStartMs := int64(-1)
+	lastEndMs := int64(-1)
+	for _, each := range quantized {
+		if lastStartMs == -1 {
+			lastStartMs = each.startMs
+			lastEndMs = each.endMs
 			group = append(group, each.Note(s.bpm))
 			continue
 		}
-		if lastMs == each.startMs {
+		if lastStartMs == each.startMs {
 			group = append(group, each.Note(s.bpm))
+			if each.endMs > lastEndMs {
+				lastEndMs = each.endMs
+			}
 			continue
 		}
 		s.noteGroups = append(s.noteGroups, group)
 		// add zero or more rest notes for the gap
-		fraction, dotted := FractionToDurationParts(float64(each.startMs-lastMs) / float64(whole))
+		fraction, dotted := FractionToDurationParts(float64(each.startMs-lastEndMs) / float64(whole))
 		rest, _ := NewNote("=", 4, fraction, 0, dotted, 0)
 		s.noteGroups = append(s.noteGroups, []Note{rest})
 		group = []Note{each.Note(s.bpm)}
-		lastMs = each.startMs
+		lastStartMs = each.startMs
+		lastEndMs = each.endMs
+	}
+	if len(group) > 0 {
+		s.noteGroups = append(s.noteGroups, group)
 	}
 
 	return Sequence{
