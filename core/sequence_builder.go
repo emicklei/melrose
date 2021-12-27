@@ -55,9 +55,9 @@ func (p NotePeriod) Velocity() int { return p.velocity }
 
 func (p NotePeriod) Note(bpm float64) Note {
 	// TODO assume duration is <= whole note
-	sixteenth := int64(math.Round(4 * 60 * 1000 / bpm / 16))
-	times := (p.endMs - p.startMs) / sixteenth
-	fraction, dotted := FractionToDurationParts(float64(times) * 0.0625) // 1/16
+	sixteenth := 4 * 60 * 1000 / bpm / 16
+	times := float64(p.endMs-p.startMs) / sixteenth
+	fraction, dotted := FractionToDurationParts(times * 0.0625) // 1/16
 	name, octave, accidental := MIDIToNoteParts(p.number)
 	n, _ := NewNote(name, octave, fraction, accidental, dotted, p.velocity)
 	return n
@@ -66,14 +66,16 @@ func (p NotePeriod) Note(bpm float64) Note {
 func (p NotePeriod) Quantized(bpm float64) NotePeriod {
 	// snap the start to a multiple of 16th note duration for bpm
 	// snap the length too
-	sixteenth := int64(math.Round(4 * 60 * 1000 / bpm / 16))
+	sixteenth := 4 * 60 * 1000 / bpm / 16
 	startMs := nearest(p.startMs, sixteenth)
 	endMs := nearest(p.endMs, sixteenth)
 	return NotePeriod{startMs: startMs, endMs: endMs, number: p.number, velocity: p.velocity}
 }
 
-func nearest(value int64, delta int64) int64 {
-	return delta * int64(math.RoundToEven((float64(value) / float64(delta))))
+func nearest(value int64, delta float64) int64 {
+	vf := float64(value)
+	times := math.Round(vf / delta)
+	return int64(times * delta)
 }
 
 // TODO move inside sequencebuilder ?

@@ -25,7 +25,6 @@ func (v NotesView) DrawOn(gc *gg.Context) {
 
 	bar := 0
 	for x := 0.0; x < float64(gc.Width()); x += float64(quarter) * xscale {
-		bar++
 		if bar == 4 {
 			gc.SetRGB(200/256.0, 0.0, 0.0) // redisch
 			bar = 0
@@ -34,6 +33,7 @@ func (v NotesView) DrawOn(gc *gg.Context) {
 		}
 		gc.DrawLine(x, 0, x, float64(gc.Height()))
 		gc.Stroke()
+		bar++
 	}
 
 	gc.SetRGB(62/256.0, 161/256.0, 11/256.0) // greenish

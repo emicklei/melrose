@@ -67,12 +67,3 @@ func TestScheduleAdd(t *testing.T) {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
-
-func TestNearest(t *testing.T) {
-	if got, want := nearest(5, 3), int64(6); got != want {
-		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
-	}
-	if got, want := nearest(539, 125), int64(500); got != want {
-		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
-	}
-}

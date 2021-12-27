@@ -6,6 +6,7 @@ import (
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/midi"
+	"github.com/emicklei/melrose/op"
 	"github.com/fogleman/gg"
 )
 
@@ -64,13 +65,13 @@ func TestScale(t *testing.T) {
 func TestRecordedTimeline(t *testing.T) {
 	bpm := 120.0
 	events := core.NoteEventsFromFile("/tmp/melrose-recording.json")
-	periods := core.NoteEventsToPeriods(events)
 	gc := gg.NewContext(500, 50)
 	nv := NotesView{Events: events, BPM: bpm}
 	nv.DrawOn(gc)
 	gc.SavePNG("TestRecorded_RAW.png")
 
 	{
+		periods := core.NoteEventsToPeriods(events)
 		b := core.NewSequenceBuilder(periods, bpm)
 		seq := b.Build()
 		t.Log(seq)
@@ -82,4 +83,20 @@ func TestRecordedTimeline(t *testing.T) {
 		nv.DrawOn(gc)
 		gc.SavePNG("TestRecorded_PROCESSED.png")
 	}
+}
+
+func TestScaleInputSequenceBuilder(t *testing.T) {
+	bpm := 120.0
+	s1, _ := core.NewScale(2, "8C")
+	s2, _ := core.NewScale(2, "8C3")
+	seq := op.Merge{
+		Target: []core.Sequenceable{s1, s2},
+	}
+	tim := core.NewTimeline()
+	d := midi.NewOutputDevice(0, nil, 0, tim)
+	d.Play(core.NoCondition, seq, bpm, time.Now())
+	gc := gg.NewContext(500, 100)
+	nv := NotesView{Events: tim.NoteEvents(), BPM: bpm}
+	nv.DrawOn(gc)
+	gc.SavePNG("TestRecorded_SCALE.png")
 }
