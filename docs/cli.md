@@ -3,7 +3,7 @@
 The program `melrōse` is a Read–Eval–Print Loop (REPL) that produces or consumes MIDI. 
 By entering statements using the language, `melrōse` will send out MIDI messages to any connected DAW.
 
-Although it is possible to program directly using the command line interface of `melrōse`, it is much more convenient to use the Visual Studio Code editor with the Melrose Plugin which uses the [HTTP API](http.md) of the same running program.
+Although it is possible to program directly using the command line interface of `melrōse`, it is much more convenient to use the Visual Studio Code editor with the Melrōse Plugin which uses the [HTTP API](http.md) of the same running program.
 
 ### program flags
 
