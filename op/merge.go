@@ -52,6 +52,9 @@ func (m Merge) S() core.Sequence {
 					// consume and add it immediately ,reader could become empty
 					ns := each.take()
 					groups = append(groups, ns)
+					if ns[0].IsPedal() {
+						emptyReaders = false
+					}
 				} else {
 					emptyReaders = false
 					// update shortest
@@ -80,7 +83,7 @@ func (m Merge) S() core.Sequence {
 			}
 		}
 	}
-	return core.Sequence{Notes: groups}
+	return core.Sequence{Notes: deduplicatedPedals(groups)}
 }
 
 // compactGroup returns a group without superfluous rest notes. Does not have pedals
@@ -115,6 +118,22 @@ func compactGroup(g []core.Note) (compacted []core.Note) {
 			}
 		}
 		compacted = append(compacted, each)
+	}
+	return
+}
+
+func deduplicatedPedals(notes [][]core.Note) (deduplicated [][]core.Note) {
+	lastPedal := ""
+	for _, group := range notes {
+		if len(group) == 1 {
+			if p := group[0]; p.IsPedal() {
+				if p.Name == lastPedal {
+					continue
+				}
+				lastPedal = p.Name
+			}
+		}
+		deduplicated = append(deduplicated, group)
 	}
 	return
 }
