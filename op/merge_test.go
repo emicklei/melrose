@@ -18,6 +18,7 @@ func TestMerge(t *testing.T) {
 		{"= = C (D E)", "= F = F F", "sequence('= F C (D E F) F')"},
 		{"> e <", "f", "sequence('> (E F) <')"},
 		{"> 8c 8= <", "16d 16d 16e 16e", "sequence('> (8C 16D) 16D 16E 16E <')"},
+		//		{"> C <", "> D <", "sequence('> (C D) <')"},
 	} {
 		s1 := core.MustParseSequence(each.top)
 		s2 := core.MustParseSequence(each.bottom)

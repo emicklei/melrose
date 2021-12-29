@@ -119,7 +119,7 @@ func compactGroup(g []core.Note) (compacted []core.Note) {
 	return
 }
 
-// sequenceReader is to read notes and keeping the absolute duration for each note read
+// sequenceReader is to read notes and keeping the total duration for each note read
 type sequenceReader struct {
 	index              int           // zero based
 	sequence           core.Sequence // must be a single note group sequence

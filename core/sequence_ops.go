@@ -98,8 +98,10 @@ func (s Sequence) Split() []Sequence {
 				layer = append(layer, each[i])
 			} else {
 				// take rest duration from first sequence
-				restOne := all[0].Notes[j][0].ToRest()
-				layer = append(layer, restOne)
+				one := all[0].Notes[j][0]
+				if !one.IsPedal() {
+					layer = append(layer, one.ToRest())
+				}
 			}
 		}
 		all = append(all, BuildSequence(layer))

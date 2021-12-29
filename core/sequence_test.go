@@ -82,6 +82,18 @@ func TestSequence_Split(t *testing.T) {
 	}
 }
 
+func TestSequence_SplitPedals(t *testing.T) {
+	//t.Skip()
+	s := MustParseSequence("> (4D 4E) <")
+	m := s.Split()
+	if got, want := m[0].Storex(), "sequence('> D <')"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := m[1].Storex(), "sequence('E')"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}
+
 func TestSequence_RestSequence(t *testing.T) {
 	s := RestSequence(2, 4)
 	if got, want := len(s.Notes), 8; got != want {

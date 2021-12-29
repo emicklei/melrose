@@ -105,6 +105,9 @@ func (n Note) IsRest() bool        { return Rest4.Name == n.Name }
 func (n Note) IsPedalUp() bool     { return PedalUp.Name == n.Name }
 func (n Note) IsPedalDown() bool   { return PedalDown.Name == n.Name }
 func (n Note) IsPedalUpDown() bool { return PedalUpDown.Name == n.Name }
+func (n Note) IsPedal() bool {
+	return PedalUpDown.Name == n.Name || PedalDown.Name == n.Name || PedalUp.Name == n.Name
+}
 
 // DurationFactor is the actual duration time factor
 func (n Note) DurationFactor() float32 {

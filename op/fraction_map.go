@@ -95,3 +95,17 @@ func parseIndexFractions(s string) (m []int2fractionAndDotted, err error) {
 	}
 	return
 }
+
+// Return a new FractionMap in which any occurrences of "from" are replaced by "to".
+func (f FractionMap) Replaced(from, to core.Sequenceable) core.Sequenceable {
+	if core.IsIdenticalTo(f, from) {
+		return to
+	}
+	if core.IsIdenticalTo(f.target, from) {
+		return FractionMap{target: to, fraction: f.fraction}
+	}
+	if rep, ok := f.target.(core.Replaceable); ok {
+		return FractionMap{target: rep.Replaced(from, to), fraction: f.fraction}
+	}
+	return f
+}

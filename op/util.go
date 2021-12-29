@@ -42,9 +42,7 @@ func parseIndices(src string) [][]int {
 			ingroup = false
 		default:
 			i, err := strconv.Atoi(s.TokenText())
-			if err != nil {
-				i = 0 // set to invalid one
-			} else {
+			if err == nil {
 				if ingroup {
 					container = append(container, i)
 				} else {

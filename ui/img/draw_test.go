@@ -40,26 +40,12 @@ func sampleTimeline() *core.Timeline {
 
 func TestDraw(t *testing.T) {
 	tl := sampleTimeline()
-	gc := gg.NewContext(500, 50)
+	gc := gg.NewContext(1000, 150)
 
 	evts := tl.NoteEvents()
-	nv := NotesView{Events: evts}
+	nv := NotesView{Events: evts, BPM: 10.0}
 	nv.DrawOn(gc)
 	gc.SavePNG("TestDraw.png")
-}
-
-func TestScale(t *testing.T) {
-	tim := core.NewTimeline()
-	d := midi.NewOutputDevice(0, nil, 0, tim)
-	s, _ := core.NewScale(2, "C")
-	d.Play(core.NoCondition, s, 120.0, time.Now())
-
-	gc := gg.NewContext(500, 50)
-
-	evts := tim.NoteEvents()
-	nv := NotesView{Events: evts}
-	nv.DrawOn(gc)
-	gc.SavePNG("TestScale.png")
 }
 
 func TestRecordedTimeline(t *testing.T) {
