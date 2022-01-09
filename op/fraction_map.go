@@ -64,25 +64,41 @@ type int2fractionAndDotted struct {
 }
 
 // 1:1 2:.2 3:8.
+//   1 .2 8
 func parseIndexFractions(s string) (m []int2fractionAndDotted, err error) {
 	entries := strings.Fields(strings.ReplaceAll(s, ",", " "))
-	for _, each := range entries {
-		if !strings.Contains(each, ":") {
-			return m, fmt.Errorf("mapping must use ':' as separated, got %s", each)
-		}
-		kv := strings.Split(each, ":")
-		ik, err := strconv.Atoi(strings.TrimSpace(kv[0]))
-		if err != nil {
-			return m, err
-		}
-		rh := strings.TrimSpace(kv[1])
-		dotted := strings.Contains(rh, ".")
-		if dotted {
-			rh = strings.Replace(rh, ".", "", -1)
-		}
-		iv, err := strconv.Atoi(rh)
-		if err != nil {
-			return m, err
+	for i, each := range entries {
+		var ik = i + 1
+		var iv int
+		var err error
+		var dotted bool
+		if strings.Contains(each, ":") {
+
+			kv := strings.Split(each, ":")
+			ik, err = strconv.Atoi(strings.TrimSpace(kv[0]))
+			if err != nil {
+				return m, err
+			}
+			rh := strings.TrimSpace(kv[1])
+			dotted = strings.Contains(rh, ".")
+			if dotted {
+				rh = strings.Replace(rh, ".", "", -1)
+			}
+			iv, err = strconv.Atoi(rh)
+			if err != nil {
+				return m, err
+			}
+
+		} else {
+			rh := each
+			dotted = strings.Contains(each, ".")
+			if dotted {
+				rh = strings.Replace(each, ".", "", -1)
+			}
+			iv, err = strconv.Atoi(rh)
+			if err != nil {
+				return m, err
+			}
 		}
 		if ik < 1 {
 			return m, fmt.Errorf("index must be >= 1, got %d", ik)

@@ -781,7 +781,8 @@ stop() // stop all playables`,
 		Prefix:      "frm",
 		Template:    `fractionmap('${1:fraction-mapping}',${2:object})`,
 		IsComposer:  true,
-		Samples:     `fractionmap('3:. 2:4,1:2',sequence('c e g')) // => .G E 2C`,
+		Samples: `fractionmap('3:. 2:4,1:2',sequence('c e g')) // => .G E 2C
+fractionmap('. 8 2',sequence('c e g')) // => .C 8E 2G`,
 		Func: func(indices interface{}, m interface{}) interface{} {
 			s, ok := getSequenceable(m)
 			if !ok {
