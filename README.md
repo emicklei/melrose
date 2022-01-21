@@ -18,6 +18,8 @@ sequence('c d e f g a b c5')
 Note sequences in your program can be changed while playing giving you direct audible feedback. 
 For the best experience, use the `melrōse` tool together with the Visual Studio Code Plugin for Melrōse.
 
+See also [Blog post](http://ernestmicklei.com/melrose/introduction_melrose/)
+
 ## Install
 
 See [Build instructions](docs/install.md).
