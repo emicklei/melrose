@@ -2,6 +2,7 @@ package midi
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/emicklei/melrose/notify"
 )
@@ -81,6 +82,27 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 // Command is part of melrose.AudioDevice
 // TODO obsolete?
 func (d *DeviceRegistry) Command(args []string) notify.Message {
+	fmt.Println(args)
+	if len(args) == 2 && args[0] == "o" {
+		id, err := strconv.Atoi(args[1])
+		if err != nil {
+			return notify.NewError(err)
+		}
+		if err := d.HandleSetting("midi.out", []interface{}{id}); err != nil {
+			return notify.NewError(err)
+		}
+		return nil
+	}
+	if len(args) == 2 && args[0] == "i" {
+		id, err := strconv.Atoi(args[1])
+		if err != nil {
+			return notify.NewError(err)
+		}
+		if err := d.HandleSetting("midi.in", []interface{}{id}); err != nil {
+			return notify.NewError(err)
+		}
+		return nil
+	}
 	if len(args) == 1 && args[0] == "e" {
 		d.HandleSetting("echo.toggle", []interface{}{})
 		return nil
@@ -116,8 +138,8 @@ func (d *DeviceRegistry) printInfo() {
 	fmt.Println()
 
 	notify.PrintHighlighted("change:")
-	fmt.Println("set('midi.in',<device-id>)               --- change the default MIDI input device id")
-	fmt.Println("set('midi.out',<device-id>)              --- change the default MIDI output device id")
+	fmt.Println("set('midi.in',<device-id>)               --- change the default MIDI input device id (or e.g. \":m i 1\")")
+	fmt.Println("set('midi.out',<device-id>)              --- change the default MIDI output device id (or e.g. \":m o 1\")")
 	fmt.Println("set('midi.out.channel',<device-id>,<nr>) --- change the default MIDI channel for an output device id")
 	fmt.Println("set('echo.toggle')                       --- toggle printing the notes (or \":m e\" )")
 	fmt.Println("set('echo',true)                         --- true = print the notes")
