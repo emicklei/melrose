@@ -80,9 +80,7 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 }
 
 // Command is part of melrose.AudioDevice
-// TODO obsolete?
 func (d *DeviceRegistry) Command(args []string) notify.Message {
-	fmt.Println(args)
 	if len(args) == 2 && args[0] == "o" {
 		id, err := strconv.Atoi(args[1])
 		if err != nil {

@@ -45,11 +45,16 @@ func (r *Recording) Play(ctx core.Context, at time.Time) error {
 func (r *Recording) Stop(ctx core.Context) error {
 	// nothing there or already stopped
 	if r.timeline.Len() == 0 {
+		if core.IsDebug() {
+			notify.Debugf("empty timeline on stop recording")
+		}
 		return nil
 	}
 	seq := r.S()
 	if core.IsDebug() {
 		notify.Debugf("recording.stop seq:%v", seq)
+		// TODO temporary store the recording for the test in ui/img/draw_test.go
+		fmt.Println("writing /tmp/melrose-recording.json")
 		core.NotesEventsToFile(r.timeline.NoteEvents(), "/tmp/melrose-recording.json")
 	}
 	ctx.Variables().Put(r.variableName, seq)
@@ -73,19 +78,19 @@ func (r *Recording) S() core.Sequenceable {
 
 func (r *Recording) NoteOn(channel int, n core.Note) {
 	when := time.Now()
-	if core.IsDebug() {
-		notify.Debugf("recording.noteon note:%v t:%s", when.Format("04:05.000"))
-	}
 	change := core.NewNoteChange(true, int64(n.MIDI()), int64(n.Velocity))
+	if core.IsDebug() {
+		notify.Debugf("recording.noteon note:%v t:%s", n, when.Format("04:05.000"))
+	}
 	r.timeline.Schedule(change, when)
 }
 
 func (r *Recording) NoteOff(channel int, n core.Note) {
 	when := time.Now()
+	change := core.NewNoteChange(false, int64(n.MIDI()), int64(n.Velocity))
 	if core.IsDebug() {
 		notify.Debugf("recording.noteoff note:%v t:%s", n, when.Format("04:05.000"))
 	}
-	change := core.NewNoteChange(false, int64(n.MIDI()), int64(n.Velocity))
 	r.timeline.Schedule(change, when)
 }
 

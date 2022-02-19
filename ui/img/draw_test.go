@@ -50,7 +50,9 @@ func TestDraw(t *testing.T) {
 
 func TestRecordedTimeline(t *testing.T) {
 	bpm := 120.0
+	// TODO stored from control/recording.go:54
 	events := core.NoteEventsFromFile("/tmp/melrose-recording.json")
+	t.Log("event count:", len(events))
 	gc := gg.NewContext(500, 50)
 	nv := NotesView{Events: events, BPM: bpm}
 	nv.DrawOn(gc)
