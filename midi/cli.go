@@ -24,9 +24,21 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 		if len(values) != 0 {
 			return fmt.Errorf("no argument expected")
 		}
+		// input
+		id, _ := d.Input(d.defaultInputID)
+		id.echo = !id.echo
+		if id.echo {
+			id.listener.Add(DefaultEchoListener)
+			id.listener.Start()
+		} else {
+			id.listener.Remove(DefaultEchoListener)
+			// id.listener.Stop()
+		}
+		notify.Infof("echo input  notes from device %d is enabled: %v", id.id, id.echo)
+		// output
 		od, _ := d.Output(d.defaultOutputID)
 		od.echo = !od.echo
-		notify.Infof("echo notes is enabled: %v", od.echo)
+		notify.Infof("echo output notes from device %d is enabled: %v", od.id, od.echo)
 	case "midi.in":
 		if len(values) != 1 {
 			return fmt.Errorf("one argument expected")

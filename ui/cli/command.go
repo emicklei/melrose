@@ -27,7 +27,8 @@ func cmdFunctions() map[string]Command {
 	cmds[":m"] = Command{Description: "MIDI settings", Func: handleMIDISetting}
 	cmds[":q"] = Command{Description: "quit"} // no Func because it is handled in the main loop
 	cmds[":d"] = Command{Description: "toggle debug lines", Func: handleToggleDebug}
-	cmds[":p"] = Command{Description: "list all running:", Func: handleListAllRunning}
+	cmds[":p"] = Command{Description: "list all running", Func: handleListAllRunning}
+	cmds[":e"] = Command{Description: "echo notes", Func: handleEchoNotes}
 	return cmds
 }
 
@@ -79,4 +80,8 @@ func handleListAllRunning(ctx core.Context, args []string) notify.Message {
 		fmt.Printf("%s = %s\n", ctx.Variables().NameFor(each), core.Storex(each))
 	}
 	return nil
+}
+
+func handleEchoNotes(ctx core.Context, args []string) notify.Message {
+	return ctx.Device().Command([]string{"e"})
 }
