@@ -35,8 +35,8 @@ func (s SyncPlay) Play(ctx core.Context, at time.Time) error {
 	return s.Evaluate(ctx)
 }
 
-// Stop implements Playable
-func (s SyncPlay) _Stop(ctx core.Context) error {
+// Stop implements Stoppeable
+func (s SyncPlay) Stop(ctx core.Context) error {
 	for _, each := range s.playables {
 		val := each.Value()
 		if ply, ok := val.(core.Stoppable); ok {
@@ -57,19 +57,18 @@ func (s SyncPlay) S() core.Sequence {
 	return (op.Merge{Target: l}).S()
 }
 
-// TODO
-// IsPlaying implements Playable
-// func (s SyncPlay) IsPlaying() bool {
-// 	for _, each := range s.playables {
-// 		val := each.Value()
-// 		if ply, ok := val.(core.Stoppable); ok {
-// 			if ply.IsPlaying() {
-// 				return true
-// 			}
-// 		}
-// 	}
-// 	return false
-// }
+// IsPlaying implements Stoppeable
+func (s SyncPlay) IsPlaying() bool {
+	for _, each := range s.playables {
+		val := each.Value()
+		if ply, ok := val.(core.Stoppable); ok {
+			if ply.IsPlaying() {
+				return true
+			}
+		}
+	}
+	return false
+}
 
 func (s SyncPlay) Evaluate(ctx core.Context) error {
 	for _, each := range s.playables {

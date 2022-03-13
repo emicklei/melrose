@@ -435,7 +435,8 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 	eval["sequence"] = Function{
 		Title:       "Sequence creator",
 		Description: `create a Sequence using this <a href="/docs/reference/notations/#sequence">format</a>`,
-		Prefix:      "seq",
+		Prefix:      "se",
+		Alias:       "seq",
 		Template:    `sequence('${1:space-separated-notes}')`,
 		Samples: `sequence('c d e')
 sequence('(8c d e)') // => (8C D E)

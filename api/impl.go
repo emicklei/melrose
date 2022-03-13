@@ -108,7 +108,7 @@ func (s *ServiceImpl) CommandStop(file string, lineEnd int, source string) (inte
 	}
 
 	if p, ok := returnValue.(core.Stoppable); ok {
-		notify.Infof("stop(%s)", displayString(s.context, p))
+		notify.Infof("stopping(%s)", displayString(s.context, p))
 		return returnValue, p.Stop(s.context)
 	}
 
