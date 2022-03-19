@@ -25,7 +25,7 @@ If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH
 
 On Ubuntu / Debian
 
-	sudo apt-get install libasound2-dev
+	sudo apt-get install libasound2-dev libportmidi-dev
 
 You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
 
