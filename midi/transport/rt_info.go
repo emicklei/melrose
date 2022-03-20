@@ -28,7 +28,7 @@ func (t RtmidiTransporter) PrintInfo(inID, outID int) {
 		if err != nil {
 			name = ""
 		}
-		fmt.Printf(" input device %d: %s\n", i, name)
+		fmt.Printf(" set('midi.in',%d) : %s\n", i, name)
 	}
 	fmt.Println()
 
@@ -50,7 +50,7 @@ func (t RtmidiTransporter) PrintInfo(inID, outID int) {
 			if err != nil {
 				name = ""
 			}
-			fmt.Printf("output device %d: %s\n", i, name)
+			fmt.Printf("set('midi.out',%d) : %s\n", i, name)
 		}
 	}
 	fmt.Println()
