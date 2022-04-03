@@ -72,7 +72,7 @@ func getSequenceable(v interface{}) (core.Sequenceable, bool) {
 
 func getPlayable(v interface{}) (core.Playable, bool) {
 	if val, ok := v.(core.HasValue); ok {
-		v = val
+		v = val.Value()
 	}
 	if s, ok := v.(core.Playable); ok {
 		return s, ok
