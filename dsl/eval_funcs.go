@@ -542,7 +542,7 @@ next(num)`,
 					pl.Play(ctx, time.Now())
 					continue
 				}
-				fmt.Printf("not a playable %T\n", p)
+				// fmt.Printf("not a playable %T\n", p)
 				if s, ok := getSequenceable(p); ok { // unwrap var
 					list = append(list, s)
 				} else {
