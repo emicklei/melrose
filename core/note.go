@@ -36,6 +36,8 @@ func (n Note) ToNote() (Note, error) {
 	return n, nil
 }
 
+func (n Note) Fraction() float32 { return n.fraction }
+
 func (n Note) ToRest() Note {
 	return Note{
 		Name:       "=",
@@ -123,6 +125,11 @@ func (n Note) S() Sequence {
 
 func (n Note) WithDynamic(emphasis string) Note {
 	n.Velocity = ParseVelocity(emphasis)
+	return n
+}
+
+func (n Note) WithoutDynamic() Note {
+	n.Velocity = Normal
 	return n
 }
 
@@ -308,30 +315,38 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 		fmt.Fprintf(buf, "%d", n.Octave)
 	}
 	if n.Velocity != Normal {
-		switch {
-		case n.Velocity <= VelocityPPPP:
-			io.WriteString(buf, "-----")
-		case n.Velocity <= VelocityPPP:
-			io.WriteString(buf, "----")
-		case n.Velocity <= VelocityPP:
-			io.WriteString(buf, "---")
-		case n.Velocity <= VelocityP:
-			io.WriteString(buf, "--")
-		case n.Velocity <= VelocityMP:
-			io.WriteString(buf, "-")
-		case n.Velocity <= Normal:
-		case n.Velocity <= VelocityMF:
-			io.WriteString(buf, "+")
-		case n.Velocity <= VelocityF:
-			io.WriteString(buf, "++")
-		case n.Velocity <= VelocityFF:
-			io.WriteString(buf, "+++")
-		case n.Velocity <= VelocityFFF:
-			io.WriteString(buf, "++++")
-		case n.Velocity > VelocityFFF:
-			io.WriteString(buf, "+++++")
-		}
+		io.WriteString(buf, VelocityToDynamic(n.Velocity))
 	}
+}
+
+func VelocityToDynamic(v int) string {
+	if v == Normal {
+		return ""
+	}
+	switch {
+	case v <= VelocityPPPP:
+		return "-----"
+	case v <= VelocityPPP:
+		return "----"
+	case v <= VelocityPP:
+		return "---"
+	case v <= VelocityP:
+		return "--"
+	case v <= VelocityMP:
+		return "-"
+	case v <= Normal:
+	case v <= VelocityMF:
+		return "+"
+	case v <= VelocityF:
+		return "++"
+	case v <= VelocityFF:
+		return "+++"
+	case v <= VelocityFFF:
+		return "++++"
+	case v > VelocityFFF:
+		return "+++++"
+	}
+	return "?"
 }
 
 var fractionRanges = []struct {
