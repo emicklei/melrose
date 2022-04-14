@@ -13,7 +13,7 @@ Depending on your operating system, different steps are required.
 
 You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
 
-	go install github.com/emicklei/melrose/cmd/melrose
+	go install github.com/emicklei/melrose/cmd/melrose@latest
 
 After installing `melrōse`, you can start the tool in a Terminal using:
 
@@ -25,11 +25,11 @@ If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH
 
 On Ubuntu / Debian
 
-	sudo apt-get install libasound2-dev libportmidi-dev
+	sudo apt-get install libasound2-dev
 
 You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
 
-	go install github.com/emicklei/melrose/cmd/melrose
+	go install github.com/emicklei/melrose/cmd/melrose@latest
 
 After installing both `libasound2` and `melrōse`, you can start the tool in a Terminal using:
 
@@ -39,7 +39,7 @@ If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH
 
 ## Windows
 
-Look at the build script (`.travis.yml`) of [melrose-windows](https://github.com/emicklei/melrose-windows) for detailed steps to build an executable from source.
+Look at the build script (`.travis.yml`) of [melrose-windows](https://github.com/emicklei/melrose-windows) for detailed steps to build an executable from source or download the latest release (build using Travis CI).
 
 
 ## [all platforms] Melrōse plugin for Visual Studio Code<a name="plugin"></a>

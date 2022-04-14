@@ -101,7 +101,7 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 		Prefix:      "pro",
 		IsCore:      true,
 		Template:    `progression('${1:scale}','${2:space-separated-roman-chords}')`,
-		Samples:     `progression('C','II V I') // => (D F A) (G B D5) (C E G)`,
+		Samples:     `progression('1c3++','II V I') // => (1D3++ 1F3++ 1A3++) (1G3++ 1B3++ 1D++) (1C3++ 1E3++ 1G3++)`,
 		Func: func(scale, chords interface{}) interface{} {
 			return core.NewChordProgression(getHasValue(scale), getHasValue(chords))
 		}}
