@@ -112,6 +112,25 @@ func Test_formatParser_ParseNote(t *testing.T) {
 	}
 }
 
+func TestParseTiedNotes(t *testing.T) {
+	for i, each := range []struct {
+		in  string
+		out string
+	}{
+		{"8c~4c", "note('8C~C')"},
+		{"8c~4c~2c", "note('8C~C~2C')"},
+	} {
+		p := newFormatParser(each.in)
+		s, err := p.parseNote()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got, want := s.Storex(), each.out; got != want {
+			t.Errorf("[%d:%s] got [%v:%T] want [%v:%T]", i, each.in, got, got, want, want)
+		}
+	}
+}
+
 func Test_formatParser_ParseNoteError(t *testing.T) {
 	for i, each := range []struct {
 		in string
@@ -124,6 +143,11 @@ func Test_formatParser_ParseNoteError(t *testing.T) {
 		{"A_A"},
 		{"A_5_"},
 		{"..C"},
+		{"c~d"},
+		{"~d"},
+		{"e~~e"},
+		{">~<"},
+		{"<~>"},
 		//{"4.4C"},
 	} {
 		p := newFormatParser(each.in)

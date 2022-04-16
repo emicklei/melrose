@@ -129,6 +129,7 @@ func ExampleParseNote() {
 	e2, _ := ParseNote("8B_")
 	e3, _ := ParseNote("4.D")
 	e4, _ := ParseNote("E_")
+	t1, _ := ParseNote("2c~4c")
 	fmt.Println(e1)
 	fmt.Println(e2)
 	fmt.Println(e3)
@@ -136,6 +137,7 @@ func ExampleParseNote() {
 	fmt.Println(n1)
 	fmt.Println(n2)
 	fmt.Println(n3)
+	fmt.Println(t1)
 	// Output:
 	// 2C#
 	// 8B_
@@ -144,6 +146,7 @@ func ExampleParseNote() {
 	// 2C#3
 	// 2.E_2
 	// .F_2++
+	// 2C~C
 }
 
 // Failures
@@ -175,6 +178,7 @@ func TestNoteDurationFactor(t *testing.T) {
 		{">", 0},
 		{"^", 0},
 		{"<", 0},
+		{"2c~8c", 0.5 + 0.125},
 	} {
 		n := MustParseNote(each.note)
 		if got, want := n.DurationFactor(), each.length; got != want {

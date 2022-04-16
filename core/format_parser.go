@@ -106,6 +106,7 @@ type noteSTM struct {
 	accidental int
 	octave     int
 	velocity   string
+	tied       []Note
 }
 
 type chordprogressionSTM struct {
@@ -182,14 +183,18 @@ func (s *chordprogressionSTM) endChord() {
 const allowedNoteNames = "abcdefgABCDEFG=<^>"
 
 func newNoteSTM() *noteSTM {
-	return &noteSTM{
-		fraction:   0.25,
-		dotted:     false,
-		name:       "",
-		accidental: 0,
-		octave:     4,
-		velocity:   "",
-	}
+	s := new(noteSTM)
+	s.reset()
+	return s
+}
+
+func (s *noteSTM) reset() {
+	s.accidental = 0
+	s.dotted = false
+	s.fraction = 0.25
+	s.name = ""
+	s.octave = 4
+	s.velocity = ""
 }
 
 func (s *noteSTM) accept(lit string) error {
@@ -224,11 +229,11 @@ func (s *noteSTM) accept(lit string) error {
 		switch lit {
 		case "16":
 			f = 0.0625
-		case "8", "⅛":
+		case "8":
 			f = 0.125
-		case "4", "¼":
+		case "4":
 			f = 0.25
-		case "2", "½":
+		case "2":
 			f = 0.5
 		case "1":
 			f = 1
@@ -250,11 +255,7 @@ func (s *noteSTM) accept(lit string) error {
 		switch lit {
 		case "#":
 			accidental = 1
-		case "♯":
-			accidental = 1
 		case "_":
-			accidental = -1
-		case "♭":
 			accidental = -1
 		}
 		if accidental != 0 {
@@ -269,6 +270,16 @@ func (s *noteSTM) accept(lit string) error {
 			s.velocity += lit
 			return nil
 		}
+		// tie
+		if lit == "~" {
+			n, err := s.currentNote()
+			if err != nil {
+				return err
+			}
+			s.tied = append(s.tied, n)
+			s.reset()
+			return nil
+		}
 		// octave
 		if i, err := strconv.Atoi(lit); err != nil {
 			return fmt.Errorf("invalid octave, unexpected:%s", lit)
@@ -279,7 +290,7 @@ func (s *noteSTM) accept(lit string) error {
 	return nil
 }
 
-func (s *noteSTM) note() (Note, error) {
+func (s *noteSTM) currentNote() (Note, error) {
 	// pedal
 	switch s.name {
 	case "^":
@@ -297,6 +308,30 @@ func (s *noteSTM) note() (Note, error) {
 		}
 	}
 	return MakeNote(s.name, s.octave, s.fraction, s.accidental, s.dotted, vel), nil
+}
+
+func (s *noteSTM) note() (Note, error) {
+	c, err := s.currentNote()
+	if err != nil {
+		return Rest4, err
+	}
+	// handle tied onces
+	if len(s.tied) == 0 {
+		return c, nil
+	}
+	// must be identical notes.
+	here := s.tied[0]
+	if err := here.CheckTieableTo(c); err != nil {
+		return Rest4, err
+	}
+	for i := 1; i < len(s.tied); i++ {
+		each := s.tied[i]
+		if err := here.CheckTieableTo(each); err != nil {
+			return Rest4, err
+		}
+		here = here.WithTiedNote(each)
+	}
+	return here.WithTiedNote(c), nil
 }
 
 func (s *sequenceSTM) accept(lit string) error {

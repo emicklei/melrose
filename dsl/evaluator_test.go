@@ -210,7 +210,7 @@ func TestEvaluate_Scale_At(t *testing.T) {
 		`at(1,scale(2,'C'))`)
 	checkError(t, err)
 	at, _ := r.(op.AtIndex)
-	if got, want := at.Target.S().At(0)[0], core.MustParseNote("C"); got != want {
+	if got, want := at.Target.S().At(0)[0], core.MustParseNote("C"); !got.Equals(want) {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }

@@ -25,6 +25,31 @@ type Note struct {
 
 	fraction float32       // {0.0625,0.125,0.25,0.5,1}
 	duration time.Duration // if set then this overrides Dotted and fraction
+
+	tied []Note // succeeding identical notes that are tied to this ; mostly empty
+}
+
+func (n Note) Equals(o Note) bool {
+	return n.Name == o.Name &&
+		n.Octave == o.Octave &&
+		n.Accidental == o.Accidental &&
+		n.Dotted == o.Dotted &&
+		n.Velocity == o.Velocity &&
+		n.fraction == o.fraction &&
+		n.duration == o.duration &&
+		n.HasEqualTied(o)
+}
+
+func (n Note) HasEqualTied(o Note) bool {
+	if len(n.tied) != len(o.tied) {
+		return false
+	}
+	for t := 0; t < len(n.tied); t++ {
+		if !n.tied[t].Equals(o.tied[t]) {
+			return false
+		}
+	}
+	return true
 }
 
 func (n Note) Storex() string {
@@ -113,10 +138,14 @@ func (n Note) IsPedal() bool {
 
 // DurationFactor is the actual duration time factor
 func (n Note) DurationFactor() float32 {
+	f := n.fraction
 	if n.Dotted {
-		return n.fraction * 1.5
+		f *= 1.5
 	}
-	return n.fraction
+	for _, each := range n.tied {
+		f += each.DurationFactor()
+	}
+	return f
 }
 
 func (n Note) S() Sequence {
@@ -162,6 +191,11 @@ func (n Note) WithFraction(f float32, dotted bool) Note {
 	}
 	n.fraction = f
 	n.Dotted = dotted
+	return n
+}
+
+func (n Note) WithTiedNote(t Note) Note {
+	n.tied = append(n.tied, t)
 	return n
 }
 
@@ -259,6 +293,22 @@ func (n Note) durationf() string {
 	return ""
 }
 
+func (n Note) CheckTieableTo(t Note) error {
+	if n.Name != t.Name {
+		return fmt.Errorf("note name mismatch, got [%s] want [%s]", t.Name, n.Name)
+	}
+	if n.Octave != t.Octave {
+		return fmt.Errorf("note octave mismatch, got [%d] want [%d]", t.Octave, n.Octave)
+	}
+	if n.Accidental != t.Accidental {
+		return fmt.Errorf("note accidential mismatch, got [%d] want [%d]", t.Accidental, n.Accidental)
+	}
+	if n.Velocity != t.Velocity {
+		return fmt.Errorf("note veloicty mismatch, got [%d] want [%d]", t.Velocity, n.Velocity)
+	}
+	return nil
+}
+
 func (n Note) Inspect(i Inspection) {
 	i.Properties["length"] = n.DurationFactor()
 	i.Properties["midi"] = n.MIDI()
@@ -316,6 +366,12 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 	}
 	if n.Velocity != Normal {
 		io.WriteString(buf, VelocityToDynamic(n.Velocity))
+	}
+	if len(n.tied) > 0 {
+		for _, each := range n.tied {
+			io.WriteString(buf, "~")
+			each.printOn(buf, sharpOrFlatKey)
+		}
 	}
 }
 
