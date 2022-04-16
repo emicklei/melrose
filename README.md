@@ -53,4 +53,4 @@ Discuss larger ones in the Issues list.
 You can also sponsor Melrōse via [Github Sponsors](https://github.com/sponsors/emicklei).
 
 Software is licensed under [MIT](LICENSE).
-&copy; 2014-2021 [ernestmicklei.com](http://ernestmicklei.com)
+&copy; 2014-2022 [ernestmicklei.com](http://ernestmicklei.com)

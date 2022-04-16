@@ -21,6 +21,7 @@ func TestParseSequence(t *testing.T) {
 		{"B_ 8F 8D_5 8B_5 8F A_ 8E_ 8C5 8A_5 8E_", "B_ 8F 8D_5 8B_5 8F A_ 8E_ 8C5 8A_5 8E_"},
 		{"> c d e ^ ( c d e ) <", "> C D E ^ (C D E) <"},
 		{"< = ^ > ^ = < ^ = ^ >", "< = ^ > ^ = < ^ = ^ >"},
+		//{"(c e g)~(2C 2E 2G)", "(C E G)~(2C 2E 2G)"},
 	} {
 		sin, err := ParseSequence(each.in)
 		if err != nil {

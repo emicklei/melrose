@@ -12,19 +12,34 @@ func (n Note) Pitched(howManySemitones int) Note {
 	if err != nil {
 		panic(err)
 	}
-	return MakeNote(simple.Name, simple.Octave, n.fraction, simple.Accidental, n.Dotted, n.Velocity)
+	p := MakeNote(simple.Name, simple.Octave, n.fraction, simple.Accidental, n.Dotted, n.Velocity)
+	// handle tied notes
+	for _, each := range n.tied {
+		p = p.WithTiedNote(each.Pitched(howManySemitones))
+	}
+	return p
 }
 
 func (n Note) Octaved(howmuch int) Note {
 	if howmuch == 0 {
 		return n
 	}
-	return MakeNote(n.Name, n.Octave+howmuch, n.fraction, n.Accidental, n.Dotted, n.Velocity)
+	p := MakeNote(n.Name, n.Octave+howmuch, n.fraction, n.Accidental, n.Dotted, n.Velocity)
+	// handle tied notes
+	for _, each := range n.tied {
+		p = p.WithTiedNote(each.Octaved(howmuch))
+	}
+	return p
 }
 
 func (n Note) Stretched(f float32) Note {
 	if f == 1.0 {
 		return n
 	}
-	return MakeNote(n.Name, n.Octave, n.fraction*f, n.Accidental, n.Dotted, n.Velocity)
+	p := MakeNote(n.Name, n.Octave, n.fraction*f, n.Accidental, n.Dotted, n.Velocity)
+	// handle tied notes
+	for _, each := range n.tied {
+		p = p.WithTiedNote(each.Stretched(f))
+	}
+	return p
 }

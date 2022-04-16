@@ -153,17 +153,24 @@ func (n Note) S() Sequence {
 }
 
 func (n Note) WithDynamic(emphasis string) Note {
-	n.Velocity = ParseVelocity(emphasis)
-	return n
+	return n.WithVelocity(ParseVelocity(emphasis))
 }
 
 func (n Note) WithoutDynamic() Note {
-	n.Velocity = Normal
-	return n
+	return n.WithVelocity(Normal)
 }
 
 func (n Note) WithVelocity(v int) Note {
 	n.Velocity = v
+	if len(n.tied) == 0 {
+		return n
+	}
+	// handle tied notes
+	t := make([]Note, len(n.tied))
+	for i := 0; i < len(n.tied); i++ {
+		t[i] = n.tied[i].WithVelocity(v)
+	}
+	n.tied = t
 	return n
 }
 
@@ -191,6 +198,15 @@ func (n Note) WithFraction(f float32, dotted bool) Note {
 	}
 	n.fraction = f
 	n.Dotted = dotted
+	if len(n.tied) == 0 {
+		return n
+	}
+	// handle tied notes
+	t := make([]Note, len(n.tied))
+	for i := 0; i < len(n.tied); i++ {
+		t[i] = n.tied[i].WithFraction(f, dotted)
+	}
+	n.tied = t
 	return n
 }
 
@@ -301,10 +317,10 @@ func (n Note) CheckTieableTo(t Note) error {
 		return fmt.Errorf("note octave mismatch, got [%d] want [%d]", t.Octave, n.Octave)
 	}
 	if n.Accidental != t.Accidental {
-		return fmt.Errorf("note accidential mismatch, got [%d] want [%d]", t.Accidental, n.Accidental)
+		return fmt.Errorf("note accidental mismatch, got [%d] want [%d]", t.Accidental, n.Accidental)
 	}
 	if n.Velocity != t.Velocity {
-		return fmt.Errorf("note veloicty mismatch, got [%d] want [%d]", t.Velocity, n.Velocity)
+		return fmt.Errorf("note velocity mismatch, got [%d] want [%d]", t.Velocity, n.Velocity)
 	}
 	return nil
 }

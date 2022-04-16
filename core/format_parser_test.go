@@ -30,6 +30,11 @@ func Test_formatParser_ParseChordProgression(t *testing.T) {
 		in   string
 		out  string
 	}{
+		// with duration
+		{"C", "2.I", "sequence('(2.C 2.E 2.G)')"},
+		{"C", "2ii", "sequence('(2D 2F 2A)')"},
+		{"C", "8.V7", "sequence('(8.G 8.B 8.D5 8.F5)')"},
+		// quarters
 		{"C", "viidim", "sequence('(B D5 F5)')"},
 		{"C", "I", "sequence('(C E G)')"},
 		{"C", "Idim7", "sequence('(C E_ G_ A)')"}, // A -> B__
@@ -51,7 +56,7 @@ func Test_formatParser_ParseChordProgression(t *testing.T) {
 		}
 		cs, err := p.parseChordProgression(sc)
 		if err != nil {
-			t.Error(err)
+			t.Errorf("[%s] error:%v", each.in, err)
 		}
 		if got, want := cs[0].S().Storex(), each.out; got != want {
 			t.Errorf("[%s] got [%v:%T] want [%v:%T]", each.in, got, got, want, want)
@@ -70,13 +75,46 @@ func Test_formatParser_ParseMultipleChordProgression(t *testing.T) {
 		t.Fatal(err)
 	}
 	if got, want := len(cs), 4; got != want {
-		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+		t.Fatalf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 	if got, want := cs[0].start.Name, "E"; got != want {
-		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+		t.Fatalf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 	if got, want := cs[3].start.Name, "B"; got != want {
-		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+		t.Fatalf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}
+
+func Test_formatParser_ParseMultipleChordProgressionWitDuration(t *testing.T) {
+	p := newFormatParser(` 2I++  4VI  8II  16V `)
+	sc, err := NewScale(1, "E")
+	if err != nil {
+		t.Fatal(err)
+	}
+	cs, err := p.parseChordProgression(sc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := len(cs), 4; got != want {
+		t.Fatalf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := cs[0].start.Name, "E"; got != want {
+		t.Fatalf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := cs[0].start.Velocity, VelocityF; got != want {
+		t.Fatalf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := cs[0].start.DurationFactor(), float32(0.5); got != want {
+		t.Fatalf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := cs[1].start.DurationFactor(), float32(0.25); got != want {
+		t.Fatalf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := cs[2].start.DurationFactor(), float32(0.125); got != want {
+		t.Fatalf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	if got, want := cs[3].start.DurationFactor(), float32(0.0625); got != want {
+		t.Fatalf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
 

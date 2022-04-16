@@ -109,6 +109,7 @@ var pitchers = []struct {
 	{"C", 12, "C5"},
 	{"C5", 2, "D5"},
 	{"C#3", 0, "C#3"},
+	{"C~2C", 2, "D~2D"},
 }
 
 func TestModifiedPitch(t *testing.T) {
@@ -195,16 +196,17 @@ func TestNoteWithDynamic(t *testing.T) {
 	}{
 		{"c", "-", "note('C-')"},
 		{"2.c#2", "--", "note('2.C#2--')"},
+		{"e~2e", "+", "note('E+~2E+')"},
 	} {
 		nin := MustParseNote(each.in)
 		before := nin.Storex()
 		nout := nin.WithDynamic(each.dynamic)
 		after := nin.Storex()
 		if got, want := after, before; got != want {
-			t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+			t.Errorf("got [%v:%T] want unchanged [%v:%T]", got, got, want, want)
 		}
 		if got, want := nout.Storex(), each.out; got != want {
-			t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+			t.Errorf("got [%v:%T] want changed [%v:%T]", got, got, want, want)
 		}
 	}
 }
@@ -213,11 +215,13 @@ func TestQuantizeNote(t *testing.T) {
 	bpm := 120.0
 	w := WholeNoteDuration(bpm)
 	w16 := w / 16
-	t.Log(w16)
+	if got, want := w16, time.Duration(125)*time.Millisecond; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
 }
 
 func TestQuantizedFractions(t *testing.T) {
-	s := MustParseSequence("16c 16.c 8c 8.c 4c 4.c 2c 2.c 1c 1.c")
+	s := MustParseSequence("16c 16.c 8c 8.c 4c 4.c 2c 2.c 1c 1.c 16c~2c")
 	for _, each := range s.Notes {
 		t.Log(each[0].String(), each[0].DurationFactor())
 	}

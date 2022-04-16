@@ -73,9 +73,10 @@ func (f *formatParser) parseChordProgression(s Scale) ([]Chord, error) {
 		err = errors.New(m)
 	}
 	f.scanner.Mode = scanner.ScanIdents | scanner.ScanInts
-	f.scanner.Whitespace = 1 << ' '
+	//f.scanner.Whitespace = 1 << ' '
 	stm := new(chordprogressionSTM)
-	stm.scale = s
+	stm.reset()
+	stm.scale = s // for each chord
 	for {
 		ch := f.scanner.Scan()
 		if err != nil {
@@ -87,8 +88,8 @@ func (f *formatParser) parseChordProgression(s Scale) ([]Chord, error) {
 		if err := stm.accept(f.scanner.TokenText()); err != nil {
 			return []Chord{}, err
 		}
-		stm.endChord()
 	}
+	stm.endChord()
 	return stm.chords, nil
 }
 
@@ -115,6 +116,11 @@ type chordprogressionSTM struct {
 	index    int
 	interval int
 	quality  int
+	// duration
+	fraction float32
+	dotted   bool
+	// dynamic
+	velocity string
 }
 
 var romanChordRegex = regexp.MustCompile("([iIvV]{1,3})([Mmaj]{0,3})([dim]{0,3})(7?)")
@@ -124,6 +130,34 @@ func (s *chordprogressionSTM) accept(lit string) error {
 		s.endChord()
 		return nil
 	}
+	if lit == "." {
+		s.dotted = true
+		return nil
+	}
+	switch lit {
+	case "16":
+		s.fraction = 0.0625
+		return nil
+	case "8":
+		s.fraction = 0.125
+		return nil
+	case "4":
+		s.fraction = 0.25
+		return nil
+	case "2":
+		s.fraction = 0.5
+		return nil
+	case "1":
+		s.fraction = 1
+		return nil
+	}
+
+	// velocity
+	if strings.ContainsAny(lit, "-o+") {
+		s.velocity += lit
+		return nil
+	}
+
 	matches := romanChordRegex.FindStringSubmatch(lit)
 	if matches == nil {
 		return fmt.Errorf("illegal chord: %s", lit)
@@ -170,6 +204,9 @@ func (s *chordprogressionSTM) accept(lit string) error {
 }
 
 func (s *chordprogressionSTM) endChord() {
+	if s.index == 0 { // whitespace
+		return
+	}
 	ch := s.scale.ChordAt(s.index)
 	if s.interval > 0 {
 		ch = ch.WithInterval(s.interval)
@@ -177,7 +214,21 @@ func (s *chordprogressionSTM) endChord() {
 	if s.quality > 0 {
 		ch = ch.WithQuality(s.quality)
 	}
+	if s.fraction != 0.25 {
+		ch = ch.WithFraction(s.fraction, s.dotted)
+	}
+	if s.velocity != "" {
+		ch = ch.WithVelocity(ParseVelocity(s.velocity))
+	}
 	s.chords = append(s.chords, ch)
+	s.reset()
+}
+
+func (s *chordprogressionSTM) reset() {
+	s.index = 0
+	s.fraction = 0.25 // quarter by default
+	s.dotted = false
+	s.velocity = "" // collect -o+
 }
 
 const allowedNoteNames = "abcdefgABCDEFG=<^>"

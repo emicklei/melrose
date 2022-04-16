@@ -41,6 +41,16 @@ func (c Chord) WithQuality(q int) Chord {
 	return c
 }
 
+func (c Chord) WithVelocity(v int) Chord {
+	c.start = c.start.WithVelocity(v)
+	return c
+}
+
+func (c Chord) WithFraction(f float32, dotted bool) Chord {
+	c.start = c.start.WithFraction(f, dotted)
+	return c
+}
+
 func (c Chord) String() string {
 	if c.start.IsRest() {
 		return c.start.String()
