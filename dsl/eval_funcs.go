@@ -232,6 +232,18 @@ midi(16,36,70) // => 16C2 (kick)`,
 			return core.NewMIDI(durVal, nrVal, velVal)
 		}}
 
+	eval["midicc"] = Function{
+		Title:       "MIDI control change creator",
+		Description: ``,
+		Template:    `midicc(${1:parameter},${2:value})`,
+		Samples:     `midicc(64,127) // => sustain pedal on`,
+		IsCore:      true,
+		Func: func(parameter, value interface{}) interface{} {
+			parameterVal := getHasValue(parameter)
+			valueVal := getHasValue(value)
+			return core.NewMIDICC(parameterVal, valueVal)
+		}}
+
 	eval["print"] = Function{
 		Title:       "Printer creator",
 		Description: "prints an object when evaluated (play,loop)",
