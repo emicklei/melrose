@@ -1,5 +1,13 @@
 # Install 
 
+## Download prepared binaries
+
+Microsoft Windows
+- https://github.com/emicklei/melrose-windows/releases
+
+Apple Mac
+- https://github.com/emicklei/melrose-osx/releases
+
 ## Build from source
 
 In order to build and work with `melrose` on your operating system, the following components need to be installed:
@@ -8,6 +16,12 @@ In order to build and work with `melrose` on your operating system, the followin
 - (optionally) Melrōse plugin for Visual Studio Code
 
 Depending on your operating system, different steps are required.
+
+
+## [all platforms] Melrōse plugin for Visual Studio Code<a name="plugin"></a>
+
+Search and install the extension from the editor or go to the [Marketplace published package](https://marketplace.visualstudio.com/items?itemName=EMicklei.melrose-for-vscode)
+
 
 ## Mac OSX
 
@@ -39,9 +53,4 @@ If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH
 
 ## Windows
 
-Look at the build script (`.travis.yml`) of [melrose-windows](https://github.com/emicklei/melrose-windows) for detailed steps to build an executable from source or download the latest release (build using Travis CI).
-
-
-## [all platforms] Melrōse plugin for Visual Studio Code<a name="plugin"></a>
-
-Search and install the extension from the editor or go to the [Marketplace published package](https://marketplace.visualstudio.com/items?itemName=EMicklei.melrose-for-vscode)
+Look at the build script (`.travis.yml`) of [melrose-windows](https://github.com/emicklei/melrose-windows) for detailed steps to build an executable from source.
