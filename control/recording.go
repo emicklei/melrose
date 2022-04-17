@@ -25,11 +25,6 @@ func NewRecording(deviceID int, variableName string, bpm float64) *Recording {
 	}
 }
 
-type noteChangeEvent struct {
-	change core.NoteChange
-	when   time.Time
-}
-
 func (r *Recording) GetTargetFrom(other *Recording) {
 	// only overwrite variable
 	// listener may have been started so timeline is not empty, so device is listened to

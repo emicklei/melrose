@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"sort"
@@ -17,7 +16,7 @@ import (
 // see Makefile how to run this
 
 func grammar() {
-	data, err := ioutil.ReadFile(os.Args[2])
+	data, err := os.ReadFile(os.Args[2])
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,7 +46,7 @@ func grammar() {
 		fmt.Fprintf(&buffer, "%s", k)
 	}
 	content = strings.Replace(content, "$Keywords", buffer.String(), -1)
-	if err := ioutil.WriteFile(os.Args[3], []byte(content), os.ModePerm); err != nil {
+	if err := os.WriteFile(os.Args[3], []byte(content), os.ModePerm); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -9,7 +8,7 @@ import (
 )
 
 func postProcessMenus() {
-	data, err := ioutil.ReadFile("../../docs/menu.template")
+	data, err := os.ReadFile("../../docs/menu.template")
 	checkErr(err)
 	mds, err := filepath.Glob("../../docs/*.md")
 	checkErr(err)
@@ -19,10 +18,10 @@ func postProcessMenus() {
 }
 
 func postProcessMenu(file string, menu string) {
-	data, err := ioutil.ReadFile(file)
+	data, err := os.ReadFile(file)
 	checkErr(err)
 	replaced := strings.Replace(string(data), "$$menu", menu, -1)
-	err = ioutil.WriteFile(file, []byte(replaced), os.ModePerm)
+	err = os.WriteFile(file, []byte(replaced), os.ModePerm)
 	checkErr(err)
 }
 

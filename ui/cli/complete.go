@@ -50,7 +50,7 @@ func completeMe(line string, pos int) (head string, c []string, tail string) {
 func stripParameters(sample string) string {
 	var buf bytes.Buffer
 	inparam := false
-	for _, each := range []rune(sample) {
+	for _, each := range sample {
 		if each == '$' {
 			inparam = true
 			continue
