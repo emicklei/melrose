@@ -228,10 +228,6 @@ func TestQuantizedFractions(t *testing.T) {
 }
 
 func TestQuantizeFraction(t *testing.T) {
-	type args struct {
-		length time.Duration
-		whole  time.Duration
-	}
 	tests := []struct {
 		name         string
 		df           float32
