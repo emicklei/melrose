@@ -1,19 +1,25 @@
 package core
 
-import "time"
-
 type MIDIControlChange struct {
-	parameter HasValue
+	ctx       Context
+	parameter int
 	value     HasValue
 }
 
-func NewMIDICC(p, v HasValue) MIDIControlChange {
+func NewMIDICC(p int, v HasValue) MIDIControlChange {
 	return MIDIControlChange{
 		parameter: p,
 		value:     v,
 	}
 }
 
-func (cc MIDIControlChange) Play(ctx Context, at time.Time) error {
-	return nil
+// S has the side effect of sending a MIDI CC message to the current output device
+func (cc MIDIControlChange) S() Sequence {
+	return EmptySequence
+}
+
+type SliderPosition struct {
+	fraction float32
+	dotted   bool
+	value    int
 }

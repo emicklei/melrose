@@ -238,10 +238,9 @@ midi(16,36,70) // => 16C2 (kick)`,
 		Template:    `midicc(${1:parameter},${2:value})`,
 		Samples:     `midicc(64,127) // => sustain pedal on`,
 		IsCore:      true,
-		Func: func(parameter, value interface{}) interface{} {
-			parameterVal := getHasValue(parameter)
+		Func: func(parameter int, value interface{}) interface{} {
 			valueVal := getHasValue(value)
-			return core.NewMIDICC(parameterVal, valueVal)
+			return core.NewMIDICC(parameter, valueVal)
 		}}
 
 	eval["print"] = Function{
