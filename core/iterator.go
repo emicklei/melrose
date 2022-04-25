@@ -7,10 +7,6 @@ type Iterator struct {
 	Target []interface{}
 }
 
-func (i *Iterator) String() string {
-	return fmt.Sprintf("core.Iterator(index=%d,target=%v)", i.index+1, i.Target) // public index is 1-based
-}
-
 //  Value is part of HasValue
 func (i *Iterator) Value() interface{} {
 	if len(i.Target) == 0 {

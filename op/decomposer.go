@@ -11,7 +11,7 @@ import (
 func DecomposeSequence(s core.Sequence) core.Sequenceable {
 	fractions := []int{}
 	dynamics := []index2dynamic{}
-	notes := []core.Note{}
+	groups := [][]core.Note{}
 	for i, eachGroup := range s.Notes {
 		if len(eachGroup) == 1 {
 			eachNote := eachGroup[0]
@@ -21,7 +21,18 @@ func DecomposeSequence(s core.Sequence) core.Sequenceable {
 			if s != "" {
 				dynamics = append(dynamics, index2dynamic{at: i + 1, dynamic: s}) // 1-based index
 			}
-			notes = append(notes, eachNote.WithoutDynamic().WithFraction(0.25, false))
+			note := eachNote.WithoutDynamic().WithFraction(0.25, false)
+			groups = append(groups, []core.Note{note})
+		} else {
+			f := int(1.0 / eachGroup[0].Fraction()) // first will decide
+			fractions = append(fractions, f)
+			s := core.VelocityToDynamic(eachGroup[0].Velocity) // first will decide
+			if s != "" {
+				dynamics = append(dynamics, index2dynamic{at: i + 1, dynamic: s}) // 1-based index
+			}
+			group := groupWithoutDynamic(eachGroup)
+			group = groupWithFraction(group, 0.25, false)
+			groups = append(groups, group)
 		}
 	}
 	fs := new(bytes.Buffer)
@@ -35,10 +46,23 @@ func DecomposeSequence(s core.Sequence) core.Sequenceable {
 	io.WriteString(fs, "'")
 	r := DynamicMap{
 		Target: []core.Sequenceable{FractionMap{
-			target:   core.BuildSequence(notes),
+			target:   core.Sequence{Notes: groups},
 			fraction: core.On(fs),
 		}},
 		IndexDynamics: dynamics,
 	}
 	return r
+}
+
+func groupWithoutDynamic(g []core.Note) (list []core.Note) {
+	for _, each := range g {
+		list = append(list, each.WithoutDynamic())
+	}
+	return
+}
+func groupWithFraction(g []core.Note, fraction float32, dotted bool) (list []core.Note) {
+	for _, each := range g {
+		list = append(list, each.WithFraction(fraction, dotted))
+	}
+	return
 }

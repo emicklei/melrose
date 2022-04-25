@@ -7,7 +7,7 @@ import (
 )
 
 func TestDecomposeSequence(t *testing.T) {
-	s := core.MustParseSequence("1C 2D4+ =")
+	s := core.MustParseSequence("1C# 2D_4+ = (2e-- 2e5--)")
 	ds := DecomposeSequence(s)
 	t.Log(core.Storex(ds))
 }
