@@ -24,7 +24,7 @@ func NewTimeline() *Timeline {
 	}
 }
 
-// TimelineEvent describe an event that can be scheduled on a Timeline.
+// TimelineEvent describes an event that can be scheduled on a Timeline.
 type TimelineEvent interface {
 	Handle(tim *Timeline, when time.Time)
 	NoteChangesDo(block func(NoteChange))
@@ -165,7 +165,7 @@ func (t *Timeline) schedule(event *scheduledTimelineEvent) {
 	event.next = here
 }
 
-// EventsDo visits all scheduled events and call the block for each.
+// EventsDo visits all scheduled events and calls the block for each.
 func (t *Timeline) EventsDo(block func(event TimelineEvent, when time.Time)) {
 	t.protection.Lock()
 	defer t.protection.Unlock()
