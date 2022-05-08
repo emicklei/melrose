@@ -36,77 +36,77 @@ func NewDeviceRegistry() (*DeviceRegistry, error) {
 }
 
 // DefaultDeviceIDs is part of AudioDevice
-func (d *DeviceRegistry) DefaultDeviceIDs() (inputDeviceID, outputDeviceID int) {
-	d.mutex.RLock()
-	defer d.mutex.RUnlock()
-	return d.defaultInputID, d.defaultOutputID
+func (r *DeviceRegistry) DefaultDeviceIDs() (inputDeviceID, outputDeviceID int) {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+	return r.defaultInputID, r.defaultOutputID
 }
 
-func (d *DeviceRegistry) Reset() {
-	for _, each := range d.out {
+func (r *DeviceRegistry) Reset() {
+	for _, each := range r.out {
 		each.Reset()
 	}
-	for _, each := range d.in {
+	for _, each := range r.in {
 		each.stopListener()
 	}
 }
 
-func (d *DeviceRegistry) Output(id int) (*OutputDevice, error) {
+func (r *DeviceRegistry) Output(id int) (*OutputDevice, error) {
 	if id == -1 {
 		return nil, errors.New("no output available")
 	}
-	d.mutex.RLock()
-	if m, ok := d.out[id]; ok {
-		d.mutex.RUnlock()
+	r.mutex.RLock()
+	if m, ok := r.out[id]; ok {
+		r.mutex.RUnlock()
 		return m, nil
 	}
-	d.mutex.RUnlock()
+	r.mutex.RUnlock()
 	// not present
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-	midiOut, err := d.streamRegistry.output(id)
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+	midiOut, err := r.streamRegistry.output(id)
 	if err != nil {
 		return nil, tre.New(err, "Output", "id", id)
 	}
 	od := NewOutputDevice(id, midiOut, 1, core.NewTimeline())
-	d.out[id] = od
+	r.out[id] = od
 	od.Start() // play outgoing notes
 	return od, nil
 }
 
-func (d *DeviceRegistry) Input(id int) (*InputDevice, error) {
+func (r *DeviceRegistry) Input(id int) (*InputDevice, error) {
 	if id == -1 {
 		return nil, errors.New("no input available")
 	}
-	d.mutex.RLock()
-	if m, ok := d.in[id]; ok {
-		d.mutex.RUnlock()
+	r.mutex.RLock()
+	if m, ok := r.in[id]; ok {
+		r.mutex.RUnlock()
 		return m, nil
 	}
-	d.mutex.RUnlock()
+	r.mutex.RUnlock()
 	// not present
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-	midiIn, err := d.streamRegistry.input(id)
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+	midiIn, err := r.streamRegistry.input(id)
 	if err != nil {
 		return nil, tre.New(err, "Input", "id", id)
 	}
-	ide := NewInputDevice(id, midiIn, d.streamRegistry.transport)
-	d.in[id] = ide
+	ide := NewInputDevice(id, midiIn, r.streamRegistry.transport)
+	r.in[id] = ide
 	return ide, nil
 }
 
-func (d *DeviceRegistry) init() error {
-	d.defaultOutputID = d.streamRegistry.transport.DefaultOutputDeviceID()
-	d.defaultInputID = d.streamRegistry.transport.DefaultInputDeviceID()
+func (r *DeviceRegistry) init() error {
+	r.defaultOutputID = r.streamRegistry.transport.DefaultOutputDeviceID()
+	r.defaultInputID = r.streamRegistry.transport.DefaultInputDeviceID()
 	return nil
 }
 
-func (d *DeviceRegistry) Close() error {
-	for _, each := range d.in {
+func (r *DeviceRegistry) Close() error {
+	for _, each := range r.in {
 		each.stopListener()
 	}
-	return d.streamRegistry.close()
+	return r.streamRegistry.close()
 }
 
 func (r *DeviceRegistry) HasInputCapability() bool {

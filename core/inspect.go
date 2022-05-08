@@ -70,7 +70,7 @@ func (i Inspection) Markdown() string {
 		fmt.Fprintf(&b, "- %v %s\n", v, k)
 	}
 	// only if we know the variable and have a http service listening
-	if len(i.VariableName) > 0 && i.Context.Capabilities().HttpService {
+	if len(i.VariableName) > 0 && i.Context.Capabilities().HTTPService {
 		fmt.Fprintln(&b)
 		fmt.Fprintf(&b, `[more...](http://localhost:8118/v1/notes?var=%s)`, i.VariableName) // TODO get port from flag
 	}

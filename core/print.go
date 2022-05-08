@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/emicklei/melrose/notify"
@@ -45,4 +46,9 @@ func (w Print) S() Sequence {
 	}
 	notify.Infof("%s", in.String())
 	return EmptySequence
+}
+
+// Storex is part of Storable
+func (w Print) Storex() string {
+	return fmt.Sprintf("print(%s)", Storex(w.Target))
 }

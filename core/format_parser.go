@@ -302,7 +302,7 @@ func (s *noteSTM) accept(lit string) error {
 			return fmt.Errorf("name already known, got:%s", lit)
 		}
 		// accidental
-		var accidental int = 0
+		var accidental = 0
 		switch lit {
 		case "#":
 			accidental = 1

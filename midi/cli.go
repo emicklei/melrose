@@ -7,7 +7,7 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error {
+func (r *DeviceRegistry) HandleSetting(name string, values []interface{}) error {
 	switch name {
 	case "echo":
 		if len(values) != 1 {
@@ -17,7 +17,7 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 		if !ok {
 			return fmt.Errorf("boolean device argument expected, got %T", values[0])
 		}
-		od, _ := d.Output(d.defaultOutputID)
+		od, _ := r.Output(r.defaultOutputID)
 		od.echo = enable
 		notify.Infof("echo notes is enabled: %v", enable)
 	case "echo.toggle":
@@ -25,7 +25,7 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 			return fmt.Errorf("no argument expected")
 		}
 		// input
-		id, err := d.Input(d.defaultInputID)
+		id, err := r.Input(r.defaultInputID)
 		if err == nil {
 			id.echo = !id.echo
 			if id.echo {
@@ -40,7 +40,7 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 			notify.Infof("echo input notes is disabled ; no input device")
 		}
 		// output
-		od, err := d.Output(d.defaultOutputID)
+		od, err := r.Output(r.defaultOutputID)
 		if err == nil {
 			od.echo = !od.echo
 			notify.Infof("echo output notes from device %d is enabled: %v", od.id, od.echo)
@@ -55,11 +55,11 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 		if !ok {
 			return fmt.Errorf("integer device argument expected, got %T", values[0])
 		}
-		_, err := d.Input(id)
+		_, err := r.Input(id)
 		if err != nil {
 			return fmt.Errorf("bad input device number: %v", err)
 		}
-		d.defaultInputID = id
+		r.defaultInputID = id
 		notify.Infof("Set default MIDI input device id: %d", id)
 	case "midi.out.channel":
 		if len(values) != 2 {
@@ -73,7 +73,7 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 		if !ok {
 			return fmt.Errorf("integer channel argument expected")
 		}
-		out, err := d.Output(id)
+		out, err := r.Output(id)
 		if err != nil {
 			return fmt.Errorf("bad input device number: %v", err)
 		}
@@ -87,11 +87,11 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 		if !ok {
 			return fmt.Errorf("integer device argument expected")
 		}
-		out, err := d.Output(id)
+		out, err := r.Output(id)
 		if err != nil {
 			return fmt.Errorf("bad output device number: %v", err)
 		}
-		d.defaultOutputID = id
+		r.defaultOutputID = id
 		notify.Infof("Set default MIDI output device id: %d with default channel: %d", id, out.defaultChannel)
 	default:
 		return fmt.Errorf("unknown setting:%s", name)
@@ -100,13 +100,13 @@ func (d *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 }
 
 // Command is part of melrose.AudioDevice
-func (d *DeviceRegistry) Command(args []string) notify.Message {
+func (r *DeviceRegistry) Command(args []string) notify.Message {
 	if len(args) == 2 && args[0] == "o" {
 		id, err := strconv.Atoi(args[1])
 		if err != nil {
 			return notify.NewError(err)
 		}
-		if err := d.HandleSetting("midi.out", []interface{}{id}); err != nil {
+		if err := r.HandleSetting("midi.out", []interface{}{id}); err != nil {
 			return notify.NewError(err)
 		}
 		return nil
@@ -116,38 +116,38 @@ func (d *DeviceRegistry) Command(args []string) notify.Message {
 		if err != nil {
 			return notify.NewError(err)
 		}
-		if err := d.HandleSetting("midi.in", []interface{}{id}); err != nil {
+		if err := r.HandleSetting("midi.in", []interface{}{id}); err != nil {
 			return notify.NewError(err)
 		}
 		return nil
 	}
 	if len(args) == 1 && args[0] == "e" {
-		d.HandleSetting("echo.toggle", []interface{}{})
+		r.HandleSetting("echo.toggle", []interface{}{})
 		return nil
 	}
 	if len(args) == 1 && args[0] == "r" {
 		fmt.Println("Reset MIDI device configuration. Stopping all listeners")
-		d.Reset()
-		d.Close()
-		d.init()
+		r.Reset()
+		r.Close()
+		r.init()
 	}
-	d.printInfo()
+	r.printInfo()
 	return nil
 }
 
-func (d *DeviceRegistry) printInfo() {
-	d.streamRegistry.transport.PrintInfo(d.defaultInputID, d.defaultOutputID)
+func (r *DeviceRegistry) printInfo() {
+	r.streamRegistry.transport.PrintInfo(r.defaultInputID, r.defaultOutputID)
 
 	notify.PrintHighlighted("current defaults:")
-	_, err := d.Input(d.defaultInputID)
+	_, err := r.Input(r.defaultInputID)
 	if err == nil {
-		fmt.Printf(" input device = %d\n", d.defaultInputID)
+		fmt.Printf(" input device = %d\n", r.defaultInputID)
 	} else {
 		fmt.Printf(" no input device\n")
 	}
-	od, err := d.Output(d.defaultOutputID)
+	od, err := r.Output(r.defaultOutputID)
 	if err == nil {
-		fmt.Printf("output device = %d, channel = %d\n", d.defaultOutputID, od.defaultChannel)
+		fmt.Printf("output device = %d, channel = %d\n", r.defaultOutputID, od.defaultChannel)
 		fmt.Printf("   echo notes = %v\n", od.echo)
 	} else {
 		fmt.Printf(" no output device (restart?)\n")

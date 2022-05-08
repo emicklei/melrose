@@ -2,7 +2,7 @@ package core
 
 type Capabilities struct {
 	AnsiColoring  bool
-	HttpService   bool
+	HTTPService   bool
 	ExportMIDI    bool
 	ImportMelrose bool
 	ReceivingMIDI bool
@@ -12,7 +12,7 @@ type Capabilities struct {
 func NewCapabilities() *Capabilities {
 	return &Capabilities{
 		AnsiColoring:  true,
-		HttpService:   true,
+		HTTPService:   true,
 		ExportMIDI:    true,
 		ImportMelrose: true,
 		ReceivingMIDI: true,

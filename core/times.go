@@ -27,12 +27,12 @@ func FractionToDurationParts(f float64) (fraction float32, dotted bool) {
 		{0.0625, true, 0.09375},
 		{0.0625, false, 0.0625},
 	}
-	hit_distance := 2.0
+	hitDistance := 2.0
 	hit := durations[0]
 	for _, each := range durations {
-		if distance := abs64(each.actual - f); distance <= hit_distance {
+		if distance := abs64(each.actual - f); distance <= hitDistance {
 			hit = each
-			hit_distance = distance
+			hitDistance = distance
 		}
 	}
 	return hit.fraction, hit.dotted

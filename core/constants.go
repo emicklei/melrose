@@ -33,9 +33,6 @@ const (
 	Inversion3
 )
 
-// TODO typed constants
-type inversion int
-
 // https://www.cs.cmu.edu/~music/cmsip/readings/MIDI%20tutorial%20for%20programmers.html
 const (
 	VelocityPPPP = 8   // -----

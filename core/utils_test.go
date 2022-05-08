@@ -50,10 +50,3 @@ func Test_parseIndices(t *testing.T) {
 		})
 	}
 }
-
-func storex(s interface{}) string {
-	if st, ok := s.(Storable); ok {
-		return st.Storex()
-	}
-	return ""
-}

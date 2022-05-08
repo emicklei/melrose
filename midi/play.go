@@ -8,9 +8,9 @@ import (
 )
 
 // Schedule exists for Loop
-func (registry *DeviceRegistry) Schedule(e core.TimelineEvent, beginAt time.Time) {
+func (r *DeviceRegistry) Schedule(e core.TimelineEvent, beginAt time.Time) {
 	// TODO check DeviceSelector
-	device, err := registry.Output(registry.defaultOutputID)
+	device, err := r.Output(r.defaultOutputID)
 	if err != nil {
 		return
 	}
@@ -19,7 +19,7 @@ func (registry *DeviceRegistry) Schedule(e core.TimelineEvent, beginAt time.Time
 
 // Play schedules all the notes on the timeline beginning at a give time (now or in the future).
 // Returns the end time of the last played Note.
-func (registry *DeviceRegistry) Play(condition core.Condition, seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
+func (r *DeviceRegistry) Play(condition core.Condition, seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
 	if core.IsDebug() {
 		notify.Debugf("midi.play: time=%s object=%s", beginAt.Format("04:05.000"), core.Storex(seq))
 	}
@@ -28,12 +28,12 @@ func (registry *DeviceRegistry) Play(condition core.Condition, seq core.Sequence
 
 	// which device?
 	var device *OutputDevice
-	deviceID := registry.defaultOutputID
+	deviceID := r.defaultOutputID
 	if dev, ok := seq.(core.DeviceSelector); ok {
 		deviceID = dev.DeviceID()
 		seq = dev.Unwrap()
 	}
-	device, err := registry.Output(deviceID)
+	device, err := r.Output(deviceID)
 	if err != nil {
 		return beginAt
 	}

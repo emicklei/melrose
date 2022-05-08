@@ -8,19 +8,12 @@ import (
 )
 
 func TestRecordingStop(t *testing.T) {
-	var r interface{}
-	r = new(Recording)
+	var r interface{} = new(Recording)
 	_, ok := r.(core.Stoppable)
 	if !ok {
 		t.Fail()
 	}
 }
-
-type testEvent struct {
-	id int
-}
-
-func (e testEvent) Handle(t *core.Timeline, w time.Time) {}
 
 func sampleRecording() *Recording {
 	tim := core.NewTimeline()
