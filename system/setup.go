@@ -27,7 +27,7 @@ func Setup(buildTag string) (core.Context, error) {
 		core.ToggleDebug()
 	}
 	transport.Initializer()
-	checkVersion()
+	//checkVersion()
 
 	ctx := new(core.PlayContext)
 	ctx.EnvironmentVars = new(sync.Map)
@@ -47,7 +47,7 @@ func checkVersion() {
 		return // ignore
 	}
 	v := getVersion()
-	notify.Infof("you are running version %s, a newer version (%s) is available on http://melrōse.org", core.BuildTag, v)
+	notify.Infof("you are running version %s, a newer version (%s) is available on https://melrōse.org", core.BuildTag, v)
 }
 
 func getVersion() string {

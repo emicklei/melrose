@@ -57,7 +57,8 @@ func repl(line *liner.State, ctx core.Context) {
 		entry, err := line.Prompt(notify.Prompt())
 		if err != nil {
 			notify.Print(notify.NewError(err))
-			continue
+			tearDown(line, ctx)
+			goto exit
 		}
 		entry = strings.TrimSpace(entry)
 		if strings.HasPrefix(entry, ":") {
