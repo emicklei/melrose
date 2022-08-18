@@ -27,7 +27,7 @@ Search and install the extension from the editor or go to the [Marketplace publi
 
 You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
 
-	go install github.com/emicklei/melrose/cmd/melrose@latest
+	go install -v github.com/emicklei/melrose/cmd/melrose...@latest
 
 After installing `melrōse`, you can start the tool in a Terminal using:
 
