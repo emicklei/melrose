@@ -9,10 +9,11 @@ import (
 var ansiColorsEnabled = true
 
 func PrintWelcome(version string) {
+	tail := " - program your melodies - " + version + " (help = :h, quit = :q or ctrl+c)"
 	if ansiColorsEnabled {
-		fmt.Println("\033[1;34mmelrōse\033[0m" + " - program your melodies - " + version)
+		fmt.Println("\033[1;34mmelrōse\033[0m" + tail)
 	} else {
-		fmt.Fprintf(Console.StandardOut, "melrose - program your melodies - "+version+"\n")
+		fmt.Fprintf(Console.StandardOut, "melrose"+tail+"\n")
 	}
 }
 
