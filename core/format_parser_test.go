@@ -196,3 +196,23 @@ func Test_formatParser_ParseNoteError(t *testing.T) {
 		t.Logf("%s = %v", each.in, err)
 	}
 }
+
+func Test_formatParser_ParseChord(t *testing.T) {
+	for i, each := range []struct {
+		in      string
+		isError bool
+		seq     string
+	}{
+		{"1e/m7 1f#/m7", true, ""},
+		{"1e", false, "chord('1E')"},
+	} {
+		p := newFormatParser(each.in)
+		n, err := p.parseChord()
+		if err == nil && each.isError {
+			t.Fatalf("%d:%s expected an error but got:%v", i, each.in, n)
+		}
+		if err != nil && !each.isError {
+			t.Fatalf("%d:%s not expected an error but got:%v", i, each.in, err)
+		}
+	}
+}
