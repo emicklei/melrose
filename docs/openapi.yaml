@@ -1,0 +1,148 @@
+openapi: 3.0.3
+info:
+  title: Melrōse - OpenAPI 3.0
+  description: |-
+    This is a documentation of the HTTP API of the melrose tool.
+    
+    Some useful links:
+    - [Project github repository](https://github.com/emicklei/melrose)
+    - [The source API definition for the Melrōse API](https://github.com/emicklei/melrose/blob/master/docs/openapi.yaml)
+    
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: ernest.micklei@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+servers:
+  - url: http://localhost:8118
+tags:
+  - name: actions
+    description: Executing Melrōse language expressions
+    externalDocs:
+      description: Find out more
+      url: "https://melrōse.org"
+paths:
+  /v1/statements:
+    post:
+      tags:
+        - actions
+      summary: Perform the action
+      description: Perform the action
+      operationId: performAction
+      parameters: 
+          - name: action
+            in: query
+            required: true
+            schema:
+              type: string
+            description: |-
+              one of:
+              - `play` : try to play the result of the selected expression(s).
+              - `stop` : try to end the loop of the selected expression
+              - `eval` : produce extra logging
+              - `inspect` : print inspection details of the selected expression
+              - `eval` : only evaluate the expression(s) or statements ; no play
+          - name: file
+            in: query
+            schema:
+              type: string
+            required: false
+            description: absolute filename
+          - name: line
+            in: query
+            required: false
+            schema:
+              type: integer
+            description: one-based
+          - name: debug
+            in: query
+            schema:
+              type: boolean
+            required: false
+            description: writes debugging information to output
+      requestBody:
+        description: Source of the expression ; can be multi-line
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluationResult'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluationResult'
+  /v1/inspect:
+    post:
+      tags:
+        - actions
+      operationId: showInspection
+      parameters: 
+      - name: debug
+        in: query
+        schema:
+          type: boolean
+        required: false
+        description: writes debugging information to output
+  /v1/notes:
+    post:
+      tags:
+        - actions
+      operationId: showNotesPage
+      parameters: 
+      - name: debug
+        in: query
+        schema:
+          type: boolean
+        required: false
+        description: writes debugging information to output
+  /v1/pianoroll:
+    post:
+      tags:
+        - actions
+      operationId: showPianoRoll
+      parameters: 
+      - name: debug
+        in: query
+        schema:
+          type: boolean
+        required: false
+        description: writes debugging information to output
+  /version:
+    get:
+      tags:
+        - actions
+components:
+  schemas:
+    VersionInfo:
+      type: object
+      properties:
+        APIVersion:
+          type: string
+        SyntaxVersion:
+          type: string
+        BuildTag:
+          type: string
+    EvaluationResult:
+      type: object
+      properties:
+        type:
+          type: string
+        is-error:
+          type: boolean
+        is-stoppable:
+          type: boolean
+        message:
+          type: string
+        file:
+          type: string
+        line:
+          type: integer
+        object:
+          type: object

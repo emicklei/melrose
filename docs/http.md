@@ -4,6 +4,9 @@ Melrōse starts a HTTP server on port 8118 and evaluates expressions or programs
 This server is used by the [Melrōse Plugin for Visual Studio Code](https://github.com/emicklei/melrose-for-vscode).
 
 
+The API is documented in `openapi.yaml` which can be [viewed](https://raw.githubusercontent.com/emicklei/melrose/master/docs/openapi.yaml).
+
+
 ## HTTP Request
 
     POST http://localhost:8118/v1/statements?action={action}
@@ -44,23 +47,19 @@ If the request is malformed then the response will have the error message.
 
 ## HTTP Request parameters
 
-### play
+### action=play
 
 If the HTTP URL has the query parameter `action=play` then `melrōse` will try to play the result of the selected expression(s).
 
-### begin
+### stop
 
-If the HTTP URL has the query parameter `action=begin` then `melrōse` will try to `begin` the loop of the selected expression.
-
-### end
-
-If the HTTP URL has the query parameter `action=end` then `melrōse` will try to `end` the loop of the selected expression.
+If the HTTP URL has the query parameter `action=stop` then `melrōse` will try to `end` the loop of the selected expression.
 
 ### eval
 
 If the HTTP URL has the query parameter `action=eval` then `melrōse` will only evaluate the expression(s) or statemennts.
 
-### tracing
+### tracing (optional)
 
 If the HTTP URL has the query parameter `debug=true` then `melrōse` will produce extra logging.
 
@@ -71,6 +70,16 @@ If the HTTP URL has the query parameter `action=kill` then `melrōse` will stop 
 ### inspecting
 
 If the HTTP URL has the query parameter `action=inspect` then `melrōse` will print inspection details of the selected expression.
+
+### file (optional)
+
+The absolute filename of the script in which the expression is evaluatated. 
+
+
+### line (optional)
+
+The line (starting at 1) in the script of the start of the expression source.
+The response of the action will also include the line field ; the value will be the line of the last expression in the source
 
 ### version
 
