@@ -4,7 +4,7 @@ Melrōse starts a HTTP server on port 8118 and evaluates expressions or programs
 This server is used by the [Melrōse Plugin for Visual Studio Code](https://github.com/emicklei/melrose-for-vscode).
 
 
-The API is documented in `openapi.yaml` which can be [viewed](https://raw.githubusercontent.com/emicklei/melrose/master/docs/openapi.yaml).
+The API is documented in `openapi.yaml` which can be [viewed](https://editor.swagger.io/?url=https://raw.githubusercontent.com/emicklei/melrose/master/docs/openapi.yaml).
 
 
 ## HTTP Request
