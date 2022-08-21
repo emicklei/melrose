@@ -90,6 +90,9 @@ paths:
           type: boolean
         required: false
         description: writes debugging information to output
+      responses:
+        '200':
+          description: Successful operation
   /v1/notes:
     post:
       tags:
@@ -102,6 +105,9 @@ paths:
           type: boolean
         required: false
         description: writes debugging information to output
+      responses:
+        '200':
+          description: Successful operation
   /v1/pianoroll:
     post:
       tags:
@@ -114,10 +120,16 @@ paths:
           type: boolean
         required: false
         description: writes debugging information to output
+      responses:
+        '200':
+          description: Successful operation
   /version:
     get:
       tags:
         - actions
+      responses:
+        '200':
+          description: Successful operation
 components:
   schemas:
     VersionInfo:
