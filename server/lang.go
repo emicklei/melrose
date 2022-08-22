@@ -55,8 +55,8 @@ func Start(ctx core.Context) {
 		mux := new(http.ServeMux)
 		mux.HandleFunc("/v1/statements", ls.statementHandler)
 		mux.HandleFunc("/v1/inspect", ls.inspectHandler)
-		http.HandleFunc("/v1/notes", ls.notesPageHandler)
-		http.HandleFunc("/v1/pianoroll", ls.pianorollImageHandler)
+		mux.HandleFunc("/v1/notes", ls.notesPageHandler)
+		mux.HandleFunc("/v1/pianoroll", ls.pianorollImageHandler)
 		mux.HandleFunc("/version", ls.versionHandler)
 		server := http.Server{Handler: mux}
 		// Handle request from localtunnel

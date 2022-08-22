@@ -63,6 +63,16 @@ func (e *Evaluator) EvaluateProgram(source string) (interface{}, error) {
 	return lastResult, nil
 }
 
+func (e *Evaluator) RecoveringEvaluateStatement(entry string) (interface{}, error) {
+	defer func() {
+		if err := recover(); err != nil {
+			notify.Errorf("%v", err)
+			return
+		}
+	}()
+	return e.EvaluateStatement(entry)
+}
+
 func (e *Evaluator) EvaluateStatement(entry string) (interface{}, error) {
 	// flatten multiline ; expr does not support multiline strings
 	entry = strings.Replace(entry, "\n", " ", -1)

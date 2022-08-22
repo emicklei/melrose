@@ -75,7 +75,7 @@ func repl(line *liner.State, ctx core.Context) {
 				continue
 			}
 		}
-		if result, err := eval.EvaluateStatement(entry); err != nil {
+		if result, err := eval.RecoveringEvaluateStatement(entry); err != nil {
 			notify.Print(notify.NewError(err))
 			// even on error, add entry to history so we can edit/fix it
 		} else {
