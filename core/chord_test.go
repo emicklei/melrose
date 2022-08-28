@@ -132,6 +132,12 @@ func TestParseChord(t *testing.T) {
 			false,
 		},
 		{
+			"double chord",
+			args{"1e/m7 1f#/m7"},
+			"",
+			true,
+		},
+		{
 			"E_ augmented seventh",
 			args{"E_/aug7"},
 			"('(E_ G B D_5)')",
@@ -213,5 +219,6 @@ func TestParseChord(t *testing.T) {
 				return
 			}
 		})
+		break
 	}
 }

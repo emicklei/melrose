@@ -93,6 +93,28 @@ func (f *formatParser) parseChordProgression(s Scale) ([]Chord, error) {
 	return stm.chords, nil
 }
 
+func (f *formatParser) parseChord() (Chord, error) {
+	var err error
+	// capture scan errors
+	f.scanner.Error = func(s *scanner.Scanner, m string) {
+		err = errors.New(m)
+	}
+	stm := newChordSTM()
+	for {
+		ch := f.scanner.Scan()
+		if err != nil {
+			return zeroChord(), err
+		}
+		if ch == scanner.EOF {
+			break
+		}
+		if err := stm.accept(f.scanner); err != nil {
+			return zeroChord(), err
+		}
+	}
+	return stm.chord()
+}
+
 type sequenceSTM struct {
 	groups  [][]Note
 	ingroup bool
@@ -121,6 +143,139 @@ type chordprogressionSTM struct {
 	dotted   bool
 	// dynamic
 	velocity string
+}
+
+type chordSTM struct {
+	note      *noteSTM
+	quality   int
+	interval  int
+	inversion int
+	// substate
+	wantsNote      bool
+	wantsQuality   bool
+	wantsInversion bool
+}
+
+func newChordSTM() *chordSTM {
+	c := new(chordSTM)
+	c.reset()
+	return c
+}
+
+func (c *chordSTM) reset() {
+	c.note = nil
+	c.quality = Major
+	c.interval = Triad
+	c.wantsNote = true
+	c.wantsInversion = false
+}
+
+func (c *chordSTM) accept(scan *scanner.Scanner) error {
+	lit := scan.TokenText()
+	if lit == " " {
+		return errors.New("unexpected space")
+	}
+	// change state
+	if lit == "/" {
+		if c.note == nil {
+			return errors.New("expected note")
+		}
+		if c.wantsNote {
+			c.wantsNote = false
+			c.wantsQuality = true
+			// match on full tokens
+			scan.Mode = scanner.ScanIdents
+			return nil
+		}
+		if c.wantsQuality {
+			c.wantsQuality = false
+			// match on integer tokens
+			scan.Mode = scanner.ScanInts
+			c.wantsInversion = true
+		}
+		return nil
+	}
+	// act on state
+	if c.wantsNote {
+		if c.note == nil {
+			c.note = newNoteSTM()
+		}
+		return c.note.accept(lit)
+	}
+	if c.wantsQuality {
+		switch lit {
+		case "maj", "M":
+		case "maj7", "M7":
+			c.interval = Seventh
+		case "m":
+			c.quality = Minor
+		case "m7":
+			c.quality = Minor
+			c.interval = Seventh
+		case "dim":
+			c.quality = Diminished
+		case "o":
+			c.quality = Diminished
+		case "aug":
+			c.quality = Augmented
+		case "aug7":
+			c.quality = Augmented
+			c.interval = Seventh
+		case "+":
+			c.quality = Augmented
+		case "sus2":
+			c.quality = Suspended2
+		case "sus4":
+			c.quality = Suspended4
+		case "7":
+			c.quality = Septiem
+			c.interval = Seventh
+		case "6":
+			c.interval = Sixth
+		case "3":
+			c.inversion = Inversion3
+		case "2":
+			c.inversion = Inversion2
+		case "1":
+			c.inversion = Inversion1
+		default:
+			return errors.New("unexpected quality:" + lit)
+		}
+	}
+	if c.wantsInversion {
+		if c.inversion == 0 {
+			c.inversion = Ground
+		} else {
+			return errors.New("unexpected inversion:" + lit)
+		}
+		switch lit {
+		case "1":
+			c.inversion = Inversion1
+		case "2":
+			c.inversion = Inversion2
+		case "3":
+			c.inversion = Inversion3
+		default:
+			return errors.New("unexpected inversion:" + lit)
+		}
+	}
+	return nil
+}
+
+func (c *chordSTM) chord() (Chord, error) {
+	if c.note == nil {
+		return zeroChord(), errors.New("missing note")
+	}
+	n, err := c.note.note()
+	if err != nil {
+		return zeroChord(), err
+	}
+	return Chord{
+		start:     n,
+		quality:   c.quality,
+		interval:  c.interval,
+		inversion: c.inversion,
+	}, nil
 }
 
 var romanChordRegex = regexp.MustCompile("([iIvV]{1,3})([Mmaj]{0,3})([dim]{0,3})(7?)")
