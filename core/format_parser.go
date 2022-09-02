@@ -43,6 +43,28 @@ func (f *formatParser) parseNote() (Note, error) {
 	return stm.note()
 }
 
+func (f *formatParser) parseTabNote() (TabNote, error) {
+	var err error
+	// capture scan errors
+	f.scanner.Error = func(s *scanner.Scanner, m string) {
+		err = errors.New(m)
+	}
+	stm := newTabNoteSTM()
+	for {
+		ch := f.scanner.Scan()
+		if err != nil {
+			return TabNote{}, err
+		}
+		if ch == scanner.EOF {
+			break
+		}
+		if err := stm.accept(f.scanner.TokenText()); err != nil {
+			return TabNote{}, err
+		}
+	}
+	return stm.note()
+}
+
 func (f *formatParser) parseSequence() (Sequence, error) {
 	var err error
 	// capture scan errors

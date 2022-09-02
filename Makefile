@@ -11,6 +11,10 @@ unused:
 install: test
 	go install github.com/emicklei/melrose/cmd/melrose
 
+# quickly get me a new binary
+q:
+	go install github.com/emicklei/melrose/cmd/melrose
+
 snippets:
 	cd cmd/vsc && go run *.go snippets > ../../../melrose-for-vscode/snippets/snippets.json
 

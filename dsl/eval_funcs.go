@@ -1123,6 +1123,19 @@ begin(lp_pi)`,
 				Target: s}
 		}}
 
+	eval["tabs"] = Function{
+		Title:       "Create a bass tablature",
+		Description: `Create a tabs using this <a href="/docs/reference/notations/#tabs">format</a>`,
+		Template:    `tabs($1:string)`,
+		Samples:     `bass = tabs('E e3 a2 a5 d5 a5 a3 e3 G24')`,
+		Func: func(notation string) interface{} {
+			t, err := core.ParseBassTablature(notation)
+			if err != nil {
+				return notify.Panic(fmt.Errorf("invalid tabs syntax: %v", err))
+			}
+			return t
+		}}
+
 	eval["replace"] = Function{
 		Title:       "Replace operator",
 		Description: `replaces all occurrences of one musical object with another object for a given composed musical object`,
