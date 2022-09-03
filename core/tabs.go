@@ -1,7 +1,7 @@
 package core
 
 import (
-	"errors"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -9,6 +9,19 @@ import (
 // tabs('e3 a2 a5 d5 a5 a2 e3')
 type BassTablature struct {
 	TabNotes []TabNote
+}
+
+func (t BassTablature) Storex() string {
+	b := new(strings.Builder)
+	b.WriteString("tabs('")
+	for i, each := range t.TabNotes {
+		if i > 0 {
+			b.WriteRune(' ')
+		}
+		each.WriteWith(b)
+	}
+	b.WriteString("')")
+	return b.String()
 }
 
 func (t BassTablature) S() Sequence {
@@ -38,7 +51,29 @@ func (t TabNote) ToNote() Note {
 	return n.Pitched(t.Fret)
 }
 
-var invalidTab = errors.New("not a valid tab note, [EADGeadg][0..24]")
+func (t TabNote) IsRest() bool { return t.Name == "=" }
+
+func (t TabNote) String() string {
+	b := new(strings.Builder)
+	t.WriteWith(b)
+	return b.String()
+}
+
+func (t TabNote) WriteWith(b *strings.Builder) {
+	if t.fraction != 0.25 {
+		b.WriteString(FractionToString(t.fraction))
+	}
+	if t.Dotted {
+		b.WriteRune('.')
+	}
+	b.WriteString(t.Name)
+	if !t.IsRest() {
+		b.WriteString(strconv.Itoa(t.Fret))
+	}
+	if t.Velocity != Normal {
+		b.WriteString(VelocityToDynamic(t.Velocity))
+	}
+}
 
 func ParseTabNote(input string) (TabNote, error) {
 	return newFormatParser(input).parseTabNote()

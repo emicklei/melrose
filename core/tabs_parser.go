@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var allowedTabnoteNames = "EADGeadg"
+var allowedTabnoteNames = "EADGeadg="
 
 type tabnoteSTM struct {
 	fraction   float32

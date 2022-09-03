@@ -10,11 +10,13 @@ import (
 
 // Note represents a musical note.
 // Notations:
-// 		2.C#3 = half duration, pitch C, sharp, octave 3, velocity default
-//		D     = quarter duration, pitch D, octave 4, no accidental
-//      8B_   = eighth duration, pitch B, octave 4, flat
-//		=     = quarter rest
-//      -/+   = velocity number
+//
+//			2.C#3 = half duration, pitch C, sharp, octave 3, velocity default
+//			D     = quarter duration, pitch D, octave 4, no accidental
+//	     8B_   = eighth duration, pitch B, octave 4, flat
+//			=     = quarter rest
+//	     -/+   = velocity number
+//
 // http://en.wikipedia.org/wiki/Musical_Note
 type Note struct {
 	Name       string // {C D E F G A B = ^ < >}
@@ -293,8 +295,8 @@ func (n Note) NonFractionBasedDuration() (time.Duration, bool) {
 	return ZeroDuration, false
 }
 
-func (n Note) durationf() string {
-	switch n.fraction {
+func FractionToString(f float32) string {
+	switch f {
 	case 0.0625:
 		return "16"
 	case 0.125:
@@ -354,7 +356,7 @@ func (n Note) printOn(buf *bytes.Buffer, sharpOrFlatKey int) {
 	}
 
 	if n.fraction != 0.25 {
-		buf.WriteString(n.durationf())
+		buf.WriteString(FractionToString(n.fraction))
 	}
 
 	if n.Dotted {

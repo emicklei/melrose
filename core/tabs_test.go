@@ -21,6 +21,8 @@ func TestParseTabNote(t *testing.T) {
 		{"a24", args{"a24"}, TabNote{Name: "A", Fret: 24, Velocity: Normal, fraction: 0.25}, 69, false},
 		// errors
 		{"c2", args{"c2"}, TabNote{Name: "", Fret: 0}, 0, true},
+		{"rest", args{"="}, TabNote{Name: "=", Fret: 0, Velocity: Normal, fraction: 0.25}, 0, false},
+		{"8.e2++", args{"8.e2++"}, TabNote{Name: "E", Fret: 2, Dotted: true, Velocity: 80, fraction: 0.125}, 42, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -36,5 +38,16 @@ func TestParseTabNote(t *testing.T) {
 				t.Errorf("ToNote().MIDI() = %v, want %v", m, tt.wantMIDI)
 			}
 		})
+	}
+}
+
+func TestTabNoteString(t *testing.T) {
+	fix := "8.E2++"
+	n, err := ParseTabNote(fix)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := n.String(), fix; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
