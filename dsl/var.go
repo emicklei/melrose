@@ -31,6 +31,10 @@ func (v variable) Inspect(i core.Inspection) {
 	i.Properties["val"] = core.Storex(currentValue)
 	if insp, ok := currentValue.(core.Inspectable); ok {
 		insp.Inspect(i)
+	} else {
+		if s, ok := currentValue.(core.Sequenceable); ok {
+			i.Properties["_seq"] = s.S()
+		}
 	}
 }
 
