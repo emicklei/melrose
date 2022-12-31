@@ -24,7 +24,8 @@ func (m MIDINote) ToNote() (Note, error) {
 		i == 2 ||
 		i == 4 ||
 		i == 8 ||
-		i == 16 {
+		i == 16 ||
+		i == 32 {
 		fraction := 1.0 / float32(i)
 		return MIDItoNote(fraction, nr, velocity)
 	}

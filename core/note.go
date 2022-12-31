@@ -25,7 +25,7 @@ type Note struct {
 	Dotted     bool // if true then fraction is increased by half
 	Velocity   int  // 1..127
 
-	fraction float32       // {0.0625,0.125,0.25,0.5,1}
+	fraction float32       // {0.03175,0.0625,0.125,0.25,0.5,1}
 	duration time.Duration // if set then this overrides Dotted and fraction
 
 	tied []Note // succeeding identical notes that are tied to this ; mostly empty
@@ -111,13 +111,14 @@ func NewNote(name string, octave int, frac float32, accidental int, dot bool, ve
 		return Rest4, fmt.Errorf("invalid note name [%s]:%s", allowedNoteNames, name)
 	}
 	switch frac {
+	case 0.03175:
 	case 0.0625:
 	case 0.125:
 	case 0.25:
 	case 0.5:
 	case 1:
 	default:
-		return Rest4, fmt.Errorf("invalid fraction [1,0.5,0.25,0.125,0.0625]:%v", frac)
+		return Rest4, fmt.Errorf("invalid fraction [1,0.5,0.25,0.125,0.0625,0.03175]:%v", frac)
 	}
 
 	if accidental != 0 && accidental != -1 && accidental != 1 {
@@ -195,6 +196,11 @@ func (n Note) WithFraction(f float32, dotted bool) Note {
 	}
 	if f == 0.0625*1.5 {
 		n.fraction = 0.0625
+		n.Dotted = true
+		return n
+	}
+	if f == 0.03175*1.5 {
+		n.fraction = 0.03175
 		n.Dotted = true
 		return n
 	}
@@ -297,6 +303,8 @@ func (n Note) NonFractionBasedDuration() (time.Duration, bool) {
 
 func FractionToString(f float32) string {
 	switch f {
+	case 0.03175:
+		return "32"
 	case 0.0625:
 		return "16"
 	case 0.125:
@@ -427,6 +435,8 @@ var fractionRanges = []struct {
 	fraction float32
 	dotted   bool
 }{
+	{0.03175, false}, // 1/32
+	{0.03175 * 1.5, true},
 	{0.0625, false}, // 1/16
 	{0.09375, true},
 	{0.125, false},
