@@ -96,10 +96,18 @@ type RtListener struct {
 }
 
 func newRtListener(in rtmidi.MIDIIn) *RtListener {
-	return &RtListener{
+	lis := &RtListener{
 		midiIn:    in,
 		mListener: newMListener(),
 	}
+	// since l.midiIn.SetCallback is blocking on success, there is no meaningful way to get an error
+	// and set the callback non blocking
+	go func(l *RtListener) {
+		if err := l.midiIn.SetCallback(l.handleRtEvent); err != nil {
+			notify.Warnf("failed to set listener callback")
+		}
+	}(lis)
+	return lis
 }
 
 func (l *RtListener) Start() {
@@ -109,16 +117,18 @@ func (l *RtListener) Start() {
 		return
 	}
 	l.listening = true
-	// since l.midiIn.SetCallback is blocking on success, there is no meaningful way to get an error
-	// and set the callback non blocking
-	go func() {
-		if err := l.midiIn.SetCallback(l.handleRtEvent); err != nil {
-			notify.Warnf("failed to set listener callback")
-		}
-	}()
+
 }
 
 func (l *RtListener) handleRtEvent(m rtmidi.MIDIIn, data []byte, delta float64) {
+	if !l.listening {
+		// consume event so the queue does not fill up
+
+		// if core.IsDebug() {
+		// 	notify.Debugf("handle.rt.event:%v,%v\n", data, delta)
+		// }
+		return
+	}
 	if len(data) != 3 {
 		return
 	}
