@@ -218,3 +218,11 @@ v = value(i)`)
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
+
+func TestDeviceOnTrack(t *testing.T) {
+	t.Skip() // TODO
+	r := eval(t, `
+s = sequence('a b')
+dt = device(1,track('title',4, onbar(1,s)))`)
+	checkStorex(t, r, "value(i)")
+}

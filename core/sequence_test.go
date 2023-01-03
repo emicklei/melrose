@@ -54,7 +54,7 @@ func TestSequence_Duration(t *testing.T) {
 
 func TestSequenceLength(t *testing.T) {
 	m, _ := ParseSequence("C (E G)")
-	if got, want := m.Duration(120).Seconds(), 1.0; got != want {
+	if got, want := m.DurationAt(120).Seconds(), 1.0; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }

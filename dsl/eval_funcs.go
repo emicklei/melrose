@@ -394,7 +394,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Samples:     `duration(note('c')) // => 375ms`,
 		Func: func(m interface{}) time.Duration {
 			if s, ok := getSequenceable(m); ok {
-				return s.S().Duration(ctx.Control().BPM())
+				return s.S().DurationAt(ctx.Control().BPM())
 			}
 			return time.Duration(0)
 		}}
@@ -772,7 +772,7 @@ stop() // stop all playables`,
 		Func: func(midiChannel interface{}, m interface{}) interface{} {
 			seq, ok := getSequenceable(m)
 			if !ok {
-				return notify.Panic(fmt.Errorf("cannot decorate with channel (%T) %v", m, m))
+				return notify.Panic(fmt.Errorf("cannot decorate with channel (%T) %s", m, core.Storex(m)))
 			}
 			return core.NewChannelSelector(seq, getHasValue(midiChannel))
 		}}
@@ -950,7 +950,7 @@ onkey(c2, fun) // if C2 is pressed on the axiom device then evaluate the functio
 		Func: func(deviceID interface{}, m interface{}) interface{} {
 			seq, ok := getSequenceable(m)
 			if !ok {
-				return notify.Panic(fmt.Errorf("cannot decorate with device (%T) %v", m, m))
+				return notify.Panic(fmt.Errorf("cannot decorate with device (%T) %s", m, core.Storex(m)))
 			}
 			return core.NewDeviceSelector(seq, getHasValue(deviceID))
 		}}
