@@ -83,6 +83,7 @@ func (s Sequence) S() Sequence {
 	return s
 }
 
+// DurationFactor is only valid if none of its notes have a fixed duration.
 func (s Sequence) DurationFactor() float64 {
 	dur := float32(0.0)
 	for _, each := range s.Notes {
@@ -95,7 +96,7 @@ func (s Sequence) DurationFactor() float64 {
 }
 
 func (s Sequence) Inspect(i Inspection) {
-	i.Properties["duration"] = s.Duration(i.Context.Control().BPM())
+	i.Properties["duration"] = s.DurationAt(i.Context.Control().BPM())
 	i.Properties["note(s)/groups"] = len(s.Notes)
 	i.Properties["bars"] = s.Bars(i.Context.Control().BIAB())
 }
@@ -174,12 +175,11 @@ func StringFromNoteGroup(notes []Note) string {
 	return buf.String()
 }
 
-func (s Sequence) Duration(bpm float64) time.Duration {
-	w := WholeNoteDuration(bpm)
+func (s Sequence) DurationAt(bpm float64) time.Duration {
 	l := time.Duration(0)
 	for _, group := range s.Notes {
 		if len(group) > 0 {
-			l += time.Duration(float32(w) * group[0].DurationFactor())
+			l += group[0].DurationAt(bpm)
 		}
 	}
 	return l

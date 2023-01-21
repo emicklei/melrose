@@ -140,6 +140,7 @@ func (n Note) IsPedal() bool {
 }
 
 // DurationFactor is the actual duration time factor
+// Only correct if n.duration is 0 and also for each tied note ; use DurationAt otherwise
 func (n Note) DurationFactor() float32 {
 	f := n.fraction
 	if n.Dotted {
@@ -149,6 +150,17 @@ func (n Note) DurationFactor() float32 {
 		f += each.DurationFactor()
 	}
 	return f
+}
+
+func (n Note) DurationAt(bpm float64) time.Duration {
+	if n.duration > 0 {
+		sum := n.duration
+		for _, each := range n.tied {
+			sum += each.DurationAt(bpm)
+		}
+		return sum
+	}
+	return time.Duration(float32(WholeNoteDuration(bpm)) * n.DurationFactor())
 }
 
 func (n Note) S() Sequence {
@@ -339,8 +351,7 @@ func (n Note) Inspect(i Inspection) {
 	i.Properties["length"] = n.DurationFactor()
 	i.Properties["midi"] = n.MIDI()
 	i.Properties["velocity"] = n.Velocity
-	wholeNoteDuration := WholeNoteDuration(i.Context.Control().BPM())
-	i.Properties["duration"] = time.Duration(float32(wholeNoteDuration) * n.DurationFactor())
+	i.Properties["duration"] = n.DurationAt(i.Context.Control().BPM())
 }
 
 func (n Note) String() string {

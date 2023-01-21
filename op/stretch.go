@@ -37,9 +37,5 @@ func (s Stretch) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	if core.IsIdenticalTo(s, from) {
 		return to
 	}
-	// TODO
-	// if core.IsIdenticalTo(s.factor, from) {
-	// 	return Stretch{target: s.target, factor: from}
-	// }
-	return Stretch{target: replacedAll(s.target, from, to)}
+	return Stretch{target: replacedAll(s.target, from, to), factor: s.factor}
 }
