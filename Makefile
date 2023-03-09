@@ -22,3 +22,6 @@ grammar:
 	cd cmd/vsc && go run *.go grammar  \
 		../../../melrose-for-vscode/syntaxes/melrose.tmGrammar.json.template \
 		../../../melrose-for-vscode/syntaxes/melrose.tmGrammar.json
+
+since:
+	git log --oneline v0.43.0..@ > since.log
