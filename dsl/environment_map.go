@@ -1,7 +1,6 @@
 package dsl
 
 import (
-	"log"
 	"reflect"
 
 	"github.com/antonmedv/expr"
@@ -67,7 +66,7 @@ var variableType = reflect.TypeOf(variable{})
 type indexedAccessPatcher struct{}
 
 func (p *indexedAccessPatcher) Visit(node *ast.Node) {
-	log.Printf("%T %v\n", node, ast.Dump(*node))
+	//log.Printf("%T %v\n", node, ast.Dump(*node))
 	n, ok := (*node).(*ast.MemberNode)
 	if ok {
 		// check receiver type
@@ -95,6 +94,6 @@ func (p *indexedAccessPatcher) Visit(node *ast.Node) {
 				n.Property,
 			},
 		})
-		log.Printf("%T %v %v\n", node, ast.Dump(*node), methodName)
+		//log.Printf("%T %v %v\n", node, ast.Dump(*node), methodName)
 	}
 }
