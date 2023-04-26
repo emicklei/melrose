@@ -1,6 +1,7 @@
 package dsl
 
 import (
+	"log"
 	"reflect"
 
 	"github.com/antonmedv/expr"
@@ -65,9 +66,9 @@ var variableType = reflect.TypeOf(variable{})
 // indexedAccessPatcher exist to patch expression which use [] on variables.
 type indexedAccessPatcher struct{}
 
-func (p *indexedAccessPatcher) Enter(_ *ast.Node) {}
-func (p *indexedAccessPatcher) Exit(node *ast.Node) {
-	n, ok := (*node).(*ast.IndexNode)
+func (p *indexedAccessPatcher) Visit(node *ast.Node) {
+	log.Printf("%T %v\n", node, ast.Dump(*node))
+	n, ok := (*node).(*ast.MemberNode)
 	if ok {
 		// check receiver type
 		in, ok := n.Node.(*ast.IdentifierNode)
@@ -79,16 +80,21 @@ func (p *indexedAccessPatcher) Exit(node *ast.Node) {
 		}
 		// check argument type
 		methodName := "At"
-		_, ok = n.Index.(*ast.IdentifierNode)
+		_, ok = n.Property.(*ast.IdentifierNode)
 		if ok {
 			methodName = "AtVariable"
 		}
-		ast.Patch(node, &ast.MethodNode{
-			Node:   n.Node,
-			Method: methodName,
+		ast.Patch(node, &ast.CallNode{
+			Callee: &ast.MemberNode{
+				Node: in,
+				Property: &ast.StringNode{
+					Value: methodName,
+				},
+			},
 			Arguments: []ast.Node{
-				n.Index,
+				n.Property,
 			},
 		})
+		log.Printf("%T %v %v\n", node, ast.Dump(*node), methodName)
 	}
 }
