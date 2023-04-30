@@ -14,7 +14,7 @@ func (v variable) At(index int) interface{} {
 	if !ok {
 		return nil
 	}
-	if intArray, ok := m.([]int); ok {
+	if intArray, ok := m.([]interface{}); ok {
 		if index < 1 || index > len(intArray) {
 			return nil
 		}

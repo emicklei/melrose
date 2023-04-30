@@ -192,11 +192,20 @@ func TestEvaluateError_Play(t *testing.T) {
 	}
 }
 
+func TestEvaluateIndexOnArray(t *testing.T) {
+	e := newTestEvaluator()
+	r, err := e.EvaluateProgram(
+		`([1,2,3])[1]`)
+	checkError(t, err)
+	if got, want := r, 2; got != want {
+		t.Errorf("got [%v] want [%v]", got, want)
+	}
+}
+
 func TestEvaluateIndexOnVariable(t *testing.T) {
 	e := newTestEvaluator()
 	r, err := e.EvaluateProgram(
-		`([1,2,3])[1]
-a=[1,2,3]
+		`a=[1,2,3]
 a[1]`)
 	checkError(t, err)
 	if got, want := r, 1; got != want {
