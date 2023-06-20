@@ -32,6 +32,10 @@ type Function struct {
 	Func          interface{}
 }
 
+func (f Function) Declaration() string {
+	return f.HumanizedTemplate()
+}
+
 func (f Function) Markdown() string {
 	return fmt.Sprintf("%s\n\n%s", f.Description, f.HumanizedTemplate())
 }

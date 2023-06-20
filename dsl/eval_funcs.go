@@ -123,10 +123,11 @@ chordsequence('(c d)') // => (C E G D G_ A)`,
 		}}
 
 	eval["prob"] = Function{
-		Title:    "Probabilistic music object.",
-		Prefix:   "prob",
-		IsCore:   true,
-		Template: `prob(${1:perc},${2:note-or-sequenceable})`,
+		Title:       "Probabilistic music object.",
+		Prefix:      "prob",
+		Description: "Creates a new musical object for which the notes are played with a certain probability",
+		IsCore:      true,
+		Template:    `prob(${1:perc},${2:note-or-sequenceable})`,
 		Samples: `prob(50,note('c')) // 50% chance of playing the note C, otherwise a quarter rest
 prob(0.8,sequence('(c e g)')) // 80% chance of playing the chord C, otherwise a quarter rest`,
 		Func: func(prec interface{}, noteOrSeq interface{}) interface{} {
@@ -235,6 +236,7 @@ midi(16,36,70) // => 16C2 (kick)`,
 	eval["print"] = Function{
 		Title:       "Printer creator",
 		Description: "prints an object when evaluated (play,loop)",
+		Template:    `print(${1:object})`,
 		Func: func(m interface{}) interface{} {
 			return core.Print{Context: ctx, Target: m}
 		}}
@@ -1022,6 +1024,7 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 
 	eval["if"] = Function{
 		Title:       "Conditional operator",
+		Template:    `if(${1:condition},${2:then},${3:else})`,
 		Description: "Supports conditions with operators on numbers: <,<=,>,>=,!=,==",
 		Samples:     ``,
 		Func: func(c interface{}, thenelse ...interface{}) interface{} {
@@ -1050,6 +1053,7 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 	eval["value"] = Function{
 		Title:       "Value operator",
 		Description: "returns the current value of a variable",
+		Template:    `value(${1:variable})`,
 		Func: func(v interface{}) interface{} {
 			return core.ValueFunction{
 				StoreString: fmt.Sprintf("value(%s)", core.Storex(v)),
@@ -1062,6 +1066,7 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 
 	eval["index"] = Function{
 		Title:       "Index operator",
+		Template:    `index(${1:generator})`,
 		Description: "returns the current index of an object (e.g. iterator,interval,repeat)",
 		Func: func(v interface{}) interface{} {
 			return core.ValueFunction{
@@ -1074,7 +1079,8 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 	}
 
 	eval["next"] = Function{
-		Title: "Next operator",
+		Title:    "Next operator",
+		Template: `next(${1:generator})`,
 		Description: `is used to produce the next value in a generator such as random, iterator and interval.
 The function itself does not return the value; use the generator for that.`,
 		Samples: `i = interval(-4,4,2)
