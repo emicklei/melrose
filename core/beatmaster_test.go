@@ -21,7 +21,8 @@ func Test_tickerDuration(t *testing.T) {
 }
 
 func TestBeatmaster_beatsAtNextBar(t *testing.T) {
-	b := Beatmaster{}
+	ctx := PlayContext{}
+	b := NewBeatmaster(ctx, 120.0)
 	b.beats = 0
 	b.biab = 3
 	if got, want := b.beatsAtNextBar(), int64(0); got != want {
