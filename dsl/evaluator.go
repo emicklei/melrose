@@ -243,6 +243,11 @@ func (e *Evaluator) handleAssignment(varName string, r interface{}) (interface{}
 // EvaluateExpression returns the result of an expression (entry) using a given store of variables.
 // The result is either FunctionResult or a "raw" Go object.
 func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
+	options := []expr.Option{}
+	// since 1.14.3
+	for _, each := range []string{"join", "repeat", "trim", "replace", "duration"} {
+		options = append(options, expr.DisableBuiltin(each))
+	}
 	env := envMap{}
 	for k, f := range e.funcs {
 		env[k] = f.Func
@@ -250,7 +255,8 @@ func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
 	for k := range e.context.Variables().Variables() {
 		env[k] = variable{Name: k, store: e.context.Variables()}
 	}
-	options := []expr.Option{expr.Env(env), expr.Patch(new(indexedAccessPatcher))}
+	options = append(options, expr.Env(env))
+	options = append(options, expr.Patch(new(indexedAccessPatcher)))
 	program, err := expr.Compile(entry, append(options, env.exprOperators()...)...)
 	if err != nil {
 		// try parsing the entry as a sequence or chord
