@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/antonmedv/expr/file"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/dsl"
 	midifile "github.com/emicklei/melrose/midi/file"
 	"github.com/emicklei/melrose/notify"
+	"github.com/expr-lang/expr/file"
 )
 
 type ServiceImpl struct {

@@ -3,10 +3,10 @@ package dsl
 import (
 	"reflect"
 
-	"github.com/antonmedv/expr"
-	"github.com/antonmedv/expr/ast"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/dsl/calc"
+	"github.com/expr-lang/expr"
+	"github.com/expr-lang/expr/ast"
 )
 
 type envMap map[string]interface{}

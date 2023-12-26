@@ -10,7 +10,7 @@ import (
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
 
-	"github.com/antonmedv/expr"
+	"github.com/expr-lang/expr"
 )
 
 type Evaluator struct {
