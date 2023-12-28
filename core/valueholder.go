@@ -128,7 +128,7 @@ func ValueOf(v interface{}) interface{} {
 // IndexOf returns the non HasValue value of v
 func IndexOf(v interface{}) interface{} {
 	if i, ok := v.(HasIndex); ok {
-		return i.Index("?")
+		return i.Index()
 	}
 	if w, ok := v.(HasValue); ok {
 		return IndexOf(w.Value())

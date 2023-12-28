@@ -1,7 +1,7 @@
 package dsl
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/emicklei/melrose/core"
@@ -193,7 +193,7 @@ d = dynamic(v,note('c'))`)
 }
 
 func TestProcessLanguageTest(t *testing.T) {
-	src, _ := ioutil.ReadFile("language_test.mel")
+	src, _ := os.ReadFile("language_test.mel")
 	defer func() {
 		if err := recover(); err != nil {
 			t.Fatal("panic recovered:", err)
@@ -225,4 +225,10 @@ func TestDeviceOnTrack(t *testing.T) {
 s = sequence('a b')
 dt = device(1,track('title',4, onbar(1,s)))`)
 	checkStorex(t, r, "value(i)")
+}
+
+func TestIteratorIndex(t *testing.T) {
+	r := eval(t, `it = iterator(1,2,3)
+idx = it.Index()`)
+	checkStorex(t, r, "it.Index()")
 }

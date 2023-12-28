@@ -75,7 +75,7 @@ func (v variable) Value() interface{} {
 func (v variable) Index() interface{} {
 	m, _ := v.store.Get(v.Name)
 	if h, ok := m.(core.HasIndex); ok {
-		return h.Index(v.Name)
+		return h.Index()
 	}
 	return 0 // signals invalid index, public indexables are 1-based
 }

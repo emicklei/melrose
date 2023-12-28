@@ -4,10 +4,16 @@ import "fmt"
 
 type Iterator struct {
 	index  int
+	name   string
 	Target []interface{}
 }
 
-//  Value is part of HasValue
+// VariableName is part of NameAware
+func (i *Iterator) VariableName(n string) {
+	i.name = n
+}
+
+// Value is part of HasValue
 func (i *Iterator) Value() interface{} {
 	if len(i.Target) == 0 {
 		return nil
@@ -16,10 +22,9 @@ func (i *Iterator) Value() interface{} {
 }
 
 // Index returns the current index of the iterator as a HasValue ; 1-based
-// TODO or implement NameAware interface and remove the parameter?
-func (i *Iterator) Index(receiver string) HasValue {
+func (i *Iterator) Index() HasValue {
 	return ValueFunction{
-		StoreString: fmt.Sprintf("%s.Index()", receiver),
+		StoreString: fmt.Sprintf("%s.Index()", i.name),
 		Function: func() interface{} {
 			return i.getindex() + 1
 		}}
@@ -27,7 +32,7 @@ func (i *Iterator) Index(receiver string) HasValue {
 
 func (i *Iterator) getindex() int { return i.index }
 
-//  S is part of Sequenceable
+// S is part of Sequenceable
 func (i *Iterator) S() Sequence {
 	if len(i.Target) == 0 {
 		return EmptySequence

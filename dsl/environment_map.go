@@ -77,6 +77,9 @@ func (p *indexedAccessPatcher) Visit(node *ast.Node) {
 		if in.Type() != variableType {
 			return
 		}
+		if n.Name != "" {
+			return
+		}
 		// check argument type
 		methodName := "At"
 		_, ok = n.Property.(*ast.IdentifierNode)
