@@ -144,6 +144,6 @@ func (r *DeviceRegistry) Listen(deviceID int, who core.NoteListener, startOrStop
 		in.listener.Add(who)
 	} else {
 		in.listener.Remove(who)
-		// do not stop the listener such that incoming events are just ignored
+		// do not stop the listener ; incoming events are just ignored. otherwise buffer will overflow
 	}
 }
