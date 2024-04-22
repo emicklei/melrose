@@ -3,7 +3,9 @@ package cli
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"os/signal"
+	"runtime"
 	"strings"
 	"syscall"
 
@@ -75,6 +77,21 @@ func repl(line *liner.State, ctx core.Context) {
 				continue
 			}
 		}
+		if strings.HasSuffix(entry, "!") {
+			// create hidden variable
+			// assign it the value of the expression before !
+			// open the browser on it
+			if result, err := eval.RecoveringEvaluateStatement(entry[:len(entry)-2]); err != nil {
+				notify.Print(notify.NewError(err))
+				return
+			} else {
+				if result != nil {
+					ctx.Variables().Put("_", result)
+					open(fmt.Sprintf("http://localhost:8118/v1/notes?var=_"))
+					continue
+				}
+			}
+		}
 		if result, err := eval.RecoveringEvaluateStatement(entry); err != nil {
 			notify.Print(notify.NewError(err))
 			// even on error, add entry to history so we can edit/fix it
@@ -99,4 +116,18 @@ func setupCloseHandler(line *liner.State, ctx core.Context) {
 		tearDown(line, ctx)
 		os.Exit(0)
 	}()
+}
+
+// Open calls the OS default program for uri
+func open(uri string) error {
+	switch {
+	case "windows" == runtime.GOOS:
+		return exec.Command("rundll32", "url.dll,FileProtocolHandler", uri).Start()
+	case "darwin" == runtime.GOOS:
+		return exec.Command("open", uri).Start()
+	case "linux" == runtime.GOOS:
+		return exec.Command("xdg-open", uri).Start()
+	default:
+		return fmt.Errorf("Unable to open uri:%v on:%v", uri, runtime.GOOS)
+	}
 }
