@@ -7,7 +7,6 @@ require (
 	github.com/emicklei/tre v1.5.0
 	github.com/expr-lang/expr v1.15.7
 	github.com/fogleman/gg v1.3.0
-	github.com/jonasfj/go-localtunnel v0.0.0-20170326223115-8a804488f275
 	github.com/peterh/liner v1.2.2
 	gitlab.com/gomidi/rtmididrv v0.15.0
 )

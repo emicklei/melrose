@@ -32,6 +32,8 @@ func (r *Recording) GetTargetFrom(other *Recording) {
 }
 
 func (r *Recording) Play(ctx core.Context, at time.Time) error {
+	// flush
+	r.timeline.Reset()
 	ctx.Device().Listen(r.deviceID, r, true)
 	return nil
 }

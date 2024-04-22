@@ -14,7 +14,7 @@ type Sequence struct {
 	Notes [][]Note
 }
 
-// At uses zero-based indexing into the Notes
+// At uses zero-based indexing into the Notes; i is zero-index
 func (s Sequence) At(i int) []Note {
 	if i < 0 || i > len(s.Notes)-1 {
 		panic("Sequence index out of bounds:" + strconv.Itoa(i))
@@ -97,7 +97,7 @@ func (s Sequence) DurationFactor() float64 {
 
 func (s Sequence) Inspect(i Inspection) {
 	i.Properties["duration"] = s.DurationAt(i.Context.Control().BPM())
-	i.Properties["note(s)/groups"] = len(s.Notes)
+	i.Properties["note(s)|groups"] = len(s.Notes)
 	i.Properties["bars"] = s.Bars(i.Context.Control().BIAB())
 }
 
