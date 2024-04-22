@@ -31,7 +31,9 @@ func (s Sequence) NoRests() Sequence {
 				ng = append(ng, n)
 			}
 		}
-		notes = append(notes, ng)
+		if len(ng) > 0 {
+			notes = append(notes, ng)
+		}
 	}
 	return Sequence{Notes: notes}
 }

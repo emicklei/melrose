@@ -611,6 +611,25 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 			return op.Octave{Target: list, Offset: core.ToHasValue(scalarOrVar)}
 		}}
 
+	eval["bare"] = Function{
+		Title:         "Bare creator",
+		Description:   "Transforms the object into a simple basic sequence of notes without fractions,dynamics and rests",
+		ControlsAudio: false,
+		Template:      `bare(somevar,othervar)`,
+		Samples:       `b = bare(sequence('.2F+++ =')) // => 2F`,
+		Func: func(playables ...interface{}) interface{} {
+			list := []core.Sequenceable{}
+			for _, p := range playables {
+				if s, ok := getSequenceable(p); !ok {
+					notify.NewWarningf("cannot bare (%T) %v", p, p)
+					return nil
+				} else {
+					list = append(list, s)
+				}
+			}
+			return op.Bare{Target: list}
+		}}
+
 	eval["record"] = Function{
 		Title:         "Recording creator",
 		Description:   "create a recorded sequence of notes from the current MIDI input device using the currrent BPM",
@@ -969,7 +988,7 @@ lp_cdef = loop(transpose(int1,sequence('c d e f')), next(int1))`,
 			return core.NewInterval(core.ToHasValue(from), core.ToHasValue(to), core.ToHasValue(by), core.RepeatFromTo)
 		}}
 
-	eval["resequence"] = Function{
+	registerFunction(eval, "resequence", Function{
 		Title:       "Sequence modifier",
 		Description: "creates a modifier of sequence notes by index (1-based)",
 		Prefix:      "resq",
@@ -984,7 +1003,7 @@ i2 = resequence('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)`,
 				return notify.Panic(fmt.Errorf("cannot create resequencer on (%T) %v", m, m))
 			}
 			return op.NewResequencer(s, core.ToHasValue(pattern))
-		}}
+		}})
 
 	eval["notemap"] = Function{
 		Title:       "Note Map creator",
