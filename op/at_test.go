@@ -1,8 +1,9 @@
 package op
 
 import (
-	"github.com/emicklei/melrose/core"
 	"testing"
+
+	"github.com/emicklei/melrose/core"
 )
 
 func TestAtIndex_S(t *testing.T) {
@@ -20,6 +21,15 @@ func TestAtIndex_S(t *testing.T) {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 	if got, want := a.Storex(), "at(3,sequence('C D'))"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+
+	b := NewAtIndex(core.On(1), s).S()
+	if got, want := b.Storex(), "sequence('C')"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	b2 := NewAtIndex(core.On(2), s).S()
+	if got, want := b2.Storex(), "sequence('D')"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
