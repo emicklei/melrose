@@ -15,26 +15,26 @@ import (
 // pianorollImageHandler returns PNG content given a variable
 func (l *LanguageServer) pianorollImageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		notify.Console.Warnf("HTTP method not allowed:%s", r.Method)
 		w.WriteHeader(http.StatusMethodNotAllowed)
+		notify.Console.Warnf("HTTP method not allowed:%s", r.Method)
 		return
 	}
 	varname := r.URL.Query().Get("var")
 	if varname == "" {
-		fmt.Fprintf(w, "var parameter is empty")
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "var parameter is empty")
 		return
 	}
 	obj, ok := l.context.Variables().Get(varname)
 	if !ok {
-		fmt.Fprintf(w, "no object found for var:%s", varname)
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "no object found for var:%s", varname)
 		return
 	}
 	seq, ok := obj.(core.Sequenceable)
 	if !ok {
-		fmt.Fprintf(w, "no object is not sequenceable:%s", varname)
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "no object is not sequenceable:%s", varname)
 		return
 	}
 
