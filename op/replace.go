@@ -3,6 +3,7 @@ package op
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/emicklei/melrose/core"
 )
 
@@ -40,4 +41,15 @@ func (r Replace) Storex() string {
 		fmt.Fprintf(&b, "%v)", r.To)
 	}
 	return b.String()
+}
+
+// Return a new Replace in which any occurrences of "from" are replaced by "to".
+func (r Replace) Replaced(from, to core.Sequenceable) core.Sequenceable {
+	if from == core.Sequenceable(r) {
+		return to
+	}
+	if rep, ok := r.Target.(core.Replaceable); ok {
+		return Replace{Target: rep.Replaced(from, to), From: r.From, To: r.To}
+	}
+	return r
 }
