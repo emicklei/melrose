@@ -79,8 +79,8 @@ func (i Inspection) Markdown() string {
 
 func (i Inspection) String() string {
 	var b bytes.Buffer
-	title := i.Text
-	fmt.Fprintf(&b, "%s ", title)
+	// title := i.Text
+	// fmt.Fprintf(&b, "%s ", title)
 	// sort keys
 	keys := []string{}
 	for k := range i.Properties {

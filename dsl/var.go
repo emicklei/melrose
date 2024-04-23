@@ -22,13 +22,13 @@ func (v variable) String() string {
 }
 
 func (v variable) Inspect(i core.Inspection) {
-	i.Properties["name"] = v.Name
+	i.Properties["var-name"] = v.Name
 	currentValue, ok := v.store.Get(v.Name)
 	if !ok {
 		i.Properties["error"] = "missing value"
 		return
 	}
-	i.Properties["val"] = core.Storex(currentValue)
+	i.Properties["var-value"] = core.Storex(currentValue)
 	if insp, ok := currentValue.(core.Inspectable); ok {
 		insp.Inspect(i)
 	} else {

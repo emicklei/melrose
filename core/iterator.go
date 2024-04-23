@@ -65,5 +65,6 @@ func (i Iterator) Storex() string {
 // Inspect is part of Inspectable
 func (i Iterator) Inspect(in Inspection) {
 	in.Properties["index"] = i.index + 1
+	in.Properties["value"] = i.Value()
 	in.Properties["length"] = len(i.Target)
 }
