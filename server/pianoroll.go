@@ -42,7 +42,7 @@ func (l *LanguageServer) pianorollImageHandler(w http.ResponseWriter, r *http.Re
 	d := midi.NewOutputDevice(0, nil, 0, tim)
 	d.Play(core.NoCondition, seq, l.context.Control().BPM(), time.Now())
 
-	gc := gg.NewContext(500, 50)
+	gc := gg.NewContext(1000, 200)
 
 	evts := tim.NoteEvents()
 	nv := img.NotesView{Events: evts, BPM: l.context.Control().BPM()}

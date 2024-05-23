@@ -77,7 +77,7 @@ func (p *indexedAccessPatcher) Visit(node *ast.Node) {
 		if in.Type() != variableType {
 			return
 		}
-		if n.Name != "" {
+		if n.Method {
 			return
 		}
 		// check argument type
