@@ -170,7 +170,7 @@ func displayString(ctx core.Context, v interface{}) string {
 func patchFilelocation(err error, lineEnd int) error {
 	// patch Location of error
 	if fe, ok := err.(*file.Error); ok {
-		fe.Location.Line = fe.Location.Line - 1 + lineEnd
+		fe.Line = fe.Line - 1 + lineEnd
 		return fe
 	}
 	return err

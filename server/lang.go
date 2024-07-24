@@ -7,6 +7,7 @@ import (
 	"github.com/emicklei/melrose/api"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
+	"github.com/emicklei/structexplorer"
 )
 
 // LanguageServer can execute DSL statements received over HTTP
@@ -41,5 +42,8 @@ func Start(ctx core.Context) {
 		go ls.Start()
 	} else {
 		notify.Warnf("empty http flag, skip starting HTTP server")
+	}
+	if core.BuildTag == "dev" {
+		go structexplorer.NewService("ctx", ctx).Start()
 	}
 }
