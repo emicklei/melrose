@@ -60,6 +60,7 @@ func registerFunction(m map[string]Function, k string, f Function) {
 		if dup, ok := m[f.Alias]; ok {
 			log.Fatal("duplicate function alias key detected:", dup)
 		}
+		m[f.Alias] = f
 	}
 	m[k] = f
 }
