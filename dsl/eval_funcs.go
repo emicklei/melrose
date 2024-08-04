@@ -1278,5 +1278,15 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 		},
 	})
 
+	registerFunction(eval, "transpose_scale", Function{
+		Title:       "Transpose on a Scale operator",
+		Description: "Same as transpose but uses the scale of find the notes",
+		Template:    "transpose_scale(${1:scale),${2:integer},${3:sequenceable})",
+		Samples:     `transpose_scale(scale(1,'E_'),1,sequence('G'))`,
+		Func: func(scaleVar any, intVar any, seqVar any) any {
+			return nil
+		},
+	})
+
 	return eval
 }
