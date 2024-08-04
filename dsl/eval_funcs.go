@@ -473,7 +473,14 @@ note('2.e#--')`,
 		Prefix:      "sc",
 		Template:    `scale(${1:octaves},'${2:scale-syntax}')`,
 		IsCore:      true,
-		Samples:     `scale(1,'e/m') // => E F G A B C5 D5`,
+		Samples: `
+// E major
+scale(1,'e') // => E G_ A_ A B D_5 E_5
+/ E minor
+scale(1,'e/m') // => E F G A B C5 D5
+// E flat minor
+scale(1,'e_/m') // => E_ E G_ A_ B_ B D_5
+`,
 		Func: func(octaves int, s string) interface{} {
 			if octaves < 1 {
 				return notify.Panic(fmt.Errorf("octaves must be >= 1%v", octaves))
