@@ -9,7 +9,7 @@ func Test_formatParser_ParseSequence(t *testing.T) {
 		in  string
 		out string
 	}{
-		{"16.A#++ .C_-( A B ) C (D) ", "sequence('16.A#++ .C_- (A B) C D')"},
+		{"16.A♯++ .C♭-( A B ) C (D) ", "sequence('16.A#++ .C_- (A B) C D')"},
 		{"8c#5-", "sequence('8C#5-')"},
 		{" ", "sequence('')"},
 	} {

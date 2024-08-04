@@ -486,9 +486,9 @@ func (s *noteSTM) accept(lit string) error {
 		// accidental
 		var accidental = 0
 		switch lit {
-		case "#":
+		case "#", "♯":
 			accidental = 1
-		case "_":
+		case "_", "♭":
 			accidental = -1
 		}
 		if accidental != 0 {
