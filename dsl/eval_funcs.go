@@ -24,7 +24,7 @@ func EvalFunctions(ctx core.Context) map[string]Function {
 	eval := map[string]Function{}
 
 	// TODO allow fractions:  0.5, 0.25, 0.0125
-	eval["fraction"] = Function{
+	registerFunction(eval, "fraction", Function{
 		Title: "Duration fraction operator",
 		Description: `Creates a new object for which the fraction of duration of all notes are changed.
 The first parameter controls the fraction of the note, e.g. 1 = whole, 2 = half, 4 = quarter, 8 = eight, 16 = sixteenth.
@@ -45,9 +45,9 @@ Fraction can also be an exact float value between 0 and 1.
 				}
 			}
 			return op.NewFraction(getHasValue(param), joined)
-		}}
+		}})
 
-	eval["dynamic"] = Function{
+	registerFunction(eval, "dynamic", Function{
 		Title: "Dynamic operator",
 		Description: `Creates a new modified musical object for which the dynamics of all notes are changed.
 	The first parameter controls the emphasis the note, e.g. + (mezzoforte,mf), -- (piano,p) or a velocity [0..127].
@@ -68,9 +68,9 @@ dynamic(112,note('a')) // => A++++`,
 				}
 			}
 			return op.Dynamic{Target: joined, Emphasis: getHasValue(emphasis)}
-		}}
+		}})
 
-	eval["dynamicmap"] = Function{
+	registerFunction(eval, "dynamicmap", Function{
 		Title:       "Dynamic Map creator",
 		Description: `changes the dynamic of notes from a musical object. 1-index-based mapping`,
 		Prefix:      "dyna",
@@ -93,9 +93,9 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 				return nil
 			}
 			return mapper
-		}}
+		}})
 
-	eval["progression"] = Function{
+	registerFunction(eval, "progression", Function{
 		Title:       "Chord progression creator",
 		Description: `create a Chord progression using this <a href="/docs/reference/notations/#chordprogression">format</a>`,
 		Prefix:      "pro",
@@ -104,9 +104,9 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 		Samples:     `progression('1c3++','II V I') // => (1D3++ 1F3++ 1A3++) (1G3++ 1B3++ 1D++) (1C3++ 1E3++ 1G3++)`,
 		Func: func(scale, chords interface{}) interface{} {
 			return core.NewChordProgression(getHasValue(scale), getHasValue(chords))
-		}}
+		}})
 
-	eval["chordsequence"] = Function{
+	registerFunction(eval, "chordsequence", Function{
 		Title:       "Sequence of chords creator",
 		Description: `create a Chord sequence using this <a href="/docs/reference/notations/#chordsequence">format</a>`,
 		Prefix:      "pro",
@@ -120,9 +120,9 @@ chordsequence('(c d)') // => (C E G D G_ A)`,
 				return notify.Panic(err)
 			}
 			return p
-		}}
+		}})
 
-	eval["prob"] = Function{
+	registerFunction(eval, "prob", Function{
 		Title:       "Probabilistic music object.",
 		Prefix:      "prob",
 		Description: "Creates a new musical object for which the notes are played with a certain probability",
@@ -132,9 +132,9 @@ chordsequence('(c d)') // => (C E G D G_ A)`,
 prob(0.8,sequence('(c e g)')) // 80% chance of playing the chord C, otherwise a quarter rest`,
 		Func: func(prec interface{}, noteOrSeq interface{}) interface{} {
 			return op.NewProbability(getHasValue(prec), getHasValue(noteOrSeq))
-		}}
+		}})
 
-	eval["joinmap"] = Function{
+	registerFunction(eval, "joinmap", Function{
 		Title:       "Join Map creator",
 		Description: "creates a new join by mapping elements. 1-index-based mapping",
 		Prefix:      "joinm",
@@ -150,9 +150,9 @@ jm = joinmap('1 (2 3) 4',j) // => C = D =`,
 			}
 			p := getHasValue(indices)
 			return op.NewJoinMap(v, p)
-		}}
+		}})
 
-	eval["bars"] = Function{
+	registerFunction(eval, "bars", Function{
 		Prefix:      "ba",
 		Description: "compute the number of bars that is taken when playing a musical object",
 		IsComposer:  true,
@@ -165,9 +165,9 @@ jm = joinmap('1 (2 3) 4',j) // => C = D =`,
 			// TODO handle loop
 			biab := ctx.Control().BIAB()
 			return int(math.Round((s.S().DurationFactor() * 4) / float64(biab)))
-		}}
+		}})
 
-	eval["beats"] = Function{
+	registerFunction(eval, "beats", Function{
 		Prefix:      "be",
 		Description: "compute the number of beats that is taken when playing a musical object",
 		IsComposer:  true,
@@ -178,9 +178,9 @@ jm = joinmap('1 (2 3) 4',j) // => C = D =`,
 				return notify.Panic(fmt.Errorf("cannot compute how many beats for (%T) %v", seq, seq))
 			}
 			return len(s.S().Notes)
-		}}
+		}})
 
-	eval["track"] = Function{
+	registerFunction(eval, "track", Function{
 		Title:       "Track creator",
 		Description: "create a named track for a given MIDI channel with a musical object",
 		Prefix:      "tr",
@@ -198,9 +198,9 @@ jm = joinmap('1 (2 3) 4',j) // => C = D =`,
 				tr.Add(each)
 			}
 			return tr
-		}}
+		}})
 
-	eval["multitrack"] = Function{
+	registerFunction(eval, "multitrack", Function{
 		Title:         "Multi track creator",
 		Description:   "create a multi-track object from zero or more tracks",
 		Prefix:        "mtr",
@@ -213,9 +213,9 @@ jm = joinmap('1 (2 3) 4',j) // => C = D =`,
 				tracks = append(tracks, getHasValue(each))
 			}
 			return core.MultiTrack{Tracks: tracks}
-		}}
+		}})
 
-	eval["midi"] = Function{
+	registerFunction(eval, "midi", Function{
 		Title: "Note creator",
 		Description: `create a Note from MIDI information and is typically used for drum sets.
 The first parameter is a fraction {1,2,4,8,16} or a duration in milliseconds or a time.Duration.
@@ -231,18 +231,17 @@ midi(16,36,70) // => 16C2 (kick)`,
 			nrVal := getHasValue(nr)
 			velVal := getHasValue(velocity)
 			return core.NewMIDI(durVal, nrVal, velVal)
-		}}
+		}})
 
-	eval["print"] = Function{
+	registerFunction(eval, "print", Function{
 		Title:       "Printer creator",
 		Description: "prints an object when evaluated (play,loop)",
 		Template:    `print(${1:object})`,
 		Func: func(m interface{}) interface{} {
 			return core.Print{Context: ctx, Target: m}
-		}}
+		}})
 
-	eval["chord"] = Function{
-		Title:       "Chord creator",
+	registerFunction(eval, "chord", Function{
 		Description: `create a Chord from its string <a href="/docs/reference/notations/#chord">format</a>`,
 		Prefix:      "cho",
 		Template:    `chord('${1:note}')`,
@@ -255,7 +254,7 @@ chord('g/M/2') // Major G second inversion`,
 				return notify.Panic(err)
 			}
 			return c
-		}}
+		}})
 
 	registerFunction(eval, "transposemap", Function{
 		Title:       "Transpose Map operator",
@@ -272,7 +271,7 @@ chord('g/M/2') // Major G second inversion`,
 			return op.NewTransposeMap(s, indices)
 		}})
 
-	eval["octavemap"] = Function{
+	registerFunction(eval, "octavemap", Function{
 		Title:       "Octave Map operator",
 		Description: "create a sequence with notes for which the order and the octaves are changed",
 		Prefix:      "octavem",
@@ -285,9 +284,9 @@ chord('g/M/2') // Major G second inversion`,
 				return notify.Panic(fmt.Errorf("cannot octavemap (%T) %v", m, m))
 			}
 			return op.NewOctaveMap(s, indices)
-		}}
+		}})
 
-	eval["velocitymap"] = Function{
+	registerFunction(eval, "velocitymap", Function{
 		Title:       "Velocity Map operator",
 		Description: "create a sequence with notes for which the order and the velocities are changed. Velocity 0 means no change.",
 		Prefix:      "velocitym",
@@ -300,7 +299,7 @@ chord('g/M/2') // Major G second inversion`,
 				return notify.Panic(fmt.Errorf("cannot velocitymap (%T) %v", m, m))
 			}
 			return op.NewVelocityMap(s, indices)
-		}}
+		}})
 
 	registerFunction(eval, "transpose", Function{
 		Title:       "Transpose operator",
@@ -320,7 +319,7 @@ transpose(p,note('c'))`,
 			return op.Transpose{Target: s, Semitones: getHasValue(semitones)}
 		}})
 
-	eval["reverse"] = Function{
+	registerFunction(eval, "reverse", Function{
 		Title:       "Reverse operator",
 		Description: "reverse the (groups of) notes in a sequence",
 		Prefix:      "rev",
@@ -333,9 +332,9 @@ transpose(p,note('c'))`,
 				return notify.Panic(fmt.Errorf("cannot reverse (%T) %v", m, m))
 			}
 			return op.Reverse{Target: s}
-		}}
+		}})
 
-	eval["repeat"] = Function{
+	registerFunction(eval, "repeat", Function{
 		Title:       "Repeat operator",
 		Description: "repeat one or more musical objects a number of times",
 		Prefix:      "rep",
@@ -352,7 +351,7 @@ transpose(p,note('c'))`,
 				}
 			}
 			return op.Repeat{Target: joined, Times: getHasValue(howMany)}
-		}}
+		}})
 
 	registerFunction(eval, "join", Function{
 		Title:       "Join operator",
@@ -375,7 +374,7 @@ ab = join(a,b) // => (A D_5 E5) (C E G)`,
 			return op.Join{Target: joined}
 		}})
 
-	eval["bpm"] = Function{
+	registerFunction(eval, "bpm", Function{
 		Title:         "Beats Per Minute",
 		Description:   "set the Beats Per Minute (BPM) [1..300]; default is 120",
 		ControlsAudio: true,
@@ -386,9 +385,9 @@ speedup = iterator(80,100,120,140)
 l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Func: func(v interface{}) interface{} {
 			return control.NewBPM(core.On(v), ctx)
-		}}
+		}})
 
-	eval["duration"] = Function{
+	registerFunction(eval, "duration", Function{
 		Title:       "Duration calculator",
 		Description: "computes the duration of the object using the current BPM",
 		Prefix:      "dur",
@@ -399,9 +398,9 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 				return s.S().DurationAt(ctx.Control().BPM())
 			}
 			return time.Duration(0)
-		}}
+		}})
 
-	eval["biab"] = Function{
+	registerFunction(eval, "biab", Function{
 		Title:         "Beats in a Bar",
 		Description:   "set the Beats in a Bar; default is 4",
 		ControlsAudio: true,
@@ -414,7 +413,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 			}
 			ctx.Control().SetBIAB(i)
 			return nil
-		}}
+		}})
 
 	registerFunction(eval, "import", Function{
 		Title:         "Import script",
@@ -434,7 +433,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		},
 	})
 
-	eval["sequence"] = Function{
+	registerFunction(eval, "sequence", Function{
 		Title:       "Sequence creator",
 		Description: `create a Sequence using this <a href="/docs/reference/notations/#sequence">format</a>`,
 		Prefix:      "se",
@@ -450,12 +449,12 @@ sequence('c (d e f) a =')`,
 				return notify.Panic(err)
 			}
 			return sq
-		}}
+		}})
 
-	eval["note"] = Function{
+	registerFunction(eval, "note", Function{
 		Title:       "Note creator",
 		Description: `create a Note using this <a href="/docs/reference/notations/#note">format</a>`,
-		Prefix:      "no",
+		Prefix:      "not",
 		Template:    `note('${1:letter}')`,
 		Samples: `note('e')
 note('2.e#--')`,
@@ -466,9 +465,9 @@ note('2.e#--')`,
 				return notify.Panic(err)
 			}
 			return n
-		}}
+		}})
 
-	eval["scale"] = Function{
+	registerFunction(eval, "scale", Function{
 		Title:       "Scale creator",
 		Description: `create a Scale using this <a href="/docs/reference/notations/#scale">format</a>`,
 		Prefix:      "sc",
@@ -485,9 +484,9 @@ note('2.e#--')`,
 				return nil
 			}
 			return sc
-		}}
+		}})
 
-	eval["at"] = Function{
+	registerFunction(eval, "at", Function{
 		Title:       "Index getter",
 		Description: "create an index getter (1-based) to select a musical object",
 		Prefix:      "at",
@@ -500,9 +499,9 @@ note('2.e#--')`,
 				return notify.Panic(fmt.Errorf("cannot index (%T) %v", object, object))
 			}
 			return op.NewAtIndex(indexVal, objectSeq)
-		}}
+		}})
 
-	eval["onbar"] = Function{
+	registerFunction(eval, "onbar", Function{
 		Title:       "Track modifier",
 		Description: "puts a musical object on a track to start at a specific bar",
 		Prefix:      "onbar",
@@ -514,9 +513,9 @@ note('2.e#--')`,
 				return notify.Panic(fmt.Errorf("cannot put on track (%T) %v", seq, seq))
 			}
 			return core.NewSequenceOnTrack(getHasValue(bar), s)
-		}}
+		}})
 
-	eval["random"] = Function{
+	registerFunction(eval, "random", Function{
 		Title:       "Random generator",
 		Description: "create a random integer generator. Use next() to generate a new integer",
 		Prefix:      "ra",
@@ -527,9 +526,9 @@ next(num)`,
 			fromVal := getHasValue(from)
 			toVal := getHasValue(to)
 			return op.NewRandomInteger(fromVal, toVal)
-		}}
+		}})
 
-	eval["play"] = Function{
+	registerFunction(eval, "play", Function{
 		Title:         "Play musical objects in order. Use sync() for parallel playing",
 		Description:   "play all musical objects",
 		ControlsAudio: true,
@@ -552,9 +551,9 @@ next(num)`,
 				}
 			}
 			return control.NewPlay(ctx, list, false)
-		}}
+		}})
 
-	eval["sync"] = Function{
+	registerFunction(eval, "sync", Function{
 		Title:         "Synchroniser creator",
 		Description:   "Synchronise playing musical objects. Use play() for serial playing",
 		ControlsAudio: true,
@@ -568,9 +567,9 @@ sync(loop1,loop2) // begin loop2 at the next start of loop1`,
 				vals = append(vals, getHasValue(p))
 			}
 			return control.NewSyncPlay(vals)
-		}}
+		}})
 
-	eval["ungroup"] = Function{
+	registerFunction(eval, "ungroup", Function{
 		Title:       "Ungroup operator",
 		Description: "undo any grouping of notes from one or more musical objects",
 		Prefix:      "ung",
@@ -589,9 +588,9 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 				}
 			}
 			return op.Serial{Target: joined}
-		}}
+		}})
 
-	eval["octave"] = Function{
+	registerFunction(eval, "octave", Function{
 		Title:       "Octave operator",
 		Description: "change the pitch of notes by steps of 12 semitones for one or more musical objects",
 		Prefix:      "oct",
@@ -609,9 +608,9 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 				}
 			}
 			return op.Octave{Target: list, Offset: core.ToHasValue(scalarOrVar)}
-		}}
+		}})
 
-	eval["bare"] = Function{
+	registerFunction(eval, "bare", Function{
 		Title:         "Bare creator",
 		Description:   "Transforms the object into a simple basic sequence of notes without fractions,dynamics and rests",
 		ControlsAudio: false,
@@ -628,9 +627,9 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 				}
 			}
 			return op.Bare{Target: list}
-		}}
+		}})
 
-	eval["record"] = Function{
+	registerFunction(eval, "record", Function{
 		Title:         "Recording creator",
 		Description:   "create a recorded sequence of notes from the current MIDI input device using the currrent BPM",
 		ControlsAudio: true,
@@ -657,9 +656,9 @@ record(rec) // record notes played on the current input device`,
 				}
 			}
 			return control.NewRecording(deviceID, injectable.Name, ctx.Control().BPM())
-		}}
+		}})
 
-	eval["undynamic"] = Function{
+	registerFunction(eval, "undynamic", Function{
 		Title:       "Undo dynamic operator",
 		Description: "set the dymamic to normal for all notes in a musical object",
 		Prefix:      "und",
@@ -672,7 +671,7 @@ record(rec) // record notes played on the current input device`,
 			} else {
 				return op.Undynamic{Target: s}
 			}
-		}}
+		}})
 
 	registerFunction(eval, "iterator", Function{
 		Title:       "Iterator creator",
@@ -722,7 +721,7 @@ stretch(8,note('c'))  // C with length of 8 x 0.25 (quarter) = 2 bars`,
 			return op.NewStretch(getHasValue(factor), list)
 		}})
 
-	eval["group"] = Function{
+	registerFunction(eval, "group", Function{
 		Title:       "Group operator",
 		Description: "create a new sequence in which all notes of a musical object are grouped",
 		Prefix:      "gro",
@@ -735,9 +734,10 @@ stretch(8,note('c'))  // C with length of 8 x 0.25 (quarter) = 2 bars`,
 			} else {
 				return op.Group{Target: s}
 			}
-		}}
+		}})
+
 	// BEGIN Loop and control
-	eval["loop"] = Function{
+	registerFunction(eval, "loop", Function{
 		Title:         "Loop creator",
 		Description:   "create a new loop from one or more musical objects",
 		ControlsAudio: true,
@@ -756,9 +756,9 @@ loop(cb,reverse(cb))`,
 				}
 			}
 			return core.NewLoop(ctx, joined)
-		}}
+		}})
 
-	eval["stop"] = Function{
+	registerFunction(eval, "stop", Function{
 		Title:         "Stop a loop or listen",
 		Description:   "stop running loop(s) or listener(s). Ignore if it was stopped.",
 		ControlsAudio: true,
@@ -781,9 +781,10 @@ stop() // stop all playables`,
 				}
 			}
 			return nil
-		}}
+		}})
+
 	// END Loop and control
-	eval["channel"] = Function{
+	registerFunction(eval, "channel", Function{
 		Title:         "MIDI channel selector",
 		Description:   "select a MIDI channel, must be in [1..16]; must be a top-level operator",
 		ControlsAudio: true,
@@ -796,9 +797,9 @@ stop() // stop all playables`,
 				return notify.Panic(fmt.Errorf("cannot decorate with channel (%T) %s", m, core.Storex(m)))
 			}
 			return core.NewChannelSelector(seq, getHasValue(midiChannel))
-		}}
+		}})
 
-	eval["fractionmap"] = Function{
+	registerFunction(eval, "fractionmap", Function{
 		Title:       "Fraction Map operator",
 		Description: "create a sequence with notes for which the fractions are changed. 1-based indexing. use space or comma as separator",
 		Prefix:      "frm",
@@ -812,7 +813,7 @@ fractionmap('. 8 2',sequence('c e g')) // => .C 8E 2G`,
 				return notify.Panic(fmt.Errorf("cannot fractionmap (%T) %v", m, m))
 			}
 			return op.NewFractionMap(getHasValue(indices), s)
-		}}
+		}})
 
 	// eval["input"] = Function{
 	// 	Title: "MIDI Input device",
@@ -846,7 +847,7 @@ fractionmap('. 8 2',sequence('c e g')) // => .C 8E 2G`,
 	// 			return nil
 	// 		}}
 
-	eval["key"] = Function{
+	registerFunction(eval, "key", Function{
 		Title:       "MIDI Keyboard key",
 		Description: "Use the key to trigger the play of musical object",
 		Template:    `key('${2:note}')`,
@@ -882,9 +883,9 @@ c2 = key(channel(3,note('c2')) // C2 key on the default input device and channel
 				note = n // TODO
 			}
 			return control.NewKey(deviceID, channel, note)
-		}}
+		}})
 
-	eval["knob"] = Function{
+	registerFunction(eval, "knob", Function{
 		Title:       "MIDI controller knob",
 		Description: "Use the knob as an integer value for a parameter in any object",
 		Template:    `knob(${1:device-id},${2:midi-number})`,
@@ -905,9 +906,9 @@ transpose(k,scale(1,'E')) // when played, use the current value of knob "k"`,
 			k := control.NewKnob(deviceID, 0, number)
 			ctx.Device().Listen(deviceID, k, true)
 			return k
-		}}
+		}})
 
-	eval["onkey"] = Function{
+	registerFunction(eval, "onkey", Function{
 		Title: "Key trigger creator",
 		Description: `Assign a playable to a key.
 If this key is pressed the playable will start. 
@@ -959,9 +960,9 @@ onkey(c2, fun) // if C2 is pressed on the axiom device then evaluate the functio
 				return notify.Panic(fmt.Errorf("cannot install onkey because error:%v", err))
 			}
 			return nil
-		}}
+		}})
 
-	eval["device"] = Function{
+	registerFunction(eval, "device", Function{
 		Title:         "MIDI device selector",
 		Description:   "select a MIDI device from the available device IDs; must become before channel",
 		ControlsAudio: true,
@@ -974,9 +975,9 @@ onkey(c2, fun) // if C2 is pressed on the axiom device then evaluate the functio
 				return notify.Panic(fmt.Errorf("cannot decorate with device (%T) %s", m, core.Storex(m)))
 			}
 			return core.NewDeviceSelector(seq, getHasValue(deviceID))
-		}}
+		}})
 
-	eval["interval"] = Function{
+	registerFunction(eval, "interval", Function{
 		Title:       "Interval creator",
 		Description: "create an integer repeating interval (from,to,by,method). Default method is 'repeat', Use next() to get a new integer",
 		Prefix:      "int",
@@ -986,7 +987,7 @@ lp_cdef = loop(transpose(int1,sequence('c d e f')), next(int1))`,
 		IsComposer: true,
 		Func: func(from, to, by interface{}) *core.Interval {
 			return core.NewInterval(core.ToHasValue(from), core.ToHasValue(to), core.ToHasValue(by), core.RepeatFromTo)
-		}}
+		}})
 
 	registerFunction(eval, "resequence", Function{
 		Title:       "Sequence modifier",
@@ -1005,7 +1006,7 @@ i2 = resequence('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)`,
 			return op.NewResequencer(s, core.ToHasValue(pattern))
 		}})
 
-	eval["notemap"] = Function{
+	registerFunction(eval, "notemap", Function{
 		Title:       "Note Map creator",
 		Description: "creates a mapper of notes by index (1-based) or using dots (.) and bangs (!)",
 		Template:    `notemap('${1:space-separated-1-based-indices-or-dots-and-bangs}',${2:has-note})`,
@@ -1018,9 +1019,9 @@ m2 = notemap('3 6 9', octave(-1,note('d2')))`,
 				return notify.Panic(fmt.Errorf("cannot create notemap, error:%v", err))
 			}
 			return m
-		}}
+		}})
 
-	eval["merge"] = Function{
+	registerFunction(eval, "merge", Function{
 		Title:       "Merge creator",
 		Description: `merges multiple sequences into one sequence`,
 		Template:    `merge(${1:sequenceable})`,
@@ -1039,9 +1040,9 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 				}
 			}
 			return op.Merge{Target: s}
-		}}
+		}})
 
-	eval["if"] = Function{
+	registerFunction(eval, "if", Function{
 		Title:       "Conditional operator",
 		Template:    `if(${1:condition},${2:then},${3:else})`,
 		Description: "Supports conditions with operators on numbers: <,<=,>,>=,!=,==",
@@ -1067,9 +1068,9 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 			}
 			return ifop
 		},
-	}
+	})
 
-	eval["value"] = Function{
+	registerFunction(eval, "value", Function{
 		Title:       "Value operator",
 		Description: "returns the current value of a variable",
 		Template:    `value(${1:variable})`,
@@ -1081,9 +1082,8 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 				},
 			}
 		},
-	}
-
-	eval["index"] = Function{
+	})
+	registerFunction(eval, "index", Function{
 		Title:       "Index operator",
 		Template:    `index(${1:generator})`,
 		Description: "returns the current index of an object (e.g. iterator,interval,repeat)",
@@ -1095,9 +1095,9 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 				},
 			}
 		},
-	}
+	})
 
-	eval["next"] = Function{
+	registerFunction(eval, "next", Function{
 		Title:    "Next operator",
 		Template: `next(${1:generator})`,
 		Description: `is used to produce the next value in a generator such as random, iterator and interval.
@@ -1108,9 +1108,9 @@ lp_pi = loop(pi,next(i)) // "i" will advance to the next value
 begin(lp_pi)`,
 		Func: func(v interface{}) interface{} {
 			return core.Nexter{Target: getHasValue(v)}
-		}}
+		}})
 
-	eval["export"] = Function{
+	registerFunction(eval, "export", Function{
 		Title:       "Export command",
 		Description: `writes a multi-track MIDI file`,
 		Template:    `export(${1:filename},${2:sequenceable})`,
@@ -1130,9 +1130,9 @@ begin(lp_pi)`,
 				filename += ".mid"
 			}
 			return file.Export(filename, getValue(m), ctx.Control().BPM(), ctx.Control().BIAB())
-		}}
+		}})
 
-	eval["trim"] = Function{
+	registerFunction(eval, "trim", Function{
 		Title:       "Trim notes|groups from start or end",
 		Description: `create a new sequence object with notes trimmed at the start or/and at the end.`,
 		Template:    `trim(${1:remove-from-start},${2:remove-from-end},${3:object})`,
@@ -1146,9 +1146,9 @@ begin(lp_pi)`,
 				Start:  getHasValue(skipStart),
 				End:    getHasValue(skipEnd),
 				Target: s}
-		}}
+		}})
 
-	eval["tabs"] = Function{
+	registerFunction(eval, "tabs", Function{
 		Title:       "Create a bass tablature",
 		Description: `Create a tabs using this <a href="/docs/reference/notations/#tabs">format</a>`,
 		Template:    `tabs($1:string)`,
@@ -1159,9 +1159,9 @@ begin(lp_pi)`,
 				return notify.Panic(fmt.Errorf("invalid tabs syntax: %v", err))
 			}
 			return t
-		}}
+		}})
 
-	eval["replace"] = Function{
+	registerFunction(eval, "replace", Function{
 		Title:       "Replace operator",
 		Description: `replaces all occurrences of one musical object with another object for a given composed musical object`,
 		Template:    `replace(${1:target},${2:from},${3:to})`,
@@ -1183,9 +1183,9 @@ pitchD = replace(pitchA, c, d) // c -> d in pitchA`,
 				return notify.Panic(fmt.Errorf("cannot create replace with (%T) %v", to, to))
 			}
 			return op.Replace{Target: targetS, From: fromS, To: toS}
-		}}
+		}})
 
-	eval["midi_send"] = Function{
+	registerFunction(eval, "midi_send", Function{
 		Title:       "Send MIDI message",
 		Description: "Sends a MIDI message with status, channel(ignore if < 1), 2nd byte and 3rd byte to an output device. Can be used as a musical object",
 		Template:    "midi_send(${1:device-id},${1:status},${2:channel},${3:2nd-byte},${4:3rd-byte}",
@@ -1195,7 +1195,7 @@ midi_send(2,0xB0,4,0,16) // control change, bank select 16 for channel 4
 midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1`,
 		Func: func(deviceID int, status int, channel, data1, data2 interface{}) interface{} {
 			return midi.NewMessage(ctx.Device(), core.On(deviceID), status, core.On(channel), core.On(data1), core.On(data2))
-		}}
+		}})
 
 	registerFunction(eval, "set", Function{
 		Title:         "Change a setting",

@@ -21,7 +21,7 @@ func showHelp(ctx core.Context, args []string) notify.Message {
 		fmt.Fprintf(&b, "https://melrōse.org \n")
 	}
 
-	// detect help for a command or function
+	// detect help for a command or function or it alias
 	if len(args) > 0 {
 		cmdfunc := strings.TrimSpace(args[0])
 		if cmd, ok := cmdFunctions()[cmdfunc]; ok {
@@ -30,8 +30,19 @@ func showHelp(ctx core.Context, args []string) notify.Message {
 			fmt.Fprintf(&b, "%s\n", cmd.Sample)
 			return notify.NewInfof("%s", b.String())
 		}
-		if fun, ok := dsl.EvalFunctions(ctx)[cmdfunc]; ok {
-			fmt.Fprintf(&b, "%s\n----------\n", cmdfunc)
+		var fun dsl.Function
+		for k, v := range dsl.EvalFunctions(ctx) {
+			if k == cmdfunc {
+				fun = v
+				break
+			}
+			if v.Alias == cmdfunc {
+				fun = v
+				break
+			}
+		}
+		if fun.Title != "" {
+			fmt.Fprintf(&b, "%s (alias:%s)\n----------\n", fun.Keyword, fun.Alias)
 			fmt.Fprintf(&b, "%s\n\n", fun.Description)
 			fmt.Fprintf(&b, "%s\n", fun.Template)
 			return notify.NewInfof("%s", b.String())
@@ -57,7 +68,11 @@ func showHelp(ctx core.Context, args []string) notify.Message {
 		sort.Strings(keys)
 		for _, k := range keys {
 			f := funcs[k]
-			fmt.Fprintf(&b, "%s --- %s\n", strings.Repeat(" ", width-len(k))+k, f.Title)
+			fmt.Fprintf(&b, "%s --- %s", strings.Repeat(" ", width-len(k))+k, f.Title)
+			if f.Alias != "" {
+				fmt.Fprintf(&b, " (alias:%s)", f.Alias)
+			}
+			fmt.Fprintln(&b)
 		}
 	}
 	io.WriteString(&b, "\n")

@@ -14,6 +14,7 @@ type Inspection struct {
 	Text         string
 	VariableName string
 	Properties   map[string]interface{}
+	flat         string
 }
 
 const maxTextLength = 40
@@ -34,6 +35,9 @@ func NewInspect(ctx Context, varname string, value interface{}) Inspection {
 		if s, ok := value.(Sequenceable); ok {
 			s.S().Inspect(i) // show props as sequence
 		}
+	}
+	if s, ok := value.(Sequenceable); ok {
+		i.flat = s.S().Storex()
 	}
 	// default
 	if len(i.Text) == 0 {
@@ -90,6 +94,17 @@ func (i Inspection) String() string {
 	// last minute prop
 	keys = append(keys, "type")
 	i.Properties["type"] = i.Type
+
+	// last minute prop, flatten sequence if avail
+	seq := i.flat
+	if seq != "" {
+		keys = append(keys, "flat")
+		// chop to reasonable size
+		if len(seq) > maxTextLength*4 {
+			seq = seq[:maxTextLength*4] + "..."
+		}
+		i.Properties["flat"] = seq
+	}
 
 	for _, k := range keys {
 		v := i.Properties[k]

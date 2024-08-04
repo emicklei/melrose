@@ -19,6 +19,7 @@ func IsCompatibleSyntax(s string) bool {
 }
 
 type Function struct {
+	Keyword       string
 	Title         string
 	Description   string
 	Prefix        string // for autocomplete
@@ -51,8 +52,9 @@ func (f Function) HumanizedTemplate() string {
 }
 
 func registerFunction(m map[string]Function, k string, f Function) {
+	f.Keyword = k
 	if dup, ok := m[k]; ok {
-		log.Fatal("duplicate function key detected:", dup)
+		log.Fatal("duplicate function key detected:", k, dup)
 	}
 	if len(f.Alias) > 0 {
 		if dup, ok := m[f.Alias]; ok {
@@ -60,11 +62,6 @@ func registerFunction(m map[string]Function, k string, f Function) {
 		}
 	}
 	m[k] = f
-	if len(f.Alias) > 0 {
-		// modify title
-		f.Title = fmt.Sprintf("%s [%s]", f.Title, f.Alias)
-		m[f.Alias] = f
-	}
 }
 
 func getSequenceable(v interface{}) (core.Sequenceable, bool) {
