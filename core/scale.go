@@ -10,11 +10,12 @@ import (
 type Scale struct {
 	start   Note
 	variant int
-	octaves int
+	// https://en.wikipedia.org/wiki/Scale_(music)#Scales,_steps,_and_intervals
+	scaleType string // Heptatonic
 }
 
 func (s Scale) Storex() string {
-	return fmt.Sprintf("scale(%d,'%s')", s.octaves, s.start.String())
+	return fmt.Sprintf("scale('%s')", s.start.String())
 }
 
 // Replaced is part of Replaceable
@@ -25,12 +26,11 @@ func (s Scale) Replaced(from, to Sequenceable) Sequenceable {
 	return s
 }
 
-func NewScale(octaves int, input string) (Scale, error) {
+func NewScale(input string) (Scale, error) {
 	s, err := ParseScale(input)
 	if err != nil {
 		return s, err
 	}
-	s.octaves = octaves
 	return s, nil
 }
 
@@ -41,7 +41,7 @@ func ParseScale(s string) (Scale, error) {
 	if len(parts) == 2 && parts[1] == "m" {
 		v = Minor
 	}
-	return Scale{start: n, variant: v, octaves: 1}, err
+	return Scale{start: n, variant: v}, err
 }
 
 var (
@@ -70,10 +70,45 @@ func (s Scale) S() Sequence {
 	if s.variant == Minor {
 		steps = naturalMinorScale
 	}
-	for o := 0; o < s.octaves; o++ {
-		for _, p := range steps {
-			notes = append(notes, s.start.Pitched(p+(o*12)))
-		}
+	for _, p := range steps {
+		notes = append(notes, s.start.Pitched(p))
 	}
 	return BuildSequence(notes)
+}
+
+// one-based
+func (s Scale) IndexOfNote(n Note) int {
+	n.Octave = 0
+	midN := n.MIDI()
+	s.start.Octave = 0
+	midS := s.start.MIDI()
+	steps := majorScale
+	if s.variant == Minor {
+		steps = naturalMinorScale
+	}
+	for i := 0; i < len(steps); i++ {
+		if midN == midS+steps[i] {
+			return i + 1
+		}
+	}
+	return -1
+}
+
+// one-based [1..7]
+func (s Scale) NoteAtIndex(index int) Note {
+	steps := majorScale
+	if s.variant == Minor {
+		steps = naturalMinorScale
+	}
+	var stepIndex, octaveDelta int
+	if index < 1 {
+		stepIndex = (index-1)%7 + 7
+		octaveDelta = -1 + ((index - 1) / 7)
+	} else {
+		stepIndex = (index - 1) % 7
+		octaveDelta = (index - 1) / 7
+	}
+	n := s.start.Pitched(steps[stepIndex])
+	n.Octave = s.start.Octave
+	return n.Octaved(octaveDelta)
 }

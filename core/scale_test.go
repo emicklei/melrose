@@ -45,9 +45,28 @@ func TestScale_MajorG(t *testing.T) {
 	}
 }
 
-func TestScale_TwoOctaves(t *testing.T) {
-	s, _ := NewScale(2, "e")
-	if got, want := s.S().Storex(), "sequence('E G_ A_ A B D_5 E_5 E5 G_5 A_5 A5 B5 D_6 E_6')"; got != want {
-		t.Errorf("got [%v] want [%v]", got, want)
+func TestScaleIndexOf(t *testing.T) {
+	s, _ := NewScale("E_")
+	i := s.IndexOfNote(N("A_"))
+	if got, want := i, 4; got != want {
+		t.Errorf("got [%[1]v:%[1]T] want [%[2]v:%[2]T]", got, want)
+	}
+	cases := []struct {
+		offset int
+		note   string
+	}{
+		{0, "note('A_')"},
+		{1, "note('B_')"},
+		{-1, "note('G')"},
+		{-4, "note('D3')"},
+		{4, "note('E_5')"},
+		{11, "note('E_6')"},
+		{-11, "note('D2')"},
+	}
+	for _, each := range cases {
+		n := s.NoteAtIndex(i + each.offset)
+		if got, want := n.Storex(), each.note; got != want {
+			t.Errorf("got [%[1]v:%[1]T] want [%[2]v:%[2]T]", got, want)
+		}
 	}
 }

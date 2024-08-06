@@ -12,7 +12,7 @@ func Test_formatParser_ParseSequence(t *testing.T) {
 		{"16.A♯++ .C♭-( A B ) C (D) ", "sequence('16.A#++ .C_- (A B) C D')"},
 		{"8c#5-", "sequence('8C#5-')"},
 		{" ", "sequence('')"},
-		{"E♭, F, G, A♭, B♭, C, D'", "sequence('')"},
+		{"E♭ F G A♭ B♭ C D", "sequence('E_ F G A_ B_ C D')"},
 	} {
 		p := newFormatParser(each.in)
 		s, err := p.parseSequence()
@@ -51,7 +51,7 @@ func Test_formatParser_ParseChordProgression(t *testing.T) {
 		{"C", "Imaj7", "sequence('(C E G B)')"},
 	} {
 		p := newFormatParser(each.in)
-		sc, err := NewScale(1, each.root)
+		sc, err := NewScale(each.root)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -67,7 +67,7 @@ func Test_formatParser_ParseChordProgression(t *testing.T) {
 
 func Test_formatParser_ParseMultipleChordProgression(t *testing.T) {
 	p := newFormatParser(` I  VI  II  V `)
-	sc, err := NewScale(1, "E")
+	sc, err := NewScale("E")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -88,7 +88,7 @@ func Test_formatParser_ParseMultipleChordProgression(t *testing.T) {
 
 func Test_formatParser_ParseMultipleChordProgressionWitDuration(t *testing.T) {
 	p := newFormatParser(` 2I++  4VI  8II  16V `)
-	sc, err := NewScale(1, "E")
+	sc, err := NewScale("E")
 	if err != nil {
 		t.Fatal(err)
 	}

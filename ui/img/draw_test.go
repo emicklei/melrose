@@ -75,8 +75,8 @@ func TestRecordedTimeline(t *testing.T) {
 
 func TestScaleInputSequenceBuilder(t *testing.T) {
 	bpm := 120.0
-	s1, _ := core.NewScale(2, "8C")
-	s2, _ := core.NewScale(2, "8C3")
+	s1, _ := core.NewScale("8C")
+	s2, _ := core.NewScale("8C3")
 	seq := op.Merge{
 		Target: []core.Sequenceable{s1, s2},
 	}

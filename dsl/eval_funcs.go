@@ -471,21 +471,18 @@ note('2.e#--')`,
 		Title:       "Scale creator",
 		Description: `create a Scale using this <a href="/docs/reference/notations/#scale">format</a>`,
 		Prefix:      "sc",
-		Template:    `scale(${1:octaves},'${2:scale-syntax}')`,
+		Template:    `scale('${1:scale-syntax}')`,
 		IsCore:      true,
 		Samples: `
 // E major
-scale(1,'e') // => E G_ A_ A B D_5 E_5
+scale('e') // => E G_ A_ A B D_5 E_5
 / E minor
-scale(1,'e/m') // => E F G A B C5 D5
+scale('e/m') // => E F G A B C5 D5
 // E flat minor
-scale(1,'e_/m') // => E_ E G_ A_ B_ B D_5
+scale('e_/m') // => E_ E G_ A_ B_ B D_5
 `,
-		Func: func(octaves int, s string) interface{} {
-			if octaves < 1 {
-				return notify.Panic(fmt.Errorf("octaves must be >= 1%v", octaves))
-			}
-			sc, err := core.NewScale(octaves, s)
+		Func: func(s string) interface{} {
+			sc, err := core.NewScale(s)
 			if err != nil {
 				notify.Print(notify.NewError(err))
 				return nil
@@ -1278,11 +1275,11 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 		},
 	})
 
-	registerFunction(eval, "transpose_scale", Function{
+	registerFunction(eval, "scale_transpose", Function{
 		Title:       "Transpose on a Scale operator",
-		Description: "Same as transpose but uses the scale of find the notes",
-		Template:    "transpose_scale(${1:scale),${2:integer},${3:sequenceable})",
-		Samples:     `transpose_scale(scale(1,'E_'),1,sequence('G'))`,
+		Description: "Similar to transpose but uses the scale of find the notes",
+		Template:    "scale_transpose(${1:scale),${2:integer},${3:sequenceable})",
+		Samples:     `scale_transpose(scale(1,'E_'),1,sequence('G'))`,
 		Func: func(scaleVar any, intVar any, seqVar any) any {
 			return nil
 		},

@@ -216,7 +216,7 @@ a[1]`)
 func TestEvaluate_Scale_At(t *testing.T) {
 	e := newTestEvaluator()
 	r, err := e.EvaluateProgram(
-		`at(1,scale(2,'C'))`)
+		`at(1,scale('C'))`)
 	checkError(t, err)
 	at, _ := r.(op.AtIndex)
 	if got, want := at.Target.S().At(0)[0], core.MustParseNote("C"); !got.Equals(want) {
