@@ -11,7 +11,7 @@ type Scale struct {
 	start   Note
 	variant int
 	// https://en.wikipedia.org/wiki/Scale_(music)#Scales,_steps,_and_intervals
-	scaleType string // Heptatonic
+	scaleType string
 }
 
 func (s Scale) Storex() string {
@@ -35,13 +35,19 @@ func NewScale(input string) (Scale, error) {
 }
 
 func ParseScale(s string) (Scale, error) {
+	style := "major" // Ionian mode
+	tokens := strings.Split(s, " ")
+	if len(tokens) == 2 {
+		style = tokens[0]
+		s = tokens[1]
+	}
 	parts := strings.Split(s, "/")
 	n, err := ParseNote(parts[0])
 	v := Major
 	if len(parts) == 2 && parts[1] == "m" {
 		v = Minor
 	}
-	return Scale{start: n, variant: v}, err
+	return Scale{start: n, variant: v, scaleType: style}, err
 }
 
 var (
@@ -94,7 +100,7 @@ func (s Scale) IndexOfNote(n Note) int {
 	return -1
 }
 
-// one-based [1..7]
+// one-based
 func (s Scale) NoteAtIndex(index int) Note {
 	steps := majorScale
 	if s.variant == Minor {
@@ -109,6 +115,8 @@ func (s Scale) NoteAtIndex(index int) Note {
 		octaveDelta = (index - 1) / 7
 	}
 	n := s.start.Pitched(steps[stepIndex])
+	// n could have a change in the octave
+	// so put it back such that delta is correct
 	n.Octave = s.start.Octave
 	return n.Octaved(octaveDelta)
 }

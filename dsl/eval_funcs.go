@@ -1275,11 +1275,11 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 		},
 	})
 
-	registerFunction(eval, "scale_transpose", Function{
-		Title:       "Transpose on a Scale operator",
-		Description: "Similar to transpose but uses the scale of find the notes",
-		Template:    "scale_transpose(${1:scale),${2:integer},${3:sequenceable})",
-		Samples:     `scale_transpose(scale(1,'E_'),1,sequence('G'))`,
+	registerFunction(eval, "scale_stepper", Function{
+		Title:       "Scale stepping Note finding operator",
+		Description: "Similar to transpose but uses the scale of find the note(s)",
+		Template:    "scale_stepper(${1:scale),${2:integer},${3:sequenceable})",
+		Samples:     `scale_stepper(scale(1,'E_'),1,note('G')) // A_`,
 		Func: func(scaleVar any, intVar any, seqVar any) any {
 			return nil
 		},

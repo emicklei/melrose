@@ -46,7 +46,7 @@ func TestScale_MajorG(t *testing.T) {
 }
 
 func TestScaleIndexOf(t *testing.T) {
-	s, _ := NewScale("E_")
+	s, _ := NewScale("Chromatic E_")
 	i := s.IndexOfNote(N("A_"))
 	if got, want := i, 4; got != want {
 		t.Errorf("got [%[1]v:%[1]T] want [%[2]v:%[2]T]", got, want)
