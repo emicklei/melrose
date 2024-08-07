@@ -15,7 +15,7 @@ type Scale struct {
 }
 
 func (s Scale) Storex() string {
-	return fmt.Sprintf("scale('%s')", s.start.String())
+	return fmt.Sprintf("scale('%s %s')", s.scaleType, s.start.String())
 }
 
 // Replaced is part of Replaceable
@@ -84,20 +84,22 @@ func (s Scale) S() Sequence {
 
 // one-based
 func (s Scale) IndexOfNote(n Note) int {
-	n.Octave = 0
-	midN := n.MIDI()
-	s.start.Octave = 0
-	midS := s.start.MIDI()
 	steps := majorScale
 	if s.variant == Minor {
 		steps = naturalMinorScale
 	}
-	for i := 0; i < len(steps); i++ {
-		if midN == midS+steps[i] {
+	if s.start.Name == n.Name &&
+		s.start.Accidental == n.Accidental {
+		return 1
+	}
+	for i := 1; i < len(steps); i++ {
+		p := s.start.Pitched(steps[i])
+		if p.Name == n.Name &&
+			p.Accidental == n.Accidental {
 			return i + 1
 		}
 	}
-	return -1
+	return -1 // not found
 }
 
 // one-based

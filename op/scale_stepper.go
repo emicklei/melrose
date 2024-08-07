@@ -20,8 +20,12 @@ func (p ScaleStepper) S() core.Sequence {
 		pair := []core.Note{}
 		for _, other := range each {
 			i := s.IndexOfNote(other)
-			j := s.NoteAtIndex(i + count)
-			pair = append(pair, j)
+			if i == -1 { // not in pattern
+				pair = append(pair, other.Pitched(count*2)) // hack
+			} else {
+				j := s.NoteAtIndex(i+count).WithFraction(other.Fraction(), other.Dotted).WithVelocity(other.Velocity)
+				pair = append(pair, j)
+			}
 		}
 		notes = append(notes, pair)
 	}

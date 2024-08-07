@@ -51,7 +51,7 @@ func TestChordSequence_Invalid(t *testing.T) {
 
 func TestScale(t *testing.T) {
 	r := eval(t, "scale('16e2')")
-	checkStorex(t, r, "scale('16E2')")
+	checkStorex(t, r, "scale('major 16E2')")
 	checkStorex(t, r.(core.Sequenceable).S(),
 		"sequence('16E2 16G_2 16A_2 16A2 16B2 16D_3 16E_3')")
 }

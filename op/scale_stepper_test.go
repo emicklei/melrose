@@ -14,5 +14,7 @@ func TestScaleStepperNote(t *testing.T) {
 		Count:  core.On(1),
 		Target: seq,
 	}
-	t.Log(st.S()) //  B_ E_5
+	if got, want := st.S().Storex(), "sequence('B_ E_5')"; got != want {
+		t.Errorf("got [%[1]v:%[1]T] want [%[2]v:%[2]T]", got, want)
+	}
 }

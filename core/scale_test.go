@@ -45,8 +45,28 @@ func TestScale_MajorG(t *testing.T) {
 	}
 }
 
-func TestScaleIndexOf(t *testing.T) {
-	s, _ := NewScale("Chromatic E_")
+func TestScaleIndexOfNote(t *testing.T) {
+	s, _ := NewScale("major E_")
+	cases := []struct {
+		offset int
+		note   string
+	}{
+		{4, "A_"},
+		{1, "E_"},
+		{7, "D"},
+		{-1, "D#"},
+	}
+	for _, each := range cases {
+		n := MustParseNote(each.note)
+		o := s.IndexOfNote(n)
+		if got, want := o, each.offset; got != want {
+			t.Errorf("got [%[1]v:%[1]T] want [%[2]v:%[2]T]", got, want)
+		}
+	}
+}
+
+func TestScaleNoteAtIndex(t *testing.T) {
+	s, _ := NewScale("major E_")
 	i := s.IndexOfNote(N("A_"))
 	if got, want := i, 4; got != want {
 		t.Errorf("got [%[1]v:%[1]T] want [%[2]v:%[2]T]", got, want)
@@ -57,6 +77,7 @@ func TestScaleIndexOf(t *testing.T) {
 	}{
 		{0, "note('A_')"},
 		{1, "note('B_')"},
+		{3, "note('D')"},
 		{-1, "note('G')"},
 		{-4, "note('D3')"},
 		{4, "note('E_5')"},
