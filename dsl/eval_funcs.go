@@ -1275,23 +1275,5 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 		},
 	})
 
-	// registerFunction(eval, "scale_stepper", Function{
-	// 	Title:       "Scale stepping Note finding operator",
-	// 	Description: "Similar to transpose but uses the scale of find the note(s)",
-	// 	Template:    "scale_stepper(${1:scale),${2:integer},${3:sequenceable})",
-	// 	Samples:     `scale_stepper(scale(1,'E_'),1,note('G')) // A_`,
-	// 	Func: func(scaleVar any, intVar any, seqVar any) any {
-	// 		seq, ok := getSequenceable(seqVar)
-	// 		if !ok {
-	// 			return notify.Panic(fmt.Errorf("cannot step with non-sequenceable"))
-	// 		}
-	// 		return op.ScaleStepper{
-	// 			Scale:  getHasValue(scaleVar),
-	// 			Count:  getHasValue(intVar),
-	// 			Target: seq,
-	// 		}
-	// 	},
-	// })
-
 	return eval
 }

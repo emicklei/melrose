@@ -1,15 +1,5 @@
 # Install 
 
-## Download prepared binaries
-
-Microsoft Windows
-- https://github.com/emicklei/melrose-windows/releases
-
-Apple Mac
-- https://github.com/emicklei/melrose-osx/releases
-
-## Build from source
-
 In order to build and work with `melrose` on your operating system, the following components need to be installed:
 
 - melrose executable program
@@ -23,9 +13,11 @@ Depending on your operating system, different steps are required.
 Search and install the extension from the editor or go to the [Marketplace published package](https://marketplace.visualstudio.com/items?itemName=EMicklei.melrose-for-vscode)
 
 
-## Mac OSX
+## [all platforms] Go SDK.
 
 You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
+
+## Mac OSX
 
 	go install -v github.com/emicklei/melrose/cmd/melrose...@latest
 
@@ -43,7 +35,7 @@ On Ubuntu / Debian
 
 You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
 
-	go install github.com/emicklei/melrose/cmd/melrose@latest
+	go install -v github.com/emicklei/melrose/cmd/melrose...@latest
 
 After installing both `libasound2` and `melrōse`, you can start the tool in a Terminal using:
 
