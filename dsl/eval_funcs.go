@@ -10,6 +10,7 @@ import (
 	"github.com/emicklei/melrose/control"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/midi"
+	"github.com/emicklei/melrose/mpg"
 
 	"github.com/emicklei/melrose/midi/file"
 
@@ -1275,5 +1276,18 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 		},
 	})
 
+	registerFunction(eval, "euclidean", Function{
+		Title:       "Music Pattern Generator: Euclidean",
+		Description: "",
+		Template:    "euclidean(${1:steps},${2:pulses},${3:rotation})",
+		Samples:     "",
+		Func: func(steps, pulses, rotation any) any {
+			return &mpg.Euclidean{
+				Steps:    core.On(steps),
+				Pulses:   core.On(pulses),
+				Rotation: core.On(rotation),
+			}
+		},
+	})
 	return eval
 }
