@@ -255,3 +255,12 @@ func TestKeyOnChannelNote(t *testing.T) {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
+func TestEuclidean(t *testing.T) {
+	e := newTestEvaluator()
+	r, err := e.EvaluateProgram(
+		`e = euclidean(12,4,0,note('c'))`)
+	checkError(t, err)
+	if got, want := r.(*core.Euclidean).Storex(), "euclidean(12,4,0,note('C'))"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}
