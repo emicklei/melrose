@@ -31,6 +31,7 @@ The first parameter controls the fraction of the note, e.g. 1 = whole, 2 = half,
 Fraction can also be an exact float value between 0 and 1.
 `,
 		Prefix:     "fra",
+		Alias:      "frac",
 		IsComposer: true,
 		Template:   `fraction(${1:object},${2:object})`,
 		Samples:    `fraction(8,sequence('e f')) // => 8E 8F , shorten the notes from quarter to eight`,
