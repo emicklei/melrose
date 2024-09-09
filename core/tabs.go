@@ -3,7 +3,6 @@ package core
 import (
 	"strconv"
 	"strings"
-	"time"
 )
 
 // tabs('e3 a2 a5 d5 a5 a2 e3')
@@ -39,8 +38,7 @@ type TabNote struct {
 	Dotted   bool   // if true then fraction is increased by half
 	Velocity int    // 1..127
 
-	fraction float32       // {0.0625,0.125,0.25,0.5,1}
-	duration time.Duration // if set then this overrides Dotted and fraction
+	fraction float32 // {0.0625,0.125,0.25,0.5,1}
 }
 
 func (t TabNote) ToNote() Note {

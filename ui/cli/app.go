@@ -87,7 +87,7 @@ func repl(line *liner.State, ctx core.Context) {
 			} else {
 				if result != nil {
 					ctx.Variables().Put("_", result)
-					open(fmt.Sprintf("http://localhost:8118/v1/notes?var=_"))
+					open("http://localhost:8118/v1/notes?var=_")
 					continue
 				}
 			}
@@ -128,6 +128,6 @@ func open(uri string) error {
 	case "linux" == runtime.GOOS:
 		return exec.Command("xdg-open", uri).Start()
 	default:
-		return fmt.Errorf("Unable to open uri:%v on:%v", uri, runtime.GOOS)
+		return fmt.Errorf("unable to open uri:%v on:%v", uri, runtime.GOOS)
 	}
 }

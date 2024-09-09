@@ -2,7 +2,7 @@ package dsl
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/emicklei/melrose/core"
@@ -15,7 +15,7 @@ func ImportProgram(ctx core.Context, filename string) error {
 		pwd = ""
 	}
 	fullName := filepath.Join(pwd.(string), filename)
-	data, err := ioutil.ReadFile(fullName)
+	data, err := os.ReadFile(fullName)
 	if err != nil {
 		abs, _ := filepath.Abs(fullName)
 		return fmt.Errorf("unable to read file[%s] :%v", abs, err)

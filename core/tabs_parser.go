@@ -9,12 +9,11 @@ import (
 var allowedTabnoteNames = "EADGeadg="
 
 type tabnoteSTM struct {
-	fraction   float32
-	dotted     bool
-	name       string
-	accidental int
-	fret       int
-	velocity   string
+	fraction float32
+	dotted   bool
+	name     string
+	fret     int
+	velocity string
 }
 
 func newTabNoteSTM() *tabnoteSTM {

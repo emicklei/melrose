@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"regexp"
 )
 
 // https://en.wikipedia.org/wiki/Chord_(music)
@@ -185,8 +184,6 @@ func (c Chord) Notes() []Note {
 	}
 	return notes
 }
-
-var chordRegexp = regexp.MustCompile("([Mmdijaugo+su]*)([2467]?)")
 
 // C/D7/2 = C dominant 7, 2nd inversion
 func ParseChord(s string) (Chord, error) {
