@@ -1,9 +1,0 @@
-dist: bionic
-language: go
-go: 
- - 1.17.x
-before_install:
-- sudo apt-get update
-- sudo apt-get install libasound2-dev
-script:
-- go test -cover ./...
