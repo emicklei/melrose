@@ -145,3 +145,7 @@ type NameAware interface {
 type HasIndex interface {
 	Index() HasValue
 }
+
+type HasSequenceables interface {
+	Sequenceables() []Sequenceable
+}

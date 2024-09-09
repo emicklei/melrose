@@ -264,3 +264,15 @@ func TestEuclidean(t *testing.T) {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
+
+func TestCollect(t *testing.T) {
+	e := newTestEvaluator()
+	r, err := e.EvaluateProgram(`
+
+	c = collect(join(note('e')), fraction(8,_))
+	`)
+	checkError(t, err)
+	if got, want := r.(core.Collect).Storex(), "collect(join(note('E')),fraction(8,_))"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}

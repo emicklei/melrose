@@ -31,7 +31,6 @@ The first parameter controls the fraction of the note, e.g. 1 = whole, 2 = half,
 Fraction can also be an exact float value between 0 and 1.
 `,
 		Prefix:     "fra",
-		Alias:      "frac",
 		IsComposer: true,
 		Template:   `fraction(${1:object},${2:object})`,
 		Samples:    `fraction(8,sequence('e f')) // => 8E 8F , shorten the notes from quarter to eight`,
@@ -438,7 +437,6 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Title:       "Sequence creator",
 		Description: `create a Sequence using this <a href="/docs/reference/notations/#sequence">format</a>`,
 		Prefix:      "se",
-		Alias:       "seq",
 		Template:    `sequence('${1:space-separated-notes}')`,
 		Samples: `sequence('c d e')
 sequence('(8c d e)') // => (8C D E)
@@ -1290,5 +1288,27 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 			}
 		},
 	})
+
+	registerFunction(eval, "collect", Function{
+		Title:       "Collect function",
+		Description: "",
+		Template:    "collect(${1:collection},${2:function-with-underscore})",
+		Samples:     "",
+		Func: func(collection any, function any) any {
+			if _, ok := getValue(collection).(core.HasSequenceables); !ok {
+				return notify.Panic(errors.New("collection must have sequenceables"))
+			}
+			if _, ok := getValue(collection).(core.Replaceable); !ok {
+				return notify.Panic(errors.New("function must allow replacement"))
+			}
+			each, _ := ctx.Variables().Get("_")
+			return core.Collect{
+				Target:      core.On(collection),
+				Replaceable: core.On(function),
+				Each:        each.(core.Sequenceable), // todo check
+			}
+		},
+	})
+
 	return eval
 }

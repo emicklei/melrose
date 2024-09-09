@@ -11,6 +11,11 @@ type Join struct {
 	Target []core.Sequenceable
 }
 
+// SequenceableList is part of core.HasSequenceables
+func (j Join) Sequenceables() []core.Sequenceable {
+	return j.Target
+}
+
 func (j Join) Storex() string {
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "join(")
@@ -23,11 +28,11 @@ func (j Join) S() core.Sequence {
 	if len(j.Target) == 0 {
 		return core.EmptySequence
 	}
-	head := j.Target[0].S()
+	joined := j.Target[0].S()
 	for i := 1; i < len(j.Target); i++ {
-		head = head.SequenceJoin(j.Target[i].S())
+		joined = joined.SequenceJoin(j.Target[i].S())
 	}
-	return head
+	return joined
 }
 
 // Replaced is part of Replaceable

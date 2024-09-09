@@ -22,7 +22,7 @@ type VariableStore struct {
 // NewVariableStore returns a new
 func NewVariableStore() *VariableStore {
 	return &VariableStore{
-		variables: map[string]interface{}{},
+		variables: map[string]interface{}{"_": core.EmptySequence},
 	}
 }
 
@@ -94,6 +94,10 @@ func ListVariables(storage core.VariableStorage, args []string) notify.Message {
 	sort.Strings(keys)
 	for _, k := range keys {
 		v := variables[k]
+		// skip empty temporary var
+		if k == "_" {
+			continue
+		}
 		if s, ok := v.(core.Storable); ok {
 			fmt.Printf("%s = %s\n", strings.Repeat(" ", width-len(k))+k, s.Storex())
 		} else {
