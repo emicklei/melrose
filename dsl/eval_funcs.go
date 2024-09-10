@@ -1275,10 +1275,11 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 	})
 
 	registerFunction(eval, "euclidean", Function{
-		Title:       "Music Pattern Generator: Euclidean",
-		Description: "euclidean creates a euclidean rythm generator",
-		Template:    "euclidean(${1:steps},${2:beats},${3:rotation},${4:noteOrVariable})",
-		Samples:     "",
+		Title:         "Music Pattern Generator: Euclidean",
+		Description:   "euclidean creates a euclidean rythm generator",
+		Template:      "euclidean(${1:steps},${2:beats},${3:rotation},${4:noteOrVariable})",
+		ControlsAudio: true,
+		Samples:       "e = euclidean(12,4,0,sequence('c e g'))",
 		Func: func(steps, beats, rotation, noteOrVariable any) any {
 			return &core.Euclidean{
 				Steps:    core.On(steps),
