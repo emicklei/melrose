@@ -1276,7 +1276,7 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 
 	registerFunction(eval, "euclidean", Function{
 		Title:       "Music Pattern Generator: Euclidean",
-		Description: "",
+		Description: "euclidean creates a euclidean rythm generator",
 		Template:    "euclidean(${1:steps},${2:beats},${3:rotation},${4:noteOrVariable})",
 		Samples:     "",
 		Func: func(steps, beats, rotation, noteOrVariable any) any {
@@ -1291,9 +1291,11 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 
 	registerFunction(eval, "collect", Function{
 		Title:       "Collect function",
-		Description: "",
+		Description: "collect will map each sequence of a collection using a function that references a replacement",
 		Template:    "collect(${1:collection},${2:function-with-underscore})",
-		Samples:     "",
+		Samples: `j = join(sequence('C E G'),sequence('D F A'))
+			// uses the special variable named "_"
+			c = collect(j, transpose(1, _ ))`,
 		Func: func(collection any, function any) any {
 			if _, ok := getValue(collection).(core.HasSequenceables); !ok {
 				return notify.Panic(errors.New("collection must have sequenceables"))
