@@ -43,7 +43,7 @@ func Start(ctx core.Context) {
 	} else {
 		notify.Warnf("empty http flag, skip starting HTTP server")
 	}
-	if core.BuildTag == "dev" {
+	if core.IsDebug() {
 		go structexplorer.NewService("ctx", ctx).Start()
 	}
 }
