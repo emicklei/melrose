@@ -27,9 +27,8 @@ func (p Transpose) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	if core.IsIdenticalTo(p.Target, from) {
 		return Transpose{Target: to, Semitones: p.Semitones}
 	}
-	// https://play.golang.org/p/qHbbK_sTo84
 	if r, ok := p.Target.(core.Replaceable); ok {
-		return r.Replaced(from, to)
+		return Transpose{Target: r.Replaced(from, to), Semitones: p.Semitones}
 	}
 	return p
 }
