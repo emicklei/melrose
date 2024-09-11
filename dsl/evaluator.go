@@ -244,8 +244,8 @@ func (e *Evaluator) handleAssignment(varName string, r interface{}) (interface{}
 // The result is either FunctionResult or a "raw" Go object.
 func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
 	options := []expr.Option{}
-	// since 1.14.3
-	for _, each := range []string{"join", "repeat", "trim", "replace", "duration"} {
+	// since expr 1.14.3
+	for _, each := range []string{"join", "repeat", "trim", "replace", "duration", "map"} {
 		options = append(options, expr.DisableBuiltin(each))
 	}
 	env := envMap{}

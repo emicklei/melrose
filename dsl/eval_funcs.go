@@ -1290,13 +1290,14 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 		},
 	})
 
-	registerFunction(eval, "collect", Function{
-		Title:       "Collect function",
-		Description: "collect will map each sequence of a collection using a function that references a replacement",
-		Template:    "collect(${1:collection},${2:function-with-underscore})",
+	registerFunction(eval, "map", Function{
+		Title:       "Map function",
+		Description: "map will collect tranformations of each sequence of a collection using a function that references a replacement",
+		Template:    "map(${1:collection},${2:function-with-underscore})",
+		Alias:       "collect",
 		Samples: `j = join(sequence('C E G'),sequence('D F A'))
 			// uses the special variable named "_"
-			c = collect(j, transpose(1, _ ))`,
+			c = map(j, transpose(1, _ ))`,
 		Func: func(collection any, function any) any {
 			if _, ok := getValue(collection).(core.HasSequenceables); !ok {
 				return notify.Panic(errors.New("collection must have sequenceables"))
@@ -1305,7 +1306,7 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 				return notify.Panic(errors.New("function must allow replacement"))
 			}
 			each, _ := ctx.Variables().Get("_")
-			return core.Collect{
+			return core.Map{
 				Target:      core.On(collection),
 				Replaceable: core.On(function),
 				Each:        each.(core.Sequenceable), // todo check

@@ -265,28 +265,28 @@ func TestEuclidean(t *testing.T) {
 	}
 }
 
-func TestCollecFraction(t *testing.T) {
+func TestMapFraction(t *testing.T) {
 	e := newTestEvaluator()
 	r, err := e.EvaluateProgram(`
 
-	c = collect(join(note('e')), fraction(8,_))
+	c = map(join(note('e')), fraction(8,_))
 	`)
 	checkError(t, err)
-	if got, want := r.(core.Collect).Storex(), "collect(join(note('E')),fraction(8,_))"; got != want {
+	if got, want := r.(core.Map).Storex(), "map(join(note('E')),fraction(8,_))"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
-	if got, want := r.(core.Collect).S().Storex(), "sequence('8E')"; got != want {
+	if got, want := r.(core.Map).S().Storex(), "sequence('8E')"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
-func TestCollecTranspose(t *testing.T) {
+func TestMapTranspose(t *testing.T) {
 	e := newTestEvaluator()
 	r, err := e.EvaluateProgram(`
 
-	c = collect(join(note('e')), transpose(1,_))
+	c = map(join(note('e')), transpose(1,_))
 	`)
 	checkError(t, err)
-	if got, want := r.(core.Collect).S().Storex(), "sequence('F')"; got != want {
+	if got, want := r.(core.Map).S().Storex(), "sequence('F')"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }

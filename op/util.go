@@ -57,20 +57,9 @@ func parseIndices(src string) [][]int {
 	return ii
 }
 
+// depreacted: use core.ReplacedAll
 func replacedAll(target []core.Sequenceable, from, to core.Sequenceable) []core.Sequenceable {
-	newTarget := []core.Sequenceable{}
-	for _, each := range target {
-		if core.IsIdenticalTo(each, from) {
-			newTarget = append(newTarget, to)
-		} else {
-			if other, ok := each.(core.Replaceable); ok {
-				newTarget = append(newTarget, other.Replaced(from, to))
-			} else {
-				newTarget = append(newTarget, each)
-			}
-		}
-	}
-	return newTarget
+	return core.ReplacedAll(target, from, to)
 }
 
 // "1 (4 5 6) 2 (4 5 6) 3 (4 5 6) 2 (4 5 6)"

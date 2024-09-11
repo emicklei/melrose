@@ -121,3 +121,19 @@ func ContainsInt(list []int, value int) bool {
 	}
 	return false
 }
+
+func ReplacedAll(target []Sequenceable, from, to Sequenceable) []Sequenceable {
+	newTarget := []Sequenceable{}
+	for _, each := range target {
+		if IsIdenticalTo(each, from) {
+			newTarget = append(newTarget, to)
+		} else {
+			if other, ok := each.(Replaceable); ok {
+				newTarget = append(newTarget, other.Replaced(from, to))
+			} else {
+				newTarget = append(newTarget, each)
+			}
+		}
+	}
+	return newTarget
+}
