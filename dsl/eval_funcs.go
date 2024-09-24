@@ -141,7 +141,7 @@ prob(0.8,sequence('(c e g)')) // 80% chance of playing the chord C, otherwise a 
 		IsComposer:  true,
 		Template:    `joinmap('${1:indices}',${2:join})`,
 		Samples: `j = join(note('c'), sequence('d e f'))
-jm = joinmap('1 (2 3) 4',j) // => C = D =`,
+jm = joinmap('1 (2 3) 4',j) // => C (D E) F`,
 		Func: func(indices interface{}, join interface{}) interface{} { // allow multiple seq?
 			v := getHasValue(join)
 			vNow := v.Value()
@@ -324,7 +324,7 @@ transpose(p,note('c'))`,
 		Description: "reverse the (groups of) notes in a sequence",
 		Prefix:      "rev",
 		Template:    `reverse(${1:sequenceable})`,
-		Samples:     `reverse(chord('a'))`,
+		Samples:     `reverse(chord('a')) // (A D_5 E5)`,
 		IsComposer:  true,
 		Func: func(m interface{}) interface{} {
 			s, ok := getSequenceable(m)
@@ -524,7 +524,7 @@ scale('e_/m') // => E_ E G_ A_ B_ B D_5
 		Prefix:      "ra",
 		Template:    `random(${1:from},${2:to})`,
 		Samples: `num = random(1,10)
-next(num)`,
+loop(transpose(num,note('C')),next(num))`,
 		Func: func(from interface{}, to interface{}) interface{} {
 			fromVal := getHasValue(from)
 			toVal := getHasValue(to)
@@ -683,8 +683,7 @@ record(rec) // record notes played on the current input device`,
 		Template:    `iterator(${1:array-element})`,
 		Samples: `i = iterator(1,3,5,7,9)
 p = transpose(i,note('c'))
-lp = loop(p,next(i))
-		`,
+lp = loop(p,next(i))`,
 		Func: func(values ...interface{}) *core.Iterator {
 			return &core.Iterator{
 				Target: values,
@@ -1108,7 +1107,7 @@ The function itself does not return the value; use the generator for that.`,
 		Samples: `i = interval(-4,4,2)
 pi = transpose(i,sequence('c d e f g a b')) // current value of "i" is used
 lp_pi = loop(pi,next(i)) // "i" will advance to the next value
-begin(lp_pi)`,
+loop(lp_pi)`,
 		Func: func(v interface{}) interface{} {
 			return core.Nexter{Target: getHasValue(v)}
 		}})
@@ -1170,8 +1169,8 @@ begin(lp_pi)`,
 		Template:    `replace(${1:target},${2:from},${3:to})`,
 		Samples: `c = note('c')
 d = note('d')
-pitchA = transpose(1,c)
-pitchD = replace(pitchA, c, d) // c -> d in pitchA`,
+tc = transpose(1,c)
+td = replace(tc, c, d) // c -> d in tc`,
 		Func: func(target interface{}, from, to interface{}) interface{} {
 			targetS, ok := getSequenceable(target)
 			if !ok {
@@ -1296,8 +1295,8 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 		Template:    "map(${1:collection},${2:function-with-underscore})",
 		Alias:       "collect",
 		Samples: `j = join(sequence('C E G'),sequence('D F A'))
-			// uses the special variable named "_"
-			c = map(j, transpose(1, _ ))`,
+// uses the special variable named "_"
+c = map(j, transpose(1, _ ))`,
 		Func: func(collection any, function any) any {
 			if _, ok := getValue(collection).(core.HasSequenceables); !ok {
 				return notify.Panic(errors.New("collection must have sequenceables"))
