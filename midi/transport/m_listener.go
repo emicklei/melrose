@@ -80,8 +80,7 @@ func (l *mListener) HandleMIDIMessage(status int16, nr int, data2 int) {
 	ch := int(int16(0x0F)&status) + 1
 
 	// controlChange before noteOn
-	isControlChange := (status & controlChange) == controlChange
-	if isControlChange {
+	if (status & controlChange) == controlChange {
 		for _, each := range l.noteListeners {
 			each.ControlChange(ch, nr, int(data2))
 		}

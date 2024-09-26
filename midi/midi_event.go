@@ -1,7 +1,6 @@
 package midi
 
 import (
-	"bytes"
 	"fmt"
 	"time"
 
@@ -21,9 +20,9 @@ type midiEvent struct {
 	mustHandle core.Condition
 }
 
-func (m midiEvent) NoteChangesDo(block func(core.NoteChange)) {
+func (m midiEvent) NoteChangesDo(callback func(core.NoteChange)) {
 	for _, each := range m.which {
-		block(core.NewNoteChange(m.onoff == noteOn, each, m.velocity))
+		callback(core.NewNoteChange(m.onoff == noteOn, each, m.velocity))
 	}
 }
 
@@ -32,16 +31,13 @@ func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
 	if m.mustHandle != nil && m.onoff == noteOn && !m.mustHandle() {
 		return
 	}
-	if len(m.echoString) > 0 {
-		fmt.Fprintf(notify.Console.DeviceOut, " %s", m.echoString)
-	}
 	status := m.onoff | int64(m.channel-1)
 	for _, each := range m.which {
 		if err := m.out.WriteShort(status, each, m.velocity); err != nil {
 			notify.Errorf("failed to write MIDI data, error:%v", err)
 		}
 	}
-	if core.IsDebug() {
+	if m.echoString != "" {
 		m.log(status, when)
 	}
 }
@@ -51,22 +47,12 @@ func (m midiEvent) log(status int64, when time.Time) {
 	if m.onoff == noteOff {
 		onoff = "off"
 	}
-	var echos bytes.Buffer
-	for i, each := range m.which {
-		if i > 0 {
-			fmt.Fprintf(&echos, " ")
-		}
-		n, _ := core.MIDItoNote(0.25, int(each), core.Normal) // TODO
-		fmt.Fprintf(&echos, "%s", n.String())
-	}
-	fmt.Fprintf(notify.Console.StandardOut, "midi.note: t=%s dev=%d ch=%d seq='%s' %s=%d,%v,%d\n",
-		when.Format("04:05.000"), m.device, m.channel, echos.String(), onoff, status, m.which, m.velocity)
+	fmt.Fprintf(notify.Console.StandardOut, "%s dev=%d ch=%d seq='%s' %s=%d,%v,%d\n",
+		when.Format("04:05.000"), m.device, m.channel, m.echoString, onoff, status, m.which, m.velocity)
 }
 
 func (m midiEvent) asNoteoff() midiEvent {
 	m.onoff = noteOff
-	// do not echo OFF
-	m.echoString = ""
 	return m
 }
 
@@ -77,11 +63,4 @@ type restEvent struct {
 
 func (r restEvent) NoteChangesDo(block func(core.NoteChange)) {}
 
-func (r restEvent) Handle(tim *core.Timeline, when time.Time) {
-	if r.mustHandle != nil && !r.mustHandle() {
-		return
-	}
-	if len(r.echoString) > 0 {
-		fmt.Fprintf(notify.Console.DeviceOut, " %s", r.echoString)
-	}
-}
+func (r restEvent) Handle(tim *core.Timeline, when time.Time) {}

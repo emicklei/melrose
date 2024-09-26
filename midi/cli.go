@@ -10,43 +10,10 @@ import (
 func (r *DeviceRegistry) HandleSetting(name string, values []interface{}) error {
 	switch name {
 	case "echo":
-		if len(values) != 1 {
-			return fmt.Errorf("one argument expected")
-		}
-		enable, ok := values[0].(bool)
-		if !ok {
-			return fmt.Errorf("boolean device argument expected, got %T", values[0])
-		}
-		od, _ := r.Output(r.defaultOutputID)
-		od.echo = enable
-		notify.Infof("echo notes is enabled: %v", enable)
-	case "echo.toggle":
 		if len(values) != 0 {
 			return fmt.Errorf("no argument expected")
 		}
-		// input
-		id, err := r.Input(r.defaultInputID)
-		if err == nil {
-			id.echo = !id.echo
-			if id.echo {
-				id.listener.Add(DefaultEchoListener)
-				id.listener.Start()
-			} else {
-				id.listener.Remove(DefaultEchoListener)
-				// id.listener.Stop()
-			}
-			notify.Infof("echo input notes from device %d is enabled: %v", id.id, id.echo)
-		} else {
-			notify.Infof("echo input notes is disabled ; no input device")
-		}
-		// output
-		od, err := r.Output(r.defaultOutputID)
-		if err == nil {
-			od.echo = !od.echo
-			notify.Infof("echo output notes from device %d is enabled: %v", od.id, od.echo)
-		} else {
-			notify.Infof("echo output notes is disabled ; no output device")
-		}
+		r.toggleEchoNotesForDevices()
 	case "midi.in":
 		if len(values) != 1 {
 			return fmt.Errorf("one argument expected")
@@ -122,7 +89,7 @@ func (r *DeviceRegistry) Command(args []string) notify.Message {
 		return nil
 	}
 	if len(args) == 1 && args[0] == "e" {
-		r.HandleSetting("echo.toggle", []interface{}{})
+		r.HandleSetting("echo", []interface{}{})
 		return nil
 	}
 	if len(args) == 1 && args[0] == "r" {
@@ -138,7 +105,7 @@ func (r *DeviceRegistry) Command(args []string) notify.Message {
 func (r *DeviceRegistry) printInfo() {
 	r.streamRegistry.transport.PrintInfo(r.defaultInputID, r.defaultOutputID)
 
-	notify.PrintHighlighted("current defaults:")
+	notify.PrintHighlighted("default settings:")
 	_, err := r.Input(r.defaultInputID)
 	if err == nil {
 		fmt.Printf(" input device = %d\n", r.defaultInputID)
@@ -148,7 +115,7 @@ func (r *DeviceRegistry) printInfo() {
 	od, err := r.Output(r.defaultOutputID)
 	if err == nil {
 		fmt.Printf("output device = %d, channel = %d\n", r.defaultOutputID, od.defaultChannel)
-		fmt.Printf("   echo notes = %v\n", od.echo)
+		fmt.Printf("   echo MIDI = %v\n", od.echo)
 	} else {
 		fmt.Printf(" no output device (restart?)\n")
 	}
@@ -156,9 +123,26 @@ func (r *DeviceRegistry) printInfo() {
 	fmt.Println()
 
 	notify.PrintHighlighted("change:")
-	fmt.Println("set('midi.in',<device-id>)               --- change the default MIDI input device id (or e.g. \":m i 1\")")
-	fmt.Println("set('midi.out',<device-id>)              --- change the default MIDI output device id (or e.g. \":m o 1\")")
+	fmt.Println("set('midi.in',<device-id>)               --- change the default MIDI input device id (or use e.g. \":m i 1\")")
+	fmt.Println("set('midi.out',<device-id>)              --- change the default MIDI output device id (or use e.g. \":m o 1\")")
 	fmt.Println("set('midi.out.channel',<device-id>,<nr>) --- change the default MIDI channel for an output device id")
-	fmt.Println("set('echo.toggle')                       --- toggle printing the notes (or \":m e\" )")
-	fmt.Println("set('echo',true)                         --- true = print the notes")
+	fmt.Println("set('echo')                              --- toggle printing the notes (or use \":m e\" )")
+}
+
+func (r *DeviceRegistry) toggleEchoNotesForDevices() {
+	for _, each := range r.in {
+		each.echo = !each.echo
+		if each.echo {
+			each.listener.Add(DefaultEchoListener)
+			each.listener.Start()
+		} else {
+			each.listener.Remove(DefaultEchoListener)
+			// each.listener.Stop()
+		}
+		notify.Infof("echo input notes from device %d is enabled: %v", each.id, each.echo)
+	}
+	for _, each := range r.out {
+		each.echo = !each.echo
+		notify.Infof("echo output notes from device %d is enabled: %v", each.id, each.echo)
+	}
 }

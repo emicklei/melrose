@@ -78,14 +78,19 @@ func repl(line *liner.State, ctx core.Context) {
 			}
 		}
 		if strings.HasSuffix(entry, "!") {
-			// create hidden variable
-			// assign it the value of the expression before !
-			// open the browser on it
-			if result, err := eval.RecoveringEvaluateStatement(entry[:len(entry)-2]); err != nil {
+
+			if len(entry) == 1 {
+				notify.Errorf("missing expression before '!'")
+				continue
+			}
+			if result, err := eval.RecoveringEvaluateStatement(entry[:len(entry)-1]); err != nil {
 				notify.Print(notify.NewError(err))
-				return
+				continue
 			} else {
 				if result != nil {
+					// create hidden variable
+					// assign it the value of the expression before !
+					// open the browser on it
 					ctx.Variables().Put("_", result)
 					open("http://localhost:8118/v1/notes?var=_")
 					continue

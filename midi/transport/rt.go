@@ -6,7 +6,7 @@ package transport
 import (
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
-	"gitlab.com/gomidi/rtmididrv/imported/rtmidi"
+	"gitlab.com/gomidi/midi/v2/drivers/rtmididrv/imported/rtmidi"
 )
 
 func init() { Initializer = rtInitialize }

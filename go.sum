@@ -20,9 +20,8 @@ github.com/peterh/liner v1.2.2/go.mod h1:xFwJyiKIXJZUKItq5dGHZSTBRAuG/CpeNpWLyiN
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.4.7 h1:WUdvkW8uEhrYfLC4ZzdpI2ztxP1I582+49Oc5Mq64VQ=
 github.com/rivo/uniseg v0.4.7/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
-gitlab.com/gomidi/midi v1.21.0/go.mod h1:3ohtNOhqoSakkuLG/Li1OI6I3J1c2LErnJF5o/VBq1c=
-gitlab.com/gomidi/rtmididrv v0.15.0 h1:52Heco8Y3Jjcl4t0yDUVikOxfI8FMF1Zq+qsG++TUeo=
-gitlab.com/gomidi/rtmididrv v0.15.0/go.mod h1:p/6IL1LGgj7utcv3wXudsDWiD9spgAdn0O8LDsGIPG0=
+gitlab.com/gomidi/midi/v2 v2.2.10 h1:u9D+5TM0vkFWF5DcO6xGKG99ERYqksh6wPj2X2Rx5A8=
+gitlab.com/gomidi/midi/v2 v2.2.10/go.mod h1:ENtYaJPOwb2N+y7ihv/L7R4GtWjbknouhIIkMrJ5C0g=
 golang.org/x/image v0.18.0 h1:jGzIakQa/ZXI1I0Fxvaa9W7yP25TqT6cHIHn+6CqvSQ=
 golang.org/x/image v0.18.0/go.mod h1:4yyo5vMFQjVjUcVk4jEQcU9MGy/rulF5WvUILseCM2E=
 golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=

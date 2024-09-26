@@ -21,6 +21,8 @@ func testContext() core.Context {
 	}
 }
 
+var _ core.AudioDevice = (*testAudioDevice)(nil)
+
 type testAudioDevice struct{}
 
 func (t testAudioDevice) Command(args []string) notify.Message { return nil }
@@ -36,7 +38,8 @@ func (t testAudioDevice) OnKey(ctx core.Context, deviceID int, channel int, note
 }
 func (t testAudioDevice) Schedule(event core.TimelineEvent, beginAt time.Time) {}
 func (t testAudioDevice) Reset()                                               {}
-func (t testAudioDevice) Close() error                                         { return nil }
+func (t testAudioDevice) Close() error                                         { return nil }                                  { return nil }
+
 
 func checkError(t *testing.T, err error) {
 	t.Helper()

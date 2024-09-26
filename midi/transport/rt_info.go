@@ -8,11 +8,11 @@ import (
 	"log"
 
 	"github.com/emicklei/melrose/notify"
-	"gitlab.com/gomidi/rtmididrv/imported/rtmidi"
+	"gitlab.com/gomidi/midi/v2/drivers/rtmididrv/imported/rtmidi"
 )
 
-func (t RtmidiTransporter) PrintInfo(inID, outID int) {
-	notify.PrintHighlighted("available input:")
+func (t RtmidiTransporter) PrintInfo(defaultInID, defaultOutID int) {
+	notify.PrintHighlighted("available inputs:")
 
 	in, err := rtmidi.NewMIDIInDefault()
 	if err != nil {
@@ -21,18 +21,22 @@ func (t RtmidiTransporter) PrintInfo(inID, outID int) {
 	defer in.Close()
 	ports, err := in.PortCount()
 	if err != nil {
-		log.Fatalln("can't get number of in ports: ", err)
+		log.Fatalln("can't get number of input ports: ", err)
 	}
 	for i := 0; i < ports; i++ {
 		name, err := in.PortName(i)
 		if err != nil {
 			name = ""
 		}
-		fmt.Printf(" set('midi.in',%d) : %s\n", i, name)
+		isCurrent := ""
+		if i == defaultInID {
+			isCurrent = " (default)"
+		}
+		fmt.Printf(" set('midi.in',%d) --- set MIDI input from %s%s\n", i, name, isCurrent)
 	}
 	fmt.Println()
 
-	notify.PrintHighlighted("available output:")
+	notify.PrintHighlighted("available outputs:")
 	{
 		// Outs
 		out, err := rtmidi.NewMIDIOutDefault()
@@ -42,7 +46,7 @@ func (t RtmidiTransporter) PrintInfo(inID, outID int) {
 		defer out.Close()
 		ports, err := out.PortCount()
 		if err != nil {
-			log.Fatalln("can't get number of out ports: ", err)
+			log.Fatalln("can't get number of output ports: ", err)
 		}
 
 		for i := 0; i < ports; i++ {
@@ -50,7 +54,12 @@ func (t RtmidiTransporter) PrintInfo(inID, outID int) {
 			if err != nil {
 				name = ""
 			}
-			fmt.Printf("set('midi.out',%d) : %s\n", i, name)
+			isCurrent := ""
+			if i == defaultInID {
+				isCurrent = " (default)"
+			}
+
+			fmt.Printf("set('midi.out',%d) --- set MIDI output to%s%s\n", i, name, isCurrent)
 		}
 	}
 	fmt.Println()

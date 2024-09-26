@@ -40,7 +40,7 @@ func (d *OutputDevice) Reset() {
 		// send note off all to all channels for current device
 		for c := 1; c <= 16; c++ {
 			if err := d.stream.WriteShort(controlChange|int64(c-1), noteAllOff, 0); err != nil {
-				notify.Console.Errorf("device.%d: portmidi write error:%v", d.id, err)
+				notify.Console.Errorf("device.%d: midi write error:%v", d.id, err)
 			}
 		}
 	}

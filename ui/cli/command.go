@@ -28,7 +28,7 @@ func cmdFunctions() map[string]Command {
 	cmds[":q"] = Command{Description: "quit"} // no Func because it is handled in the main loop
 	cmds[":d"] = Command{Description: "toggle debug lines", Func: handleToggleDebug}
 	cmds[":p"] = Command{Description: "list all running", Func: handleListAllRunning}
-	cmds[":e"] = Command{Description: "echo notes", Func: handleEchoNotes}
+	cmds[":e"] = Command{Description: "echo MIDI", Func: handleEchoNotes}
 	return cmds
 }
 

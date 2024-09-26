@@ -11,6 +11,8 @@ import (
 	"github.com/emicklei/tre"
 )
 
+var _ core.AudioDevice = (*DeviceRegistry)(nil)
+
 type DeviceRegistry struct {
 	mutex           *sync.RWMutex
 	in              map[int]*InputDevice
