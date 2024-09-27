@@ -92,18 +92,26 @@ func (r *DeviceRegistry) Command(args []string) notify.Message {
 		r.HandleSetting("echo", []interface{}{})
 		return nil
 	}
+	if len(args) == 1 && args[0] == "i" {
+		r.printInfo()
+		return nil
+	}
 	if len(args) == 1 && args[0] == "r" {
 		fmt.Println("Reset MIDI device configuration. Stopping all listeners")
 		r.Reset()
 		r.Close()
 		r.init()
 	}
-	r.printInfo()
+	r.printInfoVerbose()
 	return nil
 }
 
 func (r *DeviceRegistry) printInfo() {
 	r.streamRegistry.transport.PrintInfo(r.defaultInputID, r.defaultOutputID)
+
+}
+func (r *DeviceRegistry) printInfoVerbose() {
+	r.printInfo()
 
 	notify.PrintHighlighted("default settings:")
 	_, err := r.Input(r.defaultInputID)
@@ -115,7 +123,7 @@ func (r *DeviceRegistry) printInfo() {
 	od, err := r.Output(r.defaultOutputID)
 	if err == nil {
 		fmt.Printf("output device = %d, channel = %d\n", r.defaultOutputID, od.defaultChannel)
-		fmt.Printf("   echo MIDI = %v\n", od.echo)
+		fmt.Printf("   echo MIDI  = %v\n", od.echo)
 	} else {
 		fmt.Printf(" no output device (restart?)\n")
 	}

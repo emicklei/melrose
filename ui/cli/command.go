@@ -55,8 +55,9 @@ func handleMIDISetting(ctx core.Context, args []string) notify.Message {
 
 func handleBeatSetting(ctx core.Context, args []string) notify.Message {
 	l := ctx.Control()
-	fmt.Printf("[sequencer] beats per minute (BPM): %v\n", l.BPM())
-	fmt.Printf("[sequencer] beats in a bar  (BIAB): %d\n", l.BIAB())
+	notify.PrintHighlighted("sequencer settings:")
+	fmt.Printf("beats per minute (BPM) = %v\n", l.BPM())
+	fmt.Printf("beats in a bar  (BIAB) = %d\n", l.BIAB())
 	return nil
 }
 
