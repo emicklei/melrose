@@ -43,12 +43,12 @@ func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
 }
 
 func (m midiEvent) log(status int64, when time.Time) {
-	onoff := "on"
+	onoff := " on"
 	if m.onoff == noteOff {
 		onoff = "off"
 	}
-	fmt.Fprintf(notify.Console.StandardOut, "%s dev=%d ch=%d seq='%s' %s=%d,%v,%d\n",
-		when.Format("04:05.000"), m.device, m.channel, m.echoString, onoff, status, m.which, m.velocity)
+	fmt.Fprintf(notify.Console.StandardOut, "%s dev=%d ch=%d %s=%d nrs=%v vel=%d seq='%s'\n",
+		when.Format("04:05.000"), m.device, m.channel, onoff, status, m.which, m.velocity, m.echoString)
 }
 
 func (m midiEvent) asNoteoff() midiEvent {

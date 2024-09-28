@@ -32,7 +32,7 @@ func (t RtmidiTransporter) PrintInfo(defaultInID, defaultOutID int) {
 		if i == defaultInID {
 			isCurrent = " (current)"
 		}
-		fmt.Printf(" set('midi.in',%d) --- set default MIDI input device to %s%s\n", i, name, isCurrent)
+		fmt.Printf("\t input device %d = %s%s\n", i, name, isCurrent)
 	}
 	fmt.Println()
 
@@ -59,7 +59,7 @@ func (t RtmidiTransporter) PrintInfo(defaultInID, defaultOutID int) {
 				isCurrent = " (current)"
 			}
 
-			fmt.Printf("set('midi.out',%d) --- set default MIDI output device to %s%s\n", i, name, isCurrent)
+			fmt.Printf("\toutput device %d = %s%s\n", i, name, isCurrent)
 		}
 	}
 	fmt.Println()

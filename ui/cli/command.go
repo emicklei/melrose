@@ -84,5 +84,5 @@ func handleListAllRunning(ctx core.Context, args []string) notify.Message {
 }
 
 func handleEchoNotes(ctx core.Context, args []string) notify.Message {
-	return ctx.Device().Command([]string{"e"})
+	return ctx.Device().Command(append([]string{"e"}, args...))
 }

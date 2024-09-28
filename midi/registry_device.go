@@ -3,12 +3,14 @@ package midi
 import (
 	"errors"
 	"fmt"
+	"log"
 	"sync"
 	"time"
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
 	"github.com/emicklei/tre"
+	"gitlab.com/gomidi/midi/v2/drivers/rtmididrv/imported/rtmidi"
 )
 
 var _ core.AudioDevice = (*DeviceRegistry)(nil)
@@ -95,12 +97,71 @@ func (r *DeviceRegistry) Input(id int) (*InputDevice, error) {
 	}
 	ide := NewInputDevice(id, midiIn, r.streamRegistry.transport)
 	r.in[id] = ide
+	// do not start listening until requested for
 	return ide, nil
 }
 
 func (r *DeviceRegistry) init() error {
 	r.defaultOutputID = r.streamRegistry.transport.DefaultOutputDeviceID()
 	r.defaultInputID = r.streamRegistry.transport.DefaultInputDeviceID()
+	notify.PrintHighlighted("MIDI available to melrōse:")
+	if err := r.initInputs(); err != nil {
+		return err
+	}
+	if err := r.initOutputs(); err != nil {
+		return err
+	}
+	fmt.Println()
+	return nil
+}
+
+func (r *DeviceRegistry) initOutputs() error {
+	out, err := rtmidi.NewMIDIOutDefault()
+	if err != nil {
+		return fmt.Errorf("can't open default MIDI out: %w", err)
+	}
+	defer out.Close()
+	ports, err := out.PortCount()
+	if err != nil {
+		return fmt.Errorf("can't get number of output ports: %w", err)
+	}
+	for each := range ports {
+		device, err := r.Output(each)
+		if err != nil {
+			log.Println("warning: can't use port: ", err)
+		}
+		name, err := out.PortName(each)
+		if err != nil {
+			name = ""
+		}
+		device.name = name
+		fmt.Printf("\toutput device %d = %s\n", each, name)
+	}
+	return nil
+}
+
+func (r *DeviceRegistry) initInputs() error {
+	in, err := rtmidi.NewMIDIInDefault()
+	if err != nil {
+		return fmt.Errorf("can't open default MIDI in: %w", err)
+	}
+	defer in.Close()
+	ports, err := in.PortCount()
+	if err != nil {
+		return fmt.Errorf("can't get number of input ports: %w", err)
+	}
+	for each := range ports {
+		device, err := r.Input(each)
+		if err != nil {
+			log.Println("warning: can't use port: ", err)
+		}
+		name, err := in.PortName(each)
+		if err != nil {
+			name = ""
+		}
+		device.name = name
+		fmt.Printf("\t input device %d = %s\n", each, name)
+	}
 	return nil
 }
 

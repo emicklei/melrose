@@ -55,7 +55,6 @@ func setup(line *liner.State) {
 func repl(line *liner.State, ctx core.Context) {
 	eval := dsl.NewEvaluator(ctx)
 	ctx.Control().Start()
-	ctx.Device().Command([]string{"i"}) // bit of a hack
 	for {
 		entry, err := line.Prompt(notify.Prompt())
 		if err != nil {

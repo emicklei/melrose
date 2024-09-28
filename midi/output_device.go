@@ -10,6 +10,7 @@ import (
 
 type OutputDevice struct {
 	id             int
+	name           string
 	stream         transport.MIDIOut
 	defaultChannel int
 

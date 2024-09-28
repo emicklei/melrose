@@ -6,6 +6,7 @@ import (
 
 type InputDevice struct {
 	id       int
+	name     string
 	echo     bool
 	listener transport.MIDIListener
 }

@@ -9,11 +9,10 @@ import (
 
 func (r *DeviceRegistry) HandleSetting(name string, values []interface{}) error {
 	switch name {
-	case "echo":
-		if len(values) != 0 {
-			return fmt.Errorf("no argument expected")
-		}
-		r.toggleEchoNotesForDevices()
+	case "echo": // i|o id
+		isInput := values[0] == "i"
+		id := values[1].(int)
+		r.toggleEchoNotesForDevice(isInput, id)
 	case "midi.in":
 		if len(values) != 1 {
 			return fmt.Errorf("one argument expected")
@@ -68,6 +67,10 @@ func (r *DeviceRegistry) HandleSetting(name string, values []interface{}) error 
 
 // Command is part of melrose.AudioDevice
 func (r *DeviceRegistry) Command(args []string) notify.Message {
+	if len(args) == 0 {
+		r.printInfoVerbose()
+		return nil
+	}
 	if len(args) == 2 && args[0] == "o" {
 		id, err := strconv.Atoi(args[1])
 		if err != nil {
@@ -88,12 +91,15 @@ func (r *DeviceRegistry) Command(args []string) notify.Message {
 		}
 		return nil
 	}
-	if len(args) == 1 && args[0] == "e" {
-		r.HandleSetting("echo", []interface{}{})
-		return nil
-	}
-	if len(args) == 1 && args[0] == "i" {
-		r.printInfo()
+	if len(args) == 3 && args[0] == "e" {
+		if args[1] != "i" && args[1] != "o" {
+			return notify.NewErrorf("first parameter is either `i` for input or `o` for output")
+		}
+		id, err := strconv.Atoi(args[2])
+		if err != nil {
+			return notify.NewError(err)
+		}
+		r.HandleSetting("echo", []any{args[1], id})
 		return nil
 	}
 	if len(args) == 1 && args[0] == "r" {
@@ -102,8 +108,7 @@ func (r *DeviceRegistry) Command(args []string) notify.Message {
 		r.Close()
 		r.init()
 	}
-	r.printInfoVerbose()
-	return nil
+	return notify.NewErrorf("unknown command:%v", args)
 }
 
 func (r *DeviceRegistry) printInfo() {
@@ -114,43 +119,51 @@ func (r *DeviceRegistry) printInfoVerbose() {
 	r.printInfo()
 
 	notify.PrintHighlighted("default settings:")
-	_, err := r.Input(r.defaultInputID)
+	deviceIn, err := r.Input(r.defaultInputID)
 	if err == nil {
-		fmt.Printf(" input device = %d\n", r.defaultInputID)
+		fmt.Printf(" input device = %d, echo = %v\n", r.defaultInputID, deviceIn.echo)
 	} else {
 		fmt.Printf(" no input device\n")
 	}
-	od, err := r.Output(r.defaultOutputID)
+	deviceOut, err := r.Output(r.defaultOutputID)
 	if err == nil {
-		fmt.Printf("output device = %d, channel = %d\n", r.defaultOutputID, od.defaultChannel)
-		fmt.Printf("   echo MIDI  = %v\n", od.echo)
+		fmt.Printf("output device = %d, channel = %d, echo = %v\n", r.defaultOutputID, deviceOut.defaultChannel, deviceOut.echo)
 	} else {
 		fmt.Printf(" no output device (restart?)\n")
 	}
-
 	fmt.Println()
 
-	notify.PrintHighlighted("change:")
-	fmt.Println("set('midi.in',<device-id>)               --- change the default MIDI input device id (or use e.g. \":m i 1\")")
+	notify.PrintHighlighted("how to change:")
+	fmt.Println("set('midi.in', <device-id>)              --- change the default MIDI input device id (or use e.g. \":m i 1\")")
 	fmt.Println("set('midi.out',<device-id>)              --- change the default MIDI output device id (or use e.g. \":m o 1\")")
 	fmt.Println("set('midi.out.channel',<device-id>,<nr>) --- change the default MIDI channel for an output device id")
-	fmt.Println("set('echo')                              --- toggle printing the notes (or use \":m e\" )")
+	fmt.Println(":e i <device-id>                         --- toggle printing the MIDI notes from input device id")
+	fmt.Println(":e o <device-id>                         --- toggle printing the MIDI notes to output device id")
 }
 
-func (r *DeviceRegistry) toggleEchoNotesForDevices() {
-	for _, each := range r.in {
-		each.echo = !each.echo
-		if each.echo {
-			each.listener.Add(DefaultEchoListener)
-			each.listener.Start()
+func (r *DeviceRegistry) toggleEchoNotesForDevice(isInput bool, deviceID int) {
+	if isInput {
+		in, ok := r.in[deviceID]
+		if !ok {
+			notify.Errorf("no device found with id:%d", deviceID)
+			return
+		}
+		in.echo = !in.echo
+		if in.echo {
+			in.listener.Add(DefaultEchoListener)
+			in.listener.Start()
 		} else {
-			each.listener.Remove(DefaultEchoListener)
+			in.listener.Remove(DefaultEchoListener)
 			// each.listener.Stop()
 		}
-		notify.Infof("echo input notes from device %d is enabled: %v", each.id, each.echo)
-	}
-	for _, each := range r.out {
-		each.echo = !each.echo
-		notify.Infof("echo output notes from device %d is enabled: %v", each.id, each.echo)
+		notify.Infof("echo input notes from device %d (%s) is enabled: %v", in.id, in.name, in.echo)
+	} else {
+		out, ok := r.out[deviceID]
+		if !ok {
+			notify.Errorf("no device found with id:%d", deviceID)
+			return
+		}
+		out.echo = !out.echo
+		notify.Infof("echo output notes from device %d (%s) is enabled: %v", out.id, out.name, out.echo)
 	}
 }
