@@ -135,7 +135,7 @@ func (r *DeviceRegistry) initOutputs() error {
 			name = ""
 		}
 		device.name = name
-		fmt.Printf("\toutput device %d = %s\n", each, name)
+		fmt.Printf("output device %d = %s\n", each, name)
 	}
 	return nil
 }
@@ -160,7 +160,7 @@ func (r *DeviceRegistry) initInputs() error {
 			name = ""
 		}
 		device.name = name
-		fmt.Printf("\t input device %d = %s\n", each, name)
+		fmt.Printf(" input device %d = %s\n", each, name)
 	}
 	return nil
 }
