@@ -439,7 +439,7 @@ func VelocityToDynamic(v int) string {
 	case v > VelocityFFF:
 		return "+++++"
 	}
-	return "?"
+	return ""
 }
 
 var fractionRanges = []struct {
