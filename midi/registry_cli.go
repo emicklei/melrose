@@ -93,7 +93,7 @@ func (r *DeviceRegistry) Command(args []string) notify.Message {
 	}
 	if args[0] == "e" {
 		if len(args) != 3 {
-			return notify.NewErrorf("missing`i` or `o` and device number")
+			return notify.NewErrorf("missing `i` or `o` and device number")
 		}
 		if args[1] != "i" && args[1] != "o" {
 			return notify.NewErrorf("first parameter is either `i` for input or `o` for output")

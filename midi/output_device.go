@@ -33,8 +33,13 @@ func (d *OutputDevice) Start() {
 }
 
 func (d *OutputDevice) Reset() {
+	defer func() {
+		if err := recover(); err != nil {
+			notify.Warnf("reset failed for device:%v", d.id)
+		}
+	}()
 	d.timeline.Reset()
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("device.%d: sending Note OFF to all 16 channels", d.id)
 	}
 	if d.stream != nil {

@@ -58,6 +58,9 @@ func Print(m Message) {
 var Println = fmt.Println
 
 func Debugf(format string, args ...interface{}) {
+	if !IsDebug() {
+		return
+	}
 	// make sure it ends with newline
 	if !strings.HasSuffix(format, "\n") {
 		format += "\n"

@@ -74,7 +74,7 @@ func (l *Listen) IsPlaying() bool {
 // NoteOn is part of core.NoteListener
 func (l *Listen) NoteOn(channel int, n core.Note) {
 	l.mutex.Lock()
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("control.listen ON %v", n)
 	}
 	l.noteChangeCount++
@@ -108,7 +108,7 @@ func (l *Listen) isNoteOnCount(nr, countCheck int) bool {
 func (l *Listen) NoteOff(channel int, n core.Note) {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("control.listen OFF %v", n)
 	}
 	delete(l.notesOn, n.MIDI())

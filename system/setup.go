@@ -8,6 +8,7 @@ import (
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/midi"
 	"github.com/emicklei/melrose/midi/transport"
+	"github.com/emicklei/melrose/notify"
 
 	"github.com/emicklei/melrose/dsl"
 )
@@ -20,7 +21,7 @@ func Setup(buildTag string) (core.Context, error) {
 	core.BuildTag = buildTag
 	flag.Parse()
 	if *debugLogging {
-		core.ToggleDebug()
+		notify.ToggleDebug()
 	}
 	transport.Initializer()
 	//checkVersion()

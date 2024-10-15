@@ -29,7 +29,7 @@ func (p pedalEvent) Handle(tim *core.Timeline, when time.Time) {
 	// MIDI CC 64	Damper Pedal /Sustain Pedal
 	status := controlChange | int64(p.channel-1)
 	_ = p.out.WriteShort(status, sustainPedal, onoff)
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		msg := "down"
 		if !p.goingDown {
 			msg = "up"

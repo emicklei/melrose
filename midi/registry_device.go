@@ -192,7 +192,7 @@ func (r *DeviceRegistry) OnKey(ctx core.Context, deviceID int, channel int, note
 }
 
 func (r *DeviceRegistry) Listen(deviceID int, who core.NoteListener, startOrStop bool) {
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("midi.listen id=%d, start=%v", deviceID, startOrStop)
 	}
 	in, err := r.Input(deviceID)

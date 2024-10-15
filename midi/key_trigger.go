@@ -28,7 +28,7 @@ func NewKeyTrigger(ctx core.Context, channel int, onNote core.Note, startStop co
 
 // NoteOn is part of core.NoteListener
 func (t *KeyTrigger) NoteOn(channel int, n core.Note) {
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("keytrigger.NoteOn ch=%d note=%v", channel, n)
 	}
 	if channel != t.channel {
@@ -73,14 +73,14 @@ func (t *KeyTrigger) NoteOn(channel int, n core.Note) {
 
 // NoteOff is part of core.NoteListener
 func (t *KeyTrigger) NoteOff(channel int, n core.Note) {
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("keytrigger.NoteOff ch=%d note=%v", channel, n)
 	}
 	// key trigger is not interested in this
 }
 
 func (t *KeyTrigger) ControlChange(channel, number, value int) {
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("keytrigger.ControlChange %d %d %d", channel, number, value)
 	}
 	// key trigger is not interested in this

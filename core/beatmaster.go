@@ -66,7 +66,7 @@ func (b *Beatmaster) SettingNotifier(handler func(LoopController)) {
 // bars is zero-based
 func (b *Beatmaster) Plan(bars int64, seq Sequenceable) {
 	atBeats := b.beatsAtNextBar() + (b.biab * bars)
-	if IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("beat.schedule at beats: %d put: %s bars: %.2f", atBeats, Storex(seq), seq.S().Bars(int(b.biab)))
 	}
 	b.schedule.Schedule(atBeats, func(when time.Time) {
@@ -132,7 +132,7 @@ func (b *Beatmaster) Start() {
 	b.ticker = time.NewTicker(beatTickerDuration(b.bpm))
 	b.beating = true
 	go func() {
-		if IsDebug() {
+		if notify.IsDebug() {
 			notify.Debugf("core.beatmaster: started bpm=%v tick=%v", b.bpm, beatTickerDuration(b.bpm))
 		}
 		for {
@@ -144,7 +144,7 @@ func (b *Beatmaster) Start() {
 					return
 				// only change BPM on a bar
 				case bpm := <-b.bpmChanges:
-					if IsDebug() {
+					if notify.IsDebug() {
 						notify.Debugf("core.beatmaster: changed bpm=%v tick=%v", bpm, beatTickerDuration(bpm))
 					}
 					b.bpm = bpm
@@ -185,7 +185,7 @@ func (b *Beatmaster) Stop() {
 	b.beating = false
 	b.ticker.Stop()
 	b.done <- true
-	if IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("core.beatmaster: stopped")
 	}
 }

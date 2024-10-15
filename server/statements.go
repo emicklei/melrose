@@ -21,7 +21,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	}
 	query := r.URL.Query()
 	file := query.Get("file")
-	debug := query.Get("debug") == "true" || core.IsDebug()
+	debug := query.Get("debug") == "true" || notify.IsDebug()
 	if debug {
 		notify.Debugf("service.http: %s", r.URL.String())
 	}

@@ -4,7 +4,6 @@
 package transport
 
 import (
-	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
 	"gitlab.com/gomidi/midi/v2/drivers/rtmididrv/imported/rtmidi"
 )
@@ -12,7 +11,7 @@ import (
 func init() { Initializer = rtInitialize }
 
 func rtInitialize() {
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("transport.init: use RtmidiTransporter")
 	}
 	Factory = func() Transporter {
@@ -70,7 +69,7 @@ func (o RtmidiOut) WriteShort(status int64, data1 int64, data2 int64) error {
 	return o.out.SendMessage([]byte{byte(status & 0xFF), byte(data1 & 0xFF), byte(data2 & 0xFF)})
 }
 func (o RtmidiOut) Close() error {
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		name, _ := o.out.PortName(o.port)
 		notify.Debugf("transport.RtmidiOut.Close: name=%s port=%d", name, o.port)
 	}
@@ -83,7 +82,7 @@ type RtmidiIn struct {
 }
 
 func (i RtmidiIn) Close() error {
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		name, _ := i.in.PortName(i.port)
 		notify.Debugf("transport.RtmidiIn.Close: name=%s port=%d", name, i.port)
 	}
@@ -124,7 +123,7 @@ func (l *RtListener) handleRtEvent(m rtmidi.MIDIIn, data []byte, delta float64) 
 	if !l.listening {
 		// consume event so the queue does not fill up
 
-		// if core.IsDebug() {
+		// if notify.IsDebug() {
 		// 	notify.Debugf("handle.rt.event:%v,%v\n", data, delta)
 		// }
 		return

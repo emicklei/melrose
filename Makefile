@@ -8,8 +8,7 @@ unused:
 	# go install honnef.co/go/tools/cmd/staticcheck@latest
 	staticcheck ./...
 	
-install: test
-	go install github.com/emicklei/melrose/cmd/melrose
+install: test q
 
 # quickly get me a new binary
 q:

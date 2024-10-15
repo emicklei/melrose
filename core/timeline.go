@@ -91,7 +91,7 @@ func (t *Timeline) Play() {
 
 // Reset forgets about all scheduled calls.
 func (t *Timeline) Reset() {
-	if IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("core.timeline: flushing all scheduled MIDI events")
 	}
 	t.protection.Lock()

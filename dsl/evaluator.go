@@ -263,7 +263,7 @@ func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
 		// this can be requested from the editor to listen to a part of a sequence,chord,note,progression
 		if strings.Contains(entry, "/") {
 			if subchord, suberr := core.ParseChord(entry); suberr == nil {
-				if core.IsDebug() {
+				if notify.IsDebug() {
 					notify.Debugf("dsl.evaluate:%s", subchord.Storex())
 				}
 				return subchord, nil
@@ -271,7 +271,7 @@ func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
 		}
 		// try parsing the entry as a sequence
 		if subseq, suberr := core.ParseSequence(entry); suberr == nil {
-			if core.IsDebug() {
+			if notify.IsDebug() {
 				notify.Debugf("dsl.evaluate:%s", subseq.Storex())
 			}
 			return subseq, nil

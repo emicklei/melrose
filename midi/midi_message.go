@@ -38,7 +38,7 @@ func (m Message) S() core.Sequence {
 	channel := core.Int(m.channel)
 	data1 := core.Int(m.data1)
 	data2 := core.Int(m.data2)
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("midi.message: device=%d, status=%d channel=%v data1=%v data2=%v", deviceID, m.status, channel, data1, data2)
 	}
 	devices := m.audioDevices.(*DeviceRegistry)

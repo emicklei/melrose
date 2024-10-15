@@ -7,6 +7,17 @@ import (
 	"strings"
 )
 
+var debugEnabled = false
+
+func IsDebug() bool {
+	return debugEnabled
+}
+
+func ToggleDebug() bool {
+	debugEnabled = !debugEnabled
+	return debugEnabled
+}
+
 var Console = ConsoleWriter{
 	DeviceIn:      os.Stdout,
 	DeviceOut:     os.Stdout,

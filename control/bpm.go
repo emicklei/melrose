@@ -26,7 +26,7 @@ func (s SetBPM) S() core.Sequence {
 // performs the set operation
 func (s SetBPM) Evaluate(ctx core.Context) error {
 	f := core.Float(s.bpm)
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("control.bpm set %.2f", f)
 	}
 	if f > 0.0 {

@@ -60,7 +60,7 @@ func (l *Loop) Evaluate(ctx Context) error {
 		cond = with.Condition()
 	}
 	clone.condition = cond
-	if IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("loop.eval")
 	}
 	clone.Play(l.ctx, time.Now())
@@ -89,7 +89,7 @@ func (l *Loop) reschedule(d AudioDevice, when time.Time) {
 		// after each other
 		moment = d.Play(l.condition, each, l.ctx.Control().BPM(), moment)
 	}
-	if IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("core.loop: next=%s", moment.Format("15:04:05.00"))
 	}
 	// schedule the loop itself so it can play again when Handle is called

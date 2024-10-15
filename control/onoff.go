@@ -32,7 +32,7 @@ func NewOnOff(deviceID int, channel int, note core.Note) OnOff {
 
 // Play implements Playable
 func (o OnOff) Play(ctx core.Context, at time.Time) error {
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("control.OnOff.Play dev=%d ch=%d note=%v", o.deviceID, o.channel, o.note)
 	}
 	return o.send(ctx, noteOn)
@@ -53,7 +53,7 @@ func (o OnOff) send(ctx core.Context, status int64) error {
 
 // Stop implements Playable
 func (o OnOff) Stop(ctx core.Context) error {
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("control.OnOff.Stop dev=%d ch=%d note=%v", o.deviceID, o.channel, o.note)
 	}
 	return o.send(ctx, noteOff)

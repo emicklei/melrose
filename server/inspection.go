@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
 )
 
@@ -14,7 +13,7 @@ func (l *LanguageServer) inspectHandler(w http.ResponseWriter, r *http.Request) 
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-	debug := r.URL.Query().Get("debug") == "true" || core.IsDebug()
+	debug := r.URL.Query().Get("debug") == "true" || notify.IsDebug()
 	if debug {
 		notify.Debugf("service.http: %s", r.URL.String())
 	}

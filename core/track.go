@@ -30,7 +30,7 @@ func (t *Track) Play(ctx Context, now time.Time) error {
 		cs := NewChannelSelector(each, On(t.Channel))
 		offset := int64((bars-1)*biab) * whole.Nanoseconds() / 4
 		when := now.Add(time.Duration(time.Duration(offset)))
-		if IsDebug() {
+		if notify.IsDebug() {
 			notify.Debugf("core.track title=%s channel=%d bar=%d, biab=%d, bpm=%.2f time=%s", t.Title, t.Channel, bars, biab, bpm, when.Format("04:05.000"))
 		}
 		ctx.Device().Play(NoCondition, cs, bpm, when)

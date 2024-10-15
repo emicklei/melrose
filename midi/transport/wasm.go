@@ -1,3 +1,4 @@
+//go:build wasm
 // +build wasm
 
 package transport
@@ -5,14 +6,13 @@ package transport
 import (
 	"syscall/js"
 
-	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
 )
 
 func init() { Initializer = wasmInitialize }
 
 func wasmInitialize() {
-	if core.IsDebug() {
+	if notify.IsDebug() {
 		notify.Debugf("transport.init: use WASMmidiTransporter")
 	}
 	Factory = func() Transporter {

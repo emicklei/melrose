@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 )
 
 type mNoteEvent struct {
@@ -92,11 +93,12 @@ func (l *mListener) HandleMIDIMessage(status int16, nr int, data2 int) {
 		if _, ok := l.noteOn[nr]; ok {
 			return
 		}
-		onNote, _ := core.MIDItoNote(0.25, nr, velocity)
+		onNote, _ := core.MIDItoNote(0.25, nr, velocity) // length is computed on note off
 		l.noteOn[nr] = mNoteEvent{
 			note: onNote,
 			when: time.Now(),
 		}
+		notify.Debugf("on  %s", onNote)
 		for _, each := range l.noteListeners {
 			each.NoteOn(ch, onNote)
 		}
@@ -115,8 +117,9 @@ func (l *mListener) HandleMIDIMessage(status int16, nr int, data2 int) {
 		delete(l.noteOn, nr)
 		// compute delta
 		ms := time.Duration(time.Now().UnixNano()-on.when.UnixNano()) * time.Nanosecond
-		frac := core.DurationToFraction(120.0, ms) // TODO
-		offNote, _ := core.MIDItoNote(frac, nr, core.Normal)
+		frac := core.DurationToFraction(120.0, ms) // TODO, BPM
+		offNote, _ := core.MIDItoNote(frac, nr, on.note.Velocity)
+		notify.Debugf("off %s [%d]", offNote, ms)
 		for _, each := range l.noteListeners {
 			each.NoteOff(ch, offNote)
 		}
