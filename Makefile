@@ -23,4 +23,4 @@ grammar:
 		../../../melrose-for-vscode/syntaxes/melrose.tmGrammar.json
 
 since:
-	git log --oneline v0.52.0..@ > since.log
+	git log --oneline v0.55.1..@ > since.log
