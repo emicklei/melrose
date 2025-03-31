@@ -38,6 +38,7 @@ func (t testAudioDevice) OnKey(ctx core.Context, deviceID int, channel int, note
 }
 func (t testAudioDevice) Schedule(event core.TimelineEvent, beginAt time.Time) {}
 func (t testAudioDevice) Reset()                                               {}
+func (t testAudioDevice) Report()                                              {}
 func (t testAudioDevice) Close() error                                         { return nil }
 
 func checkError(t *testing.T, err error) {
