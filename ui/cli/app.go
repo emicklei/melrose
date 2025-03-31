@@ -28,6 +28,7 @@ func StartREPL(ctx core.Context) {
 	defer tearDown(line, ctx)
 	// TODO liner catches control+c
 	//setupCloseHandler(line)
+	ctx.Device().Report()
 	setup(line)
 	repl(line, ctx)
 }

@@ -53,6 +53,7 @@ type AudioDevice interface {
 	// Record(ctx Context) (*Recording, error)
 	Reset()
 	Close() error
+	Report()
 }
 
 type LoopController interface {

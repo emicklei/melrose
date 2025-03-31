@@ -3,7 +3,6 @@ package midi
 import (
 	"errors"
 	"fmt"
-	"log"
 	"sync"
 	"time"
 
@@ -104,15 +103,26 @@ func (r *DeviceRegistry) Input(id int) (*InputDevice, error) {
 func (r *DeviceRegistry) init() error {
 	r.defaultOutputID = r.streamRegistry.transport.DefaultOutputDeviceID()
 	r.defaultInputID = r.streamRegistry.transport.DefaultInputDeviceID()
-	notify.PrintHighlighted("MIDI available to melrōse:")
 	if err := r.initInputs(); err != nil {
 		return err
 	}
 	if err := r.initOutputs(); err != nil {
 		return err
 	}
-	fmt.Println()
 	return nil
+}
+
+func (r *DeviceRegistry) Report() {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
+	notify.PrintHighlighted("MIDI available to melrōse:")
+	for k, v := range r.in {
+		fmt.Printf(" input device %d = %s\n", k, v.name)
+	}
+	for k, v := range r.out {
+		fmt.Printf("output device %d = %s\n", k, v.name)
+	}
 }
 
 func (r *DeviceRegistry) initOutputs() error {
@@ -128,14 +138,13 @@ func (r *DeviceRegistry) initOutputs() error {
 	for each := range ports {
 		device, err := r.Output(each)
 		if err != nil {
-			log.Println("warning: can't use port: ", err)
+			continue
 		}
 		name, err := out.PortName(each)
 		if err != nil {
 			name = ""
 		}
 		device.name = name
-		fmt.Printf("output device %d = %s\n", each, name)
 	}
 	return nil
 }
@@ -153,14 +162,13 @@ func (r *DeviceRegistry) initInputs() error {
 	for each := range ports {
 		device, err := r.Input(each)
 		if err != nil {
-			log.Println("warning: can't use port: ", err)
+			continue
 		}
 		name, err := in.PortName(each)
 		if err != nil {
 			name = ""
 		}
 		device.name = name
-		fmt.Printf(" input device %d = %s\n", each, name)
 	}
 	return nil
 }
