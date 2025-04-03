@@ -2,13 +2,13 @@ module github.com/emicklei/melrose
 
 go 1.23.0
 
-toolchain go1.24.0
+toolchain go1.24.1
 
 require (
 	github.com/Try431/EasyMIDI v1.0.3
 	github.com/emicklei/structexplorer v0.8.1
 	github.com/emicklei/tre v1.7.0
-	github.com/expr-lang/expr v1.16.9
+	github.com/expr-lang/expr v1.17.0
 	github.com/fogleman/gg v1.3.0
 	github.com/mark3labs/mcp-go v0.18.0
 	github.com/peterh/liner v1.2.2
