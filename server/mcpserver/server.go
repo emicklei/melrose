@@ -40,7 +40,7 @@ func (s *MCPServer) Handle(ctx context.Context, request mcp.CallToolRequest) (*m
 	toolResult.Content = []mcp.Content{
 		mcp.TextContent{
 			Type: "text",
-			Text: core.Storex(result),
+			Text: "", // ??
 		},
 	}
 	return toolResult, nil
