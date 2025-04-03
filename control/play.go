@@ -24,19 +24,20 @@ func NewPlay(ctx core.Context, list []core.Sequenceable, playInSync bool) Play {
 }
 
 // Play is part of core.Playable
-func (p Play) Play(ctx core.Context, at time.Time) error {
+func (p Play) Play(ctx core.Context, at time.Time) time.Time {
 	cond := core.NoCondition
 	if with, ok := ctx.(core.Conditional); ok {
 		cond = with.Condition()
 	}
+	end := at
 	for _, each := range p.target {
-		end := p.ctx.Device().Play(cond, each, p.ctx.Control().BPM(), at)
+		end = p.ctx.Device().Play(cond, each, p.ctx.Control().BPM(), at)
 		if !p.sync {
 			// play after each other
 			at = end
 		}
 	}
-	return nil
+	return end
 }
 
 // Evaluate implements Evaluatable

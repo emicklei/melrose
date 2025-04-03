@@ -120,11 +120,12 @@ func (l *Loop) Handle(tim *Timeline, when time.Time) {
 func (l *Loop) NoteChangesDo(block func(NoteChange)) {}
 
 // Play is part of Playable
-func (l *Loop) Play(ctx Context, at time.Time) error {
+func (l *Loop) Play(ctx Context, at time.Time) time.Time {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
+	forever := time.Now().AddDate(100, 0, 0)
 	if l.isRunning {
-		return nil
+		return forever
 	}
 	when := at
 	if runningLoop != nil {
@@ -139,7 +140,7 @@ func (l *Loop) Play(ctx Context, at time.Time) error {
 	l.isRunning = true
 	l.startedAt = when
 	l.reschedule(l.ctx.Device(), when)
-	return nil
+	return forever
 }
 
 // Stop is part of Playable

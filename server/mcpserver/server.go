@@ -3,20 +3,19 @@ package mcpserver
 import (
 	"context"
 	"errors"
-	"strings"
+	"time"
 
+	"github.com/emicklei/melrose/api"
 	"github.com/emicklei/melrose/core"
-	"github.com/emicklei/melrose/dsl"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
 type MCPServer struct {
-	context   core.Context
-	evaluator *dsl.Evaluator
+	service api.Service
 }
 
 func NewMCPServer(ctx core.Context) *MCPServer {
-	return &MCPServer{context: ctx, evaluator: dsl.NewEvaluator(ctx)}
+	return &MCPServer{service: api.NewService(ctx)}
 }
 
 func (s *MCPServer) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -24,16 +23,25 @@ func (s *MCPServer) Handle(ctx context.Context, request mcp.CallToolRequest) (*m
 	if !ok {
 		return nil, errors.New("expression must be a string")
 	}
-	var playExpression string
-	if strings.HasPrefix(expression, "play(") {
-		playExpression = expression
-	} else {
-		playExpression = "play(" + expression + ")"
+	toolResult := new(mcp.CallToolResult)
+	result, err := s.service.CommandPlay("melrose-mcp", 0, expression)
+	if endTime, ok := result.(time.Time); ok {
+		time.Sleep(time.Until(endTime))
 	}
-	result, err := s.evaluator.EvaluateExpression(playExpression)
 	if err != nil {
-		return mcp.NewToolResultText(err.Error()), err
+		toolResult.IsError = true
+		toolResult.Content = []mcp.Content{
+			mcp.TextContent{
+				Type: "text",
+				Text: err.Error(),
+			}}
+		return toolResult, err
 	}
-	inspect := core.NewInspect(s.context, "result", result)
-	return mcp.NewToolResultText(inspect.Markdown()), nil
+	toolResult.Content = []mcp.Content{
+		mcp.TextContent{
+			Type: "text",
+			Text: core.Storex(result),
+		},
+	}
+	return toolResult, nil
 }

@@ -1,7 +1,6 @@
 package control
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -46,16 +45,18 @@ func (l *Listen) Target() core.HasValue { return l.callback }
 func (l *Listen) SetTarget(c core.HasValue) { l.callback = c }
 
 // Play is part of core.Playable
-func (l *Listen) Play(ctx core.Context, at time.Time) error {
+func (l *Listen) Play(ctx core.Context, at time.Time) time.Time {
+	now := time.Now() // actually forever
 	if l.isRunning {
-		return nil
+		return now
 	}
 	if !ctx.Device().HasInputCapability() {
-		return errors.New("input is not available for this device")
+		notify.Warnf("input is not available for this device")
+		return now
 	}
 	l.isRunning = true
 	ctx.Device().Listen(l.deviceID, l, l.isRunning)
-	return nil
+	return now
 }
 
 func (l *Listen) Stop(ctx core.Context) error {

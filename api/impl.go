@@ -77,27 +77,26 @@ func (s *ServiceImpl) CommandInspect(file string, lineEnd int, source string) (i
 func (s *ServiceImpl) CommandPlay(file string, lineEnd int, source string) (interface{}, error) {
 	s.updateMetadata(file, lineEnd, source)
 
-	returnValue, err := s.evaluator.EvaluateProgram(source)
+	programResult, err := s.evaluator.EvaluateProgram(source)
 	if err != nil {
 		return nil, patchFilelocation(err, lineEnd)
 	}
-
-	if pl, ok := returnValue.(core.Playable); ok {
+	var endTime time.Time
+	if pl, ok := programResult.(core.Playable); ok {
 		notify.Infof("play(%s)", displayString(s.context, pl))
-		_ = pl.Play(s.context, time.Now())
+		endTime = pl.Play(s.context, time.Now())
 	} else {
 		// any sequenceable is playable
-		if seq, ok := returnValue.(core.Sequenceable); ok {
+		if seq, ok := programResult.(core.Sequenceable); ok {
 			notify.Infof("play(%s)", displayString(s.context, seq))
-			s.context.Device().Play(
+			endTime = s.context.Device().Play(
 				core.NoCondition,
 				seq,
 				s.context.Control().BPM(),
 				time.Now())
 		}
 	}
-
-	return returnValue, nil
+	return endTime, nil
 }
 func (s *ServiceImpl) CommandStop(file string, lineEnd int, source string) (interface{}, error) {
 	s.updateMetadata(file, lineEnd, source)
