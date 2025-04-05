@@ -37,6 +37,12 @@ func main() {
 	// Add tool handler
 	ioServer.AddTool(tool, playServer.Handle)
 
+	// ioServer.AddPrompt(mcp.NewPrompt("chord"),
+	// 	mcp.WithPromptDescription("chord with 3 notes"),
+	// 	mcp.WithArgument("base", mcp.With
+
+	// )
+
 	// Start the stdio server
 	if err := server.ServeStdio(ioServer); err != nil {
 		fmt.Printf("Server error: %v\n", err)
