@@ -25,7 +25,7 @@ func main() {
 
 	// Add tool
 	tool := mcp.NewTool("play-melrose",
-		mcp.WithDescription("play note sequences"),
+		mcp.WithDescription("play melrōse expression"),
 		mcp.WithString("expression",
 			mcp.Required(),
 			mcp.Description("melrōse expression to play"),
@@ -37,11 +37,28 @@ func main() {
 	// Add tool handler
 	ioServer.AddTool(tool, playServer.Handle)
 
-	// ioServer.AddPrompt(mcp.NewPrompt("chord"),
-	// 	mcp.WithPromptDescription("chord with 3 notes"),
-	// 	mcp.WithArgument("base", mcp.With
+	/**
+		ioServer.AddPrompt(mcp.NewPrompt("play-a-chord"),
+			mcp.WithPromptDescription("play the notes of a chord"),
+			mcp.WithArgument("ground",
+				mcp.ArgumentDescription("the ground note of the chord"),
+			), func(ctx context.Context, request mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+				name := request.Params.Arguments["ground"]
+				if name == "" {
+					name = "ground"
+				}
 
-	// )
+				return mcp.NewGetPromptResult(
+					"A friendly greeting",
+					[]mcp.PromptMessage{
+						mcp.NewPromptMessage(
+							mcp.RoleAssistant,
+							mcp.NewTextContent(fmt.Sprintf("Hello, %s! How can I help you today?", name)),
+						),
+					},
+				), nil
+			})
+	**/
 
 	// Start the stdio server
 	if err := server.ServeStdio(ioServer); err != nil {

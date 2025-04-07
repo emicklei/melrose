@@ -67,7 +67,7 @@ func main() {
 	}
 	listDirRequest.Params.Name = "play-melrose"
 	listDirRequest.Params.Arguments = map[string]interface{}{
-		"expression": "play(sequence('A B C'))",
+		"expression": "sequence('A B C')",
 	}
 
 	result, err := c.CallTool(ctx, listDirRequest)
