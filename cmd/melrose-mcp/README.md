@@ -1,4 +1,12 @@
+## installation
+
+This tool requires the [Go SDK](https://go.dev).
+
+    go install github.com/emicklei/melrose/cmd/melrose-mcp@latest
+
 ## configuration
+
+### Claude
 
     {
         "mcpServers": { 
@@ -16,7 +24,4 @@
 - play the first bar of fur elise
 - play the famous tune from Mike Oldfield called Tubular Bells
 - play the notes of Frere Jacques
-
-
-
-
+- play the C# chord

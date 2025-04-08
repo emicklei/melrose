@@ -61,7 +61,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 		if ret, err := l.service.CommandPlay(file, line, source); err != nil {
 			evalResult = err
 		} else {
-			evalResult = ret
+			evalResult = ret.ExpressionResult
 		}
 	case "stop":
 		if ret, err := l.service.CommandStop(file, line, source); err != nil {

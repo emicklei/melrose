@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -37,28 +38,25 @@ func main() {
 	// Add tool handler
 	ioServer.AddTool(tool, playServer.Handle)
 
-	/**
-		ioServer.AddPrompt(mcp.NewPrompt("play-a-chord"),
-			mcp.WithPromptDescription("play the notes of a chord"),
-			mcp.WithArgument("ground",
-				mcp.ArgumentDescription("the ground note of the chord"),
-			), func(ctx context.Context, request mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
-				name := request.Params.Arguments["ground"]
-				if name == "" {
-					name = "ground"
-				}
+	chordHander := func(ctx context.Context, request mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+		note := request.Params.Arguments["ground"]
+		if note == "" {
+			note = "ground"
+		}
+		return mcp.NewGetPromptResult(
+			"playing a chord",
+			[]mcp.PromptMessage{
+				mcp.NewPromptMessage(
+					mcp.RoleAssistant,
+					mcp.NewTextContent(fmt.Sprintf("chord('%s')", note)),
+				),
+			},
+		), nil
+	}
+	chordPrompt := mcp.NewPrompt("play-a-chord",
+		mcp.WithPromptDescription("play the notes of a chord"))
 
-				return mcp.NewGetPromptResult(
-					"A friendly greeting",
-					[]mcp.PromptMessage{
-						mcp.NewPromptMessage(
-							mcp.RoleAssistant,
-							mcp.NewTextContent(fmt.Sprintf("Hello, %s! How can I help you today?", name)),
-						),
-					},
-				), nil
-			})
-	**/
+	ioServer.AddPrompt(chordPrompt, chordHander)
 
 	// Start the stdio server
 	if err := server.ServeStdio(ioServer); err != nil {

@@ -74,12 +74,18 @@ func (s *ServiceImpl) CommandInspect(file string, lineEnd int, source string) (i
 	}
 	return lastValue, nil
 }
-func (s *ServiceImpl) CommandPlay(file string, lineEnd int, source string) (interface{}, error) {
+
+type CommandPlayResponse struct {
+	EndTime          time.Time
+	ExpressionResult any
+}
+
+func (s *ServiceImpl) CommandPlay(file string, lineEnd int, source string) (CommandPlayResponse, error) {
 	s.updateMetadata(file, lineEnd, source)
 
 	programResult, err := s.evaluator.EvaluateProgram(source)
 	if err != nil {
-		return nil, patchFilelocation(err, lineEnd)
+		return CommandPlayResponse{}, patchFilelocation(err, lineEnd)
 	}
 	var endTime time.Time
 	if pl, ok := programResult.(core.Playable); ok {
@@ -96,7 +102,7 @@ func (s *ServiceImpl) CommandPlay(file string, lineEnd int, source string) (inte
 				time.Now())
 		}
 	}
-	return endTime, nil
+	return CommandPlayResponse{EndTime: endTime, ExpressionResult: programResult}, nil
 }
 func (s *ServiceImpl) CommandStop(file string, lineEnd int, source string) (interface{}, error) {
 	s.updateMetadata(file, lineEnd, source)
