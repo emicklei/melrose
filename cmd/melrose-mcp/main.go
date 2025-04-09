@@ -41,19 +41,27 @@ func main() {
 	chordHander := func(ctx context.Context, request mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
 		note := request.Params.Arguments["ground"]
 		if note == "" {
-			note = "ground"
+			note = "C"
+		}
+		fraction := request.Params.Arguments["fraction"]
+		if fraction == "" {
+			fraction = "4"
+		}
+		octave := request.Params.Arguments["octave"]
+		if octave == "" {
+			octave = "4"
 		}
 		return mcp.NewGetPromptResult(
 			"playing a chord",
 			[]mcp.PromptMessage{
 				mcp.NewPromptMessage(
 					mcp.RoleAssistant,
-					mcp.NewTextContent(fmt.Sprintf("chord('%s')", note)),
+					mcp.NewTextContent(fmt.Sprintf("chord('%s%s%s')", fraction, note, octave)),
 				),
 			},
 		), nil
 	}
-	chordPrompt := mcp.NewPrompt("play-a-chord",
+	chordPrompt := mcp.NewPrompt("play-chord",
 		mcp.WithPromptDescription("play the notes of a chord"))
 
 	ioServer.AddPrompt(chordPrompt, chordHander)

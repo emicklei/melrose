@@ -6,3 +6,7 @@ Examples:
 - play the notes of Frere Jacques
 
 https://github.com/punkpeye/awesome-mcp-servers
+
+## inspector
+
+    npx @modelcontextprotocol/inspector `which melrose-mcp`
