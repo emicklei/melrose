@@ -23,7 +23,7 @@ func NewMCPServer(ctx core.Context) *MCPServer {
 	return &MCPServer{service: api.NewService(ctx)}
 }
 
-func (s *MCPServer) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func (s *MCPServer) HandlePlay(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	expression, ok := request.Params.Arguments["expression"].(string)
 	if !ok {
 		return nil, errors.New("expression must be a string")

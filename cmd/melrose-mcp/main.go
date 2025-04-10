@@ -23,21 +23,19 @@ func main() {
 		"melrōse",
 		"v0.56.0",
 	)
+	playServer := mcpserver.NewMCPServer(ctx)
 
-	// Add tool
-	tool := mcp.NewTool("play-melrose",
+	// Add play tool
+	tool := mcp.NewTool("melrose-play",
 		mcp.WithDescription("play melrōse expression"),
 		mcp.WithString("expression",
 			mcp.Required(),
 			mcp.Description("melrōse expression to play"),
 		),
 	)
+	ioServer.AddTool(tool, playServer.HandlePlay)
 
-	playServer := mcpserver.NewMCPServer(ctx)
-
-	// Add tool handler
-	ioServer.AddTool(tool, playServer.Handle)
-
+	// Add chord prompt
 	chordHander := func(ctx context.Context, request mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
 		note := request.Params.Arguments["ground"]
 		if note == "" {
@@ -61,10 +59,8 @@ func main() {
 			},
 		), nil
 	}
-	chordPrompt := mcp.NewPrompt("play-chord",
-		mcp.WithPromptDescription("play the notes of a chord"))
-
-	ioServer.AddPrompt(chordPrompt, chordHander)
+	ioServer.AddPrompt(mcp.NewPrompt("play-chord",
+		mcp.WithPromptDescription("play the notes of a chord")), chordHander)
 
 	// Start the stdio server
 	if err := server.ServeStdio(ioServer); err != nil {

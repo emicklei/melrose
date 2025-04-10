@@ -1293,7 +1293,6 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 		Title:       "Map function",
 		Description: "map will collect tranformations of each sequence of a collection using a function that references a replacement",
 		Template:    "map(${1:collection},${2:function-with-underscore})",
-		Alias:       "collect",
 		Samples: `j = join(sequence('C E G'),sequence('D F A'))
 // uses the special variable named "_"
 c = map(j, transpose(1, _ ))`,

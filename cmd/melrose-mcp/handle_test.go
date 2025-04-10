@@ -28,7 +28,7 @@ func TestHandleCDE(t *testing.T) {
 	req.Params.Arguments = map[string]interface{}{
 		"expression": "sequence('C D E')",
 	}
-	result, err := playServer.Handle(context.Background(), req)
+	result, err := playServer.HandlePlay(context.Background(), req)
 	if err != nil {
 		t.Fatalf("Handle failed: %v", err)
 	}
