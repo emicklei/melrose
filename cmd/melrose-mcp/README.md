@@ -11,7 +11,7 @@ This tool requires the [Go SDK](https://go.dev).
     {
         "mcpServers": { 
             ...
-            "play-melrose": {
+            "melrōse": {
             "command": "<YOUR DIRECTORY TO THE BINARY>/melrose-mcp",
             "args": []
             }
