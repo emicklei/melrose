@@ -14,6 +14,11 @@ func TestNote(t *testing.T) {
 		"sequence('C')")
 }
 
+func TestNoteUsingB(t *testing.T) {
+	r := eval(t, "note('cb')")
+	checkStorex(t, r, "note('C_')")
+}
+
 func TestNote_Invalid(t *testing.T) {
 	mustError(t, "note('k')", "illegal note")
 }

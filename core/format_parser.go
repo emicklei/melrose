@@ -412,6 +412,7 @@ func (s *chordprogressionSTM) reset() {
 }
 
 const allowedNoteNames = "abcdefgABCDEFG=<^>"
+const allowedAccidentals = "#_b♯♭"
 
 func newNoteSTM() *noteSTM {
 	s := new(noteSTM)
@@ -481,14 +482,17 @@ func (s *noteSTM) accept(lit string) error {
 	} else {
 		// name is set
 		if strings.ContainsAny(lit, allowedNoteNames) {
-			return fmt.Errorf("name already known, got:%s", lit)
+			// accidental b is allowed
+			if lit != "b" {
+				return fmt.Errorf("name already known, got:%s", lit)
+			}
 		}
 		// accidental
 		var accidental = 0
 		switch lit {
 		case "#", "♯":
 			accidental = 1
-		case "_", "♭":
+		case "_", "♭", "b":
 			accidental = -1
 		}
 		if accidental != 0 {
