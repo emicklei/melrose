@@ -2,8 +2,8 @@ package system
 
 import (
 	"flag"
+	"fmt"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -42,7 +42,6 @@ func Setup(buildTag string) (core.Context, error) {
 		notify.ToggleDebug()
 	}
 	transport.Initializer()
-	//checkVersion()
 
 	ctx := new(core.PlayContext)
 	ctx.EnvironmentVars = new(sync.Map)
@@ -51,7 +50,7 @@ func Setup(buildTag string) (core.Context, error) {
 	ctx.CapabilityFlags = core.NewCapabilities()
 	reg, err := midi.NewDeviceRegistry()
 	if err != nil {
-		log.Fatalln("unable to initialize MIDI")
+		return nil, fmt.Errorf("unable to initialize MIDI: %w", err)
 	}
 	ctx.AudioDevice = reg
 	return ctx, nil

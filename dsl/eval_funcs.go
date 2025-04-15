@@ -378,6 +378,7 @@ ab = join(a,b) // => (A D_5 E5) (C E G)`,
 		Title:         "Beats Per Minute",
 		Description:   "set the Beats Per Minute (BPM) [1..300]; default is 120",
 		ControlsAudio: true,
+		Alias:         "tempo",
 		Prefix:        "bpm",
 		Template:      `bpm(${1:beats-per-minute})`,
 		Samples: `bpm(90)

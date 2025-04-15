@@ -41,6 +41,10 @@ func (s *MCPServer) HandlePlay(ctx context.Context, request mcp.CallToolRequest)
 		toolResult.Content = []mcp.Content{
 			mcp.TextContent{
 				Type: "text",
+				Text: expression,
+			},
+			mcp.TextContent{
+				Type: "text",
 				Text: err.Error(),
 			}}
 		return toolResult, err

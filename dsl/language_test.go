@@ -223,3 +223,7 @@ func TestIteratorIndex(t *testing.T) {
 idx = it.Index()`)
 	checkStorex(t, r, "it.Index()")
 }
+func TestTempo(t *testing.T) {
+	r := eval(t, `t = tempo(120)`)
+	checkStorex(t, r, "bpm(120)")
+}
