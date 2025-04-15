@@ -2,7 +2,9 @@ package system
 
 import (
 	"flag"
+	"io"
 	"log"
+	"os"
 	"sync"
 
 	"github.com/emicklei/melrose/core"
@@ -14,12 +16,21 @@ import (
 )
 
 var (
-	debugLogging = flag.Bool("d", false, "debug logging")
+	debugLogging   = flag.Bool("d", false, "debug logging")
+	errLogLocation = flag.String("log", "", "log file location")
 )
 
 func Setup(buildTag string) (core.Context, error) {
 	core.BuildTag = buildTag
 	flag.Parse()
+	if *errLogLocation == "" {
+		errOut, err := os.OpenFile(*errLogLocation, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+		if err == nil {
+			notify.Console.StandardError = io.MultiWriter(errOut, os.Stderr)
+		} else {
+			notify.Errorf("failed to open error log file %s: %v", *errLogLocation, err)
+		}
+	}
 	if *debugLogging {
 		notify.ToggleDebug()
 	}

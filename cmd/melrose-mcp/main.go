@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"os"
 
+	"github.com/emicklei/melrose/notify"
 	"github.com/emicklei/melrose/server/mcpserver"
 	"github.com/emicklei/melrose/system"
 	"github.com/mark3labs/mcp-go/mcp"
@@ -16,7 +17,8 @@ var BuildTag = "dev"
 func main() {
 	ctx, err := system.Setup(BuildTag)
 	if err != nil {
-		log.Fatalln(err)
+		notify.Errorf("setup failed: %v", err)
+		os.Exit(1)
 	}
 
 	ioServer := server.NewMCPServer(
