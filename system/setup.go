@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/emicklei/melrose/core"
@@ -24,11 +25,17 @@ func Setup(buildTag string) (core.Context, error) {
 	core.BuildTag = buildTag
 	flag.Parse()
 	if *errLogLocation == "" {
+		err := os.MkdirAll(filepath.Dir(*errLogLocation), os.ModeDir)
+		if err != nil {
+			notify.Errorf("failed to create log directory %s: %v", *errLogLocation, err)
+			return nil, err
+		}
 		errOut, err := os.OpenFile(*errLogLocation, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 		if err == nil {
 			notify.Console.StandardError = io.MultiWriter(errOut, os.Stderr)
 		} else {
 			notify.Errorf("failed to open error log file %s: %v", *errLogLocation, err)
+			return nil, err
 		}
 	}
 	if *debugLogging {
