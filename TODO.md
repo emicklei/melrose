@@ -1,8 +1,0 @@
-- play(loop(sequence('A B C D G'))) cannot be stopped
-- https://github.com/dedicatted/golang-cross-build-ghaction
-- merge is not correct
-- LLM
-    - tempo(80, sequence(...))
-    - sequence(c2, c5, e5, g5, c6, e6, g5, e5)
-    - sequence('c2', 'c5', 'e5', 'g5', 'c6', 'e6', 'g5', 'e5')
-    - C5 Gb4 (the "b" for flat)

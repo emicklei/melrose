@@ -34,7 +34,7 @@ Read the [documentation](https://melrōse.org/) on how to use `melrōse`.
 
 ### Status
 
-Until `v1.0.0` the language syntax may change in an incompatible way.
+The language has reached version `1.0` since tool version `v1.0.0` and therefore future changes will only extend it (1.x) and not introduce breaking changes.
 
 ### Programming music
 
