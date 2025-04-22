@@ -24,7 +24,7 @@ var (
 func Setup(buildTag string) (core.Context, error) {
 	core.BuildTag = buildTag
 	flag.Parse()
-	if *errLogLocation == "" {
+	if *errLogLocation != "" {
 		err := os.MkdirAll(filepath.Dir(*errLogLocation), os.ModeDir)
 		if err != nil {
 			notify.Errorf("failed to create log directory %s: %v", *errLogLocation, err)
