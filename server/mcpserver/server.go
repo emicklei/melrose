@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/emicklei/melrose/api"
@@ -49,19 +48,20 @@ func (s *MCPServer) HandlePlay(ctx context.Context, request mcp.CallToolRequest)
 			}}
 		return toolResult, err
 	}
+	dur := max(time.Until(response.EndTime), 0)
 	content := []mcp.Content{
 		mcp.TextContent{
 			Type: "text",
-			Text: time.Until(response.EndTime).String(),
-		}, mcp.TextContent{
-			Type: "text",
-			Text: strings.TrimSpace(captured.String()),
+			Text: dur.String(),
 		}}
 	if p, ok := response.ExpressionResult.(core.Sequenceable); ok {
-		content = append(content, mcp.TextContent{
-			Type: "text",
-			Text: p.S().Storex(),
-		})
+		ps := p.S()
+		if len(ps.Notes) > 0 {
+			content = append(content, mcp.TextContent{
+				Type: "text",
+				Text: ps.Storex(),
+			})
+		}
 	} else {
 		content = append(content, mcp.TextContent{
 			Type: "text",
