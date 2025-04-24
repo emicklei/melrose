@@ -8,6 +8,10 @@ import (
 
 var ansiColorsEnabled = true
 
+func SetANSIColorsEnabled(enabled bool) {
+	ansiColorsEnabled = enabled
+}
+
 func PrintWelcome(version string) {
 	tail := " - program your melodies - " + version + " (help = :h, quit = :q or ctrl+c)"
 	if ansiColorsEnabled {

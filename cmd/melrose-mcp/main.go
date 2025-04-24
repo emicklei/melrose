@@ -15,6 +15,8 @@ import (
 var BuildTag = "dev"
 
 func main() {
+	notify.SetANSIColorsEnabled(false) // error messages cannot be colored
+
 	ctx, err := system.Setup(BuildTag)
 	if err != nil {
 		notify.Errorf("setup failed: %v", err)
