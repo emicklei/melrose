@@ -30,11 +30,13 @@ func main() {
 	playServer := mcpserver.NewMCPServer(ctx)
 
 	// Add play tool
-	tool := mcp.NewTool("melrose-play",
-		mcp.WithDescription("play melrōse expression"),
+	tool := mcp.NewTool("melrose_play",
+		mcp.WithDescription(`Melrōse is a language to create music by programming expressions.
+		 The language uses musical primitives (note, sequence, chord) and many functions (map, group, transpose)
+		 that can be used to create more complex patterns and loops of notes.`),
 		mcp.WithString("expression",
 			mcp.Required(),
-			mcp.Description("melrōse expression to play"),
+			mcp.Description("functional expression using the syntax rules of https://xn--melrse-egb.org/docs/reference/notations"),
 		),
 	)
 	ioServer.AddTool(tool, playServer.HandlePlay)

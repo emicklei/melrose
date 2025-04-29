@@ -32,6 +32,11 @@ For the best experience, use the `melrōse` together with the Visual Studio Code
 
 Read the [documentation](https://melrōse.org/) on how to use `melrōse`.
 
+### Usage in AI
+
+`melrose-mcp` is a (server) tool that uses the MCP protocol to receive expressions to play.
+See [documentation](cmd/melrose-mcp/README.md) for details.
+
 ### Status
 
 The language has reached version `1.0` since tool version `v1.0.0` and therefore future changes will only extend it (1.x) and not introduce breaking changes.

@@ -1,6 +1,6 @@
 ## installation
 
-This tool requires the [Go SDK](https://go.dev).
+This mcp server requires the [Go SDK](https://go.dev).
 
     go install github.com/emicklei/melrose/cmd/melrose-mcp@latest
 
