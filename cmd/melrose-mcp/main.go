@@ -24,7 +24,7 @@ func main() {
 	}
 
 	ioServer := server.NewMCPServer(
-		"melrōse",
+		"melrose",
 		"v0.56.0",
 	)
 	playServer := mcpserver.NewMCPServer(ctx)
