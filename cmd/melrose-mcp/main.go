@@ -10,9 +10,14 @@ import (
 	"github.com/emicklei/melrose/system"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
+
+	_ "embed"
 )
 
 var BuildTag = "dev"
+
+//go:embed resources/melrose_note_syntax.txt
+var noteSyntaxContent string
 
 func main() {
 	notify.SetANSIColorsEnabled(false) // error messages cannot be colored
@@ -28,6 +33,18 @@ func main() {
 		"v0.56.0",
 	)
 	playServer := mcpserver.NewMCPServer(ctx)
+
+	// Add resource for syntax
+	syntax := mcp.NewResource("file://melrose/note/syntax", "melrose note syntax", mcp.WithMIMEType("text/plain"))
+	ioServer.AddResource(syntax, func(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
+		return []mcp.ResourceContents{
+			mcp.TextResourceContents{
+				URI:      "file://melrose/note/syntax",
+				MIMEType: "text/plain",
+				Text:     noteSyntaxContent,
+			},
+		}, nil
+	})
 
 	// Add play tool
 	tool := mcp.NewTool("melrose_play",

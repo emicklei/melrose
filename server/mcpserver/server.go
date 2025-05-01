@@ -49,9 +49,9 @@ func (s *MCPServer) HandlePlay(ctx context.Context, request mcp.CallToolRequest)
 		return toolResult, err
 	}
 	dur := max(time.Until(response.EndTime), 0)
-	// wait until music has stopped playing
+	// wait until music has stopped playing or it is taking too long (2 min)
 	if dur > 0 {
-		time.Sleep(dur)
+		time.Sleep(min(2*time.Minute, 0))
 	}
 	content := []mcp.Content{
 		mcp.TextContent{

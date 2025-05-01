@@ -4,11 +4,26 @@ import (
 	"fmt"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/op"
 )
 
 type Add struct {
 	Left  interface{}
 	Right interface{}
+}
+
+func (a Add) S() core.Sequence {
+	ls, ok := a.Left.(core.Sequenceable)
+	if !ok {
+		return core.EmptySequence
+	}
+	rs, ok := a.Right.(core.Sequenceable)
+	if !ok {
+		return core.EmptySequence
+	}
+	return op.Join{
+		Target: []core.Sequenceable{ls, rs},
+	}.S()
 }
 
 func (a Add) Storex() string {

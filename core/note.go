@@ -46,7 +46,7 @@ func (n Note) HasEqualTied(o Note) bool {
 	if len(n.tied) != len(o.tied) {
 		return false
 	}
-	for t := 0; t < len(n.tied); t++ {
+	for t := range n.tied {
 		if !n.tied[t].Equals(o.tied[t]) {
 			return false
 		}
