@@ -355,12 +355,14 @@ transpose(p,note('c'))`,
 
 	registerFunction(eval, "join", Function{
 		Title:       "Join operator",
+		Alias:       "+",
 		Description: "joins one or more musical objects as one",
 		Prefix:      "joi",
 		Template:    `join(${1:first},${2:second})`,
 		Samples: `a = chord('a')
 b = sequence('(c e g)')
-ab = join(a,b) // => (A D_5 E5) (C E G)`,
+ab = join(a,b) // => (A D_5 E5) (C E G) 
+ab = a + b // => (A D_5 E5) (C E G)`,
 		IsComposer: true,
 		Func: func(playables ...interface{}) interface{} {
 			joined := []core.Sequenceable{}
@@ -539,7 +541,7 @@ loop(transpose(num,note('C')),next(num))`,
 		Prefix:        "pla",
 		Template:      `play(${1:sequenceable})`,
 		Samples:       `play(s1,s2,s3) // play s3 after s2 after s1`,
-		Func: func(playables ...interface{}) interface{} {
+		Func: func(playables ...any) any {
 			list := []core.Sequenceable{}
 			for _, p := range playables {
 				// first check Playable
@@ -547,8 +549,7 @@ loop(transpose(num,note('C')),next(num))`,
 					pl.Play(ctx, time.Now())
 					continue
 				}
-				// fmt.Printf("not a playable %T\n", p)
-				if s, ok := getSequenceable(p); ok { // unwrap var
+				if s, ok := getSequenceable(p); ok { // unwrap var or valueholder
 					list = append(list, s)
 				} else {
 					notify.Warnf("cannot play (%T) %v", p, p)

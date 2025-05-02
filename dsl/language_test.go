@@ -7,6 +7,14 @@ import (
 	"github.com/emicklei/melrose/core"
 )
 
+func TestStatementSeparator(t *testing.T) {
+	t.Skip()
+	r := eval(t, "a=note('c');b=note('d');a")
+	checkStorex(t, r, "note('C')")
+	checkStorex(t, r.(core.Sequenceable).S(),
+		"sequence('C')")
+}
+
 func TestNote(t *testing.T) {
 	r := eval(t, "note('c')")
 	checkStorex(t, r, "note('C')")

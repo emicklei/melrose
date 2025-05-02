@@ -66,6 +66,9 @@ func registerFunction(m map[string]Function, k string, f Function) {
 }
 
 func getSequenceable(v interface{}) (core.Sequenceable, bool) {
+	if val, ok := v.(core.HasValue); ok {
+		v = val.Value()
+	}
 	if s, ok := v.(core.Sequenceable); ok {
 		return s, ok
 	}

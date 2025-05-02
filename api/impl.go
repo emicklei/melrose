@@ -92,6 +92,10 @@ func (s *ServiceImpl) CommandPlay(file string, lineEnd int, source string) (Comm
 		notify.Infof("play(%s)", displayString(s.context, pl))
 		endTime = pl.Play(s.context, time.Now())
 	} else {
+		// unvalue if needed
+		if u, ok := programResult.(core.HasValue); ok {
+			programResult = u.Value()
+		}
 		// any sequenceable is playable
 		if seq, ok := programResult.(core.Sequenceable); ok {
 			notify.Infof("play(%s)", displayString(s.context, seq))
@@ -100,6 +104,8 @@ func (s *ServiceImpl) CommandPlay(file string, lineEnd int, source string) (Comm
 				seq,
 				s.context.Control().BPM(),
 				time.Now())
+		} else {
+			notify.Debugf("not sequenceable:%v [%T]", programResult, programResult)
 		}
 	}
 	return CommandPlayResponse{EndTime: endTime, ExpressionResult: programResult}, nil

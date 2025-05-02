@@ -11,7 +11,7 @@ import (
 )
 
 func TestHandleCDE(t *testing.T) {
-	t.Skip()
+	// t.Skip()
 	ctx, err := system.Setup("test")
 	if err != nil {
 		log.Fatalln(err)
@@ -26,7 +26,8 @@ func TestHandleCDE(t *testing.T) {
 	}
 	req.Params.Name = "play-melrose"
 	req.Params.Arguments = map[string]interface{}{
-		"expression": "sequence('C D E')",
+		"expression": `a=note('c')
+b=a+a`,
 	}
 	result, err := playServer.HandlePlay(context.Background(), req)
 	if err != nil {
