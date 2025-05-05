@@ -49,6 +49,7 @@ func TestDraw(t *testing.T) {
 }
 
 func TestRecordedTimeline(t *testing.T) {
+	t.Skip("TODO put recorded file in testdata")
 	bpm := 120.0
 	// TODO stored from control/recording.go:54
 	events := core.NoteEventsFromFile("/tmp/melrose-recording.json")
