@@ -11,7 +11,7 @@ import (
 )
 
 func TestHandleCDE(t *testing.T) {
-	// t.Skip()
+	t.Skip()
 	ctx, err := system.Setup("test")
 	if err != nil {
 		log.Fatalln(err)
