@@ -5,7 +5,6 @@ import (
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/dsl/calc"
-	"github.com/emicklei/melrose/op"
 	"github.com/expr-lang/expr"
 	"github.com/expr-lang/expr/ast"
 )
@@ -30,13 +29,6 @@ func (envMap) Sub(l, r interface{}) core.HasValue {
 }
 
 func (envMap) Add(l, r any) core.HasValue {
-	if ls, ok := l.(core.Sequenceable); ok {
-		if rs, ok := r.(core.Sequenceable); ok {
-			return core.On(op.Join{
-				Target: []core.Sequenceable{ls, rs},
-			})
-		}
-	}
 	return calc.Add{Left: l, Right: r}
 }
 

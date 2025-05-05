@@ -272,13 +272,25 @@ func TestMapFraction(t *testing.T) {
 	c = map(join(note('e')), fraction(8,_))
 	`)
 	checkError(t, err)
-	if got, want := r.(core.Map).Storex(), "map(join(note('E')),fraction(8,_))"; got != want {
+	if got, want := r.(core.Map).Storex(), "map(join(note('E')),fraction(8,sequence('')))"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 	if got, want := r.(core.Map).S().Storex(), "sequence('8E')"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
+
+func TestTransposeUnderscore(t *testing.T) {
+	e := newTestEvaluator()
+	r, err := e.EvaluateProgram(`
+c = transpose(1,_)
+	`)
+	checkError(t, err)
+	if got, want := r.(op.Transpose).Storex(), "transpose(1,sequence(''))"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}
+
 func TestMapTranspose(t *testing.T) {
 	e := newTestEvaluator()
 	r, err := e.EvaluateProgram(`
@@ -286,6 +298,9 @@ func TestMapTranspose(t *testing.T) {
 	c = map(join(note('e')), transpose(1,_))
 	`)
 	checkError(t, err)
+	if got, want := r.(core.Map).Storex(), "map(join(note('E')),transpose(1,sequence('')))"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
 	if got, want := r.(core.Map).S().Storex(), "sequence('F')"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
