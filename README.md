@@ -32,7 +32,7 @@ For the best experience, use the `melrōse` together with the Visual Studio Code
 
 Read the [documentation](https://melrōse.org/) on how to use `melrōse`.
 
-### Usage in AI
+### Melrōse MCP Server
 
 `melrose-mcp` is a (server) tool that uses the MCP protocol to receive expressions to play.
 See [documentation](cmd/melrose-mcp/README.md) for details.
