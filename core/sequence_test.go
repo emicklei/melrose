@@ -14,6 +14,7 @@ func TestParseSequence(t *testing.T) {
 		in  string
 		out string
 	}{
+		{"8(E G)", "(8E 8G)"},
 		{"C (E G)", "C (E G)"},
 		{"C ( A )", "C A"},
 		{"2C# (8D_ E_ F#)", "2C# (8D_ E_ F#)"},

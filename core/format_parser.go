@@ -138,10 +138,11 @@ func (f *formatParser) parseChord() (Chord, error) {
 }
 
 type sequenceSTM struct {
-	groups  [][]Note
-	ingroup bool
-	group   []Note
-	note    *noteSTM
+	groups        [][]Note
+	ingroup       bool
+	group         []Note
+	note          *noteSTM
+	groupFraction float32
 }
 
 type noteSTM struct {
@@ -581,6 +582,11 @@ func (s *sequenceSTM) accept(lit string) error {
 			return err
 		}
 	case "(" == lit:
+		// pending note and empty name?
+		if s.note != nil && s.note.name == "" {
+			s.groupFraction = s.note.fraction
+			s.note = nil
+		}
 		if s.ingroup {
 			return fmt.Errorf("unexpected (")
 		}
@@ -596,8 +602,16 @@ func (s *sequenceSTM) accept(lit string) error {
 			return err
 		}
 		if len(s.group) > 0 {
+			// apply group fraction if any
+			if s.groupFraction != 0 {
+				for i := range s.group {
+					// override fraction
+					s.group[i].fraction = s.groupFraction
+				}
+			}
 			s.groups = append(s.groups, s.group)
 			s.group = []Note{}
+			s.groupFraction = 0
 		}
 		s.ingroup = false
 	default:
