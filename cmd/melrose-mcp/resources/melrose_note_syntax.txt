@@ -1,8 +1,0 @@
-<note> ::= note('<note-spec>')
-<note-spec> ::= <note-fraction> <note-extend> <note-name> <note-accidental> <note-octave> <note-dynamic>
-<note-fraction> ::= "1" | "2" | "4" | "8" | "16" | "32"
-<note-extend> ::= "." | ""
-<note-name> ::= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "=" | ">" | "<" | "^"
-<note-accidental> ::= "b" |"_" | "#" | ""
-<note-octave> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-<note-dynamic> ::= "+++++" | "++++" | "+++" | "++" | "+" | "" | "o" | "-" | "--" | "---" | "----" | "-----"
