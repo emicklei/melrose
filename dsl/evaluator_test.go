@@ -9,6 +9,30 @@ import (
 	"github.com/emicklei/melrose/op"
 )
 
+func TestSemicolonSeparator(t *testing.T) {
+	for _, entry := range []struct {
+		input string
+		want  string
+	}{
+		{`// help;me
+		a=note('c') // or;him`, "note('C')"},
+		{`// help;me
+		a=note('c');b=a // a==b`, "a"},
+		{`a=note('c')	;	b=a;	;b`, "a"},
+		{`s=sequence('c
+    d');join(s,s)//test`, "join(sequence('C D'),sequence('C D'))"},
+	} {
+		e := NewEvaluator(testContext())
+		r, err := e.EvaluateProgram(entry.input)
+		if err != nil {
+			t.Error(err)
+		}
+		if got, want := core.Storex(r), entry.want; got != want {
+			t.Errorf("got [%v] want [%v]", got, want)
+		}
+	}
+}
+
 func TestIsCompatible(t *testing.T) {
 	if got, want := true, IsCompatibleSyntax("0.20"); got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
@@ -42,9 +66,12 @@ func TestMulitLineEvaluate(t *testing.T) {
 		2C 2G3 2C
 		2C 2G3 2C
 		")`
-	_, err := e.EvaluateStatement(input)
+	seq, err := e.EvaluateProgram(input)
 	if err != nil {
 		t.Error(err)
+	}
+	if got, want := seq.(core.Sequence).Storex(), "sequence('C D E C C D E C E F 2G E F 2G 8G 8A 8G 8F E C 8G 8A 8G 8F E C 2C 2G3 2C 2C 2G3 2C')"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
 

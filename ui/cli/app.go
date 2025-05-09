@@ -84,7 +84,7 @@ func repl(line *liner.State, ctx core.Context) {
 				notify.Errorf("missing expression before '!'")
 				continue
 			}
-			if result, err := eval.RecoveringEvaluateStatement(entry[:len(entry)-1]); err != nil {
+			if result, err := eval.RecoveringEvaluateProgram(entry[:len(entry)-1]); err != nil {
 				notify.Print(notify.NewError(err))
 				continue
 			} else {
@@ -98,7 +98,7 @@ func repl(line *liner.State, ctx core.Context) {
 				}
 			}
 		}
-		if result, err := eval.RecoveringEvaluateStatement(entry); err != nil {
+		if result, err := eval.RecoveringEvaluateProgram(entry); err != nil {
 			notify.Print(notify.NewError(err))
 			// even on error, add entry to history so we can edit/fix it
 		} else {

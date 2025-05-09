@@ -19,7 +19,7 @@ You need to install the [Go SDK](https://golang.org/dl/) for compiling the progr
 
 ## Mac OSX
 
-	go install -v github.com/emicklei/melrose/cmd/melrose...@latest
+	go install github.com/emicklei/melrose/cmd/melrose@latest
 
 After installing `melrōse`, you can start the tool in a Terminal using:
 

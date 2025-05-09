@@ -27,76 +27,80 @@ func NewEvaluator(ctx core.Context) *Evaluator {
 
 const fourSpaces = "    "
 
-// Statements are separated by newlines.
+// Statements are separated by newlines and semicolons.
 // If a line is prefixed by one or more TABs then that line is appended to the previous.
 // If a line is prefixed by 4 SPACES then that line is appended to the previous.
 // Return the result of the last expression or statement.
 func (e *Evaluator) EvaluateProgram(source string) (interface{}, error) {
 	lines := []string{}
 	splitted := strings.Split(source, "\n")
+
+	// indentation
 	nrOfLastExpression := -1
-	for lineNr, each := range splitted {
-		if strings.HasPrefix(each, "\t") || strings.HasPrefix(each, fourSpaces) { // append to previous
+	for lineNr, line := range splitted {
+		if strings.HasPrefix(line, "\t") || strings.HasPrefix(line, fourSpaces) { // append to previous
 			if len(lines) == 0 {
 				return nil, errors.New("syntax error, first line cannot start with TAB")
 			}
 			if nrOfLastExpression+1 != lineNr {
 				return nil, fmt.Errorf("syntax error, line with TAB [%d] must be part of expression", lineNr+1)
 			}
-			lines[len(lines)-1] = withoutTrailingComment(lines[len(lines)-1]) + each // with TAB TODO
+			lines[len(lines)-1] = withoutTrailingComment(lines[len(lines)-1]) + line // with TAB TODO
 			nrOfLastExpression = lineNr
 			continue
 		}
-		lines = append(lines, each)
+		lines = append(lines, line)
 		nrOfLastExpression = lineNr
 	}
-	var lastResult interface{}
-	for _, each := range lines {
-		result, err := e.evaluateCleanStatement(each)
-		if err != nil {
-			return nil, err
+	// now, lines dont have leading tabs or 4 spaces
+
+	var lastResult any
+	for _, line := range lines {
+		// replace all TABs
+		line = strings.Replace(line, "\t", " ", -1)
+		// whitespaces
+		line = strings.TrimSpace(line)
+		// empty
+		if len(line) == 0 {
+			continue
 		}
-		if result != nil {
-			lastResult = result
+		// comment line
+		if strings.HasPrefix(line, "//") {
+			continue
+		}
+		// trailing inline comment
+		line = withoutTrailingComment(line)
+
+		for _, statement := range strings.Split(line, ";") {
+			// whitespaces
+			statement = strings.TrimSpace(statement)
+			// empty
+			if len(statement) == 0 {
+				continue
+			}
+			result, err := e.evaluateCleanStatement(statement)
+			if err != nil {
+				return nil, err
+			}
+			if result != nil {
+				lastResult = result
+			}
 		}
 	}
 	return lastResult, nil
 }
 
-func (e *Evaluator) RecoveringEvaluateStatement(entry string) (interface{}, error) {
+func (e *Evaluator) RecoveringEvaluateProgram(entry string) (interface{}, error) {
 	defer func() {
 		if err := recover(); err != nil {
 			notify.Errorf("%v", err)
 			return
 		}
 	}()
-	return e.EvaluateStatement(entry)
-}
-
-func (e *Evaluator) EvaluateStatement(entry string) (interface{}, error) {
-	// flatten multiline ; expr does not support multiline strings
-	entry = strings.Replace(entry, "\n", " ", -1)
-
-	return e.evaluateCleanStatement(entry)
+	return e.EvaluateProgram(entry)
 }
 
 func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
-	// replace all TABs
-	entry = strings.Replace(entry, "\t", " ", -1)
-
-	// whitespaces
-	entry = strings.TrimSpace(entry)
-
-	// check comment line
-	if strings.HasPrefix(entry, "//") {
-		return nil, nil
-	}
-	// remove trailing inline comment
-	entry = withoutTrailingComment(entry)
-
-	if len(entry) == 0 {
-		return nil, nil
-	}
 	if value, ok := e.context.Variables().Get(entry); ok {
 		return value, nil
 	}
