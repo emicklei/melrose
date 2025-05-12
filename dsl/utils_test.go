@@ -40,6 +40,7 @@ func (t testAudioDevice) Schedule(event core.TimelineEvent, beginAt time.Time) {
 func (t testAudioDevice) Reset()                                               {}
 func (t testAudioDevice) Report()                                              {}
 func (t testAudioDevice) Close() error                                         { return nil }
+func (t testAudioDevice) ListDevices() (list []core.DeviceDescriptor)          { return }
 
 func checkError(t *testing.T, err error) {
 	t.Helper()

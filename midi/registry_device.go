@@ -218,3 +218,24 @@ func (r *DeviceRegistry) Listen(deviceID int, who core.NoteListener, startOrStop
 		// do not stop the listener ; incoming events are just ignored. otherwise buffer will overflow
 	}
 }
+
+func (r *DeviceRegistry) ListDevices() (list []core.DeviceDescriptor) {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+	for k, v := range r.in {
+		list = append(list, core.DeviceDescriptor{
+			ID:      k,
+			IsInput: true,
+			Name:    v.name,
+		})
+	}
+	for k, v := range r.out {
+		list = append(list, core.DeviceDescriptor{
+			ID:      k,
+			IsInput: false,
+			Name:    v.name,
+		})
+	}
+	return list
+
+}

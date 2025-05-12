@@ -50,10 +50,18 @@ type AudioDevice interface {
 	// Schedule put an event on the timeline at a begin
 	Schedule(event TimelineEvent, beginAt time.Time)
 
+	ListDevices() []DeviceDescriptor
+
 	// Record(ctx Context) (*Recording, error)
 	Reset()
 	Close() error
 	Report()
+}
+
+type DeviceDescriptor struct {
+	ID      int
+	IsInput bool
+	Name    string
 }
 
 type LoopController interface {

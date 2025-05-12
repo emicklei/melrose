@@ -170,6 +170,10 @@ func (s *ServiceImpl) CommandMIDISample(filename string, lineEnd int, source str
 	return buffer.Bytes(), nil
 }
 
+func (s *ServiceImpl) ListDevices() []core.DeviceDescriptor {
+	return s.context.Device().ListDevices()
+}
+
 func displayString(ctx core.Context, v interface{}) string {
 	name := ctx.Variables().NameFor(v)
 	if len(name) == 0 {
