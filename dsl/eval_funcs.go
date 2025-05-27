@@ -800,6 +800,10 @@ stop() // stop all playables`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot decorate with channel (%T) %s", m, core.Storex(m)))
 			}
+			_, ok = m.(core.DeviceSelector)
+			if ok {
+				return notify.Panic(fmt.Errorf("cannot decorate device with channel, need to swap the calls like device(1,channel(2,seq))"))
+			}
 			return core.NewChannelSelector(seq, getHasValue(midiChannel))
 		}})
 

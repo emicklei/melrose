@@ -235,3 +235,14 @@ func TestTempo(t *testing.T) {
 	r := eval(t, `t = tempo(120)`)
 	checkStorex(t, r, "bpm(120)")
 }
+func TestDeviceChannelNote(t *testing.T) {
+	r := eval(t, `d = device(1,channel(2,note('c')))`)
+	checkStorex(t, r, "device(1,channel(2,note('C')))")
+}
+func TestChannelDeviceNote(t *testing.T) {
+	mustError(t, `channel(1,device(2,note('c')))`, "swap")
+}
+func TestPlayDeviceChannelNote(t *testing.T) {
+	r := eval(t, `p = play(device(1,channel(2,note('c'))))`)
+	checkStorex(t, r, "play(device(1,channel(2,note('C'))))")
+}
