@@ -11,19 +11,32 @@ import (
 
 type envMap map[string]interface{}
 
-func (envMap) exprOperators() []expr.Option {
+func exprOperators() []expr.Option {
 	return []expr.Option{
-		expr.Operator("-", "Sub"),
-		expr.Operator("+", "Add"),
-		expr.Operator("*", "Multiply"),
-		expr.Operator("<", "LessThan"),
-		expr.Operator("<=", "LessEqualThan"),
-		expr.Operator(">", "GreaterThan"),
-		expr.Operator(">=", "GreaterEqualThan"),
-		expr.Operator("!=", "NotEqual"),
-		expr.Operator("==", "Equal"),
+		expr.Operator("-", "_Sub"),
+		expr.Operator("+", "_Add"),
+		expr.Operator("*", "_Multiply"),
+		expr.Operator("<", "_LessThan"),
+		expr.Operator("<=", "_LessEqualThan"),
+		expr.Operator(">", "_GreaterThan"),
+		expr.Operator(">=", "_GreaterEqualThan"),
+		expr.Operator("!=", "_NotEqual"),
+		expr.Operator("==", "_Equal"),
 	}
 }
+
+func addOperatorsTo(env map[string]interface{}) {
+	env["_Sub"] = envMap{}.Sub
+	env["_Add"] = envMap{}.Add
+	env["_Multiply"] = envMap{}.Multiply
+	env["_LessThan"] = envMap{}.LessThan
+	env["_LessEqualThan"] = envMap{}.LessEqualThan
+	env["_GreaterThan"] = envMap{}.GreaterThan
+	env["_GreaterEqualThan"] = envMap{}.GreaterEqualThan
+	env["_NotEqual"] = envMap{}.NotEqual
+	env["_Equal"] = envMap{}.Equal
+}
+
 func (envMap) Sub(l, r interface{}) core.HasValue {
 	return calc.Sub{Left: l, Right: r}
 }

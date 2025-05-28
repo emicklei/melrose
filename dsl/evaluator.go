@@ -252,7 +252,7 @@ func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
 	for _, each := range []string{"join", "repeat", "trim", "replace", "duration", "map"} {
 		options = append(options, expr.DisableBuiltin(each))
 	}
-	env := envMap{}
+	env := map[string]any{}
 	for k, f := range e.funcs {
 		env[k] = f.Func
 	}
@@ -261,7 +261,8 @@ func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
 	}
 	options = append(options, expr.Env(env))
 	options = append(options, expr.Patch(new(indexedAccessPatcher)))
-	program, err := expr.Compile(entry, append(options, env.exprOperators()...)...)
+	addOperatorsTo(env)
+	program, err := expr.Compile(entry, append(options, exprOperators()...)...)
 	if err != nil {
 		// try parsing the entry as a sequence or chord
 		// this can be requested from the editor to listen to a part of a sequence,chord,note,progression
