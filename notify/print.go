@@ -23,9 +23,9 @@ func PrintWelcome(version string) {
 
 func PrintBye() {
 	if ansiColorsEnabled {
-		fmt.Println("\033[1;34mmelrose\033[0m" + " sings bye!")
+		fmt.Println("\033[1;34mmelrōse\033[0m" + " sings bye!")
 	} else {
-		fmt.Fprintf(Console.StandardOut, "melrose sings bye!\n")
+		fmt.Fprintf(Console.StandardOut, "melrōse sings bye!\n")
 	}
 }
 
