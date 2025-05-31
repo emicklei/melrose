@@ -31,15 +31,17 @@ func (r *Recording) GetTargetFrom(other *Recording) {
 	r.variableName = other.variableName
 }
 
-func (r *Recording) Play(ctx core.Context, at time.Time) error {
+func (r *Recording) Play(ctx core.Context, at time.Time) time.Time {
+	notify.Debugf("start recording...")
 	// flush
 	r.timeline.Reset()
 	ctx.Device().Listen(r.deviceID, r, true)
-	return nil
+	return time.Now()
 }
 
 // Stop is part of Stoppable
 func (r *Recording) Stop(ctx core.Context) error {
+	notify.Debugf("... stopped recording")
 	// nothing there or already stopped
 	if r.timeline.Len() == 0 {
 		if notify.IsDebug() {

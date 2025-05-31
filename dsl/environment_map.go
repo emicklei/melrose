@@ -25,6 +25,7 @@ func exprOperators() []expr.Option {
 	}
 }
 
+// this was added because expr can no longer work with envMap directly; need to be map[s]any
 func addOperatorsTo(env map[string]interface{}) {
 	env["_Sub"] = envMap{}.Sub
 	env["_Add"] = envMap{}.Add

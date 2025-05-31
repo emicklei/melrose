@@ -3,6 +3,8 @@ package midi
 import (
 	"errors"
 	"fmt"
+	"maps"
+	"slices"
 	"sync"
 	"time"
 
@@ -117,11 +119,14 @@ func (r *DeviceRegistry) Report() {
 	defer r.mutex.RUnlock()
 
 	notify.PrintHighlighted("MIDI available to melrōse:")
-	for k, v := range r.in {
-		fmt.Printf(" input device %d = %s\n", k, v.name)
+	for k := range slices.Sorted(maps.Keys(r.in)) {
+		v := r.in[k]
+		fmt.Printf(" input device %d (:m i %d) = %s\n", k, k, v.name)
 	}
-	for k, v := range r.out {
-		fmt.Printf("output device %d = %s\n", k, v.name)
+	fmt.Println()
+	for k := range slices.Sorted(maps.Keys(r.out)) {
+		v := r.out[k]
+		fmt.Printf("output device %d (:m i %d) = %s\n", k, k, v.name)
 	}
 }
 
@@ -199,16 +204,15 @@ func (r *DeviceRegistry) OnKey(ctx core.Context, deviceID int, channel int, note
 	return nil
 }
 
-func (r *DeviceRegistry) Listen(deviceID int, who core.NoteListener, startOrStop bool) {
-	if notify.IsDebug() {
-		notify.Debugf("midi.listen id=%d, start=%v", deviceID, startOrStop)
-	}
+func (r *DeviceRegistry) Listen(deviceID int, who core.NoteListener, isStart bool) {
+	notify.Debugf("midi.listen id=%d, start=%v", deviceID, isStart)
+
 	in, err := r.Input(deviceID)
 	if err != nil {
 		notify.Warnf("input creation failed:%v", err)
 		return
 	}
-	if startOrStop {
+	if isStart {
 		in.listener.Start()
 		// wait for pending events to be flushed
 		time.Sleep(200 * time.Millisecond)

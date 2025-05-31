@@ -41,7 +41,7 @@ type AudioDevice interface {
 	Play(condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time)
 
 	HasInputCapability() bool
-	Listen(deviceID int, who NoteListener, startOrStop bool)
+	Listen(deviceID int, who NoteListener, isStart bool)
 
 	// if a key is pressed on a device then play or stop a function
 	// if fun is nil then uninstall the binding
