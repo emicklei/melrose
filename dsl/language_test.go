@@ -246,3 +246,9 @@ func TestPlayDeviceChannelNote(t *testing.T) {
 	r := eval(t, `p = play(device(1,channel(2,note('c'))))`)
 	checkStorex(t, r, "play(device(1,channel(2,note('C'))))")
 }
+
+func TestIfCondition(t *testing.T) {
+	t.Skip("wait for operator fix")
+	r := eval(t, `if(true,note("="))`)
+	checkStorex(t, r, `if(true,note("="))`)
+}

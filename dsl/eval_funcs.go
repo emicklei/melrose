@@ -27,7 +27,7 @@ func EvalFunctions(ctx core.Context) map[string]Function {
 	registerFunction(eval, "fraction", Function{
 		Title: "Duration fraction operator",
 		Description: `Creates a new object for which the fraction of duration of all notes are changed.
-The first parameter controls the fraction of the note, e.g. 1 = whole, 2 = half, 4 = quarter, 8 = eight, 16 = sixteenth.
+The first parameter controls the fraction of the note, e.g. 1 = whole, 2 = half, 4 = quarter, 8, 16 and 32.
 Fraction can also be an exact float value between 0 and 1.
 `,
 		Prefix:     "fra",
