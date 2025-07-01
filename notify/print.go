@@ -17,7 +17,7 @@ func PrintWelcome(version string) {
 	if ansiColorsEnabled {
 		fmt.Println("\033[1;34mmelrōse\033[0m" + tail)
 	} else {
-		fmt.Fprintf(Console.StandardOut, "melrose"+tail+"\n")
+		fmt.Fprint(Console.StandardOut, "melrose"+tail+"\n")
 	}
 }
 
@@ -25,7 +25,7 @@ func PrintBye() {
 	if ansiColorsEnabled {
 		fmt.Println("\033[1;34mmelrōse\033[0m" + " sings bye!")
 	} else {
-		fmt.Fprintf(Console.StandardOut, "melrōse sings bye!\n")
+		fmt.Fprint(Console.StandardOut, "melrōse sings bye!\n")
 	}
 }
 
