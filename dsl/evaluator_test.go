@@ -20,7 +20,7 @@ func TestSemicolonSeparator(t *testing.T) {
 		a=note('c');b=a // a==b`, "a"},
 		{`a=note('c')	;	b=a;	;b`, "a"},
 		{`s=sequence('c
-    d');join(s,s)//test`, "join(sequence('C D'),sequence('C D'))"},
+    d');join(s,s)//test`, "join(s,s)"},
 	} {
 		e := NewEvaluator(testContext())
 		r, err := e.EvaluateProgram(entry.input)
@@ -299,7 +299,7 @@ func TestMapFraction(t *testing.T) {
 	c = map(join(note('e')), fraction(8,_))
 	`)
 	checkError(t, err)
-	if got, want := r.(core.Map).Storex(), "map(join(note('E')),fraction(8,sequence('')))"; got != want {
+	if got, want := r.(core.Map).Storex(), "map(join(note('E')),fraction(8,_))"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 	if got, want := r.(core.Map).S().Storex(), "sequence('8E')"; got != want {
@@ -313,7 +313,7 @@ func TestTransposeUnderscore(t *testing.T) {
 c = transpose(1,_)
 	`)
 	checkError(t, err)
-	if got, want := r.(op.Transpose).Storex(), "transpose(1,sequence(''))"; got != want {
+	if got, want := r.(op.Transpose).Storex(), "transpose(1,_)"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
@@ -325,7 +325,7 @@ func TestMapTranspose(t *testing.T) {
 	c = map(join(note('e')), transpose(1,_))
 	`)
 	checkError(t, err)
-	if got, want := r.(core.Map).Storex(), "map(join(note('E')),transpose(1,sequence('')))"; got != want {
+	if got, want := r.(core.Map).Storex(), "map(join(note('E')),transpose(1,_))"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 	if got, want := r.(core.Map).S().Storex(), "sequence('F')"; got != want {

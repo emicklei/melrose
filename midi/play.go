@@ -31,7 +31,7 @@ func (r *DeviceRegistry) Play(condition core.Condition, seq core.Sequenceable, b
 	deviceID := r.defaultOutputID
 	if dev, ok := seq.(core.DeviceSelector); ok {
 		deviceID = dev.DeviceID()
-		seq = dev.Unwrap()
+		//seq = dev.Unwrap()
 	}
 	device, err := r.Output(deviceID)
 	if err != nil {
