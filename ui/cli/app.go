@@ -63,6 +63,7 @@ func repl(line *liner.State, ctx core.Context) {
 			tearDown(line, ctx)
 			goto exit
 		}
+	entry:
 		entry = strings.TrimSpace(entry)
 		if strings.HasPrefix(entry, ":") {
 			// special case
@@ -78,8 +79,11 @@ func repl(line *liner.State, ctx core.Context) {
 				continue
 			}
 		}
+		if strings.HasPrefix(entry, "!") {
+			entry = fmt.Sprintf("play(%s)", entry[1:])
+			goto entry
+		}
 		if strings.HasSuffix(entry, "!") {
-
 			if len(entry) == 1 {
 				notify.Errorf("missing expression before '!'")
 				continue
