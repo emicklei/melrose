@@ -51,3 +51,14 @@ Ctrl-P, Up   | Previous match from history
 Ctrl-N, Down | Next match from history
 Ctrl-R       | Reverse Search history (Ctrl-S forward, Ctrl-G cancel)
 Ctrl-Y       | Paste from Yank buffer (Alt-Y to paste next yank instead)
+
+
+### special commands
+
+    !<object> 
+
+play the object
+
+    <object>!
+
+browse the notes of the object
