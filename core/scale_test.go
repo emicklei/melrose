@@ -4,6 +4,23 @@ import (
 	"testing"
 )
 
+func TestScale_WithRepeated(t *testing.T) {
+	base := Scale{start: Note{Name: "C", Octave: 4}, variant: Major, scaleType: "major", repeated: 1}
+	repeated := base.WithRepeated(3)
+	if repeated.repeated != 3 {
+		t.Errorf("expected repeated=3, got %d", repeated.repeated)
+	}
+	if !repeated.start.Equals(base.start) {
+		t.Errorf("expected start to remain unchanged")
+	}
+	if repeated.variant != base.variant {
+		t.Errorf("expected variant to remain unchanged")
+	}
+	if repeated.scaleType != base.scaleType {
+		t.Errorf("expected scaleType to remain unchanged")
+	}
+}
+
 func TestScale_MajorC(t *testing.T) {
 	s, _ := ParseScale("C")
 	if got, want := s.S().Storex(), "sequence('C D E F G A B')"; got != want {
