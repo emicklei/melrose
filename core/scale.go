@@ -7,14 +7,22 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
+var _ Replaceable = Scale{}
+var _ Storable = Scale{}
+var _ Sequenceable = Scale{}
+
 type Scale struct {
 	start   Note
 	variant int
 	// https://en.wikipedia.org/wiki/Scale_(music)#Scales,_steps,_and_intervals
 	scaleType string
+	repeated  int // default = 0
 }
 
 func (s Scale) Storex() string {
+	if s.repeated > 1 {
+		return fmt.Sprintf("scale('%s %s',%d)", s.scaleType, s.start.String(), s.repeated)
+	}
 	return fmt.Sprintf("scale('%s %s')", s.scaleType, s.start.String())
 }
 
@@ -31,6 +39,7 @@ func NewScale(input string) (Scale, error) {
 	if err != nil {
 		return s, err
 	}
+	s.repeated = 1
 	return s, nil
 }
 
@@ -47,7 +56,7 @@ func ParseScale(s string) (Scale, error) {
 	if len(parts) == 2 && parts[1] == "m" {
 		v = Minor
 	}
-	return Scale{start: n, variant: v, scaleType: style}, err
+	return Scale{start: n, variant: v, scaleType: style, repeated: 1}, err
 }
 
 var (
@@ -70,14 +79,20 @@ func (s Scale) ChordAt(index int) Chord {
 	return zeroChord()
 }
 
+func (s Scale) WithRepeated(times int) Scale {
+	return Scale{start: s.start, repeated: times, variant: s.variant, scaleType: s.scaleType}
+}
+
 func (s Scale) S() Sequence {
 	notes := []Note{}
 	steps := majorScale
 	if s.variant == Minor {
 		steps = naturalMinorScale
 	}
-	for _, p := range steps {
-		notes = append(notes, s.start.Pitched(p))
+	for o := range s.repeated {
+		for _, p := range steps {
+			notes = append(notes, s.start.Pitched(p).Octaved(o))
+		}
 	}
 	return BuildSequence(notes)
 }

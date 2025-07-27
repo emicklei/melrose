@@ -69,6 +69,13 @@ func TestScale(t *testing.T) {
 		"sequence('16E2 16G_2 16A_2 16A2 16B2 16D_3 16E_3')")
 }
 
+func TestScaleRepeated(t *testing.T) {
+	r := eval(t, "scale('16e2',2)")
+	checkStorex(t, r, "scale('major 16E2',2)")
+	checkStorex(t, r.(core.Sequenceable).S(),
+		"sequence('16E2 16G_2 16A_2 16A2 16B2 16D_3 16E_3 16E3 16G_3 16A_3 16A3 16B3 16D_ 16E_')")
+}
+
 func TestTranspose_ChordSequence(t *testing.T) {
 	r := eval(t, "transpose(1,chordsequence('c/m (d7 e g) ='))")
 	checkStorex(t, r, "transpose(1,chordsequence('C/m (D7 E G) ='))")

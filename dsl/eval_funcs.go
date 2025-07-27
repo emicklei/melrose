@@ -483,11 +483,18 @@ scale('e/m') // => E F G A B C5 D5
 // E flat minor
 scale('e_/m') // => E_ E G_ A_ B_ B D_5
 `,
-		Func: func(s string) interface{} {
+		Func: func(s string, repeated ...int) interface{} {
 			sc, err := core.NewScale(s)
 			if err != nil {
 				notify.Print(notify.NewError(err))
 				return nil
+			}
+			if len(repeated) == 1 {
+				rep := repeated[0]
+				if rep < 0 {
+					return notify.Panic(fmt.Errorf("cannot have negative repeat (%T) %v", rep, rep))
+				}
+				sc = sc.WithRepeated(rep)
 			}
 			return sc
 		}})
