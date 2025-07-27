@@ -2,6 +2,7 @@
 
 ## [v1.0.0-beta] - 
 
+- add optional repeat parameter in scale, scale('16a2',2)
 - add `melrose-mcp` server
 - add tempo as alias for bpm
 - add flag for log location
