@@ -9,7 +9,7 @@ import (
 
 type Print struct {
 	Context Context
-	Target  interface{}
+	Target  any
 }
 
 func (w Print) Play(ctx Context, at time.Time) error {

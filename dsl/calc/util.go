@@ -2,7 +2,7 @@ package calc
 
 import "github.com/emicklei/melrose/core"
 
-func resolveInt(v interface{}) (int, bool) {
+func resolveInt(v any) (int, bool) {
 	if i, ok := v.(int); ok {
 		return i, true
 	}
@@ -12,7 +12,7 @@ func resolveInt(v interface{}) (int, bool) {
 	return 0, false
 }
 
-func resolveFloatWithInt(v interface{}) (float64, bool) {
+func resolveFloatWithInt(v any) (float64, bool) {
 	if f, ok := v.(float64); ok {
 		return f, true
 	}

@@ -67,12 +67,12 @@ func (v variable) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	return v
 }
 
-func (v variable) Value() interface{} {
+func (v variable) Value() any {
 	m, _ := v.store.Get(v.Name)
 	return m
 }
 
-func (v variable) Index() interface{} {
+func (v variable) Index() any {
 	m, _ := v.store.Get(v.Name)
 	if h, ok := m.(core.HasIndex); ok {
 		return h.Index()

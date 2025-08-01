@@ -30,7 +30,7 @@ type Function struct {
 	Tags          string // space separated
 	IsCore        bool   // creates a core musical object
 	IsComposer    bool   // can decorate a musical object or other decorations
-	Func          interface{}
+	Func          any
 }
 
 func (f Function) Declaration() string {
@@ -65,7 +65,7 @@ func registerFunction(m map[string]Function, k string, f Function) {
 	m[k] = f
 }
 
-func getSequenceable(v interface{}) (core.Sequenceable, bool) {
+func getSequenceable(v any) (core.Sequenceable, bool) {
 	if s, ok := v.(core.Sequenceable); ok {
 		return s, ok
 	}
@@ -78,7 +78,7 @@ func getSequenceable(v interface{}) (core.Sequenceable, bool) {
 	return nil, false
 }
 
-func getPlayable(v interface{}) (core.Playable, bool) {
+func getPlayable(v any) (core.Playable, bool) {
 	if val, ok := v.(core.HasValue); ok {
 		v = val.Value()
 	}
@@ -88,7 +88,7 @@ func getPlayable(v interface{}) (core.Playable, bool) {
 	return nil, false
 }
 
-func getSequenceableList(m ...interface{}) (list []core.Sequenceable, ok bool) {
+func getSequenceableList(m ...any) (list []core.Sequenceable, ok bool) {
 	ok = true
 	for _, each := range m {
 		if s, ok := getSequenceable(each); ok {
@@ -100,7 +100,7 @@ func getSequenceableList(m ...interface{}) (list []core.Sequenceable, ok bool) {
 	return
 }
 
-func getHasValue(val interface{}) core.HasValue {
+func getHasValue(val any) core.HasValue {
 	if v, ok := val.(core.HasValue); ok {
 		return v
 	}
@@ -108,7 +108,7 @@ func getHasValue(val interface{}) core.HasValue {
 }
 
 // getValue returns the Value() of val iff val is a HasValue, else returns val
-func getValue(val interface{}) interface{} {
+func getValue(val any) any {
 	if v, ok := val.(core.HasValue); ok {
 		return v.Value()
 	}

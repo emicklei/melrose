@@ -31,7 +31,7 @@ const fourSpaces = "    "
 // If a line is prefixed by one or more TABs then that line is appended to the previous.
 // If a line is prefixed by 4 SPACES then that line is appended to the previous.
 // Return the result of the last expression or statement.
-func (e *Evaluator) EvaluateProgram(source string) (interface{}, error) {
+func (e *Evaluator) EvaluateProgram(source string) (any, error) {
 	lines := []string{}
 	splitted := strings.Split(source, "\n")
 
@@ -90,7 +90,7 @@ func (e *Evaluator) EvaluateProgram(source string) (interface{}, error) {
 	return lastResult, nil
 }
 
-func (e *Evaluator) RecoveringEvaluateProgram(entry string) (interface{}, error) {
+func (e *Evaluator) RecoveringEvaluateProgram(entry string) (any, error) {
 	defer func() {
 		if err := recover(); err != nil {
 			notify.Errorf("%v", err)
@@ -100,7 +100,7 @@ func (e *Evaluator) RecoveringEvaluateProgram(entry string) (interface{}, error)
 	return e.EvaluateProgram(entry)
 }
 
-func (e *Evaluator) evaluateCleanStatement(entry string) (interface{}, error) {
+func (e *Evaluator) evaluateCleanStatement(entry string) (any, error) {
 	if value, ok := e.context.Variables().Get(entry); ok {
 		return value, nil
 	}
@@ -155,7 +155,7 @@ func (e *Evaluator) newSuggestedVariableName(stoppable core.Stoppable) string {
 }
 
 // *core.Loop => loop
-func shortTypeName(v interface{}) string {
+func shortTypeName(v any) string {
 	if v == nil {
 		return "nil"
 	}
@@ -166,7 +166,7 @@ func shortTypeName(v interface{}) string {
 	return strings.ToLower(parts[0])
 }
 
-func (e *Evaluator) handleAssignment(varName string, r interface{}) (interface{}, error) {
+func (e *Evaluator) handleAssignment(varName string, r any) (any, error) {
 	// check delete
 	if r == nil {
 		e.context.Variables().Delete(varName)
@@ -246,7 +246,7 @@ func (e *Evaluator) handleAssignment(varName string, r interface{}) (interface{}
 
 // EvaluateExpression returns the result of an expression (entry) using a given store of variables.
 // The result is either FunctionResult or a "raw" Go object.
-func (e *Evaluator) EvaluateExpression(entry string) (interface{}, error) {
+func (e *Evaluator) EvaluateExpression(entry string) (any, error) {
 	options := []expr.Option{}
 	// since expr 1.14.3
 	for _, each := range []string{"join", "repeat", "trim", "replace", "duration", "map"} {

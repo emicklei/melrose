@@ -13,18 +13,18 @@ type Inspection struct {
 	Type         string
 	Text         string
 	VariableName string
-	Properties   map[string]interface{}
+	Properties   map[string]any
 	flat         string
 }
 
 const maxTextLength = 40
 
-func NewInspect(ctx Context, varname string, value interface{}) Inspection {
+func NewInspect(ctx Context, varname string, value any) Inspection {
 	i := Inspection{
 		Context:      ctx,
 		VariableName: varname,
 		Type:         fmt.Sprintf("%T", value),
-		Properties:   map[string]interface{}{},
+		Properties:   map[string]any{},
 	}
 	if s, ok := value.(Storable); ok {
 		i.Text = s.Storex()

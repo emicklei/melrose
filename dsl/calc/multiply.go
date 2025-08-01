@@ -7,15 +7,15 @@ import (
 )
 
 type Multiply struct {
-	Left  interface{}
-	Right interface{}
+	Left  any
+	Right any
 }
 
 func (m Multiply) Storex() string {
 	return fmt.Sprintf("%s * %s", core.Storex(m.Left), core.Storex(m.Right))
 }
 
-func (m Multiply) Value() interface{} {
+func (m Multiply) Value() any {
 	isFloatOp := false
 	if _, ok := m.Left.(float64); ok {
 		isFloatOp = true

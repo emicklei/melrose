@@ -24,7 +24,7 @@ type Indexable interface {
 }
 
 type Nextable interface {
-	Next() interface{}
+	Next() any
 }
 
 type AudioDevice interface {
@@ -34,7 +34,7 @@ type AudioDevice interface {
 	Command(args []string) notify.Message
 
 	// Handle generic setting
-	HandleSetting(name string, values []interface{}) error
+	HandleSetting(name string, values []any) error
 
 	// Play schedules all the notes on the timeline using a BPM (beats-per-minute).
 	// Returns the end time of the last played Note.
@@ -87,7 +87,7 @@ type Replaceable interface {
 }
 
 type HasValue interface {
-	Value() interface{}
+	Value() any
 }
 
 type Inspectable interface {
@@ -104,11 +104,11 @@ type Stoppable interface {
 }
 
 type VariableStorage interface {
-	NameFor(value interface{}) string
-	Get(key string) (interface{}, bool)
-	Put(key string, value interface{})
+	NameFor(value any) string
+	Get(key string) (any, bool)
+	Put(key string, value any)
 	Delete(key string)
-	Variables() map[string]interface{}
+	Variables() map[string]any
 }
 
 type Context interface {

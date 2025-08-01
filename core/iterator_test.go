@@ -7,7 +7,7 @@ import (
 )
 
 func TestIterator_Value(t *testing.T) {
-	var l = []interface{}{"C", "D"}
+	var l = []any{"C", "D"}
 	i := &Iterator{Target: l}
 	if got, want := i.Value(), "C"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
@@ -37,7 +37,7 @@ func (l *loop) Index() number {
 type number int
 
 func TestIndex(t *testing.T) {
-	env := map[string]interface{}{
+	env := map[string]any{
 		"a": &loop{t: t},
 	}
 	_, err := expr.Compile(`a.Index()`, expr.Env(env))

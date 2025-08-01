@@ -55,7 +55,7 @@ func TestReplace_Operators(t *testing.T) {
 		}
 	}
 	{
-		s := &core.Iterator{Target: []interface{}{c, d}}
+		s := &core.Iterator{Target: []any{c, d}}
 		cn := core.MustParseNote("c")
 		f := Fraction{Target: []core.Sequenceable{cn}, Parameter: core.On(1.0)}
 		r := Replace{Target: f, From: cn, To: s}

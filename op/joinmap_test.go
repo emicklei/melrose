@@ -16,7 +16,7 @@ func TestJoinMapper_S(t *testing.T) {
 
 func TestJoinMapperWithIterator(t *testing.T) {
 	j := Join{Target: []core.Sequenceable{core.MustParseNote("c"), core.MustParseNote("d")}}
-	i := &core.Iterator{Target: []interface{}{"1 2"}}
+	i := &core.Iterator{Target: []any{"1 2"}}
 	m := NewJoinMap(core.On(j), i)
 	if got, want := m.Storex(), "joinmap('1 2 ',join(note('C'),note('D')))"; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)

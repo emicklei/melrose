@@ -34,7 +34,7 @@ Fraction can also be an exact float value between 0 and 1.
 		IsComposer: true,
 		Template:   `fraction(${1:object},${2:object})`,
 		Samples:    `fraction(8,sequence('e f')) // => 8E 8F , shorten the notes from quarter to eight`,
-		Func: func(param interface{}, playables ...interface{}) interface{} {
+		Func: func(param any, playables ...any) any {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -57,7 +57,7 @@ Fraction can also be an exact float value between 0 and 1.
 		Template:   `dynamic(${1:emphasis},${2:object})`,
 		Samples: `dynamic('++',sequence('e f')) // => E++ F++
 dynamic(112,note('a')) // => A++++`,
-		Func: func(emphasis interface{}, playables ...interface{}) interface{} {
+		Func: func(emphasis any, playables ...any) any {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -78,7 +78,7 @@ dynamic(112,note('a')) // => A++++`,
 		Template:    `dynamicmap('${1:mapping}',${2:object})`,
 		Samples: `dynamicmap('1:++,2:--',sequence('e f')) // => E++ F--
 dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
-		Func: func(mapping string, playables ...interface{}) interface{} {
+		Func: func(mapping string, playables ...any) any {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -102,7 +102,7 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 		IsCore:      true,
 		Template:    `progression('${1:scale}','${2:space-separated-roman-chords}')`,
 		Samples:     `progression('1c3++','II V I') // => (1D3++ 1F3++ 1A3++) (1G3++ 1B3++ 1D++) (1C3++ 1E3++ 1G3++)`,
-		Func: func(scale, chords interface{}) interface{} {
+		Func: func(scale, chords any) any {
 			return core.NewChordProgression(getHasValue(scale), getHasValue(chords))
 		}})
 
@@ -114,7 +114,7 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 		Template:    `chordsequence('${1:chords}')`,
 		Samples: `chordsequence('e f') // => (E A_ B) (F A C5)
 chordsequence('(c d)') // => (C E G D G_ A)`,
-		Func: func(chords string) interface{} {
+		Func: func(chords string) any {
 			p, err := core.ParseChordSequence(chords)
 			if err != nil {
 				return notify.Panic(err)
@@ -130,7 +130,7 @@ chordsequence('(c d)') // => (C E G D G_ A)`,
 		Template:    `prob(${1:perc},${2:note-or-sequenceable})`,
 		Samples: `prob(50,note('c')) // 50% chance of playing the note C, otherwise a quarter rest
 prob(0.8,sequence('(c e g)')) // 80% chance of playing the chord C, otherwise a quarter rest`,
-		Func: func(prec interface{}, noteOrSeq interface{}) interface{} {
+		Func: func(prec any, noteOrSeq any) any {
 			return op.NewProbability(getHasValue(prec), getHasValue(noteOrSeq))
 		}})
 
@@ -142,7 +142,7 @@ prob(0.8,sequence('(c e g)')) // 80% chance of playing the chord C, otherwise a 
 		Template:    `joinmap('${1:indices}',${2:join})`,
 		Samples: `j = join(note('c'), sequence('d e f'))
 jm = joinmap('1 (2 3) 4',j) // => C (D E) F`,
-		Func: func(indices interface{}, join interface{}) interface{} { // allow multiple seq?
+		Func: func(indices any, join any) any { // allow multiple seq?
 			v := getHasValue(join)
 			vNow := v.Value()
 			if _, ok := vNow.(op.Join); !ok {
@@ -157,7 +157,7 @@ jm = joinmap('1 (2 3) 4',j) // => C (D E) F`,
 		Description: "compute the number of bars that is taken when playing a musical object",
 		IsComposer:  true,
 		Template:    `bars(${1:object})`,
-		Func: func(seq interface{}) interface{} {
+		Func: func(seq any) any {
 			s, ok := getSequenceable(seq)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot compute how many bars for (%T) %v", seq, seq))
@@ -172,7 +172,7 @@ jm = joinmap('1 (2 3) 4',j) // => C (D E) F`,
 		Description: "compute the number of beats that is taken when playing a musical object",
 		IsComposer:  true,
 		Template:    `beats(${1:object})`,
-		Func: func(seq interface{}) interface{} {
+		Func: func(seq any) any {
 			s, ok := getSequenceable(seq)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot compute how many beats for (%T) %v", seq, seq))
@@ -186,7 +186,7 @@ jm = joinmap('1 (2 3) 4',j) // => C (D E) F`,
 		Prefix:      "tr",
 		Template:    `track('${1:title}',${2:midi-channel}, onbar(1,${3:object}))`,
 		Samples:     `track("lullaby",1,onbar(2, sequence('c d e'))) // => a new track on MIDI channel 1 with sequence starting at bar 2`,
-		Func: func(title string, channel int, onbars ...core.SequenceOnTrack) interface{} {
+		Func: func(title string, channel int, onbars ...core.SequenceOnTrack) any {
 			if len(title) == 0 {
 				return notify.Panic(fmt.Errorf("cannot have a track without title"))
 			}
@@ -207,7 +207,7 @@ jm = joinmap('1 (2 3) 4',j) // => C (D E) F`,
 		Template:      `multitrack(${1:track})`,
 		Samples:       `multitrack(track1,track2,track3) // 3 tracks in one multi-track object`,
 		ControlsAudio: true,
-		Func: func(varOrTrack ...interface{}) interface{} {
+		Func: func(varOrTrack ...any) any {
 			tracks := []core.HasValue{}
 			for _, each := range varOrTrack {
 				tracks = append(tracks, getHasValue(each))
@@ -226,7 +226,7 @@ The third parameter is the velocity (~ loudness) and must be one of [0..127]`,
 		Samples: `midi(500,52,80) // => 500ms E3+
 midi(16,36,70) // => 16C2 (kick)`,
 		IsCore: true,
-		Func: func(dur, nr, velocity interface{}) interface{} {
+		Func: func(dur, nr, velocity any) any {
 			durVal := getHasValue(dur)
 			nrVal := getHasValue(nr)
 			velVal := getHasValue(velocity)
@@ -237,7 +237,7 @@ midi(16,36,70) // => 16C2 (kick)`,
 		Title:       "Printer creator",
 		Description: "prints an object when evaluated (play,loop)",
 		Template:    `print(${1:object})`,
-		Func: func(m interface{}) interface{} {
+		Func: func(m any) any {
 			return core.Print{Context: ctx, Target: m}
 		}})
 
@@ -248,7 +248,7 @@ midi(16,36,70) // => 16C2 (kick)`,
 		Samples: `chord('c#5/m/1')
 chord('g/M/2') // Major G second inversion`,
 		IsCore: true,
-		Func: func(chord string) interface{} {
+		Func: func(chord string) any {
 			c, err := core.ParseChord(chord)
 			if err != nil {
 				return notify.Panic(err)
@@ -263,7 +263,7 @@ chord('g/M/2') // Major G second inversion`,
 		Template:    `transposemap('${1:int2int}',${2:object})`,
 		IsComposer:  true,
 		Samples:     `transposemap('1:-1,1:0,1:1',note('c')) // => B3 C D`,
-		Func: func(indices string, m interface{}) interface{} {
+		Func: func(indices string, m any) any {
 			s, ok := getSequenceable(m)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot transposemap (%T) %v", m, m))
@@ -278,7 +278,7 @@ chord('g/M/2') // Major G second inversion`,
 		Template:    `octavemap('${1:int2int}',${2:object})`,
 		IsComposer:  true,
 		Samples:     `octavemap('1:-1,2:0,3:1',chord('c')) // => (C3 E G5)`,
-		Func: func(indices string, m interface{}) interface{} {
+		Func: func(indices string, m any) any {
 			s, ok := getSequenceable(m)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot octavemap (%T) %v", m, m))
@@ -293,7 +293,7 @@ chord('g/M/2') // Major G second inversion`,
 		Template:    `velocitymap('${1:int2int}',${2:object})`,
 		IsComposer:  true,
 		Samples:     `velocitymap('1:30,2:0,3:60',chord('c')) // => (C3--- E G5+)`,
-		Func: func(indices string, m interface{}) interface{} {
+		Func: func(indices string, m any) any {
 			s, ok := getSequenceable(m)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot velocitymap (%T) %v", m, m))
@@ -311,7 +311,7 @@ chord('g/M/2') // Major G second inversion`,
 p = interval(-4,4,1)
 transpose(p,note('c'))`,
 		IsComposer: true,
-		Func: func(semitones, m interface{}) interface{} {
+		Func: func(semitones, m any) any {
 			s, ok := getSequenceable(m)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot transpose (%T) %v", m, m))
@@ -326,7 +326,7 @@ transpose(p,note('c'))`,
 		Template:    `reverse(${1:sequenceable})`,
 		Samples:     `reverse(chord('a')) // (A D_5 E5)`,
 		IsComposer:  true,
-		Func: func(m interface{}) interface{} {
+		Func: func(m any) any {
 			s, ok := getSequenceable(m)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot reverse (%T) %v", m, m))
@@ -341,7 +341,7 @@ transpose(p,note('c'))`,
 		Template:    `repeat(${1:times},${2:sequenceables})`,
 		Samples:     `repeat(4,sequence('c d e'))`,
 		IsComposer:  true,
-		Func: func(howMany interface{}, playables ...interface{}) interface{} {
+		Func: func(howMany any, playables ...any) any {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -364,7 +364,7 @@ b = sequence('(c e g)')
 ab = join(a,b) // => (A D_5 E5) (C E G) 
 ab = a + b // => (A D_5 E5) (C E G)`,
 		IsComposer: true,
-		Func: func(playables ...interface{}) interface{} {
+		Func: func(playables ...any) any {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -386,7 +386,7 @@ ab = a + b // => (A D_5 E5) (C E G)`,
 		Samples: `bpm(90)
 speedup = iterator(80,100,120,140)
 l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
-		Func: func(v interface{}) interface{} {
+		Func: func(v any) any {
 			return control.NewBPM(core.On(v), ctx)
 		}})
 
@@ -396,7 +396,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Prefix:      "dur",
 		Template:    `duration(${1:object})`,
 		Samples:     `duration(note('c')) // => 375ms`,
-		Func: func(m interface{}) time.Duration {
+		Func: func(m any) time.Duration {
 			if s, ok := getSequenceable(m); ok {
 				return s.S().DurationAt(ctx.Control().BPM())
 			}
@@ -410,7 +410,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		Prefix:        "biab",
 		Template:      `biab(${1:beats-in-a-bar})`,
 		Samples:       `biab(4)`,
-		Func: func(i int) interface{} {
+		Func: func(i int) any {
 			if i < 1 {
 				return notify.Panic(fmt.Errorf("invalid beats-in-a-bar, must be positive, %d = ", i))
 			}
@@ -424,7 +424,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 		ControlsAudio: false,
 		Template:      `import(${1:filename})`,
 		Samples:       `import('drumpatterns.mel')`,
-		Func: func(f string) interface{} {
+		Func: func(f string) any {
 			if !ctx.Capabilities().ImportMelrose {
 				return notify.NewWarningf("import not available")
 			}
@@ -445,7 +445,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 sequence('(8c d e)') // => (8C D E)
 sequence('c (d e f) a =')`,
 		IsCore: true,
-		Func: func(s string) interface{} {
+		Func: func(s string) any {
 			sq, err := core.ParseSequence(s)
 			if err != nil {
 				return notify.Panic(err)
@@ -461,7 +461,7 @@ sequence('c (d e f) a =')`,
 		Samples: `note('e')
 note('2.e#--')`,
 		IsCore: true,
-		Func: func(s string) interface{} {
+		Func: func(s string) any {
 			n, err := core.ParseNote(s)
 			if err != nil {
 				return notify.Panic(err)
@@ -483,7 +483,7 @@ scale('e/m') // => E F G A B C5 D5
 // E flat minor
 scale('e_/m') // => E_ E G_ A_ B_ B D_5
 `,
-		Func: func(s string, repeated ...int) interface{} {
+		Func: func(s string, repeated ...int) any {
 			sc, err := core.NewScale(s)
 			if err != nil {
 				notify.Print(notify.NewError(err))
@@ -505,7 +505,7 @@ scale('e_/m') // => E_ E G_ A_ B_ B D_5
 		Prefix:      "at",
 		Template:    `at(${1:index},${2:object})`,
 		Samples:     `at(1,scale('e/m')) // => E`,
-		Func: func(index interface{}, object interface{}) interface{} {
+		Func: func(index any, object any) any {
 			indexVal := getHasValue(index)
 			objectSeq, ok := getSequenceable(object)
 			if !ok {
@@ -520,7 +520,7 @@ scale('e_/m') // => E_ E G_ A_ B_ B D_5
 		Prefix:      "onbar",
 		Template:    `onbar(${1:bar},${2:object})`,
 		Samples:     `tr = track("solo",2, onbar(1,soloSequence)) // 2 = channel`,
-		Func: func(bar interface{}, seq interface{}) interface{} {
+		Func: func(bar any, seq any) any {
 			s, ok := getSequenceable(seq)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot put on track (%T) %v", seq, seq))
@@ -535,7 +535,7 @@ scale('e_/m') // => E_ E G_ A_ B_ B D_5
 		Template:    `random(${1:from},${2:to})`,
 		Samples: `num = random(1,10)
 loop(transpose(num,note('C')),next(num))`,
-		Func: func(from interface{}, to interface{}) interface{} {
+		Func: func(from any, to any) any {
 			fromVal := getHasValue(from)
 			toVal := getHasValue(to)
 			return op.NewRandomInteger(fromVal, toVal)
@@ -573,7 +573,7 @@ loop(transpose(num,note('C')),next(num))`,
 		Template:      `sync(${1:object})`,
 		Samples: `sync(s1,s2,s3) // play s1,s2 and s3 at the same time
 sync(loop1,loop2) // begin loop2 at the next start of loop1`,
-		Func: func(playables ...interface{}) interface{} {
+		Func: func(playables ...any) any {
 			vals := []core.HasValue{}
 			for _, p := range playables {
 				vals = append(vals, getHasValue(p))
@@ -589,7 +589,7 @@ sync(loop1,loop2) // begin loop2 at the next start of loop1`,
 		IsComposer:  true,
 		Samples: `ungroup(chord('e')) // => E G B
 ungroup(sequence('(c d)'),note('e')) // => C D E`,
-		Func: func(playables ...interface{}) interface{} {
+		Func: func(playables ...any) any {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -609,7 +609,7 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 		Template:    `octave(${1:offset},${2:sequenceable})`,
 		IsComposer:  true,
 		Samples:     `octave(1,sequence('c d')) // => C5 D5`,
-		Func: func(scalarOrVar interface{}, playables ...interface{}) interface{} {
+		Func: func(scalarOrVar any, playables ...any) any {
 			list := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -628,7 +628,7 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 		ControlsAudio: false,
 		Template:      `bare(somevar,othervar)`,
 		Samples:       `b = bare(sequence('.2F+++ =')) // => 2F`,
-		Func: func(playables ...interface{}) interface{} {
+		Func: func(playables ...any) any {
 			list := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -648,7 +648,7 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 		Template:      `record(rec)`,
 		Samples: `rec = sequence('') // variable to store the recorded sequence
 record(rec) // record notes played on the current input device`,
-		Func: func(varOrDeviceSelector interface{}) interface{} {
+		Func: func(varOrDeviceSelector any) any {
 			var injectable variable
 			deviceID, _ := ctx.Device().DefaultDeviceIDs()
 			if ds, ok := varOrDeviceSelector.(core.DeviceSelector); ok {
@@ -677,7 +677,7 @@ record(rec) // record notes played on the current input device`,
 		Template:    `undynamic(${1:sequenceable})`,
 		IsComposer:  true,
 		Samples:     `undynamic('A+ B++ C-- D-') // =>  A B C D`,
-		Func: func(value interface{}) interface{} {
+		Func: func(value any) any {
 			if s, ok := getSequenceable(value); !ok {
 				return notify.Panic(fmt.Errorf("cannot undynamic (%T) %v", value, value))
 			} else {
@@ -693,7 +693,7 @@ record(rec) // record notes played on the current input device`,
 		Samples: `i = iterator(1,3,5,7,9)
 p = transpose(i,note('c'))
 lp = loop(p,next(i))`,
-		Func: func(values ...interface{}) *core.Iterator {
+		Func: func(values ...any) *core.Iterator {
 			return &core.Iterator{
 				Target: values,
 			}
@@ -705,7 +705,7 @@ lp = loop(p,next(i))`,
 		Template:    `rotate(${1:count},${2:object})`,
 		Samples: `rotate(-1,sequence('C E G')) // E G C
 			`,
-		Func: func(count interface{}, m interface{}) interface{} {
+		Func: func(count any, m any) any {
 			s, ok := getSequenceable(m)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot rotate (%T) %v", s, s))
@@ -724,7 +724,7 @@ lp = loop(p,next(i))`,
 		Samples: `stretch(2,note('c'))  // 2C
 stretch(0.25,sequence('(c e g)'))  // (16C 16E 16G)
 stretch(8,note('c'))  // C with length of 8 x 0.25 (quarter) = 2 bars`,
-		Func: func(factor interface{}, m ...interface{}) interface{} {
+		Func: func(factor any, m ...any) any {
 			list, ok := getSequenceableList(m...)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot stretch (%T) %v", m, m))
@@ -739,7 +739,7 @@ stretch(8,note('c'))  // C with length of 8 x 0.25 (quarter) = 2 bars`,
 		Template:    `group(${1:sequenceable})`,
 		Samples:     `group(sequence('c d e')) // => (C D E)`,
 		IsComposer:  true,
-		Func: func(value interface{}) interface{} {
+		Func: func(value any) any {
 			if s, ok := getSequenceable(value); !ok {
 				return notify.Panic(fmt.Errorf("cannot group (%T) %v", value, value))
 			} else {
@@ -756,7 +756,7 @@ stretch(8,note('c'))  // C with length of 8 x 0.25 (quarter) = 2 bars`,
 		Template:      `loop(${1:object})`,
 		Samples: `cb = sequence('c d e f g a b')
 loop(cb,reverse(cb))`,
-		Func: func(playables ...interface{}) interface{} {
+		Func: func(playables ...any) any {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -778,7 +778,7 @@ loop(cb,reverse(cb))`,
 play(l1)
 stop(l1)
 stop() // stop all playables`,
-		Func: func(vars ...variable) interface{} {
+		Func: func(vars ...variable) any {
 			if len(vars) == 0 {
 				StopAllPlayables(ctx)
 				return nil
@@ -802,7 +802,7 @@ stop() // stop all playables`,
 		Prefix:        "chan",
 		Template:      `channel(${1:number},${2:sequenceable})`,
 		Samples:       `channel(2,sequence('c2 e3')) // plays on instrument connected to MIDI channel 2`,
-		Func: func(midiChannel interface{}, m interface{}) interface{} {
+		Func: func(midiChannel any, m any) any {
 			seq, ok := getSequenceable(m)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot decorate with channel (%T) %s", m, core.Storex(m)))
@@ -822,7 +822,7 @@ stop() // stop all playables`,
 		IsComposer:  true,
 		Samples: `fractionmap('3:. 2:4,1:2',sequence('c e g')) // => .G E 2C
 fractionmap('. 8 2',sequence('c e g')) // => .C 8E 2G`,
-		Func: func(indices interface{}, m interface{}) interface{} {
+		Func: func(indices any, m any) any {
 			s, ok := getSequenceable(m)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot fractionmap (%T) %v", m, m))
@@ -834,7 +834,7 @@ fractionmap('. 8 2',sequence('c e g')) // => .C 8E 2G`,
 	// 	Title: "MIDI Input device",
 	// 	//Description:   "Look up an input device by name",
 	// 	ControlsAudio: true,
-	// 	Func: func(deviceName string, optionalChannel ...int) interface{} {
+	// 	Func: func(deviceName string, optionalChannel ...int) any {
 	// 		in, _ := ctx.Device().DefaultDeviceIDs()
 	// 		return control.NewChannelOnDevice(true, deviceName, -1, in)
 	// 	}}
@@ -849,7 +849,7 @@ fractionmap('. 8 2',sequence('c e g')) // => .C 8E 2G`,
 	// 		Samples: `loopA = loop(scale(2,'c'))
 	// onpress('a',loopA)`,
 	// 		ControlsAudio: true,
-	// 		Func: func(char string, playOrEval interface{}) interface{} {
+	// 		Func: func(char string, playOrEval any) any {
 	// 			if len(char) == 0 {
 	// 				return notify.Panic(fmt.Errorf("key cannot be empty"))
 	// 			}
@@ -871,7 +871,7 @@ c2 = key(device(1,note('c2'))) // C2 key on input device 1
 c2 = key(device(1,channel(2,note('c2'))) // C2 key on input device 1 and channel 2
 c2 = key(channel(3,note('c2')) // C2 key on the default input device and channel 3`,
 		ControlsAudio: true,
-		Func: func(noteEntry interface{}) interface{} {
+		Func: func(noteEntry any) any {
 			// check string
 			if s, ok := noteEntry.(string); ok {
 				note, err := core.ParseNote(s)
@@ -909,7 +909,7 @@ B1 = 20 // MIDI number assigned to this knob on the controller
 k = knob(axiom,B1)
 transpose(k,scale(1,'E')) // when played, use the current value of knob "k"`,
 		ControlsAudio: true,
-		Func: func(deviceIDOrVar interface{}, numberOrVar interface{}) interface{} {
+		Func: func(deviceIDOrVar any, numberOrVar any) any {
 			deviceID, ok := getValue(deviceIDOrVar).(int)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot create knob with device (%T) %v", deviceIDOrVar, deviceIDOrVar))
@@ -938,7 +938,7 @@ axiom = 1 // device ID for the M-Audio Axiom 25
 c2 = key(device(axiom,note('c2')))
 fun = play(scale(2,'c')) // what to do when a key is pressed (NoteOn)
 onkey(c2, fun) // if C2 is pressed on the axiom device then evaluate the function "fun"`,
-		Func: func(keyOrVar interface{}, playOrEval interface{}) interface{} {
+		Func: func(keyOrVar any, playOrEval any) any {
 			if !ctx.Device().HasInputCapability() {
 				return notify.Panic(errors.New("input is not available for this device"))
 			}
@@ -984,7 +984,7 @@ onkey(c2, fun) // if C2 is pressed on the axiom device then evaluate the functio
 		Prefix:        "dev",
 		Template:      `device(${1:number},${2:sequenceable})`,
 		Samples:       `device(1,channel(2,sequence('c2 e3'))) // plays on connected device 1 through MIDI channel 2`,
-		Func: func(deviceID interface{}, m interface{}) interface{} {
+		Func: func(deviceID any, m any) any {
 			seq, ok := getSequenceable(m)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot decorate with device (%T) %s", m, core.Storex(m)))
@@ -1000,7 +1000,7 @@ onkey(c2, fun) // if C2 is pressed on the axiom device then evaluate the functio
 		Samples: `int1 = interval(-2,4,1)
 lp_cdef = loop(transpose(int1,sequence('c d e f')), next(int1))`,
 		IsComposer: true,
-		Func: func(from, to, by interface{}) *core.Interval {
+		Func: func(from, to, by any) *core.Interval {
 			return core.NewInterval(core.ToHasValue(from), core.ToHasValue(to), core.ToHasValue(by), core.RepeatFromTo)
 		}})
 
@@ -1013,7 +1013,7 @@ lp_cdef = loop(transpose(int1,sequence('c d e f')), next(int1))`,
 i1 = resequence('6 5 4 3 2 1',s1) // => B A G F E D
 i2 = resequence('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)`,
 		IsComposer: true,
-		Func: func(pattern, m interface{}) interface{} {
+		Func: func(pattern, m any) any {
 			s, ok := getSequenceable(m)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot create resequencer on (%T) %v", m, m))
@@ -1028,7 +1028,7 @@ i2 = resequence('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)`,
 		IsComposer:  true,
 		Samples: `m1 = notemap('..!..!..!', note('c2'))
 m2 = notemap('3 6 9', octave(-1,note('d2')))`,
-		Func: func(indices string, note interface{}) interface{} {
+		Func: func(indices string, note any) any {
 			m, err := op.NewNoteMap(indices, getHasValue(note))
 			if err != nil {
 				return notify.Panic(fmt.Errorf("cannot create notemap, error:%v", err))
@@ -1044,7 +1044,7 @@ m2 = notemap('3 6 9', octave(-1,note('d2')))`,
 m2 = notemap('4 7 10', note('d2'))
 all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 		IsComposer: true,
-		Func: func(seqs ...interface{}) op.Merge {
+		Func: func(seqs ...any) op.Merge {
 			s := []core.Sequenceable{}
 			for _, each := range seqs {
 				seq, ok := getSequenceable(each)
@@ -1062,7 +1062,7 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 		Template:    `if(${1:condition},${2:then},${3:else})`,
 		Description: "Supports conditions with operators on numbers: <,<=,>,>=,!=,==",
 		Samples:     ``,
-		Func: func(c interface{}, thenelse ...interface{}) interface{} {
+		Func: func(c any, thenelse ...any) any {
 			if len(thenelse) == 0 {
 				notify.Panic(fmt.Errorf("requires at least a <then>"))
 			}
@@ -1089,10 +1089,10 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 		Title:       "Value operator",
 		Description: "returns the current value of a variable",
 		Template:    `value(${1:variable})`,
-		Func: func(v interface{}) interface{} {
+		Func: func(v any) any {
 			return core.ValueFunction{
 				StoreString: fmt.Sprintf("value(%s)", core.Storex(v)),
-				Function: func() interface{} {
+				Function: func() any {
 					return core.ValueOf(v)
 				},
 			}
@@ -1102,10 +1102,10 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 		Title:       "Index operator",
 		Template:    `index(${1:generator})`,
 		Description: "returns the current index of an object (e.g. iterator,interval,repeat)",
-		Func: func(v interface{}) interface{} {
+		Func: func(v any) any {
 			return core.ValueFunction{
 				StoreString: fmt.Sprintf("index(%s)", core.Storex(v)),
-				Function: func() interface{} {
+				Function: func() any {
 					return core.IndexOf(v)
 				},
 			}
@@ -1121,7 +1121,7 @@ The function itself does not return the value; use the generator for that.`,
 pi = transpose(i,sequence('c d e f g a b')) // current value of "i" is used
 lp_pi = loop(pi,next(i)) // "i" will advance to the next value
 loop(lp_pi)`,
-		Func: func(v interface{}) interface{} {
+		Func: func(v any) any {
 			return core.Nexter{Target: getHasValue(v)}
 		}})
 
@@ -1130,7 +1130,7 @@ loop(lp_pi)`,
 		Description: `writes a multi-track MIDI file`,
 		Template:    `export(${1:filename},${2:sequenceable})`,
 		Samples:     `export('myMelody-v1',myObject)`,
-		Func: func(filename string, m interface{}) interface{} {
+		Func: func(filename string, m any) any {
 			if !ctx.Capabilities().ExportMIDI {
 				return notify.NewWarningf("export MIDI not available")
 			}
@@ -1152,7 +1152,7 @@ loop(lp_pi)`,
 		Description: `create a new sequence object with notes trimmed at the start or/and at the end.`,
 		Template:    `trim(${1:remove-from-start},${2:remove-from-end},${3:object})`,
 		Samples:     `t = trim(1,2,sequence('c d e f a') // d e`,
-		Func: func(skipStart, skipEnd, object interface{}) interface{} {
+		Func: func(skipStart, skipEnd, object any) any {
 			s, ok := getSequenceable(object)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot trim non-sequenceable"))
@@ -1168,7 +1168,7 @@ loop(lp_pi)`,
 		Description: `Create a tabs using this <a href="/docs/reference/notations/#tabs">format</a>`,
 		Template:    `tabs($1:string)`,
 		Samples:     `bass = tabs('E e3 a2 a5 d5 a5 a3 e3 G24')`,
-		Func: func(notation string) interface{} {
+		Func: func(notation string) any {
 			t, err := core.ParseBassTablature(notation)
 			if err != nil {
 				return notify.Panic(fmt.Errorf("invalid tabs syntax: %v", err))
@@ -1184,7 +1184,7 @@ loop(lp_pi)`,
 d = note('d')
 tc = transpose(1,c)
 td = replace(tc, c, d) // c -> d in tc`,
-		Func: func(target interface{}, from, to interface{}) interface{} {
+		Func: func(target any, from, to any) any {
 			targetS, ok := getSequenceable(target)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot create replace inside (%T) %v", target, target))
@@ -1208,7 +1208,7 @@ td = replace(tc, c, d) // c -> d in tc`,
 midi_send(1,0xC0,2,1,0) // program change, select program 1 for channel 2
 midi_send(2,0xB0,4,0,16) // control change, bank select 16 for channel 4
 midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1`,
-		Func: func(deviceID int, status int, channel, data1, data2 interface{}) interface{} {
+		Func: func(deviceID int, status int, channel, data1, data2 any) any {
 			return midi.NewMessage(ctx.Device(), core.On(deviceID), status, core.On(channel), core.On(data1), core.On(data2))
 		}})
 
@@ -1220,7 +1220,7 @@ midi_send(3,0xB0,1,120,0) // control change, all notes off for channel 1`,
 		Samples: `set('midi.in',1) // default MIDI input device is 1
 set('midi.in.channel',2,10) // default MIDI channel for device 2 is 10
 set('midi.out',3) // default MIDI output device is 3`,
-		Func: func(settingName string, settingValues ...interface{}) interface{} {
+		Func: func(settingName string, settingValues ...any) any {
 			if err := ctx.Device().HandleSetting(settingName, settingValues); err != nil {
 				notify.Errorf("%v", err)
 			}
@@ -1236,7 +1236,7 @@ set('midi.out',3) // default MIDI output device is 3`,
 fun = play(rec) // define the playable function to call when notes are received ; loop and print are also possible
 listen(rec,fun) // start a listener for notes from default input device, store it in "rec" and call "fun"
 listen(device(1,rec),fun) // start a listener for notes from input device 1`,
-		Func: func(varOrDeviceSelector interface{}, function interface{}) interface{} {
+		Func: func(varOrDeviceSelector any, function any) any {
 			_, ok := getValue(function).(core.Evaluatable)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot listen and call (%T) %s", function, core.Storex(function)))
@@ -1275,7 +1275,7 @@ listen(device(1,rec),fun) // start a listener for notes from input device 1`,
 // A second hit of C4 will stop it
 
 onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
-		Func: func(noteSource string) interface{} {
+		Func: func(noteSource string) any {
 			// Simple first
 			_, deviceID := ctx.Device().DefaultDeviceIDs()
 			note, err := core.ParseNote(noteSource)

@@ -31,12 +31,12 @@ func (r RandomInteger) Storex() string {
 }
 
 // Value is part of HasValue
-func (r *RandomInteger) Value() interface{} {
+func (r *RandomInteger) Value() any {
 	return r.last
 }
 
 // Next is part of Nextable
-func (r *RandomInteger) Next() interface{} {
+func (r *RandomInteger) Next() any {
 	f := core.Int(r.From)
 	t := core.Int(r.To)
 	if t < f {

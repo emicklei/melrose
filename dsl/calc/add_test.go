@@ -15,7 +15,7 @@ func TestAdd_Value(t *testing.T) {
 	tests := []struct {
 		name   string
 		fields fields
-		want   interface{}
+		want   any
 	}{
 		{"1+2", fields{1, 2}, 3},
 		{"1.0+2.0", fields{1.0, 2.0}, 3.0},

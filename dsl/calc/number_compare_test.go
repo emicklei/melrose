@@ -9,14 +9,14 @@ import (
 
 func TestCompare_Value(t *testing.T) {
 	type fields struct {
-		Left     interface{}
-		Right    interface{}
+		Left     any
+		Right    any
 		Operator string
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   interface{}
+		want   any
 	}{
 		{"1<2", fields{1, 2, "<"}, true},
 		{"1.0>2.0", fields{1.0, 2.0, ">"}, false},

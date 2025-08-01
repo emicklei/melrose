@@ -19,7 +19,7 @@ import (
 
 const ticksPerBeat uint16 = 960
 
-func Export(fileName string, m interface{}, bpm float64, biab int) error {
+func Export(fileName string, m any, bpm float64, biab int) error {
 	// Save to new midi source file
 	outputMidi, err := os.Create(fileName)
 	if err != nil {
@@ -31,7 +31,7 @@ func Export(fileName string, m interface{}, bpm float64, biab int) error {
 }
 
 // Export creates (overwrites) a SMF multi-track Midi file
-func ExportOn(w io.Writer, m interface{}, bpm float64, biab int) error {
+func ExportOn(w io.Writer, m any, bpm float64, biab int) error {
 	if mt, ok := m.(core.MultiTrack); ok {
 		return exportMultiTrack(w, mt, bpm, biab)
 	}

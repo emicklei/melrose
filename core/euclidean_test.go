@@ -136,7 +136,7 @@ func TestEuclidean_Inspect(t *testing.T) {
 		Playback: &ValueHolder{Any: "test"},
 	}
 
-	i := Inspection{Properties: make(map[string]interface{})}
+	i := Inspection{Properties: make(map[string]any)}
 	e.Inspect(i)
 
 	// Check that all expected properties are set
@@ -253,7 +253,7 @@ func TestEuclidean_InspectPatternGeneration(t *testing.T) {
 				Playback: &ValueHolder{Any: "test"},
 			}
 
-			i := Inspection{Properties: make(map[string]interface{})}
+			i := Inspection{Properties: make(map[string]any)}
 			e.Inspect(i)
 
 			pattern, ok := i.Properties["pattern"].(string)

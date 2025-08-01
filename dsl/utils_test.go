@@ -26,7 +26,7 @@ func checkError(t *testing.T, err error) {
 	}
 }
 
-func eval(t *testing.T, expression string) interface{} {
+func eval(t *testing.T, expression string) any {
 	t.Helper()
 	lp := new(core.TestLooper)
 	lp.SetBIAB(4)
@@ -56,7 +56,7 @@ func mustError(t *testing.T, expression string, substring string) {
 	}
 }
 
-func checkStorex(t *testing.T, r interface{}, storex string) {
+func checkStorex(t *testing.T, r any, storex string) {
 	t.Helper()
 	if s, ok := r.(core.Storable); ok {
 		if got, want := s.Storex(), storex; got != want {

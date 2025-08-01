@@ -110,7 +110,7 @@ func getInt(h HasValue, silent bool) int {
 	return 0
 }
 
-func ToHasValue(v interface{}) HasValue {
+func ToHasValue(v any) HasValue {
 	if w, ok := v.(HasValue); ok {
 		return w
 	}
@@ -118,7 +118,7 @@ func ToHasValue(v interface{}) HasValue {
 }
 
 // ValueOf returns the non HasValue value of v
-func ValueOf(v interface{}) interface{} {
+func ValueOf(v any) any {
 	if w, ok := v.(HasValue); ok {
 		return ValueOf(w.Value())
 	}
@@ -126,7 +126,7 @@ func ValueOf(v interface{}) interface{} {
 }
 
 // IndexOf returns the non HasValue value of v
-func IndexOf(v interface{}) interface{} {
+func IndexOf(v any) any {
 	if i, ok := v.(HasIndex); ok {
 		return i.Index()
 	}
@@ -136,16 +136,16 @@ func IndexOf(v interface{}) interface{} {
 	return 0 // no index
 }
 
-func On(v interface{}) HasValue {
+func On(v any) HasValue {
 	return ToHasValue(v)
 }
 
 // ValueHolder is decorate any object to become a HasValue.
 type ValueHolder struct {
-	Any interface{}
+	Any any
 }
 
-func (h ValueHolder) Value() interface{} {
+func (h ValueHolder) Value() any {
 	return h.Any
 }
 
@@ -166,13 +166,13 @@ func (h ValueHolder) String() string {
 
 type ValueFunction struct {
 	StoreString string
-	Function    func() interface{}
+	Function    func() any
 }
 
 func (v ValueFunction) Storex() string {
 	return v.StoreString
 }
 
-func (v ValueFunction) Value() interface{} {
+func (v ValueFunction) Value() any {
 	return v.Function()
 }

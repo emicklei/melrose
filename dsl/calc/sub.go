@@ -7,15 +7,15 @@ import (
 )
 
 type Sub struct {
-	Left  interface{}
-	Right interface{}
+	Left  any
+	Right any
 }
 
 func (s Sub) Storex() string {
 	return fmt.Sprintf("%s - %s", core.Storex(s.Left), core.Storex(s.Right))
 }
 
-func (s Sub) Value() interface{} {
+func (s Sub) Value() any {
 	isFloatOp := false
 	if _, ok := s.Left.(float64); ok {
 		isFloatOp = true

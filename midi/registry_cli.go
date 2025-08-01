@@ -7,7 +7,7 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
-func (r *DeviceRegistry) HandleSetting(name string, values []interface{}) error {
+func (r *DeviceRegistry) HandleSetting(name string, values []any) error {
 	switch name {
 	case "echo": // i|o id
 		isInput := values[0] == "i"
@@ -76,7 +76,7 @@ func (r *DeviceRegistry) Command(args []string) notify.Message {
 		if err != nil {
 			return notify.NewError(err)
 		}
-		if err := r.HandleSetting("midi.out", []interface{}{id}); err != nil {
+		if err := r.HandleSetting("midi.out", []any{id}); err != nil {
 			return notify.NewError(err)
 		}
 		return nil
@@ -86,7 +86,7 @@ func (r *DeviceRegistry) Command(args []string) notify.Message {
 		if err != nil {
 			return notify.NewError(err)
 		}
-		if err := r.HandleSetting("midi.in", []interface{}{id}); err != nil {
+		if err := r.HandleSetting("midi.in", []any{id}); err != nil {
 			return notify.NewError(err)
 		}
 		return nil

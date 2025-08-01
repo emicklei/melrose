@@ -61,7 +61,7 @@ func Print(m Message) {
 // Println is to inject a function that can report info,error and warning
 var Println = fmt.Println
 
-func Debugf(format string, args ...interface{}) {
+func Debugf(format string, args ...any) {
 	if !IsDebug() {
 		return
 	}
@@ -72,39 +72,39 @@ func Debugf(format string, args ...interface{}) {
 	fmt.Fprintf(Console.StandardOut, format, args...)
 }
 
-func Warnf(format string, args ...interface{}) {
+func Warnf(format string, args ...any) {
 	printWarning(fmt.Sprintf(format, args...))
 }
 
-func Infof(format string, args ...interface{}) {
+func Infof(format string, args ...any) {
 	printInfo(fmt.Sprintf(format, args...))
 }
 
-func Errorf(format string, args ...interface{}) {
+func Errorf(format string, args ...any) {
 	printError(fmt.Sprintf(format, args...))
 }
 
-func printInfo(args ...interface{}) {
+func printInfo(args ...any) {
 	fmt.Fprintf(Console.StandardOut, "%s\n", args...)
 }
 
-func printError(args ...interface{}) {
+func printError(args ...any) {
 	if ansiColorsEnabled {
-		Println(append([]interface{}{"\033[1;31merror:\033[0m"}, args...)...)
+		Println(append([]any{"\033[1;31merror:\033[0m"}, args...)...)
 	} else {
 		fmt.Fprintf(Console.StandardError, "ERROR: %s\n", args...)
 	}
 }
 
-func printWarning(args ...interface{}) {
+func printWarning(args ...any) {
 	if ansiColorsEnabled {
-		Println(append([]interface{}{"\033[1;33mwarning:\033[0m"}, args...)...)
+		Println(append([]any{"\033[1;33mwarning:\033[0m"}, args...)...)
 	} else {
 		fmt.Fprintf(Console.StandardOut, "WARN: %s\n", args...)
 	}
 }
 
-func PrintKeyValue(b io.Writer, k string, v interface{}) {
+func PrintKeyValue(b io.Writer, k string, v any) {
 	if ansiColorsEnabled {
 		fmt.Fprintf(b, "\033[94m%s:\033[0m%v ", k, v)
 	} else {

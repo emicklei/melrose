@@ -46,7 +46,7 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 	}
 	defer r.Body.Close()
 
-	var evalResult interface{}
+	var evalResult any
 	action := query.Get("action")
 	switch action {
 	case "kill":
@@ -110,17 +110,17 @@ func (l *LanguageServer) statementHandler(w http.ResponseWriter, r *http.Request
 }
 
 type evaluationResult struct {
-	Type         string      `json:"type"`
-	IsError      bool        `json:"is-error"`
-	IsStoppeable bool        `json:"stoppable"`
-	Message      string      `json:"message"`
-	Filename     string      `json:"file"`
-	Line         int         `json:"line"`
-	Column       int         `json:"column"`
-	Object       interface{} `json:"object"`
+	Type         string `json:"type"`
+	IsError      bool   `json:"is-error"`
+	IsStoppeable bool   `json:"stoppable"`
+	Message      string `json:"message"`
+	Filename     string `json:"file"`
+	Line         int    `json:"line"`
+	Column       int    `json:"column"`
+	Object       any    `json:"object"`
 }
 
-func resultFrom(filename string, line int, val interface{}) evaluationResult {
+func resultFrom(filename string, line int, val any) evaluationResult {
 	t := fmt.Sprintf("%T", val)
 	_, isStoppable := val.(core.Stoppable)
 	if err, ok := val.(error); ok {

@@ -9,13 +9,13 @@ import (
 
 func TestMultiply_Value(t *testing.T) {
 	type fields struct {
-		Left  interface{}
-		Right interface{}
+		Left  any
+		Right any
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   interface{}
+		want   any
 	}{
 		{"3*2", fields{3, 2}, 6},
 		{"3.0*2.0", fields{3.0, 2.0}, 6.0},

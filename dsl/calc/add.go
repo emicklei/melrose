@@ -8,8 +8,8 @@ import (
 )
 
 type Add struct {
-	Left  interface{}
-	Right interface{}
+	Left  any
+	Right any
 }
 
 func (a Add) S() core.Sequence {
@@ -30,7 +30,7 @@ func (a Add) Storex() string {
 	return fmt.Sprintf("%s + %s", core.Storex(a.Left), core.Storex(a.Right))
 }
 
-func (a Add) Value() interface{} {
+func (a Add) Value() any {
 	isFloatOp := false
 	if _, ok := a.Left.(float64); ok {
 		isFloatOp = true

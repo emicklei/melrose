@@ -28,14 +28,14 @@ type ConsoleWriter struct {
 	StandardError io.Writer
 }
 
-func (c ConsoleWriter) Errorf(format string, args ...interface{}) {
+func (c ConsoleWriter) Errorf(format string, args ...any) {
 	if !strings.HasSuffix(format, "\n") {
 		format += "\n"
 	}
 	fmt.Fprintf(c.StandardError, format, args...)
 }
 
-func (c ConsoleWriter) Warnf(format string, args ...interface{}) {
+func (c ConsoleWriter) Warnf(format string, args ...any) {
 	if !strings.HasSuffix(format, "\n") {
 		format += "\n"
 	}

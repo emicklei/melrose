@@ -8,7 +8,7 @@ import (
 
 func TestImplements(t *testing.T) {
 	for _, each := range []struct {
-		source          interface{}
+		source          any
 		notSequenceable bool
 		notStorable     bool
 		notReplaceable  bool
@@ -42,7 +42,7 @@ func TestImplements(t *testing.T) {
 	}
 }
 
-func storex(s interface{}) string {
+func storex(s any) string {
 	if st, ok := s.(core.Storable); ok {
 		return st.Storex()
 	}

@@ -26,12 +26,12 @@ type Interval struct {
 	value    int
 }
 
-func (i *Interval) Value() interface{} {
+func (i *Interval) Value() any {
 	return i.value
 }
 
 // Next returns and increases its value with [by].
-func (i *Interval) Next() interface{} {
+func (i *Interval) Next() any {
 	by := Int(i.by)
 	next := i.value + by
 	if by < 0 {

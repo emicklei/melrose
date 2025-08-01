@@ -54,11 +54,11 @@ func IsIdenticalTo(left, right Sequenceable) bool {
 	return reflect.DeepEqual(left, right)
 }
 
-func PrintValue(ctx Context, v interface{}) {
+func PrintValue(ctx Context, v any) {
 	InspectValue(ctx, v)
 }
 
-func InspectValue(ctx Context, v interface{}) {
+func InspectValue(ctx Context, v any) {
 	if v == nil {
 		return
 	}
@@ -67,7 +67,7 @@ func InspectValue(ctx Context, v interface{}) {
 	fmt.Fprintf(notify.Console.StandardOut, "%s\n", i.String())
 }
 
-func Storex(v interface{}) string {
+func Storex(v any) string {
 	if s, ok := v.(Storable); ok {
 		return s.Storex()
 	}

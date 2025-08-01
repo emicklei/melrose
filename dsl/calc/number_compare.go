@@ -7,8 +7,8 @@ import (
 )
 
 type NumberCompare struct {
-	Left     interface{}
-	Right    interface{}
+	Left     any
+	Right    any
 	Operator string
 }
 
@@ -16,7 +16,7 @@ func (a NumberCompare) Storex() string {
 	return fmt.Sprintf("%s %s %s", core.Storex(a.Left), a.Operator, core.Storex(a.Right))
 }
 
-func (a NumberCompare) Value() interface{} {
+func (a NumberCompare) Value() any {
 	isFloatOp := false
 	if _, ok := a.Left.(float64); ok {
 		isFloatOp = true

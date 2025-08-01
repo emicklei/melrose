@@ -10,7 +10,7 @@ import (
 
 func TestImplements(t *testing.T) {
 	for _, each := range []struct {
-		source          interface{}
+		source          any
 		notSequenceable bool
 		notStorable     bool
 	}{
@@ -36,7 +36,7 @@ func TestImplements(t *testing.T) {
 
 func TestImplementsPlayable(t *testing.T) {
 	for _, each := range []struct {
-		source          interface{}
+		source          any
 		notSequenceable bool
 		notStorable     bool
 	}{
@@ -53,7 +53,7 @@ func TestImplementsPlayable(t *testing.T) {
 
 func TestImplementsReplaceable(t *testing.T) {
 	for _, each := range []struct {
-		source interface{}
+		source any
 	}{
 		{source: op.Repeat{}},
 		{source: op.Fraction{}},

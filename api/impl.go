@@ -30,9 +30,9 @@ func (s *ServiceImpl) ChangeDefaultDeviceAndChannel(isInput bool, deviceID int, 
 	// TODO handle channel
 	var err error
 	if isInput {
-		err = s.context.Device().HandleSetting("midi.in", []interface{}{deviceID})
+		err = s.context.Device().HandleSetting("midi.in", []any{deviceID})
 	} else {
-		err = s.context.Device().HandleSetting("midi.out", []interface{}{deviceID})
+		err = s.context.Device().HandleSetting("midi.out", []any{deviceID})
 	}
 	if err != nil {
 		notify.Errorf("change device/channel failed:%s", err.Error())
@@ -53,7 +53,7 @@ func (s *ServiceImpl) updateMetadata(file string, lineEnd int, source string) er
 	return nil
 }
 
-func (s *ServiceImpl) CommandInspect(file string, lineEnd int, source string) (interface{}, error) {
+func (s *ServiceImpl) CommandInspect(file string, lineEnd int, source string) (any, error) {
 	s.updateMetadata(file, lineEnd, source)
 
 	lastValue, err := s.evaluator.EvaluateProgram(source)
@@ -110,7 +110,7 @@ func (s *ServiceImpl) CommandPlay(file string, lineEnd int, source string) (Comm
 	}
 	return CommandPlayResponse{EndTime: endTime, ExpressionResult: programResult}, nil
 }
-func (s *ServiceImpl) CommandStop(file string, lineEnd int, source string) (interface{}, error) {
+func (s *ServiceImpl) CommandStop(file string, lineEnd int, source string) (any, error) {
 	s.updateMetadata(file, lineEnd, source)
 
 	returnValue, err := s.evaluator.EvaluateProgram(source)
@@ -125,7 +125,7 @@ func (s *ServiceImpl) CommandStop(file string, lineEnd int, source string) (inte
 
 	return returnValue, nil
 }
-func (s *ServiceImpl) CommandEvaluate(file string, lineEnd int, source string) (interface{}, error) {
+func (s *ServiceImpl) CommandEvaluate(file string, lineEnd int, source string) (any, error) {
 	s.updateMetadata(file, lineEnd, source)
 
 	returnValue, err := s.evaluator.EvaluateProgram(source)
@@ -174,7 +174,7 @@ func (s *ServiceImpl) ListDevices() []core.DeviceDescriptor {
 	return s.context.Device().ListDevices()
 }
 
-func displayString(ctx core.Context, v interface{}) string {
+func displayString(ctx core.Context, v any) string {
 	name := ctx.Variables().NameFor(v)
 	if len(name) == 0 {
 		name = core.Storex(v)

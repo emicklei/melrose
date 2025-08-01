@@ -8,7 +8,7 @@ import (
 )
 
 func TestRecordingStop(t *testing.T) {
-	var r interface{} = new(Recording)
+	var r any = new(Recording)
 	_, ok := r.(core.Stoppable)
 	if !ok {
 		t.Fail()

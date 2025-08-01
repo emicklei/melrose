@@ -9,12 +9,12 @@ import (
 )
 
 // At is called from expr after patching []. One-based
-func (v variable) At(index int) interface{} {
+func (v variable) At(index int) any {
 	m, ok := v.store.Get(v.Name)
 	if !ok {
 		return nil
 	}
-	if intArray, ok := m.([]interface{}); ok {
+	if intArray, ok := m.([]any); ok {
 		if index < 1 || index > len(intArray) {
 			return nil
 		}
@@ -30,7 +30,7 @@ func (v variable) At(index int) interface{} {
 }
 
 // AtVariable is called from expr after patching [].
-func (v variable) AtVariable(index variable) interface{} {
+func (v variable) AtVariable(index variable) any {
 	indexVal := core.Int(index)
 	if indexVal == 0 {
 		return nil
@@ -39,7 +39,7 @@ func (v variable) AtVariable(index variable) interface{} {
 }
 
 // dispatchSubFrom  v(l) - r
-func (v variable) dispatchSub(r interface{}) interface{} {
+func (v variable) dispatchSub(r any) any {
 	if vr, ok := r.(core.HasValue); ok {
 		// int
 		il, lok := resolveInt(v)
@@ -60,7 +60,7 @@ func (v variable) dispatchSub(r interface{}) interface{} {
 }
 
 // dispatchSubFrom  l - v(r)
-func (v variable) dispatchSubFrom(l interface{}) interface{} {
+func (v variable) dispatchSubFrom(l any) any {
 	if vl, ok := l.(core.HasValue); ok {
 		// int
 		il, lok := resolveInt(vl)
@@ -80,7 +80,7 @@ func (v variable) dispatchSubFrom(l interface{}) interface{} {
 	return nil
 }
 
-func (v variable) dispatchAdd(r interface{}) interface{} {
+func (v variable) dispatchAdd(r any) any {
 	if vr, ok := r.(core.HasValue); ok {
 		// int
 		il, lok := resolveInt(v)
@@ -99,7 +99,7 @@ func (v variable) dispatchAdd(r interface{}) interface{} {
 	return nil
 }
 
-// func (v variable) dispatchMultiply(r interface{}) interface{} {
+// func (v variable) dispatchMultiply(r any) any {
 // 	if vr, ok := r.(core.HasValue); ok {
 // 		// int
 // 		il, lok := resolveInt(v)

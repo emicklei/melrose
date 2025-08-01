@@ -9,7 +9,7 @@ import (
 	"github.com/expr-lang/expr/ast"
 )
 
-type envMap map[string]interface{}
+type envMap map[string]any
 
 func exprOperators() []expr.Option {
 	return []expr.Option{
@@ -26,7 +26,7 @@ func exprOperators() []expr.Option {
 }
 
 // this was added because expr can no longer work with envMap directly; need to be map[s]any
-func addOperatorsTo(env map[string]interface{}) {
+func addOperatorsTo(env map[string]any) {
 	env["_Sub"] = envMap{}.Sub
 	env["_Add"] = envMap{}.Add
 	env["_Multiply"] = envMap{}.Multiply
@@ -38,7 +38,7 @@ func addOperatorsTo(env map[string]interface{}) {
 	env["_Equal"] = envMap{}.Equal
 }
 
-func (envMap) Sub(l, r interface{}) core.HasValue {
+func (envMap) Sub(l, r any) core.HasValue {
 	return calc.Sub{Left: l, Right: r}
 }
 
@@ -46,31 +46,31 @@ func (envMap) Add(l, r any) core.HasValue {
 	return calc.Add{Left: l, Right: r}
 }
 
-func (envMap) Multiply(l, r interface{}) core.HasValue {
+func (envMap) Multiply(l, r any) core.HasValue {
 	return calc.Multiply{Left: l, Right: r}
 }
 
-func (envMap) LessThan(l, r interface{}) core.HasValue {
+func (envMap) LessThan(l, r any) core.HasValue {
 	return calc.NumberCompare{Left: l, Right: r, Operator: "<"}
 }
 
-func (envMap) LessEqualThan(l, r interface{}) core.HasValue {
+func (envMap) LessEqualThan(l, r any) core.HasValue {
 	return calc.NumberCompare{Left: l, Right: r, Operator: "<="}
 }
 
-func (envMap) GreaterThan(l, r interface{}) core.HasValue {
+func (envMap) GreaterThan(l, r any) core.HasValue {
 	return calc.NumberCompare{Left: l, Right: r, Operator: ">"}
 }
 
-func (envMap) GreaterEqualThan(l, r interface{}) core.HasValue {
+func (envMap) GreaterEqualThan(l, r any) core.HasValue {
 	return calc.NumberCompare{Left: l, Right: r, Operator: ">="}
 }
 
-func (envMap) NotEqual(l, r interface{}) core.HasValue {
+func (envMap) NotEqual(l, r any) core.HasValue {
 	return calc.NumberCompare{Left: l, Right: r, Operator: "!="}
 }
 
-func (envMap) Equal(l, r interface{}) core.HasValue {
+func (envMap) Equal(l, r any) core.HasValue {
 	return calc.NumberCompare{Left: l, Right: r, Operator: "=="}
 }
 

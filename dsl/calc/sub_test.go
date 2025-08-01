@@ -9,13 +9,13 @@ import (
 
 func TestSub_Value(t *testing.T) {
 	type fields struct {
-		Left  interface{}
-		Right interface{}
+		Left  any
+		Right any
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   interface{}
+		want   any
 	}{
 		{"1-2", fields{1, 2}, -1},
 		{"1.0-2.0", fields{1.0, 2.0}, -1.0},

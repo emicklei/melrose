@@ -9,8 +9,8 @@ import (
 
 func Test_envMap_Add(t *testing.T) {
 	type args struct {
-		l interface{}
-		r interface{}
+		l any
+		r any
 	}
 	m := envMap{}
 	s := NewVariableStore()
@@ -22,7 +22,7 @@ func Test_envMap_Add(t *testing.T) {
 		name string
 		e    envMap
 		args args
-		want interface{}
+		want any
 	}{
 		{
 			"v1+1",
@@ -78,8 +78,8 @@ func Test_envMap_Add(t *testing.T) {
 
 func Test_envMap_Sub(t *testing.T) {
 	type args struct {
-		l interface{}
-		r interface{}
+		l any
+		r any
 	}
 	m := envMap{}
 	s := NewVariableStore()
@@ -91,7 +91,7 @@ func Test_envMap_Sub(t *testing.T) {
 		name string
 		e    envMap
 		args args
-		want interface{}
+		want any
 	}{
 		{
 			"v1-1",
@@ -147,8 +147,8 @@ func Test_envMap_Sub(t *testing.T) {
 
 func Test_envMap_Multiply(t *testing.T) {
 	type args struct {
-		l interface{}
-		r interface{}
+		l any
+		r any
 	}
 	m := envMap{}
 	s := NewVariableStore()
@@ -160,7 +160,7 @@ func Test_envMap_Multiply(t *testing.T) {
 		name string
 		e    envMap
 		args args
-		want interface{}
+		want any
 	}{
 		{
 			"v1*1",

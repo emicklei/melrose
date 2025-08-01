@@ -56,7 +56,7 @@ func (k *Knob) ControlChange(channel, number, value int) {
 	k.currentValue = value
 }
 
-func (k *Knob) Value() interface{} {
+func (k *Knob) Value() any {
 	return k.currentValue
 }
 

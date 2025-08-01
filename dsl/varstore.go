@@ -16,13 +16,13 @@ import (
 // Access to this store is go-routine safe.
 type VariableStore struct {
 	mutex     sync.RWMutex
-	variables map[string]interface{}
+	variables map[string]any
 }
 
 // NewVariableStore returns a new
 func NewVariableStore() *VariableStore {
 	return &VariableStore{
-		variables: map[string]interface{}{"_": core.EmptySequence},
+		variables: map[string]any{"_": core.EmptySequence},
 	}
 }
 
@@ -31,7 +31,7 @@ func (v *VariableStore) getVariable(name string) variable {
 }
 
 // NameFor finds the entry for a value and returns its (first) associated name
-func (v *VariableStore) NameFor(value interface{}) string {
+func (v *VariableStore) NameFor(value any) string {
 	v.mutex.RLock()
 	defer v.mutex.RUnlock()
 	for k, v := range v.variables {
@@ -44,7 +44,7 @@ func (v *VariableStore) NameFor(value interface{}) string {
 }
 
 // Get returns a value found by the key. Inspect the second return value of presence.
-func (v *VariableStore) Get(key string) (interface{}, bool) {
+func (v *VariableStore) Get(key string) (any, bool) {
 	v.mutex.RLock()
 	e, ok := v.variables[key]
 	v.mutex.RUnlock()
@@ -52,7 +52,7 @@ func (v *VariableStore) Get(key string) (interface{}, bool) {
 }
 
 // Put stores a value by the key. Overwrites any existing value.
-func (v *VariableStore) Put(key string, value interface{}) {
+func (v *VariableStore) Put(key string, value any) {
 	v.mutex.Lock()
 	v.variables[key] = value
 	v.mutex.Unlock()
@@ -66,9 +66,9 @@ func (v *VariableStore) Delete(key string) {
 }
 
 // Variables returns a copy of all stores variables.
-func (v *VariableStore) Variables() map[string]interface{} {
+func (v *VariableStore) Variables() map[string]any {
 	v.mutex.RLock()
-	copy := map[string]interface{}{}
+	copy := map[string]any{}
 	for k, v := range v.variables {
 		copy[k] = v
 	}

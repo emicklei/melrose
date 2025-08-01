@@ -5,7 +5,7 @@ import "fmt"
 type Iterator struct {
 	index  int
 	name   string
-	Target []interface{}
+	Target []any
 }
 
 // VariableName is part of NameAware
@@ -14,7 +14,7 @@ func (i *Iterator) VariableName(n string) {
 }
 
 // Value is part of HasValue
-func (i *Iterator) Value() interface{} {
+func (i *Iterator) Value() any {
 	if len(i.Target) == 0 {
 		return nil
 	}
@@ -25,7 +25,7 @@ func (i *Iterator) Value() interface{} {
 func (i *Iterator) Index() HasValue {
 	return ValueFunction{
 		StoreString: fmt.Sprintf("%s.Index()", i.name),
-		Function: func() interface{} {
+		Function: func() any {
 			return i.getindex() + 1
 		}}
 }
@@ -45,7 +45,7 @@ func (i *Iterator) S() Sequence {
 }
 
 // Next is part of Nextable
-func (i *Iterator) Next() interface{} { // TODO return value needed?
+func (i *Iterator) Next() any { // TODO return value needed?
 	if len(i.Target) == 0 {
 		return nil
 	}

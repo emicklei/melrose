@@ -27,7 +27,7 @@ func (m *AudioDeviceMock) DefaultDeviceIDs() (int, int) {
 }
 
 // HandleSetting implements the AudioDevice interface.
-func (m *AudioDeviceMock) HandleSetting(setting string, value []interface{}) error {
+func (m *AudioDeviceMock) HandleSetting(setting string, value []any) error {
 	return nil
 }
 
