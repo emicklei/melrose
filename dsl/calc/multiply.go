@@ -16,13 +16,22 @@ func (m Multiply) Storex() string {
 }
 
 func (m Multiply) Value() interface{} {
+	isFloatOp := false
+	if _, ok := m.Left.(float64); ok {
+		isFloatOp = true
+	}
+	if _, ok := m.Right.(float64); ok {
+		isFloatOp = true
+	}
+
+	if isFloatOp {
+		l, _ := resolveFloatWithInt(m.Left)
+		r, _ := resolveFloatWithInt(m.Right)
+		return l * r
+	}
+	// integer op
 	l, ok := resolveInt(m.Left)
 	if !ok {
-		// try floats
-		f, ok := m.floatValue()
-		if ok {
-			return f
-		}
 		l = 0
 	}
 	r, ok := resolveInt(m.Right)
@@ -30,16 +39,4 @@ func (m Multiply) Value() interface{} {
 		r = 0
 	}
 	return l * r
-}
-
-func (m Multiply) floatValue() (float64, bool) {
-	l, ok := resolveFloat(m.Left)
-	if !ok {
-		return 0.0, false
-	}
-	r, ok := resolveFloat(m.Right)
-	if !ok {
-		return 0.0, false
-	}
-	return l * r, true
 }

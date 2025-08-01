@@ -31,13 +31,22 @@ func (a Add) Storex() string {
 }
 
 func (a Add) Value() interface{} {
+	isFloatOp := false
+	if _, ok := a.Left.(float64); ok {
+		isFloatOp = true
+	}
+	if _, ok := a.Right.(float64); ok {
+		isFloatOp = true
+	}
+
+	if isFloatOp {
+		l, _ := resolveFloatWithInt(a.Left)
+		r, _ := resolveFloatWithInt(a.Right)
+		return l + r
+	}
+	// integer op
 	l, ok := resolveInt(a.Left)
 	if !ok {
-		// try floats
-		f, ok := a.floatValue()
-		if ok {
-			return f
-		}
 		l = 0
 	}
 	r, ok := resolveInt(a.Right)
@@ -45,16 +54,4 @@ func (a Add) Value() interface{} {
 		r = 0
 	}
 	return l + r
-}
-
-func (a Add) floatValue() (float64, bool) {
-	l, ok := resolveFloat(a.Left)
-	if !ok {
-		return 0.0, false
-	}
-	r, ok := resolveFloat(a.Right)
-	if !ok {
-		return 0.0, false
-	}
-	return l + r, true
 }

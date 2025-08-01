@@ -12,3 +12,5 @@ dsl/debug.test
 core/debug.test
 ui/img/*.png
 since.log
+coverage.out
+coverage.html

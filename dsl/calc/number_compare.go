@@ -17,13 +17,37 @@ func (a NumberCompare) Storex() string {
 }
 
 func (a NumberCompare) Value() interface{} {
+	isFloatOp := false
+	if _, ok := a.Left.(float64); ok {
+		isFloatOp = true
+	}
+	if _, ok := a.Right.(float64); ok {
+		isFloatOp = true
+	}
+
+	if isFloatOp {
+		l, _ := resolveFloatWithInt(a.Left)
+		r, _ := resolveFloatWithInt(a.Right)
+		switch a.Operator {
+		case "<":
+			return l < r
+		case "<=":
+			return l <= r
+		case ">":
+			return l > r
+		case ">=":
+			return l >= r
+		case "!=":
+			return l != r
+		case "==":
+			return l == r
+		default:
+			return false
+		}
+	}
+
 	l, ok := resolveInt(a.Left)
 	if !ok {
-		// try floats
-		f, ok := a.floatValue()
-		if ok {
-			return f
-		}
 		l = 0
 	}
 	r, ok := resolveInt(a.Right)
@@ -45,33 +69,5 @@ func (a NumberCompare) Value() interface{} {
 		return l == r
 	default:
 		return false
-	}
-}
-
-// floatValue operate on left and right as floats
-func (a NumberCompare) floatValue() (bool, bool) {
-	l, ok := resolveFloat(a.Left)
-	if !ok {
-		return false, false
-	}
-	r, ok := resolveFloat(a.Right)
-	if !ok {
-		return false, false
-	}
-	switch a.Operator {
-	case "<":
-		return l < r, true
-	case "<=":
-		return l <= r, true
-	case ">":
-		return l > r, true
-	case ">=":
-		return l >= r, true
-	case "!=":
-		return l != r, true
-	case "==":
-		return l == r, true
-	default:
-		return false, false
 	}
 }
