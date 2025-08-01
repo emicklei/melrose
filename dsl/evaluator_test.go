@@ -22,7 +22,7 @@ func TestSemicolonSeparator(t *testing.T) {
 		{`s=sequence('c
     d');join(s,s)//test`, "join(s,s)"},
 	} {
-		e := NewEvaluator(testContext())
+		e := NewEvaluator(MockContext())
 		r, err := e.EvaluateProgram(entry.input)
 		if err != nil {
 			t.Error(err)
@@ -46,7 +46,7 @@ func TestIsCompatible(t *testing.T) {
 }
 
 func TestNestedFunctions(t *testing.T) {
-	e := NewEvaluator(testContext())
+	e := NewEvaluator(MockContext())
 	input := `pitch(1,repeat(1,reverse(join(note('E'),sequence('F G')))))`
 	_, err := e.EvaluateExpression(input)
 	if err != nil {
@@ -55,7 +55,7 @@ func TestNestedFunctions(t *testing.T) {
 }
 
 func TestMulitLineEvaluate(t *testing.T) {
-	e := NewEvaluator(testContext())
+	e := NewEvaluator(MockContext())
 	input := `sequence("
 		C D E C 
 		C D E C 
@@ -122,28 +122,28 @@ func Test_isAssignment(t *testing.T) {
 }
 
 func TestEvaluateProgram_SingleLine(t *testing.T) {
-	e := NewEvaluator(testContext())
+	e := NewEvaluator(MockContext())
 	if _, err := e.EvaluateProgram(`a = 1`); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestEvaluateProgram_CommentLine(t *testing.T) {
-	e := NewEvaluator(testContext())
+	e := NewEvaluator(MockContext())
 	if _, err := e.EvaluateProgram(`// a = 1`); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestEvaluateProgram_FirstTab(t *testing.T) {
-	e := NewEvaluator(testContext())
+	e := NewEvaluator(MockContext())
 	if _, err := e.EvaluateProgram(`	a = 1`); err == nil {
 		t.Error(err)
 	}
 }
 
 func TestEvaluateProgram_TwoLines(t *testing.T) {
-	e := NewEvaluator(testContext())
+	e := NewEvaluator(MockContext())
 	r, err := e.EvaluateProgram(
 		`a = 1
 b = 2`)
@@ -156,7 +156,7 @@ b = 2`)
 }
 
 func TestEvaluateProgram_BrokenSequence(t *testing.T) {
-	e := NewEvaluator(testContext())
+	e := NewEvaluator(MockContext())
 	r, err := e.EvaluateProgram(
 		`a = sequence(
 	'A')`)
@@ -168,7 +168,7 @@ func TestEvaluateProgram_BrokenSequence(t *testing.T) {
 	}
 }
 func TestEvaluateProgram_AllBrokenSequence(t *testing.T) {
-	e := NewEvaluator(testContext())
+	e := NewEvaluator(MockContext())
 	r, err := e.EvaluateProgram(
 		`a = sequence
 	(
@@ -188,7 +188,7 @@ func TestEvaluateProgram_AllBrokenSequence(t *testing.T) {
 }
 
 func TestEvaluateProgram_TwoTabs(t *testing.T) {
-	e := NewEvaluator(testContext())
+	e := NewEvaluator(MockContext())
 	r, err := e.EvaluateProgram(
 		`a
 	=

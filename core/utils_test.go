@@ -5,13 +5,6 @@ import (
 	"testing"
 )
 
-func testContext() Context {
-	return PlayContext{
-		//VariableStorage: NewVariableStore(),
-		LoopControl: NoLooper,
-	}
-}
-
 func Test_parseIndices(t *testing.T) {
 	type args struct {
 		src string

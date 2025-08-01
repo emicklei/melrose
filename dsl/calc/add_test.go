@@ -9,8 +9,8 @@ import (
 
 func TestAdd_Value(t *testing.T) {
 	type fields struct {
-		Left  interface{}
-		Right interface{}
+		Left  any
+		Right any
 	}
 	tests := []struct {
 		name   string
