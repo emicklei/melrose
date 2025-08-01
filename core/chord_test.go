@@ -111,6 +111,13 @@ func TestParseChord_C(t *testing.T) {
 		})
 	}
 }
+func TestChordWithInversion(t *testing.T) {
+	c := zeroChord()
+	c = c.WithInversion(Inversion1)
+	if c.inversion != Inversion1 {
+		t.Errorf("WithInversion failed, got %d, want %d", c.inversion, Inversion1)
+	}
+}
 
 // https://muzieknotatie.nl/wiki/Akkoordsymbool
 // go test -timeout 30s github.com/emicklei/melrose -v -run "^(TestParseChord)$"

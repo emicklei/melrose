@@ -40,3 +40,21 @@ func check(t *testing.T, err error) {
 		t.Fatal(err)
 	}
 }
+
+func TestChordSequence_Replaced(t *testing.T) {
+	s1 := MustParseChordSequence("C D")
+	s2 := MustParseChordSequence("E F")
+	s3 := MustParseChordSequence("C D") // Identical to s1
+
+	// Case 1: p is identical to from
+	replaced1 := s1.Replaced(s3, s2)
+	if !IsIdenticalTo(replaced1, s2) {
+		t.Errorf("Expected s1.Replaced(s3, s2) to be s2, got %v", replaced1)
+	}
+
+	// Case 2: p is not identical to from
+	replaced2 := s1.Replaced(s2, s3)
+	if !IsIdenticalTo(replaced2, s1) {
+		t.Errorf("Expected s1.Replaced(s2, s3) to be s1, got %v", replaced2)
+	}
+}
