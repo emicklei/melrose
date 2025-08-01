@@ -21,7 +21,7 @@ func NewFraction(parameter core.HasValue, target []core.Sequenceable) Fraction {
 
 // Return a new Fraction in which any occurrences of "from" are replaced by "to".
 func (d Fraction) Replaced(from, to core.Sequenceable) core.Sequenceable {
-	if from == core.Sequenceable(d) {
+	if core.IsIdenticalTo(d, from) {
 		return to
 	}
 	return Fraction{Target: replacedAll(d.Target, from, to), Parameter: d.Parameter}

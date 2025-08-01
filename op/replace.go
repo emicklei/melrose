@@ -45,7 +45,7 @@ func (r Replace) Storex() string {
 
 // Return a new Replace in which any occurrences of "from" are replaced by "to".
 func (r Replace) Replaced(from, to core.Sequenceable) core.Sequenceable {
-	if from == core.Sequenceable(r) {
+	if core.IsIdenticalTo(r, from) {
 		return to
 	}
 	if rep, ok := r.Target.(core.Replaceable); ok {

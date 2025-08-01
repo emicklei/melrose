@@ -15,7 +15,7 @@ type Dynamic struct {
 
 // Replaced returns a new Dynamic in which any occurrences of "from" are replaced by "to".
 func (d Dynamic) Replaced(from, to core.Sequenceable) core.Sequenceable {
-	if from == core.Sequenceable(d) {
+	if core.IsIdenticalTo(d, from) {
 		return to
 	}
 	return Dynamic{Target: replacedAll(d.Target, from, to), Emphasis: d.Emphasis}
