@@ -43,7 +43,7 @@ func (j JoinMap) S() core.Sequence {
 				if j.check(i, g, each, len(source)) {
 					notes = append(notes, source[each-1].S().Notes[0]...)
 				} else {
-					target = append(target, core.Rest4) // TODO what should be the duration?
+					notes = append(notes, core.Rest4) // TODO what should be the duration?
 				}
 			}
 			target = append(target, Group{Target: core.BuildSequence(notes)})

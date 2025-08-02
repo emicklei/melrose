@@ -1,9 +1,7 @@
 package op
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/emicklei/melrose/core"
@@ -66,10 +64,43 @@ func TestReplace_Operators(t *testing.T) {
 	}
 }
 
-func TestReplace_JSON(t *testing.T) {
+func TestReplace_Storex(t *testing.T) {
 	c := core.MustParseSequence("C")
 	d := core.MustParseSequence("D")
-	p := Transpose{Target: c, Semitones: core.On(12)}
-	r := Replace{Target: p, From: c, To: d}
-	json.NewEncoder(os.Stdout).Encode(r)
+	r := Replace{Target: c, From: c, To: d}
+	if got, want := r.Storex(), "replace(sequence('C'),sequence('C'),sequence('D'))"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	r = Replace{Target: c, From: c, To: core.MustParseSequence("1")}
+	if got, want := r.Storex(), "replace(sequence('C'),sequence('C'),sequence('1'))"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	r = Replace{Target: c, From: core.MustParseSequence("1"), To: d}
+	if got, want := r.Storex(), "replace(sequence('C'),sequence('1'),sequence('D'))"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	r = Replace{Target: core.MustParseSequence("1"), From: c, To: d}
+	if got, want := r.Storex(), "replace(sequence('1'),sequence('C'),sequence('D'))"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}
+
+func TestReplace_Replaced(t *testing.T) {
+	c := core.MustParseSequence("C")
+	d := core.MustParseSequence("D")
+	r := Replace{Target: c, From: c, To: d}
+	if core.IsIdenticalTo(r, c) {
+		t.Error("should not be identical")
+	}
+	if !core.IsIdenticalTo(r.Replaced(r, d), d) {
+		t.Error("should be replaced by d")
+	}
+	r = Replace{Target: r, From: c, To: d}
+	if !core.IsIdenticalTo(r.Replaced(r.Target, d).(Replace).Target, d) {
+		t.Error("not replaced")
+	}
+	r = Replace{Target: failingNoteConvertable{}, From: c, To: d}
+	if !core.IsIdenticalTo(r.Replaced(c, d), r) {
+		t.Error("should be same")
+	}
 }

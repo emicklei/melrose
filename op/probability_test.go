@@ -20,6 +20,26 @@ func TestProbability_hit(t *testing.T) {
 	t.Log(p.hit())
 }
 
+func TestNewProbability(t *testing.T) {
+	p := NewProbability(core.On(0.5), core.On(core.N("c")))
+	if p == nil {
+		t.Fatal("should not be nil")
+	}
+}
+
+func TestProbability_ToNote_Error(t *testing.T) {
+	p := NewProbability(core.On(0.5), core.On(core.On(1)))
+	_, err := p.ToNote()
+	if err == nil {
+		t.Fatal("error expected")
+	}
+	p = NewProbability(core.On(0.5), core.On(failingNoteConvertable{}))
+	_, err = p.ToNote()
+	if err == nil {
+		t.Fatal("error expected")
+	}
+}
+
 func TestProbability_hit_halfrest(t *testing.T) {
 	p := Probability{chance: core.On(0.0), seed: rand.New(rand.NewSource(0)), target: core.On(core.N("2c"))}
 	n, err := p.ToNote()

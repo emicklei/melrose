@@ -49,3 +49,43 @@ func TestNewDynamicMapper_InvalidIndex(t *testing.T) {
 	}
 	t.Log(err)
 }
+
+func TestDynamicMap_Replaced(t *testing.T) {
+	l := core.MustParseSequence("A B")
+	d, err := NewDynamicMap([]core.Sequenceable{l}, "1:++,2:--")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if core.IsIdenticalTo(d, l) {
+		t.Error("should not be identical")
+	}
+	if !core.IsIdenticalTo(d.Replaced(l, core.EmptySequence).(DynamicMap).Target[0], core.EmptySequence) {
+		t.Error("not replaced")
+	}
+	if !core.IsIdenticalTo(d.Replaced(d, l), l) {
+		t.Error("should be replaced by l")
+	}
+}
+
+func TestDynamicMap_Invalid(t *testing.T) {
+	l := core.MustParseSequence("A B")
+	d, err := NewDynamicMap([]core.Sequenceable{l}, "1:++,3:--")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := d.S().Storex(), "sequence('A++')"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+	_, err = NewDynamicMap([]core.Sequenceable{l}, "a:b")
+	if err == nil {
+		t.Fatal("error expected")
+	}
+	_, err = NewDynamicMap([]core.Sequenceable{l}, "1:b")
+	if err == nil {
+		t.Fatal("error expected")
+	}
+	_, err = NewDynamicMap([]core.Sequenceable{l}, "a:++")
+	if err == nil {
+		t.Fatal("error expected")
+	}
+}

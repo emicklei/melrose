@@ -65,15 +65,21 @@ func replacedAll(target []core.Sequenceable, from, to core.Sequenceable) []core.
 // "1 (4 5 6) 2 (4 5 6) 3 (4 5 6) 2 (4 5 6)"
 func formatIndices(src [][]int) string {
 	var b bytes.Buffer
-	for _, each := range src {
+	for i, each := range src {
+		if i > 0 {
+			fmt.Fprintf(&b, " ")
+		}
 		if len(each) == 1 {
-			fmt.Fprintf(&b, "%d ", each[0])
+			fmt.Fprintf(&b, "%d", each[0])
 		} else {
 			fmt.Fprintf(&b, "(")
-			for _, other := range each {
-				fmt.Fprintf(&b, "%d ", other)
+			for j, other := range each {
+				if j > 0 {
+					fmt.Fprintf(&b, " ")
+				}
+				fmt.Fprintf(&b, "%d", other)
 			}
-			fmt.Fprintf(&b, ") ")
+			fmt.Fprintf(&b, ")")
 		}
 	}
 	return b.String()

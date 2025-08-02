@@ -3,7 +3,16 @@ package op
 import (
 	"reflect"
 	"testing"
+
+	"github.com/emicklei/melrose/core"
 )
+
+func testContext() core.Context {
+	return &core.PlayContext{
+		LoopControl: core.NoLooper,
+		AudioDevice: new(core.AudioDeviceMock),
+	}
+}
 
 func Test_parseIndexOffsets(t *testing.T) {
 	type args struct {

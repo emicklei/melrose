@@ -144,6 +144,9 @@ func (s Sequence) writeNotesOn(
 	sharpOrFlatKey int) {
 
 	for i, each := range s.Notes {
+		if len(each) == 0 {
+			continue // skip empty groups
+		}
 		if i > 0 {
 			buf.WriteString(" ")
 		}

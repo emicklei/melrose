@@ -46,3 +46,26 @@ func Test_compactGroup(t *testing.T) {
 		}
 	}
 }
+
+func TestMerge_Storex(t *testing.T) {
+	s1 := core.MustParseSequence("C")
+	m := Merge{Target: []core.Sequenceable{s1}}
+	if got, want := m.Storex(), "merge(sequence('C'))"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}
+
+func TestMerge_Replaced(t *testing.T) {
+	s1 := core.MustParseSequence("C")
+	s2 := core.MustParseSequence("D")
+	m := Merge{Target: []core.Sequenceable{s1}}
+	if core.IsIdenticalTo(m, s1) {
+		t.Error("should not be identical")
+	}
+	if !core.IsIdenticalTo(m.Replaced(s1, s2).(Join).Target[0], s2) {
+		t.Error("not replaced")
+	}
+	if !core.IsIdenticalTo(m.Replaced(m, s2), s2) {
+		t.Error("should be replaced by s2")
+	}
+}
