@@ -12,15 +12,25 @@ You can use the following flags to change its behavior.
 
     -http <address>
         address on which to listen for HTTP requests (default ":8118")
-    -tunnel <subdomain>
-        offers a public subdomain.loca.lt address to server HTTP request
-    -v
-        verbose logging
+    -d
+        debug logging
+    -log
+        log file location
 
 ### CLI control
 
 Commands to control the program itself are prefix with a colon `:`.
 With `:h` you get the list of known commands.
+
+    :h                    show help, optional on a command or function
+    :v [prefix]           show variables, optional filter on given prefix
+    :k                    stop all sound and loops
+    :b                    beat settings
+    -m                    MIDI settings
+    -q                    quit
+    -d                    toggle debug lines
+    -p                    list all running
+    -e                    echo MIDI
 
 ### CLI line editing
 

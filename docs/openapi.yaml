@@ -42,7 +42,7 @@ paths:
               one of:
               - `play` : try to play the result of the selected expression(s).
               - `stop` : try to end the loop of the selected expression
-              - `eval` : produce extra logging
+              - `kill` : stop all running loops and devices
               - `inspect` : print inspection details of the selected expression
               - `eval` : only evaluate the expression(s) or statements ; no play
           - name: file
