@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="none">
+	<defs></defs>
+	<g stroke="#C80000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+		<path d="M 0,0 L 0,150"></path>
+	</g>
+	<g fill="#000000" fill-rule="evenodd">
+		<path d=""></path>
+	</g>
+	<g stroke="#C8C8C8" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+		<path d="M 315.789,0 L 315.789,150"></path>
+	</g>
+	<g stroke="#C8C8C8" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+		<path d="M 631.579,0 L 631.579,150"></path>
+	</g>
+	<g stroke="#C8C8C8" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+		<path d="M 947.368,0 L 947.368,150"></path>
+	</g>
+	<g fill="#3EA10B" fill-rule="evenodd">
+		<path d="M 0,120 L 52.632,120 L 52.632,150 L 0,150 Z"></path>
+	</g>
+	<g fill="#000000" fill-rule="evenodd">
+		<path d=""></path>
+	</g>
+	<g fill="#3EA10B" fill-rule="evenodd">
+		<path d="M 210.526,90 L 263.158,90 L 263.158,120 L 210.526,120 Z"></path>
+	</g>
+	<g fill="#000000" fill-rule="evenodd">
+		<path d=""></path>
+	</g>
+	<g fill="#3EA10B" fill-rule="evenodd">
+		<path d="M 157.895,120 L 315.789,120 L 315.789,150 L 157.895,150 Z"></path>
+	</g>
+	<g fill="#000000" fill-rule="evenodd">
+		<path d=""></path>
+	</g>
+	<g fill="#3EA10B" fill-rule="evenodd">
+		<path d="M 421.053,120 L 526.316,120 L 526.316,150 L 421.053,150 Z"></path>
+	</g>
+	<g fill="#000000" fill-rule="evenodd">
+		<path d=""></path>
+	</g>
+	<g fill="#3EA10B" fill-rule="evenodd">
+		<path d="M 473.684,60 L 578.947,60 L 578.947,90 L 473.684,90 Z"></path>
+	</g>
+	<g fill="#000000" fill-rule="evenodd">
+		<path d=""></path>
+	</g>
+	<g fill="#3EA10B" fill-rule="evenodd">
+		<path d="M 684.211,120 L 789.474,120 L 789.474,150 L 684.211,150 Z"></path>
+	</g>
+	<g fill="#000000" fill-rule="evenodd">
+		<path d=""></path>
+	</g>
+	<g fill="#3EA10B" fill-rule="evenodd">
+		<path d="M 736.842,30 L 789.474,30 L 789.474,60 L 736.842,60 Z"></path>
+	</g>
+	<g fill="#000000" fill-rule="evenodd">
+		<path d=""></path>
+	</g>
+	<g fill="#3EA10B" fill-rule="evenodd">
+		<path d="M 894.737,0 L 947.368,0 L 947.368,30 L 894.737,30 Z"></path>
+	</g>
+	<g fill="#000000" fill-rule="evenodd">
+		<path d=""></path>
+	</g>
+	<g fill="#3EA10B" fill-rule="evenodd">
+		<path d="M 894.737,120 L 1000,120 L 1000,150 L 894.737,150 Z"></path>
+	</g>
+	<g fill="#000000" fill-rule="evenodd">
+		<path d=""></path>
+	</g>
+</svg>

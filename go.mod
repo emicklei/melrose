@@ -14,6 +14,7 @@ require (
 
 require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
+	github.com/llgcode/draw2d v0.0.0-20240627062922-0ed1ff131195 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect

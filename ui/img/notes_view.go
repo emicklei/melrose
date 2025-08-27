@@ -1,8 +1,12 @@
 package img
 
 import (
+	"fmt"
+	"image/color"
+
 	"github.com/emicklei/melrose/core"
-	"github.com/fogleman/gg"
+	"github.com/llgcode/draw2d"
+	"github.com/llgcode/draw2d/draw2dkit"
 )
 
 type NotesView struct {
@@ -11,37 +15,62 @@ type NotesView struct {
 	// TODO BIAB
 }
 
+const (
+	bottomPadding = 20
+)
+
 // gc 0,0 is top-left
-func (v NotesView) DrawOn(gc *gg.Context) {
+func (v NotesView) DrawOn(gc draw2d.GraphicContext, width, height int) {
 	if len(v.Events) == 0 || v.BPM == 0 {
 		return
 	}
 	stats := core.NoteStatistics(v.Events)
-	bottom := float64(gc.Height())
-	xscale := float64(gc.Width()) / float64(stats.End.Sub(stats.Start).Milliseconds())
-	yscale := float64(gc.Height()) / float64(stats.Highest-stats.Lowest+1)
+	viewHeight := float64(height - bottomPadding)
+	bottom := viewHeight
+	if stats.End.Sub(stats.Start).Milliseconds() == 0 {
+		return
+	}
+	xscale := float64(width) / float64(stats.End.Sub(stats.Start).Milliseconds())
+	yscale := viewHeight / float64(stats.Highest-stats.Lowest+1)
 
-	quarter := (core.WholeNoteDuration(v.BPM) / 4.0).Milliseconds()
+	quarterMS := (core.WholeNoteDuration(v.BPM) / 4.0).Milliseconds()
 
 	bar := 0
-	for x := 0.0; x < float64(gc.Width()); x += float64(quarter) * xscale {
-		if bar == 4 {
-			gc.SetRGB(200/256.0, 0.0, 0.0) // redisch
-			bar = 0
+	for x := 0.0; x < float64(width); x += float64(quarterMS) * xscale {
+		isNewBar := bar%4 == 0
+		if isNewBar {
+			gc.SetStrokeColor(color.RGBA{R: 200, G: 0, B: 0, A: 255}) // redisch
 		} else {
-			gc.SetRGB(200/256.0, 200/256.0, 200/256.0) // grayish
+			gc.SetStrokeColor(color.RGBA{R: 200, G: 200, B: 200, A: 255}) // grayish
 		}
-		gc.DrawLine(x, 0, x, float64(gc.Height()))
+		gc.MoveTo(x, 0)
+		gc.LineTo(x, viewHeight)
 		gc.Stroke()
+
+		// draw time
+		if isNewBar {
+			gc.SetFillColor(color.RGBA{R: 0, G: 0, B: 0, A: 255}) // black
+			momentS := (x / xscale) / 1000.0
+			gc.FillStringAt(fmt.Sprintf("%.1fs", momentS), x, viewHeight+15)
+		}
 		bar++
 	}
 
-	gc.SetRGB(62/256.0, 161/256.0, 11/256.0) // greenish
+	gc.SetFillColor(color.RGBA{R: 62, G: 161, B: 11, A: 255}) // greenish
 	for _, each := range v.Events {
 		xs := float64(each.Start.Sub(stats.Start).Milliseconds()) * xscale
 		xe := float64(each.End.Sub(stats.Start).Milliseconds()) * xscale
+		ys := bottom - (float64(each.Number-stats.Lowest+1) * yscale)
 
-		gc.DrawRectangle(xs, bottom-(float64(each.Number-stats.Lowest+1)*yscale), xe-xs, yscale)
+		draw2dkit.Rectangle(gc, xs, ys, xe, ys+yscale)
 		gc.Fill()
+
+		// draw note label
+		note, err := core.MIDItoNote(0.25, each.Number, each.Velocity)
+		if err == nil {
+			gc.SetFillColor(color.RGBA{R: 0, G: 0, B: 0, A: 255}) // black
+			gc.FillStringAt(note.String(), xs, ys-2)
+			gc.SetFillColor(color.RGBA{R: 62, G: 161, B: 11, A: 255}) // back to greenish
+		}
 	}
 }

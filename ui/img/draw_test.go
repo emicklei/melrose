@@ -1,13 +1,15 @@
 package img
 
 import (
+	"image"
 	"testing"
 	"time"
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/midi"
 	"github.com/emicklei/melrose/op"
-	"github.com/fogleman/gg"
+	"github.com/llgcode/draw2d/draw2dimg"
+	"github.com/llgcode/draw2d/draw2dsvg"
 )
 
 func sampleTimeline() *core.Timeline {
@@ -40,12 +42,20 @@ func sampleTimeline() *core.Timeline {
 
 func TestDraw(t *testing.T) {
 	tl := sampleTimeline()
-	gc := gg.NewContext(1000, 150)
-
 	evts := tl.NoteEvents()
 	nv := NotesView{Events: evts, BPM: 10.0}
-	nv.DrawOn(gc)
-	gc.SavePNG("TestDraw.png")
+
+	// PNG
+	dest := image.NewRGBA(image.Rect(0, 0, 1000, 170))
+	gc := draw2dimg.NewGraphicContext(dest)
+	nv.DrawOn(gc, 1000, 170)
+	draw2dimg.SaveToPngFile("TestDraw.png", dest)
+
+	// SVG
+	destSvg := draw2dsvg.NewSvg()
+	gcSvg := draw2dsvg.NewGraphicContext(destSvg)
+	nv.DrawOn(gcSvg, 1000, 170)
+	draw2dsvg.SaveToSvgFile("TestDraw.svg", destSvg)
 }
 
 func TestRecordedTimeline(t *testing.T) {
@@ -54,10 +64,12 @@ func TestRecordedTimeline(t *testing.T) {
 	// TODO stored from control/recording.go:54
 	events := core.NoteEventsFromFile("/tmp/melrose-recording.json")
 	t.Log("event count:", len(events))
-	gc := gg.NewContext(1000, 100)
 	nv := NotesView{Events: events, BPM: bpm}
-	nv.DrawOn(gc)
-	gc.SavePNG("TestRecorded_RAW.png")
+
+	dest := image.NewRGBA(image.Rect(0, 0, 1000, 120))
+	gc := draw2dimg.NewGraphicContext(dest)
+	nv.DrawOn(gc, 1000, 120)
+	draw2dimg.SaveToPngFile("TestRecorded_RAW.png", dest)
 
 	{
 		periods := core.NoteEventsToPeriods(events)
@@ -67,10 +79,12 @@ func TestRecordedTimeline(t *testing.T) {
 		tim := core.NewTimeline()
 		d := midi.NewOutputDevice(0, nil, 0, tim)
 		d.Play(core.NoCondition, seq, bpm, time.Now())
-		gc := gg.NewContext(500, 50)
-		nv := NotesView{Events: tim.NoteEvents(), BPM: bpm}
-		nv.DrawOn(gc)
-		gc.SavePNG("TestRecorded_PROCESSED.png")
+
+		dest2 := image.NewRGBA(image.Rect(0, 0, 500, 70))
+		gc2 := draw2dimg.NewGraphicContext(dest2)
+		nv2 := NotesView{Events: tim.NoteEvents(), BPM: bpm}
+		nv2.DrawOn(gc2, 500, 70)
+		draw2dimg.SaveToPngFile("TestRecorded_PROCESSED.png", dest2)
 	}
 }
 
@@ -84,8 +98,10 @@ func TestScaleInputSequenceBuilder(t *testing.T) {
 	tim := core.NewTimeline()
 	d := midi.NewOutputDevice(0, nil, 0, tim)
 	d.Play(core.NoCondition, seq, bpm, time.Now())
-	gc := gg.NewContext(500, 100)
+
+	dest := image.NewRGBA(image.Rect(0, 0, 500, 120))
+	gc := draw2dimg.NewGraphicContext(dest)
 	nv := NotesView{Events: tim.NoteEvents(), BPM: bpm}
-	nv.DrawOn(gc)
-	gc.SavePNG("TestRecorded_SCALE.png")
+	nv.DrawOn(gc, 500, 120)
+	draw2dimg.SaveToPngFile("TestRecorded_SCALE.png", dest)
 }
