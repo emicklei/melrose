@@ -2,6 +2,7 @@
 
 ## [v1.0.0-beta] - 
 
+- `if ` is replaced by `when` as a result of a breaking change in the expr dependency.
 - add optional repeat parameter in scale, scale('16a2',2)
 - add `melrose-mcp` server
 - add tempo as alias for bpm

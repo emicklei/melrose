@@ -1057,9 +1057,9 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 			return op.Merge{Target: s}
 		}})
 
-	registerFunction(eval, "if", Function{
+	registerFunction(eval, "when", Function{
 		Title:       "Conditional operator",
-		Template:    `if(${1:condition},${2:then},${3:else})`,
+		Template:    `when(${1:condition},${2:then},${3:else})`,
 		Description: "Supports conditions with operators on numbers: <,<=,>,>=,!=,==",
 		Samples:     ``,
 		Func: func(c any, thenelse ...any) any {
