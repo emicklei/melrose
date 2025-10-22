@@ -6,5 +6,3 @@
 This mcp server requires the [Go SDK](https://go.dev).
 
     go install github.com/emicklei/melrose-mcp@latest
-
-![melrose-prompt](img/melrose_prompt.png)
