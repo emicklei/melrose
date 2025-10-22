@@ -45,7 +45,7 @@ func (s Sequence) NotesDo(block func(Note)) {
 
 // RestSequence returns a sequence with rest notes up to <bars> respecting <biab>.
 func RestSequence(bars, biab int) Sequence {
-	groups := [][]Note{}
+	groups := make([][]Note, 0, bars*biab)
 	for b := 0; b < bars; b++ {
 		for c := 0; c < biab; c++ {
 			groups = append(groups, []Note{Rest4})
@@ -56,9 +56,9 @@ func RestSequence(bars, biab int) Sequence {
 
 // BuildSequence creates a Sequence from a slice of Note
 func BuildSequence(notes []Note) Sequence {
-	groups := [][]Note{}
-	for _, each := range notes {
-		groups = append(groups, []Note{each})
+	groups := make([][]Note, len(notes))
+	for i, each := range notes {
+		groups[i] = []Note{each}
 	}
 	return Sequence{Notes: groups}
 }
@@ -112,13 +112,13 @@ func (s Sequence) ToRest() Sequence {
 	if len(s.Notes) == 0 {
 		return s
 	}
-	groups := [][]Note{}
-	for _, group := range s.Notes {
-		changed := []Note{}
-		for _, each := range group {
-			changed = append(changed, each.ToRest()) // TODO optimize
+	groups := make([][]Note, len(s.Notes))
+	for i, group := range s.Notes {
+		changed := make([]Note, len(group))
+		for j, each := range group {
+			changed[j] = each.ToRest()
 		}
-		groups = append(groups, changed)
+		groups[i] = changed
 	}
 	return Sequence{groups}
 }

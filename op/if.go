@@ -7,6 +7,8 @@ import (
 	"github.com/emicklei/melrose/core"
 )
 
+// IfCondition represents a conditional operation that selects between two sequences
+// In the DSL, it is represented as when(condition, then, else). "if" is deprecated.
 type IfCondition struct {
 	Condition core.HasValue
 	Then      core.Sequenceable
@@ -26,9 +28,9 @@ func (i IfCondition) S() core.Sequence {
 
 func (i IfCondition) Storex() string {
 	if reflect.DeepEqual(i.Else, core.EmptySequence) {
-		return fmt.Sprintf("if(%s,%s)", core.Storex(i.Condition), core.Storex(i.Then))
+		return fmt.Sprintf("when(%s,%s)", core.Storex(i.Condition), core.Storex(i.Then))
 	}
-	return fmt.Sprintf("if(%s,%s,%s)", core.Storex(i.Condition), core.Storex(i.Then), core.Storex(i.Else))
+	return fmt.Sprintf("when(%s,%s,%s)", core.Storex(i.Condition), core.Storex(i.Then), core.Storex(i.Else))
 }
 
 // Replaced is part of Replaceable

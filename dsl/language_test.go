@@ -255,7 +255,6 @@ func TestPlayDeviceChannelNote(t *testing.T) {
 }
 
 func TestIfCondition(t *testing.T) {
-	t.Skip("wait for operator fix")
-	r := eval(t, `if(true,note("="))`)
-	checkStorex(t, r, `if(true,note("="))`)
+	r := eval(t, `when(true,note("="))`)
+	checkStorex(t, r, `when(true,note('='))`)
 }

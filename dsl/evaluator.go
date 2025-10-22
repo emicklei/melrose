@@ -32,8 +32,8 @@ const fourSpaces = "    "
 // If a line is prefixed by 4 SPACES then that line is appended to the previous.
 // Return the result of the last expression or statement.
 func (e *Evaluator) EvaluateProgram(source string) (any, error) {
-	lines := []string{}
 	splitted := strings.Split(source, "\n")
+	lines := make([]string, 0, len(splitted))
 
 	// indentation
 	nrOfLastExpression := -1
