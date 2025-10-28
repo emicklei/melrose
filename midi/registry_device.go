@@ -126,7 +126,7 @@ func (r *DeviceRegistry) Report() {
 	fmt.Println()
 	for k := range slices.Sorted(maps.Keys(r.out)) {
 		v := r.out[k]
-		fmt.Printf("output device %d (:m i %d) = %s\n", k, k, v.name)
+		fmt.Printf("output device %d (:m o %d) = %s\n", k, k, v.name)
 	}
 }
 
