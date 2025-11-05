@@ -1,6 +1,6 @@
 module github.com/emicklei/melrose
 
-go 1.24.4
+go 1.24.6
 
 require (
 	github.com/Try431/EasyMIDI v1.0.3
