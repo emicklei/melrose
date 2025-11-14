@@ -22,10 +22,11 @@ func NewTrack(title string, channel int) *Track {
 	}
 }
 
-func (t *Track) Play(ctx Context, now time.Time) error {
+func (t *Track) Play(ctx Context, now time.Time) time.Time {
 	bpm := ctx.Control().BPM()
 	biab := ctx.Control().BIAB()
 	whole := WholeNoteDuration(bpm)
+	var endingAt time.Time
 	for bars, each := range t.Content {
 		cs := NewChannelSelector(each, On(t.Channel))
 		offset := int64((bars-1)*biab) * whole.Nanoseconds() / 4
@@ -33,9 +34,9 @@ func (t *Track) Play(ctx Context, now time.Time) error {
 		if notify.IsDebug() {
 			notify.Debugf("core.track title=%s channel=%d bar=%d, biab=%d, bpm=%.2f time=%s", t.Title, t.Channel, bars, biab, bpm, when.Format("04:05.000"))
 		}
-		ctx.Device().Play(NoCondition, cs, bpm, when)
+		endingAt = ctx.Device().Play(NoCondition, cs, bpm, when)
 	}
-	return nil
+	return endingAt
 }
 
 func (t *Track) Inspect(i Inspection) {
