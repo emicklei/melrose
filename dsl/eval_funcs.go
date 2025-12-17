@@ -610,6 +610,14 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 		IsComposer:  true,
 		Samples:     `octave(1,sequence('c d')) // => C5 D5`,
 		Func: func(scalarOrVar any, playables ...any) any {
+			if scalarOrVar == nil {
+				notify.Panic(errors.New("missing octave offset parameter"))
+			}
+			_, isVar := scalarOrVar.(variable)
+			_, isInt := scalarOrVar.(int)
+			if !isVar && !isInt {
+				notify.Panic(fmt.Errorf("invalid octave offset parameter (%T) %v", scalarOrVar, scalarOrVar))
+			}
 			list := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
