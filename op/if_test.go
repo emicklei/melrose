@@ -29,11 +29,11 @@ func TestIf_Storex(t *testing.T) {
 	th := core.MustParseSequence("C")
 	el := core.MustParseSequence("D")
 	i := IfCondition{Condition: c, Then: th, Else: el}
-	if got, want := i.Storex(), "when(true,sequence('C'),sequence('D'))"; got != want {
+	if got, want := i.Storex(), "if(true,sequence('C'),sequence('D'))"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 	i.Else = core.EmptySequence
-	if got, want := i.Storex(), "when(true,sequence('C'))"; got != want {
+	if got, want := i.Storex(), "if(true,sequence('C'))"; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }

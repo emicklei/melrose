@@ -254,7 +254,12 @@ func TestPlayDeviceChannelNote(t *testing.T) {
 	checkStorex(t, r, "play(device(1,channel(2,note('C'))))")
 }
 
-func TestIfCondition(t *testing.T) {
+func TestWhenCondition(t *testing.T) {
 	r := eval(t, `when(true,note("="))`)
-	checkStorex(t, r, `when(true,note('='))`)
+	checkStorex(t, r, `if(true,note('='))`)
+}
+
+func TestIfCondition(t *testing.T) {
+	r := eval(t, `if(true,note("="))`)
+	checkStorex(t, r, `if(true,note('='))`)
 }
