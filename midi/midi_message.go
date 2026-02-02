@@ -15,7 +15,6 @@ const (
 	controlChange int64 = 0xB0 // 10110000 , 176
 	noteAllOff    int64 = 0x78 // 01111000 , 120  (not 123 because sustain)
 	sustainPedal  int64 = 0x40
-	anyChannel    int   = -1
 )
 
 type Message struct {
