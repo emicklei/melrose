@@ -10,6 +10,7 @@ import (
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
+	"github.com/emicklei/tre"
 	"gitlab.com/gomidi/midi/v2/drivers/rtmididrv/imported/rtmidi"
 )
 
@@ -70,7 +71,7 @@ func (r *DeviceRegistry) Output(id int) (*OutputDevice, error) {
 	defer r.mutex.Unlock()
 	midiOut, err := r.streamRegistry.output(id)
 	if err != nil {
-		return nil, err
+		return nil, tre.New(err, "Output", "id", id)
 	}
 	od := NewOutputDevice(id, midiOut, 1, core.NewTimeline())
 	r.out[id] = od
@@ -93,7 +94,7 @@ func (r *DeviceRegistry) Input(id int) (*InputDevice, error) {
 	defer r.mutex.Unlock()
 	midiIn, err := r.streamRegistry.input(id)
 	if err != nil {
-		return nil, err
+		return nil, tre.New(err, "Input", "id", id)
 	}
 	ide := NewInputDevice(id, midiIn, r.streamRegistry.transport)
 	r.in[id] = ide

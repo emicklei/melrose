@@ -2,9 +2,9 @@
 
 ## [v1.0.0-beta] - 
 
-- `if ` is aliased by `when`
+- `if ` is replaced by `when` as a result of a breaking change in the expr dependency.
 - add optional repeat parameter in scale, scale('16a2',2)
-- add `melrose-mcp` server mention
+- add `melrose-mcp` server
 - add tempo as alias for bpm
 - add flag for log location
 - allow 'b' for flat

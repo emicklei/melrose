@@ -97,7 +97,7 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 
 	registerFunction(eval, "progression", Function{
 		Title:       "Chord progression creator",
-		Description: `create a Chord progression using this <a href="/docs/reference/notations/#chordprogression">format</a>`,
+		Description: `create a Chord progression using this <a href="/docs/reference/notations.md#chord-progression">format</a>`,
 		Prefix:      "pro",
 		IsCore:      true,
 		Template:    `progression('${1:scale}','${2:space-separated-roman-chords}')`,
@@ -108,7 +108,7 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 
 	registerFunction(eval, "chordsequence", Function{
 		Title:       "Sequence of chords creator",
-		Description: `create a Chord sequence using this <a href="/docs/reference/notations/#chordsequence">format</a>`,
+		Description: `create a Chord sequence using this <a href="/docs/reference/notations.md#sequence">format</a>`,
 		Prefix:      "pro",
 		IsCore:      true,
 		Template:    `chordsequence('${1:chords}')`,
@@ -242,7 +242,7 @@ midi(16,36,70) // => 16C2 (kick)`,
 		}})
 
 	registerFunction(eval, "chord", Function{
-		Description: `create a Chord from its string <a href="/docs/reference/notations/#chord">format</a>`,
+		Description: `create a Chord from its string <a href="/docs/reference/notations.md#chord">format</a>`,
 		Prefix:      "cho",
 		Template:    `chord('${1:note}')`,
 		Samples: `chord('c#5/m/1')
@@ -438,7 +438,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 
 	registerFunction(eval, "sequence", Function{
 		Title:       "Sequence creator",
-		Description: `create a Sequence using this <a href="/docs/reference/notations/#sequence">format</a>`,
+		Description: `create a Sequence using this <a href="/docs/reference/notations.md#sequence">format</a>`,
 		Prefix:      "se",
 		Template:    `sequence('${1:space-separated-notes}')`,
 		Samples: `sequence('c d e')
@@ -455,7 +455,7 @@ sequence('c (d e f) a =')`,
 
 	registerFunction(eval, "note", Function{
 		Title:       "Note creator",
-		Description: `create a Note using this <a href="/docs/reference/notations/#note">format</a>`,
+		Description: `create a Note using this <a href="/docs/reference/notations.md#note">format</a>`,
 		Prefix:      "not",
 		Template:    `note('${1:letter}')`,
 		Samples: `note('e')
@@ -471,7 +471,7 @@ note('2.e#--')`,
 
 	registerFunction(eval, "scale", Function{
 		Title:       "Scale creator",
-		Description: `create a Scale using this <a href="/docs/reference/notations/#scale">format</a>`,
+		Description: `create a Scale using this <a href="/docs/reference/notations.md#scale">format</a>`,
 		Prefix:      "sc",
 		Template:    `scale('${1:scale-syntax}')`,
 		IsCore:      true,
@@ -610,14 +610,6 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 		IsComposer:  true,
 		Samples:     `octave(1,sequence('c d')) // => C5 D5`,
 		Func: func(scalarOrVar any, playables ...any) any {
-			if scalarOrVar == nil {
-				notify.Panic(errors.New("missing octave offset parameter"))
-			}
-			_, isVar := scalarOrVar.(variable)
-			_, isInt := scalarOrVar.(int)
-			if !isVar && !isInt {
-				notify.Panic(fmt.Errorf("invalid octave offset parameter (%T) %v", scalarOrVar, scalarOrVar))
-			}
 			list := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -1065,10 +1057,9 @@ all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
 			return op.Merge{Target: s}
 		}})
 
-	registerFunction(eval, "if", Function{
+	registerFunction(eval, "when", Function{
 		Title:       "Conditional operator",
-		Alias:       "when",
-		Template:    `if(${1:condition},${2:then},${3:else})`,
+		Template:    `when(${1:condition},${2:then},${3:else})`,
 		Description: "Supports conditions with operators on numbers: <,<=,>,>=,!=,==",
 		Samples:     ``,
 		Func: func(c any, thenelse ...any) any {
@@ -1174,7 +1165,7 @@ loop(lp_pi)`,
 
 	registerFunction(eval, "tabs", Function{
 		Title:       "Create a bass tablature",
-		Description: `Create a tabs using this <a href="/docs/reference/notations/#tabs">format</a>`,
+		Description: `Create a tabs using this <a href="/docs/reference/notations.md#tabs">format</a>`,
 		Template:    `tabs($1:string)`,
 		Samples:     `bass = tabs('E e3 a2 a5 d5 a5 a3 e3 G24')`,
 		Func: func(notation string) any {

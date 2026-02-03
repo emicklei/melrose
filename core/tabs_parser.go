@@ -53,7 +53,7 @@ func (s *tabnoteSTM) accept(lit string) error {
 		// fraction or dotted
 		if lit == "." {
 			if s.dotted {
-				return fmt.Errorf("note duration already known, got:%s", lit)
+				return fmt.Errorf("duration already known, got:%s", lit)
 			}
 			s.dotted = true
 			return nil
@@ -71,17 +71,17 @@ func (s *tabnoteSTM) accept(lit string) error {
 		case "1":
 			f = 1
 		default:
-			return fmt.Errorf("invalid note fraction or illegal note name, got:%s", lit)
+			return fmt.Errorf("invalid fraction or illegal note name, got:%s", lit)
 		}
 		if s.fraction != 0.25 {
-			return fmt.Errorf("note fraction already known, got:%s", lit)
+			return fmt.Errorf("fraction already known, got:%s", lit)
 		}
 		s.fraction = f
 		return nil
 	} else {
 		// name is set
 		if strings.ContainsAny(lit, allowedNoteNames) {
-			return fmt.Errorf("note name already known, got:%s", lit)
+			return fmt.Errorf("name already known, got:%s", lit)
 		}
 		// velocity
 		if strings.ContainsAny(lit, "-o+") {
@@ -90,7 +90,7 @@ func (s *tabnoteSTM) accept(lit string) error {
 		}
 		// fret
 		if i, err := strconv.Atoi(lit); err != nil {
-			return fmt.Errorf("invalid note fret, unexpected:%s", lit)
+			return fmt.Errorf("invalid fret, unexpected:%s", lit)
 		} else {
 			s.fret = i
 		}
@@ -103,7 +103,7 @@ func (s *tabnoteSTM) currentNote() (TabNote, error) {
 	if len(s.velocity) > 0 {
 		vel = ParseVelocity(s.velocity)
 		if vel == -1 {
-			return TabNote{}, fmt.Errorf("invalid note dynamic, unexpected:%s", s.velocity)
+			return TabNote{}, fmt.Errorf("invalid dynamic, unexpected:%s", s.velocity)
 		}
 	}
 	return TabNote{

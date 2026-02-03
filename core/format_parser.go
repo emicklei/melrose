@@ -485,7 +485,7 @@ func (s *noteSTM) accept(lit string) error {
 		if strings.ContainsAny(lit, allowedNoteNames) {
 			// accidental b is allowed
 			if lit != "b" {
-				return fmt.Errorf("note name already known, got:%s", lit)
+				return fmt.Errorf("name already known, got:%s", lit)
 			}
 		}
 		// accidental

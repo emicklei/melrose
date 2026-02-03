@@ -28,9 +28,9 @@ func (i IfCondition) S() core.Sequence {
 
 func (i IfCondition) Storex() string {
 	if reflect.DeepEqual(i.Else, core.EmptySequence) {
-		return fmt.Sprintf("if(%s,%s)", core.Storex(i.Condition), core.Storex(i.Then))
+		return fmt.Sprintf("when(%s,%s)", core.Storex(i.Condition), core.Storex(i.Then))
 	}
-	return fmt.Sprintf("if(%s,%s,%s)", core.Storex(i.Condition), core.Storex(i.Then), core.Storex(i.Else))
+	return fmt.Sprintf("when(%s,%s,%s)", core.Storex(i.Condition), core.Storex(i.Then), core.Storex(i.Else))
 }
 
 // Replaced is part of Replaceable

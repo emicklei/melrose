@@ -15,14 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: libsound
-      run: sudo apt-get install libasound2-dev
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libasound2-dev
 
     - uses: actions/checkout@v4
 
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.23'
+        go-version: '1.24'
 
     - name: Build
       run: go build -v ./...

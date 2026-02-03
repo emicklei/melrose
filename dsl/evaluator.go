@@ -252,7 +252,6 @@ func (e *Evaluator) EvaluateExpression(entry string) (any, error) {
 	for _, each := range []string{"join", "repeat", "trim", "replace", "duration", "map"} {
 		options = append(options, expr.DisableBuiltin(each))
 	}
-	options = append(options, expr.DisableIfOperator())
 	env := map[string]any{}
 	for k, f := range e.funcs {
 		env[k] = f.Func
