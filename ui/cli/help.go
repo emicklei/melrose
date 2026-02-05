@@ -42,7 +42,11 @@ func showHelp(ctx core.Context, args []string) notify.Message {
 			}
 		}
 		if fun.Title != "" {
-			fmt.Fprintf(&b, "%s (alias:%s)\n----------\n", fun.Keyword, fun.Alias)
+			if fun.Alias == "" {
+				fmt.Fprintf(&b, "%s\n----------\n", fun.Keyword)
+			} else {
+				fmt.Fprintf(&b, "%s (or %q)\n----------\n", fun.Keyword, fun.Alias)
+			}
 			fmt.Fprintf(&b, "%s\n\n", fun.Description)
 			fmt.Fprintf(&b, "%s\n", fun.Template)
 			return notify.NewInfof("%s", b.String())

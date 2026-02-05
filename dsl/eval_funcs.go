@@ -437,6 +437,7 @@ l = loop(bpm(speedup),sequence('c e g'),next(speedup))`,
 	})
 
 	registerFunction(eval, "sequence", Function{
+		Alias:       "seq",
 		Title:       "Sequence creator",
 		Description: `create a Sequence using this <a href="/docs/reference/notations/#sequence">format</a>`,
 		Prefix:      "se",
@@ -530,7 +531,7 @@ scale('e_/m') // => E_ E G_ A_ B_ B D_5
 
 	registerFunction(eval, "random", Function{
 		Title:       "Random generator",
-		Description: "create a random integer generator. Use next() to generate a new integer",
+		Description: "create a random integer generator. Use next() to genera  te a new integer",
 		Prefix:      "ra",
 		Template:    `random(${1:from},${2:to})`,
 		Samples: `num = random(1,10)
@@ -838,38 +839,6 @@ fractionmap('. 8 2',sequence('c e g')) // => .C 8E 2G`,
 			return op.NewFractionMap(getHasValue(indices), s)
 		}})
 
-	// eval["input"] = Function{
-	// 	Title: "MIDI Input device",
-	// 	//Description:   "Look up an input device by name",
-	// 	ControlsAudio: true,
-	// 	Func: func(deviceName string, optionalChannel ...int) any {
-	// 		in, _ := ctx.Device().DefaultDeviceIDs()
-	// 		return control.NewChannelOnDevice(true, deviceName, -1, in)
-	// 	}}
-
-	// 	eval["onpress"] = Function{
-	// 		Title: "Computer keyboard key press",
-	// 		Description: `Use the key to trigger playing.
-	// If this key is pressed the playable will start.
-	// If pressed again, the play will stop.
-	// Remove the assignment using the value nil for the playable`,
-	// 		Template: `onpress(${1:key},${2:playable-or-evaluatable-or-nil})`,
-	// 		Samples: `loopA = loop(scale(2,'c'))
-	// onpress('a',loopA)`,
-	// 		ControlsAudio: true,
-	// 		Func: func(char string, playOrEval any) any {
-	// 			if len(char) == 0 {
-	// 				return notify.Panic(fmt.Errorf("key cannot be empty"))
-	// 			}
-	// 			// allow nil, playable and evaluatable
-	// 			if playOrEval == nil {
-	// 				// uninstall binding
-	// 				// TODO
-	// 				return nil
-	// 			}
-	// 			return nil
-	// 		}}
-
 	registerFunction(eval, "key", Function{
 		Title:       "MIDI Keyboard key",
 		Description: "Use the key to trigger the play of musical object",
@@ -1013,6 +982,7 @@ lp_cdef = loop(transpose(int1,sequence('c d e f')), next(int1))`,
 		}})
 
 	registerFunction(eval, "resequence", Function{
+		Alias:       "reseq",
 		Title:       "Sequence modifier",
 		Description: "creates a modifier of sequence notes by index (1-based)",
 		Prefix:      "resq",
