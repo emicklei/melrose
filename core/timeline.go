@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/emicklei/melrose/notify"
@@ -15,6 +16,7 @@ type Timeline struct {
 	protection sync.RWMutex
 	isPlaying  bool
 	resume     chan bool
+	length     int64
 }
 
 // NewTimeline creates a new Timeline.
@@ -42,15 +44,7 @@ var (
 
 // Len returns the current number of scheduled events.
 func (t *Timeline) Len() int64 {
-	t.protection.RLock()
-	defer t.protection.RUnlock()
-	var count int64
-	here := t.head
-	for here != nil {
-		here = here.next
-		count++
-	}
-	return count
+	return atomic.LoadInt64(&t.length)
 }
 
 // Play runs a loop to handle all the events in time. This is blocking.
@@ -65,24 +59,44 @@ func (t *Timeline) Play() {
 			<-t.resume
 			continue
 		}
+
 		now := time.Now()
-		for now.After(here.when) {
-			here.event.Handle(t, now)
 
-			t.protection.Lock()
-			t.head = t.head.next
-			here = t.head
-			t.protection.Unlock()
-
-			if here == nil {
-				break
-			}
+		// Batch extract events
+		t.protection.Lock()
+		batchHead := t.head
+		var batchTail *scheduledTimelineEvent
+		var count int64
+		here = t.head
+		for here != nil && !here.when.After(now) {
+			batchTail = here
+			here = here.next
+			count++
 		}
+		if count > 0 {
+			t.head = here
+			if t.head == nil {
+				t.tail = nil
+			}
+			batchTail.next = nil
+			atomic.AddInt64(&t.length, -count)
+		} else {
+			batchHead = nil
+		}
+		t.protection.Unlock()
+
+		// Process batch outside the lock
+		for batchHead != nil {
+			batchHead.event.Handle(t, now)
+			batchHead = batchHead.next
+		}
+
 		if here != nil {
+			now = time.Now() // update now after potentially long batch processing
 			untilNext := here.when.Sub(now)
 			if wait < untilNext {
 				time.Sleep(wait) // 1/16 note
-			} else {
+			} else if untilNext > 0 {
 				time.Sleep(untilNext) // < 1/16 note
 			}
 		}
@@ -98,6 +112,7 @@ func (t *Timeline) Reset() {
 	defer t.protection.Unlock()
 	t.head = nil
 	t.tail = nil
+	atomic.StoreInt64(&t.length, 0)
 }
 
 // Schedule adds an event for a given time
@@ -121,6 +136,7 @@ func (t *Timeline) schedule(event *scheduledTimelineEvent) {
 	if t.head == nil {
 		t.head = event
 		t.tail = event
+		atomic.AddInt64(&t.length, 1)
 		// before resume otherwise run loop will deadlock
 		t.protection.Unlock()
 		if t.isPlaying {
@@ -129,6 +145,7 @@ func (t *Timeline) schedule(event *scheduledTimelineEvent) {
 		return
 	}
 	defer t.protection.Unlock()
+	atomic.AddInt64(&t.length, 1)
 	if event.when.After(t.tail.when) {
 		// event is after tail, new tail
 		t.tail.next = event
