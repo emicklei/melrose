@@ -4,17 +4,16 @@ go 1.25.0
 
 require (
 	github.com/Try431/EasyMIDI v1.0.3
-	github.com/expr-lang/expr v1.17.7
+	github.com/expr-lang/expr v1.17.8
 	github.com/fogleman/gg v1.3.0
 	github.com/peterh/liner v1.2.2
-	gitlab.com/gomidi/midi/v2 v2.3.18
+	gitlab.com/gomidi/midi/v2 v2.3.24
 )
 
 require (
-	github.com/clipperhouse/stringish v0.1.1 // indirect
-	github.com/clipperhouse/uax29/v2 v2.5.0 // indirect
+	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/mattn/go-runewidth v0.0.19 // indirect
-	golang.org/x/image v0.38.0 // indirect
-	golang.org/x/sys v0.40.0 // indirect
+	github.com/mattn/go-runewidth v0.0.24 // indirect
+	golang.org/x/image v0.43.0 // indirect
+	golang.org/x/sys v0.46.0 // indirect
 )
