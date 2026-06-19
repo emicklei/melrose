@@ -53,6 +53,7 @@ Fraction can also be an exact float value between 0 and 1.
 	The first parameter controls the emphasis the note, e.g. + (mezzoforte,mf), -- (piano,p) or a velocity [0..127].
 	`,
 		Prefix:     "dy",
+		Alias:      "velocity",
 		IsComposer: true,
 		Template:   `dynamic(${1:emphasis},${2:object})`,
 		Samples: `dynamic('++',sequence('e f')) // => E++ F++
