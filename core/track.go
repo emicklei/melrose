@@ -8,6 +8,8 @@ import (
 	"github.com/emicklei/melrose/notify"
 )
 
+var _ Playable = (*Track)(nil)
+
 type Track struct {
 	Title   string
 	Channel int
@@ -84,6 +86,8 @@ func (s SequenceOnTrack) Storex() string {
 	return ""
 }
 
+var _ Playable = (*MultiTrack)(nil)
+
 type MultiTrack struct {
 	Tracks []HasValue
 }
@@ -107,7 +111,7 @@ func (m MultiTrack) Storex() string {
 }
 
 // Play is part of Playable
-func (m MultiTrack) Play(ctx Context, at time.Time) error {
+func (m MultiTrack) Play(ctx Context, at time.Time) time.Time {
 	// because all tracks must be synchronized, we first stop the beatmaster
 	// then schedule all tracks
 	// then start the beatmaster again.
@@ -118,11 +122,8 @@ func (m MultiTrack) Play(ctx Context, at time.Time) error {
 				ch := NewChannelSelector(seq, On(track.Channel))
 				ctx.Control().Plan(int64(bar-1), ch)
 			}
-		} else {
-			// TODO
-			notify.NewErrorf("not a track:%v", each)
 		}
 	}
 	ctx.Control().Start()
-	return nil
+	return at
 }
