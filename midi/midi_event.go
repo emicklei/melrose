@@ -2,6 +2,7 @@ package midi
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/emicklei/melrose/core"
@@ -11,6 +12,7 @@ import (
 
 type midiEvent struct {
 	echoString string
+	whichAry   [4]int64
 	which      []int64
 	onoff      int64
 	channel    int
@@ -20,13 +22,32 @@ type midiEvent struct {
 	mustHandle core.Condition
 }
 
-func (m midiEvent) NoteChangesDo(callback func(core.NoteChange)) {
+var midiEventPool = sync.Pool{
+	New: func() any {
+		return &midiEvent{}
+	},
+}
+
+func getMidiEvent() *midiEvent {
+	m := midiEventPool.Get().(*midiEvent)
+	m.echoString = ""
+	m.which = m.whichAry[:0]
+	m.mustHandle = nil
+	return m
+}
+
+func putMidiEvent(m *midiEvent) {
+	midiEventPool.Put(m)
+}
+
+func (m *midiEvent) NoteChangesDo(callback func(core.NoteChange)) {
 	for _, each := range m.which {
 		callback(core.NewNoteChange(m.onoff == noteOn, each, m.velocity))
 	}
 }
 
-func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
+func (m *midiEvent) Handle(tim *core.Timeline, when time.Time) {
+	defer putMidiEvent(m)
 	// TODO not sure if the noteOn check is correct
 	if m.mustHandle != nil && m.onoff == noteOn && !m.mustHandle() {
 		return
@@ -42,18 +63,13 @@ func (m midiEvent) Handle(tim *core.Timeline, when time.Time) {
 	}
 }
 
-func (m midiEvent) log(status int64, when time.Time) {
+func (m *midiEvent) log(status int64, when time.Time) {
 	onoff := " on"
 	if m.onoff == noteOff {
 		onoff = "off"
 	}
 	fmt.Fprintf(notify.Console.StandardOut, "%s dev=%d ch=%d %s=%d nrs=%v vel=%d seq='%s'\n",
 		when.Format("04:05.000"), m.device, m.channel, onoff, status, m.which, m.velocity, m.echoString)
-}
-
-func (m midiEvent) asNoteoff() midiEvent {
-	m.onoff = noteOff
-	return m
 }
 
 type restEvent struct {

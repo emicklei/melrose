@@ -114,13 +114,16 @@ func (d *OutputDevice) Play(condition core.Condition, seq core.Sequenceable, bpm
 		}
 		//  more than one note
 		if canCombineEvent(eachGroup) {
-			event := combinedMidiEvent(d.id, channel, eachGroup, d.stream)
+			onEvent, offEvent := combinedMidiEvents(d.id, channel, eachGroup, d.stream)
 			if d.echo {
-				event.echoString = core.StringFromNoteGroup(eachGroup)
+				echoStr := core.StringFromNoteGroup(eachGroup)
+				onEvent.echoString = echoStr
+				offEvent.echoString = echoStr
 			}
 			actualDuration := durationOfGroup(eachGroup, wholeNoteDuration)
-			event.mustHandle = condition
-			moment = scheduleOnOffEvents(d, event, actualDuration, moment)
+			onEvent.mustHandle = condition
+			offEvent.mustHandle = condition
+			moment = scheduleOnOffEvents(d, onEvent, offEvent, actualDuration, moment)
 			continue
 		}
 		//  not combinable group of more than one note
@@ -158,44 +161,44 @@ func scheduleOneNote(device *OutputDevice, condition core.Condition, channel int
 		actualDuration := time.Duration(float32(whole) * note.DurationFactor())
 		return moment.Add(actualDuration)
 	}
+
+	onEvent := getMidiEvent()
+	onEvent.onoff = noteOn
+	onEvent.device = device.id
+	onEvent.channel = channel
+	onEvent.velocity = int64(note.Velocity)
+	onEvent.out = device.stream
+	onEvent.mustHandle = condition
+	onEvent.which = append(onEvent.which, int64(note.MIDI()))
+	if device.echo {
+		onEvent.echoString = note.String()
+	}
+
+	offEvent := getMidiEvent()
+	offEvent.onoff = noteOff
+	offEvent.device = device.id
+	offEvent.channel = channel
+	offEvent.velocity = int64(note.Velocity)
+	offEvent.out = device.stream
+	offEvent.mustHandle = condition
+	offEvent.which = append(offEvent.which, int64(note.MIDI()))
+	if device.echo {
+		offEvent.echoString = note.String()
+	}
+
 	// midi variable length note?
 	if fixed, ok := note.NonFractionBasedDuration(); ok {
-		event := midiEvent{
-			which:      []int64{int64(note.MIDI())},
-			onoff:      noteOn,
-			device:     device.id,
-			channel:    channel,
-			velocity:   int64(note.Velocity),
-			out:        device.stream,
-			mustHandle: condition,
-		}
-		if device.echo {
-			event.echoString = note.String()
-		}
-		return scheduleOnOffEvents(device, event, fixed, moment)
+		return scheduleOnOffEvents(device, onEvent, offEvent, fixed, moment)
 	}
-	// normal note
-	event := midiEvent{
-		which:      []int64{int64(note.MIDI())},
-		onoff:      noteOn,
-		device:     device.id,
-		channel:    channel,
-		velocity:   int64(note.Velocity),
-		out:        device.stream,
-		mustHandle: condition,
-	}
-	if device.echo {
-		event.echoString = note.String()
-	}
-	actualDuration := time.Duration(float32(whole) * note.DurationFactor())
-	return scheduleOnOffEvents(device, event, actualDuration, moment)
 
+	actualDuration := time.Duration(float32(whole) * note.DurationFactor())
+	return scheduleOnOffEvents(device, onEvent, offEvent, actualDuration, moment)
 }
 
-func scheduleOnOffEvents(device *OutputDevice, event midiEvent, duration time.Duration, at time.Time) time.Time {
-	device.timeline.Schedule(event, at)
+func scheduleOnOffEvents(device *OutputDevice, onEvent *midiEvent, offEvent *midiEvent, duration time.Duration, at time.Time) time.Time {
+	device.timeline.Schedule(onEvent, at)
 	moment := at.Add(duration)
-	device.timeline.Schedule(event.asNoteoff(), moment)
+	device.timeline.Schedule(offEvent, moment)
 	return moment
 }
 
@@ -214,7 +217,7 @@ func canCombineEvent(notes []core.Note) bool {
 }
 
 // Pre: notes not empty
-func combinedMidiEvent(deviceID int, channel int, notes []core.Note, stream transport.MIDIOut) midiEvent {
+func combinedMidiEvents(deviceID int, channel int, notes []core.Note, stream transport.MIDIOut) (*midiEvent, *midiEvent) {
 	// first note makes fraction and velocity
 	velocity := notes[0].Velocity
 	if velocity > 127 {
@@ -223,16 +226,26 @@ func combinedMidiEvent(deviceID int, channel int, notes []core.Note, stream tran
 	if velocity < 1 {
 		velocity = core.Normal
 	}
-	nrs := []int64{}
+
+	onEvent := getMidiEvent()
+	onEvent.onoff = noteOn
+	onEvent.device = deviceID
+	onEvent.channel = channel
+	onEvent.velocity = int64(velocity)
+	onEvent.out = stream
+
+	offEvent := getMidiEvent()
+	offEvent.onoff = noteOff
+	offEvent.device = deviceID
+	offEvent.channel = channel
+	offEvent.velocity = int64(velocity)
+	offEvent.out = stream
+
 	for _, each := range notes {
-		nrs = append(nrs, int64(each.MIDI()))
+		n := int64(each.MIDI())
+		onEvent.which = append(onEvent.which, n)
+		offEvent.which = append(offEvent.which, n)
 	}
-	return midiEvent{
-		which:    nrs,
-		onoff:    noteOn,
-		device:   deviceID,
-		channel:  channel,
-		velocity: int64(velocity),
-		out:      stream,
-	}
+
+	return onEvent, offEvent
 }
