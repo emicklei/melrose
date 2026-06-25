@@ -13,8 +13,10 @@ const (
 	noteOn        int64 = 0x90 // 10010000 , 144
 	noteOff       int64 = 0x80 // 10000000 , 128
 	controlChange int64 = 0xB0 // 10110000 , 176
-	noteAllOff    int64 = 0x78 // 01111000 , 120  (not 123 because sustain)
-	sustainPedal  int64 = 0x40
+	allSoundOff   int64 = 0x78 // CC120
+	allNotesOff   int64 = 0x7B // CC123
+	sustainPedal  int64 = 0x40 // CC64
+	sustainOff    int64 = 0x00
 )
 
 type Message struct {

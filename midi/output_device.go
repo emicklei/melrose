@@ -38,16 +38,49 @@ func (d *OutputDevice) Reset() {
 			notify.Warnf("reset failed for device:%v", d.id)
 		}
 	}()
+	// Stop the timeline goroutine first, then clear the queue
+	d.timeline.Stop()
 	d.timeline.Reset()
+	// Give timeline time to stop processing any pending events
+	time.Sleep(10 * time.Millisecond)
+
 	if notify.IsDebug() {
 		notify.Debugf("device.%d: sending Note OFF to all 16 channels", d.id)
 	}
 	if d.stream != nil {
-		// send note off all to all channels for current device
+		// Send a robust panic sequence for each channel.
+		// Some devices respond better to CC123, others to CC120, and sustained notes
+		// require a sustain-off first.
 		for c := 1; c <= 16; c++ {
-			if err := d.stream.WriteShort(controlChange|int64(c-1), noteAllOff, 0); err != nil {
+			status := controlChange | int64(c-1)
+			notify.Debugf("reset: sending off events to [channel %d]", c)
+			if err := d.stream.WriteShort(status, sustainPedal, sustainOff); err != nil {
 				notify.Console.Errorf("device.%d: midi write error:%v", d.id, err)
 			}
+			if err := d.stream.WriteShort(status, allNotesOff, 0); err != nil {
+				notify.Console.Errorf("device.%d: midi write error:%v", d.id, err)
+			}
+			if err := d.stream.WriteShort(status, allSoundOff, 0); err != nil {
+				notify.Console.Errorf("device.%d: midi write error:%v", d.id, err)
+			}
+			// Small delay between channels to allow receiver to process messages.
+			time.Sleep(5 * time.Millisecond)
+		}
+
+		// Send explicit note-off messages for all notes on all channels.
+		// This is more direct than relying on CC123/CC120 alone and handles
+		// devices/DAWs that may not respond to control changes during shutdown.
+		noteOff := int64(0x80) // MIDI Note Off status
+		for c := 1; c <= 16; c++ {
+			status := noteOff | int64(c-1)
+			notify.Debugf("reset: sending explicit note-off for all notes on channel %d", c)
+			for n := 0; n <= 127; n++ {
+				if err := d.stream.WriteShort(status, int64(n), 0); err != nil {
+					notify.Console.Errorf("device.%d: note-off write error:%v", d.id, err)
+				}
+			}
+			// Small delay between channels
+			time.Sleep(5 * time.Millisecond)
 		}
 	}
 }

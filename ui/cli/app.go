@@ -42,7 +42,7 @@ func StartREPL(ctx core.Context) {
 	// start REPL
 	line := liner.NewLiner()
 	defer line.Close()
-	defer tearDown(line, ctx)
+	defer tearDown(line)
 	// TODO liner catches control+c
 	//setupCloseHandler(line)
 	ctx.Device().Report()
@@ -50,9 +50,7 @@ func StartREPL(ctx core.Context) {
 	repl(line, ctx)
 }
 
-func tearDown(line *liner.State, ctx core.Context) {
-	ctx.Control().Reset()
-	ctx.Device().Reset()
+func tearDown(line *liner.State) {
 	if f, err := os.Create(history); err != nil {
 		notify.Print(notify.NewErrorf("error writing history file:%v", err))
 	} else {
@@ -77,7 +75,6 @@ func repl(line *liner.State, ctx core.Context) {
 		entry, err := line.Prompt(notify.Prompt())
 		if err != nil {
 			notify.Print(notify.NewError(err))
-			tearDown(line, ctx)
 			goto exit
 		}
 	entry:
@@ -134,13 +131,13 @@ exit:
 // setupCloseHandler creates a 'listener' on a new goroutine which will notify the
 // program if it receives an interrupt from the OS. We then handle this by calling
 // our clean up procedure and exiting the program.
-func setupCloseHandler(line *liner.State, ctx core.Context) {
+func setupCloseHandler(line *liner.State) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-c
 		fmt.Println("\r- Ctrl+C pressed in Terminal")
-		tearDown(line, ctx)
+		tearDown(line)
 		os.Exit(0)
 	}()
 }

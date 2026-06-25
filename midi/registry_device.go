@@ -47,10 +47,21 @@ func (r *DeviceRegistry) DefaultDeviceIDs() (inputDeviceID, outputDeviceID int) 
 }
 
 func (r *DeviceRegistry) Reset() {
+	r.mutex.RLock()
+	outs := make([]*OutputDevice, 0, len(r.out))
 	for _, each := range r.out {
+		outs = append(outs, each)
+	}
+	ins := make([]*InputDevice, 0, len(r.in))
+	for _, each := range r.in {
+		ins = append(ins, each)
+	}
+	r.mutex.RUnlock()
+
+	for _, each := range outs {
 		each.Reset()
 	}
-	for _, each := range r.in {
+	for _, each := range ins {
 		each.stopListener()
 	}
 }
@@ -178,7 +189,14 @@ func (r *DeviceRegistry) initInputs() error {
 }
 
 func (r *DeviceRegistry) Close() error {
+	r.mutex.RLock()
+	ins := make([]*InputDevice, 0, len(r.in))
 	for _, each := range r.in {
+		ins = append(ins, each)
+	}
+	r.mutex.RUnlock()
+
+	for _, each := range ins {
 		each.stopListener()
 	}
 	return r.streamRegistry.close()

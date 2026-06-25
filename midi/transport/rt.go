@@ -140,10 +140,8 @@ func (l *RtListener) handleRtEvent(m rtmidi.MIDIIn, data []byte, delta float64) 
 func (l *RtListener) Stop() {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
-	if l.listening {
-		if err := l.midiIn.CancelCallback(); err != nil {
-			notify.Warnf("failed to cancel listener callback")
-		}
-	}
+	// Keep the native callback installed and only gate delivery in handleRtEvent.
+	// Calling CancelCallback can race with in-flight native callbacks and cause
+	// a nil dereference inside the upstream rtmidi binding.
 	l.listening = false
 }

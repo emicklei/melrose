@@ -57,13 +57,17 @@ func (t *Timeline) Len() int64 {
 func (t *Timeline) Play() {
 	t.resume = make(chan bool)
 	t.isPlaying = true
-	for {
+	for t.isPlaying {
 		t.protection.RLock()
 		here := t.head
 		t.protection.RUnlock()
 		if here == nil {
-			<-t.resume
-			continue
+			// Wait for a signal (new event or shutdown signal)
+			select {
+			case <-t.resume:
+				// Continue to check isPlaying at top of loop
+				continue
+			}
 		}
 		now := time.Now()
 		for now.After(here.when) {
@@ -98,6 +102,25 @@ func (t *Timeline) Reset() {
 	defer t.protection.Unlock()
 	t.head = nil
 	t.tail = nil
+}
+
+// Stop signals the Play loop to exit gracefully.
+// Should be called during shutdown to clean up the timeline goroutine.
+func (t *Timeline) Stop() {
+	t.protection.Lock()
+	wasPlaying := t.isPlaying
+	t.isPlaying = false
+	t.protection.Unlock()
+
+	// If we were playing, wake up the goroutine so it can check isPlaying and exit
+	if wasPlaying && t.resume != nil {
+		select {
+		case t.resume <- true:
+			// Signal sent successfully
+		case <-time.After(100 * time.Millisecond):
+			// Timeout in case goroutine is already stopped
+		}
+	}
 }
 
 // Schedule adds an event for a given time
