@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/emicklei/melrose/core"
 
@@ -31,8 +32,13 @@ func ExecuteFile(ctx core.Context, fileName string) error {
 		return err
 	}
 	eval := dsl.NewEvaluator(ctx)
-	if _, err := eval.RecoveringEvaluateProgram(string(content)); err != nil {
+	lastResult, err := eval.RecoveringEvaluateProgram(string(content))
+	if err != nil {
 		notify.Print(notify.NewErrorf("error executing file:%v", err))
+	}
+	// check whether the last result is Playable
+	if playable, ok := lastResult.(core.Playable); ok {
+		playable.Play(ctx, time.Now())
 	}
 	return nil
 }

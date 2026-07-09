@@ -127,7 +127,7 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (any, error) {
 	if canStop, ok := r.(core.Stoppable); ok {
 		varName := e.newSuggestedVariableName(canStop)
 		if len(varName) == 0 {
-			return nil, fmt.Errorf("this object must assigned to variable name, use e.g. var = %s", canStop.(core.Storable).Storex())
+			return nil, fmt.Errorf("this object must be assigned to variable name, use e.g. var = %s", canStop.(core.Storable).Storex())
 		}
 		return e.handleAssignment(varName, r)
 	}
@@ -143,13 +143,14 @@ func (e *Evaluator) evaluateCleanStatement(entry string) (any, error) {
 }
 
 // The last expression returned a Stoppable and was not assigned to a variable.
-// Generate a name based on the combination of the file and the line (if both given).
+// Generate a name based on the combination of the file and the line.
+// Fallback to "_var" if the line number is not available.
 func (e *Evaluator) newSuggestedVariableName(stoppable core.Stoppable) string {
 	var line int
 	if v, ok := e.context.Environment().Load(core.EditorLineEnd); ok {
 		line = v.(int)
 	} else {
-		return ""
+		return "_var"
 	}
 	return fmt.Sprintf("%s%d", shortTypeName(stoppable), line)
 }
