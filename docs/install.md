@@ -17,6 +17,8 @@ Search and install the extension from the editor or go to the [Marketplace publi
 
 You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
 
+The minimum requirement is Go 1.24.2. On a Mac, macOS 11 Big Sur or higher is required.
+
 ## Mac OSX
 
 	go install github.com/emicklei/melrose/cmd/melrose@latest

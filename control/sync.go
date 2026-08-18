@@ -30,9 +30,11 @@ func (s SyncPlay) Storex() string {
 	return b.String()
 }
 
-// Play implements Playable
-func (s SyncPlay) Play(ctx core.Context, at time.Time) error {
-	return s.Evaluate(ctx)
+var _ core.Playable = SyncPlay{}
+
+func (s SyncPlay) Play(ctx core.Context, at time.Time) time.Time {
+	s.Evaluate(ctx)
+	return time.Now()
 }
 
 // Stop implements Stoppeable
