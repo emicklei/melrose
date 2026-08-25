@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/emicklei/melrose/control"
 	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/dsl"
@@ -39,6 +40,11 @@ func ExecuteFile(ctx core.Context, fileName string) error {
 	// check whether the last result is Playable
 	if playable, ok := lastResult.(core.Playable); ok {
 		playable.Play(ctx, time.Now())
+	}
+	// it is not Playable, but if it is Sequenceable then we can play it as a sequence
+	if sequenceable, ok := lastResult.(core.Sequenceable); ok {
+		play := control.NewPlay(ctx, []core.Sequenceable{sequenceable}, false)
+		play.Play(ctx, time.Now())
 	}
 	return nil
 }
