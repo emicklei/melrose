@@ -12,10 +12,12 @@ You can use the following flags to change its behavior.
 
     -http <address>
         address on which to listen for HTTP requests (default ":8118")
-    -tunnel <subdomain>
-        offers a public subdomain.loca.lt address to server HTTP request
-    -v
+    -d
         verbose logging
+    -log
+        log file location
+    -play
+        load all statements from a file and play the result of the last expression
 
 ### CLI control
 

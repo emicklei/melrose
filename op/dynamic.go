@@ -3,6 +3,7 @@ package op
 import (
 	"bytes"
 	"fmt"
+	"log"
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
@@ -27,8 +28,8 @@ func (d Dynamic) S() core.Sequence {
 	for _, eachGroup := range source {
 		mappedGroup := []core.Note{}
 		for _, eachNote := range eachGroup {
-			// emphasis is a string or int
-			e := d.Emphasis.Value()
+			// emphasis is a string or int or a HasValue that evaluates to a string or int
+			e := core.LiteralValue(d.Emphasis)
 			n := eachNote
 			if s, ok := e.(string); ok {
 				if core.ParseVelocity(s) == -1 {
@@ -38,6 +39,8 @@ func (d Dynamic) S() core.Sequence {
 				n = eachNote.WithDynamic(s)
 			} else if v, ok := e.(int); ok {
 				n = eachNote.WithVelocity(v)
+			} else {
+				log.Printf("unknown velocity:%#v\n", e)
 			}
 			mappedGroup = append(mappedGroup, n)
 		}

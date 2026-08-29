@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	BuildTag = "dev"
-	fileName = flag.String("file", "", "script file to execute")
+	BuildTag     = "dev"
+	playFilename = flag.String("play", "", "script file to play")
 )
 
 func main() {
@@ -22,8 +22,8 @@ func main() {
 	}
 	defer system.TearDown(ctx)
 	// if a file is specified, execute it a
-	if *fileName != "" {
-		if err := cli.ExecuteFile(ctx, *fileName); err != nil {
+	if *playFilename != "" {
+		if err := cli.ExecuteFile(ctx, *playFilename); err != nil {
 			log.Fatalln(err)
 		}
 		// wait for the user to press enter before exiting
