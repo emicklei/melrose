@@ -23,6 +23,12 @@ type Transporter interface {
 	NewMIDIOut(id int) (MIDIOut, error)
 	NewMIDIIn(id int) (MIDIIn, error)
 	NewMIDIListener(MIDIIn) MIDIListener
+	InitInputsOutputs() (ins []PortAndName, outs []PortAndName, err error)
+}
+
+type PortAndName struct {
+	Port int
+	Name string
 }
 
 type MIDIOut interface {

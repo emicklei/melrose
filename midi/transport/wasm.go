@@ -46,6 +46,9 @@ func (t WASMmidiTransporter) NewMIDIListener(m MIDIIn) MIDIListener {
 		mListener: newMListener(),
 	}
 }
+func (t WASMmidiTransporter) InitInputsOutputs() (ins []PortAndName, outs []PortAndName, err error) {
+	return ins, outs, nil
+}
 
 type WASMMidiOut struct {
 	id int
