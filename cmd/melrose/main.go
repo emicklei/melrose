@@ -13,6 +13,7 @@ import (
 var (
 	BuildTag     = "dev"
 	playFilename = flag.String("play", "", "script file to play")
+	loadFilename = flag.String("load", "", "script file to load")
 )
 
 func main() {
@@ -30,6 +31,11 @@ func main() {
 		fmt.Println("Press Enter to exit...")
 		fmt.Scanln()
 		return
+	}
+	if *loadFilename != "" {
+		if err := cli.LoadFile(ctx, *loadFilename); err != nil {
+			log.Fatalln(err)
+		}
 	}
 	// start the server and the REPL
 	server.Start(ctx)

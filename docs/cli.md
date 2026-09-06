@@ -18,6 +18,8 @@ You can use the following flags to change its behavior.
         log file location
     -play
         load all statements from a file and play the result of the last expression
+    -load
+        load all statements from a file
 
 ### CLI control
 

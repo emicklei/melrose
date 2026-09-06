@@ -22,6 +22,24 @@ var (
 	history = ".melrose.history"
 )
 
+func LoadFile(ctx core.Context, fileName string) error {
+	if _, err := os.Stat(fileName); os.IsNotExist(err) {
+		notify.Print(notify.NewErrorf("file does not exist:%v", fileName))
+		return err
+	}
+	content, err := os.ReadFile(fileName)
+	if err != nil {
+		notify.Print(notify.NewErrorf("error reading file:%v", err))
+		return err
+	}
+	eval := dsl.NewEvaluator(ctx)
+	_, err = eval.RecoveringEvaluateProgram(string(content))
+	if err != nil {
+		notify.Print(notify.NewErrorf("error loading file:%v", err))
+	}
+	return err
+}
+
 func ExecuteFile(ctx core.Context, fileName string) error {
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
 		notify.Print(notify.NewErrorf("file does not exist:%v", fileName))
