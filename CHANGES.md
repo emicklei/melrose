@@ -2,10 +2,10 @@
 
 ## [v1.0.0-beta*] - 
 
+- add "load", "play" and "check" subcommands
 - make any sequenceable also playable
 - improve shutdown for open notes
 - stay on go 1.24 for older Macs
-- add "file" flag to play directly from file
 - `if ` is aliased by `when`
 - add optional repeat parameter in scale, scale('16a2',2)
 - add `melrose-mcp` server mention

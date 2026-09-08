@@ -16,10 +16,19 @@ You can use the following flags to change its behavior.
         verbose logging
     -log
         log file location
-    -play
+
+### program subcommands
+
+    melrose play <file>
         load all statements from a file and play the result of the last expression
-    -load
+    melrose load <file>
         load all statements from a file
+    melrose check [file]
+        validate a Melrose source file; if no file is given, read from standard input
+
+Program flags can be used before or after a subcommand. For example:
+
+    melrose play somefile.mel -d
 
 ### CLI control
 
