@@ -4,6 +4,8 @@
 package transport
 
 import (
+	"fmt"
+
 	"github.com/emicklei/melrose/notify"
 	"gitlab.com/gomidi/midi/v2/drivers/rtmididrv/imported/rtmidi"
 )
@@ -58,6 +60,58 @@ func (t RtmidiTransporter) NewMIDIIn(id int) (MIDIIn, error) {
 }
 func (t RtmidiTransporter) NewMIDIListener(in MIDIIn) MIDIListener {
 	return newRtListener(in.(RtmidiIn).in)
+}
+
+func (t RtmidiTransporter) InitInputsOutputs() (ins []PortAndName, outs []PortAndName, err error) {
+	outs, err = t.initOutputs()
+	if err != nil {
+		return nil, nil, err
+	}
+	ins, err = t.initInputs()
+	if err != nil {
+		return nil, nil, err
+	}
+	return ins, outs, nil
+}
+func (r RtmidiTransporter) initOutputs() (outs []PortAndName, err error) {
+	out, err := rtmidi.NewMIDIOutDefault()
+	if err != nil {
+		return nil, fmt.Errorf("can't open default MIDI out: %w", err)
+	}
+	defer out.Close()
+	ports, err := out.PortCount()
+	if err != nil {
+		return nil, fmt.Errorf("can't get number of output ports: %w", err)
+	}
+
+	for each := range ports {
+		name, err := out.PortName(each)
+		if err != nil {
+			name = ""
+		}
+		outs = append(outs, PortAndName{Port: each, Name: name})
+	}
+	return outs, nil
+}
+
+func (r RtmidiTransporter) initInputs() (ins []PortAndName, err error) {
+	in, err := rtmidi.NewMIDIInDefault()
+	if err != nil {
+		return nil, fmt.Errorf("can't open default MIDI in: %w", err)
+	}
+	defer in.Close()
+	ports, err := in.PortCount()
+	if err != nil {
+		return nil, fmt.Errorf("can't get number of input ports: %w", err)
+	}
+	for each := range ports {
+		name, err := in.PortName(each)
+		if err != nil {
+			name = ""
+		}
+		ins = append(ins, PortAndName{Port: each, Name: name})
+	}
+	return ins, nil
 }
 
 type RtmidiOut struct {

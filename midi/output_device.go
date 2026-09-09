@@ -41,6 +41,8 @@ func (d *OutputDevice) Reset() {
 	// Stop the timeline goroutine first, then clear the queue
 	d.timeline.Stop()
 	d.timeline.Reset()
+	defer d.Start()
+
 	// Give timeline time to stop processing any pending events
 	time.Sleep(10 * time.Millisecond)
 

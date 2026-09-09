@@ -10,7 +10,6 @@ import (
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
-	"gitlab.com/gomidi/midi/v2/drivers/rtmididrv/imported/rtmidi"
 )
 
 var _ core.AudioDevice = (*DeviceRegistry)(nil)
@@ -115,11 +114,23 @@ func (r *DeviceRegistry) Input(id int) (*InputDevice, error) {
 func (r *DeviceRegistry) init() error {
 	r.defaultOutputID = r.streamRegistry.transport.DefaultOutputDeviceID()
 	r.defaultInputID = r.streamRegistry.transport.DefaultInputDeviceID()
-	if err := r.initInputs(); err != nil {
+	ins, outs, err := r.streamRegistry.transport.InitInputsOutputs()
+	if err != nil {
 		return err
 	}
-	if err := r.initOutputs(); err != nil {
-		return err
+	for _, each := range ins {
+		device, err := r.Input(each.Port)
+		if err != nil {
+			continue
+		}
+		device.name = each.Name
+	}
+	for _, each := range outs {
+		device, err := r.Output(each.Port)
+		if err != nil {
+			continue
+		}
+		device.name = each.Name
 	}
 	return nil
 }
@@ -138,54 +149,6 @@ func (r *DeviceRegistry) Report() {
 		v := r.out[k]
 		fmt.Printf("output device %d (:m o %d) = %s\n", k, k, v.name)
 	}
-}
-
-func (r *DeviceRegistry) initOutputs() error {
-	out, err := rtmidi.NewMIDIOutDefault()
-	if err != nil {
-		return fmt.Errorf("can't open default MIDI out: %w", err)
-	}
-	defer out.Close()
-	ports, err := out.PortCount()
-	if err != nil {
-		return fmt.Errorf("can't get number of output ports: %w", err)
-	}
-	for each := range ports {
-		device, err := r.Output(each)
-		if err != nil {
-			continue
-		}
-		name, err := out.PortName(each)
-		if err != nil {
-			name = ""
-		}
-		device.name = name
-	}
-	return nil
-}
-
-func (r *DeviceRegistry) initInputs() error {
-	in, err := rtmidi.NewMIDIInDefault()
-	if err != nil {
-		return fmt.Errorf("can't open default MIDI in: %w", err)
-	}
-	defer in.Close()
-	ports, err := in.PortCount()
-	if err != nil {
-		return fmt.Errorf("can't get number of input ports: %w", err)
-	}
-	for each := range ports {
-		device, err := r.Input(each)
-		if err != nil {
-			continue
-		}
-		name, err := in.PortName(each)
-		if err != nil {
-			name = ""
-		}
-		device.name = name
-	}
-	return nil
 }
 
 func (r *DeviceRegistry) Close() error {
