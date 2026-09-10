@@ -9,7 +9,7 @@ The API is documented in `openapi.yaml` which can be [viewed](https://editor-nex
 
 ### example
 
-    curl -d "note('c')" http://localhost:8118/v1/statements?action=play
+    curl -d "note('c')" "http://localhost:8118/v1/statements?action=play"
 
 ### 200 OK
 
@@ -18,8 +18,10 @@ If the request was successful then the response looks like:
     {
         "type": "core.Note",
         "is-error": false,
+        "stoppable": false,
         "message": "note('C')",
         "file": "",
-        "line": 0,
-        "column": 0
+        "line": 1,
+        "column": 0,
+        "object": null
     }

@@ -140,8 +140,8 @@ func (r *DeviceRegistry) printInfoVerbose() {
 	fmt.Println("set('midi.in', <device-id>)              --- change the default MIDI input device id (or use e.g. \":m i 1\")")
 	fmt.Println("set('midi.out',<device-id>)              --- change the default MIDI output device id (or use e.g. \":m o 1\")")
 	fmt.Println("set('midi.out.channel',<device-id>,<nr>) --- change the default MIDI channel for an output device id")
-	fmt.Println(":e i <device-id>                         --- toggle printing the MIDI notes from input device id")
-	fmt.Println(":e o <device-id>                         --- toggle printing the MIDI notes to output device id")
+	fmt.Println(":e i <device-id>                         --- toggle echoing the MIDI notes from input device id")
+	fmt.Println(":e o <device-id>                         --- toggle echoing the MIDI notes to output device id")
 }
 
 func (r *DeviceRegistry) toggleEchoNotesForDevice(isInput bool, deviceID int) {
