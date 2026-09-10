@@ -19,8 +19,13 @@ For the best experience, use the `melrōse` tool together with the Visual Studio
 
 See also [Blog post](http://ernestmicklei.com/melrose/introduction_melrose/)
 
+## Web
+
+See [Melrōse Playground](https://play.melrōse.org) to start writing programs directly in the browser and connect to a local running MIDI receiver, e.g. Apple Garageband.
+
 ## Install
 
+To have a full experience of the tool in which you can work with multiple devices and files, you can install it locally on our machine.
 See [Build instructions](docs/install.md).
 
 ## Usage
