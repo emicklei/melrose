@@ -7,6 +7,7 @@ import (
 	"github.com/emicklei/melrose/api"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
+	"github.com/emicklei/melrose/ui/web"
 )
 
 // LanguageServer can execute DSL statements received over HTTP
@@ -29,6 +30,7 @@ func (l *LanguageServer) Start() error {
 	http.HandleFunc("/v1/notes", l.notesPageHandler)
 	http.HandleFunc("/v1/pianoroll", l.pianorollImageHandler)
 	http.HandleFunc("/version", l.versionHandler)
+	http.Handle("/", http.FileServer(http.FS(web.Assets)))
 	return http.ListenAndServe(l.address, nil)
 }
 
@@ -41,5 +43,5 @@ func Start(ctx core.Context) {
 		go ls.Start()
 	} else {
 		notify.Warnf("empty http flag, skip starting HTTP server")
-	} 
-} 
+	}
+}

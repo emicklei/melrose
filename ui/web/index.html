@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Melrōse</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" data-name="vs/editor/editor.main"
+        href="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/editor/editor.main.css" />
+</head>
+
+<body>
+    <header>
+        <span class="brand">Melrōse</span>
+        <label for="endpoint">API</label>
+        <input id="endpoint" type="text" spellcheck="false" value="http://localhost:8118" />
+
+        <button id="btn-eval" title="Cmd/Ctrl + E">Eval</button>
+        <button id="btn-play" title="Cmd/Ctrl + 3">Play</button>
+        <button id="btn-stop" title="Cmd/Ctrl + 5">Stop</button>
+        <button id="btn-clear" title="Clear the output">Clear</button>
+        <span class="spacer"></span>
+        <span id="version" class="version">connecting&hellip;</span>
+    </header>
+    <main>
+        <div id="editor"></div>
+        <div id="output" aria-live="polite"></div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

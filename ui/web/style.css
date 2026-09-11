@@ -1,0 +1,116 @@
+:root {
+    --bg: #1e1e1e;
+    --bar: #252526;
+    --fg: #d4d4d4;
+    --line: #3c3c3c;
+    --accent: #4ec9b0;
+    --error: #f48771;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 13px;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: var(--bar);
+    border-bottom: 1px solid var(--line);
+}
+
+.brand {
+    font-weight: 600;
+    color: var(--accent);
+    margin-right: 8px;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.version {
+    opacity: .7;
+    font-family: monospace;
+}
+
+header label {
+    opacity: .7;
+}
+
+header input {
+    background: #3c3c3c;
+    border: 1px solid var(--line);
+    color: var(--fg);
+    padding: 3px 6px;
+    border-radius: 3px;
+    width: 190px;
+    font-family: monospace;
+}
+
+header button {
+    background: #0e639c;
+    border: none;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+header button:hover {
+    background: #1177bb;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#editor {
+    flex: 1;
+    min-height: 0;
+}
+
+#output {
+    height: 30%;
+    min-height: 90px;
+    overflow-y: auto;
+    border-top: 1px solid var(--line);
+    background: #181818;
+    padding: 6px 10px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+#output .entry {
+    border-bottom: 1px solid #262626;
+    padding: 2px 0;
+}
+
+#output .action {
+    color: var(--accent);
+    margin-right: 6px;
+}
+
+#output .error {
+    color: var(--error);
+}
