@@ -31,7 +31,7 @@ func (r *Recording) GetTargetFrom(other *Recording) {
 	r.variableName = other.variableName
 }
 
-func (r *Recording) Play(ctx core.Context, at time.Time) time.Time {
+func (r *Recording) Play(ctx core.Context, while core.Condition, at time.Time) time.Time {
 	notify.Debugf("start recording...")
 	// flush
 	r.timeline.Reset()

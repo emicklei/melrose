@@ -24,14 +24,10 @@ func NewPlay(ctx core.Context, list []core.Sequenceable, playInSync bool) Play {
 }
 
 // Play is part of core.Playable
-func (p Play) Play(ctx core.Context, at time.Time) time.Time {
-	cond := core.NoCondition
-	if with, ok := ctx.(core.Conditional); ok {
-		cond = with.Condition()
-	}
+func (p Play) Play(ctx core.Context, while core.Condition, at time.Time) time.Time {
 	end := at
 	for _, each := range p.target {
-		end = p.ctx.Device().Play(cond, each, p.ctx.Control().BPM(), at)
+		end = p.ctx.Device().Play(while, each, p.ctx.Control().BPM(), at)
 		if !p.sync {
 			// play after each other
 			at = end

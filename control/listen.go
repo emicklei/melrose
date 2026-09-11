@@ -45,7 +45,7 @@ func (l *Listen) Target() core.HasValue { return l.callback }
 func (l *Listen) SetTarget(c core.HasValue) { l.callback = c }
 
 // Play is part of core.Playable
-func (l *Listen) Play(ctx core.Context, at time.Time) time.Time {
+func (l *Listen) Play(ctx core.Context, while core.Condition, at time.Time) time.Time {
 	now := time.Now() // actually forever
 	if l.isRunning {
 		return now
@@ -119,7 +119,6 @@ func (l *Listen) ControlChange(channel, number, value int) {
 
 }
 
-// Storex is part of core.Storable
 func (l *Listen) Storex() string {
 	return fmt.Sprintf("listen(%d,%s,%s)", l.deviceID, l.variableName, core.Storex(l.callback))
 }

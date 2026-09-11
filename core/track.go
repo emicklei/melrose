@@ -24,7 +24,7 @@ func NewTrack(title string, channel int) *Track {
 	}
 }
 
-func (t *Track) Play(ctx Context, now time.Time) time.Time {
+func (t *Track) Play(ctx Context, while Condition, now time.Time) time.Time {
 	bpm := ctx.Control().BPM()
 	biab := ctx.Control().BIAB()
 	whole := WholeNoteDuration(bpm)
@@ -36,7 +36,7 @@ func (t *Track) Play(ctx Context, now time.Time) time.Time {
 		if notify.IsDebug() {
 			notify.Debugf("core.track title=%s channel=%d bar=%d, biab=%d, bpm=%.2f time=%s", t.Title, t.Channel, bars, biab, bpm, when.Format("04:05.000"))
 		}
-		endingAt = ctx.Device().Play(NoCondition, cs, bpm, when)
+		endingAt = ctx.Device().Play(while, cs, bpm, when)
 	}
 	return endingAt
 }
@@ -111,7 +111,7 @@ func (m MultiTrack) Storex() string {
 }
 
 // Play is part of Playable
-func (m MultiTrack) Play(ctx Context, at time.Time) time.Time {
+func (m MultiTrack) Play(ctx Context, while Condition, at time.Time) time.Time {
 	// because all tracks must be synchronized, we first stop the beatmaster
 	// then schedule all tracks
 	// then start the beatmaster again.

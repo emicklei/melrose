@@ -11,6 +11,7 @@ import (
 type KeyTrigger struct {
 	mutex   *sync.RWMutex
 	playing bool
+	count   int
 	ctx     core.Context
 	channel int
 	note    core.Note
@@ -48,22 +49,16 @@ func (t *KeyTrigger) NoteOn(channel int, n core.Note) {
 	defer t.mutex.Unlock()
 	// both playable and evaluatable are allowed
 	if play, ok := val.(core.Playable); ok {
-		stopper, stoppable := val.(core.Stoppable)
-		if stoppable {
-			if t.playing {
-				notify.Infof("%s -> stop(%s)", t.note.String(), core.Storex(t.fun))
-				stopper.Stop(t.ctx)
-				t.playing = false
-			} else {
-				t.playing = true
-				notify.Infof("%s -> play(%s)", t.note.String(), core.Storex(t.fun))
-				_ = play.Play(t.ctx, time.Now())
-			}
-			return
+		if t.playing {
+			notify.Infof("%s -> stop(%s)", t.note.String(), core.Storex(t.fun))
+			t.playing = false
+		} else {
+			t.playing = true
+			t.count++
+			activeCount := t.count
+			notify.Infof("%s -> play(%s)", t.note.String(), core.Storex(t.fun))
+			_ = play.Play(t.ctx, func() bool { return t.playing && t.count == activeCount }, time.Now())
 		}
-		// cannot stop
-		_ = play.Play(t.ctx, time.Now())
-		return
 	}
 	// not playable, maybe evaluatable
 	if eval, ok := val.(core.Evaluatable); ok {

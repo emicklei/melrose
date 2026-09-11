@@ -90,7 +90,7 @@ func (s *ServiceImpl) CommandPlay(file string, lineEnd int, source string) (Comm
 	var endTime time.Time
 	if pl, ok := programResult.(core.Playable); ok {
 		notify.Infof("play(%s)", displayString(s.context, pl))
-		endTime = pl.Play(s.context, time.Now())
+		endTime = pl.Play(s.context, core.NoCondition, time.Now())
 	} else {
 		// unvalue if needed
 		if u, ok := programResult.(core.HasValue); ok {

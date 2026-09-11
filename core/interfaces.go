@@ -95,7 +95,7 @@ type Inspectable interface {
 }
 
 type Playable interface {
-	Play(ctx Context, at time.Time) time.Time
+	Play(ctx Context, while Condition, at time.Time) time.Time
 }
 
 type Stoppable interface {

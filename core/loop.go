@@ -63,7 +63,7 @@ func (l *Loop) Evaluate(ctx Context) error {
 	if notify.IsDebug() {
 		notify.Debugf("loop.eval")
 	}
-	clone.Play(l.ctx, time.Now())
+	clone.Play(l.ctx, cond, time.Now())
 	return nil
 }
 
@@ -120,7 +120,7 @@ func (l *Loop) Handle(tim *Timeline, when time.Time) {
 func (l *Loop) NoteChangesDo(block func(NoteChange)) {}
 
 // Play is part of Playable
-func (l *Loop) Play(ctx Context, at time.Time) time.Time {
+func (l *Loop) Play(ctx Context, while Condition, at time.Time) time.Time {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 	forever := time.Now().AddDate(100, 0, 0)
@@ -138,6 +138,7 @@ func (l *Loop) Play(ctx Context, at time.Time) time.Time {
 		runningLoop = l
 	}
 	l.isRunning = true
+	l.condition = while
 	l.startedAt = when
 	l.reschedule(l.ctx.Device(), when)
 	return forever

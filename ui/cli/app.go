@@ -57,12 +57,12 @@ func ExecuteFile(ctx core.Context, fileName string) error {
 	}
 	// check whether the last result is Playable
 	if playable, ok := lastResult.(core.Playable); ok {
-		playable.Play(ctx, time.Now())
+		playable.Play(ctx, core.NoCondition, time.Now())
 	}
 	// it is not Playable, but if it is Sequenceable then we can play it as a sequence
 	if sequenceable, ok := lastResult.(core.Sequenceable); ok {
 		play := control.NewPlay(ctx, []core.Sequenceable{sequenceable}, false)
-		play.Play(ctx, time.Now())
+		play.Play(ctx, core.NoCondition, time.Now())
 	}
 	return nil
 }

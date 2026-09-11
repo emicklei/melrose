@@ -555,7 +555,7 @@ loop(transpose(num,note('C')),next(num))`,
 			for _, p := range playables {
 				// first check Playable
 				if pl, ok := getPlayable(p); ok {
-					pl.Play(ctx, time.Now())
+					pl.Play(ctx, core.NoCondition, time.Now())
 					continue
 				}
 				if s, ok := getSequenceable(p); ok { // unwrap var or valueholder
