@@ -38,7 +38,7 @@ func (e *Evaluator) EvaluateProgram(source string) (any, error) {
 	// indentation
 	nrOfLastExpression := -1
 	for lineNr, line := range splitted {
-		if strings.HasPrefix(line, "\t") || strings.HasPrefix(line, fourSpaces) { // append to previous
+		if strings.HasPrefix(line, "\t") || strings.HasPrefix(line, fourSpaces) || (strings.TrimSpace(line) == ")" && len(lines) > 0 && strings.Count(lines[len(lines)-1], "(") > strings.Count(lines[len(lines)-1], ")")) { // append to previous
 			if len(lines) == 0 {
 				return nil, errors.New("syntax error, first line cannot start with TAB")
 			}

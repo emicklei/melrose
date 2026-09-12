@@ -332,3 +332,17 @@ func TestMapTranspose(t *testing.T) {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
 	}
 }
+
+func TestCloseBracketOnEmptyLine(t *testing.T) {
+	e := newTestEvaluator()
+	r, err := e.EvaluateProgram(`
+a = note('c2')
+aa = join(
+    a,a
+)
+`)
+	checkError(t, err)
+	if got, want := r.(op.Join).Storex(), "join(a,a)"; got != want {
+		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}
