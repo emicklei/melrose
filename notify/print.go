@@ -111,3 +111,7 @@ func PrintKeyValue(b io.Writer, k string, v any) {
 		fmt.Fprintf(b, "%s:%v ", k, v)
 	}
 }
+
+func Printf(format string, args ...any) {
+	fmt.Fprintf(Console.StandardOut, format, args...)
+}

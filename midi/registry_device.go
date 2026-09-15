@@ -61,7 +61,7 @@ func (r *DeviceRegistry) Reset() {
 		each.Reset()
 	}
 	for _, each := range ins {
-		each.stopListener()
+		each.reset()
 	}
 }
 
@@ -160,7 +160,7 @@ func (r *DeviceRegistry) Close() error {
 	r.mutex.RUnlock()
 
 	for _, each := range ins {
-		each.stopListener()
+		each.reset()
 	}
 	return r.streamRegistry.close()
 }
@@ -182,6 +182,16 @@ func (r *DeviceRegistry) OnKey(ctx core.Context, deviceID int, channel int, note
 	trigger := NewKeyTrigger(ctx, channel, note, fun)
 	in.listener.OnKey(note, trigger)
 	return nil
+}
+
+// ResetListeners will call reset on each listener
+// TODO used?
+func (r *DeviceRegistry) ResetListeners() {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+	for _, in := range r.in {
+		in.listener.Reset()
+	}
 }
 
 func (r *DeviceRegistry) Listen(deviceID int, who core.NoteListener, isStart bool) {

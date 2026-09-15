@@ -105,13 +105,26 @@ func (r *DeviceRegistry) Command(args []string) notify.Message {
 		r.HandleSetting("echo", []any{args[1], id})
 		return nil
 	}
-	if len(args) == 1 && args[0] == "r" {
-		fmt.Println("Reset MIDI device configuration. Stopping all listeners")
+	if args[0] == "r" {
+		fmt.Println("Reset MIDI device configuration. Stopping all listeners. Removing all key triggers")
 		r.Reset()
-		r.Close()
-		r.init()
+		// TODO
+		// r.Close()
+		// r.init()
+		return nil
+	}
+	if args[0] == "l" {
+		r.printListenerInfo()
+		return nil
 	}
 	return notify.NewErrorf("unknown command:%v", args)
+}
+
+func (r *DeviceRegistry) printListenerInfo() {
+	for i, device := range r.in {
+		notify.PrintHighlighted(fmt.Sprintf("input device %d (%s)\n", i, device.name))
+		device.PrintListenerInfo()
+	}
 }
 
 func (r *DeviceRegistry) printInfo() {

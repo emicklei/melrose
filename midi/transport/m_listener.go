@@ -14,7 +14,7 @@ type mNoteEvent struct {
 }
 
 type mListener struct {
-	mutex *sync.RWMutex
+	mutex sync.RWMutex
 
 	listening     bool
 	noteOn        map[int]mNoteEvent
@@ -24,7 +24,6 @@ type mListener struct {
 
 func newMListener() *mListener {
 	return &mListener{
-		mutex:         new(sync.RWMutex),
 		listening:     false,
 		noteOn:        map[int]mNoteEvent{},
 		noteListeners: []core.NoteListener{},
@@ -44,7 +43,7 @@ func (l *mListener) Remove(lis core.NoteListener) {
 	l.safeRemove(lis)
 }
 
-// safeRemove require acquired lock
+// safeRemove requires acquired lock
 func (l *mListener) safeRemove(lis core.NoteListener) {
 	without := []core.NoteListener{}
 	for _, each := range l.noteListeners {
@@ -60,18 +59,16 @@ func (l *mListener) OnKey(note core.Note, handler core.NoteListener) {
 	defer l.mutex.Unlock()
 
 	nr := note.MIDI()
-	// remove existing for the key
-	old, ok := l.keyListeners[nr]
-	if ok {
-		l.safeRemove(old)
-		delete(l.keyListeners, nr)
-	}
-	if handler == nil {
-		return
-	}
-	// add to map and list
+	delete(l.keyListeners, nr)
 	l.keyListeners[nr] = handler
-	l.noteListeners = append(l.noteListeners, handler)
+}
+
+func (l *mListener) Reset() {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	l.noteOn = map[int]mNoteEvent{}
+	l.keyListeners = map[int]core.NoteListener{}
+	l.noteListeners = []core.NoteListener{}
 }
 
 func (l *mListener) HandleMIDIMessage(status int16, nr int, data2 int) {
@@ -102,6 +99,10 @@ func (l *mListener) HandleMIDIMessage(status int16, nr int, data2 int) {
 		for _, each := range l.noteListeners {
 			each.NoteOn(ch, onNote)
 		}
+		// notify key listeners
+		if keyHandler, ok := l.keyListeners[nr]; ok {
+			keyHandler.NoteOn(ch, onNote)
+		}
 		return
 	}
 	isNoteOff := (status & noteOff) == noteOff
@@ -123,6 +124,18 @@ func (l *mListener) HandleMIDIMessage(status int16, nr int, data2 int) {
 		for _, each := range l.noteListeners {
 			each.NoteOff(ch, offNote)
 		}
+		if keyHandler, ok := l.keyListeners[nr]; ok {
+			keyHandler.NoteOff(ch, offNote)
+		}
 		return
+	}
+}
+
+func (l *mListener) PrintInfo() {
+	for _, each := range l.noteListeners {
+		each.PrintInfo()
+	}
+	for _, each := range l.keyListeners {
+		each.PrintInfo()
 	}
 }

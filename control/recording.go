@@ -99,3 +99,7 @@ func (r *Recording) ControlChange(channel, number, value int) {}
 func (r *Recording) Inspect(i core.Inspection) {
 	i.Properties["sequence"] = r.S()
 }
+
+func (r *Recording) PrintInfo() {
+	notify.Printf("Recording(deviceID=%d, variableName=%s, bpm=%f)\n", r.deviceID, r.variableName, r.bpm)
+}

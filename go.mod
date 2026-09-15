@@ -4,6 +4,7 @@ go 1.24.2
 
 require (
 	github.com/Try431/EasyMIDI v1.0.3
+	github.com/emicklei/structexplorer v0.9.3
 	github.com/expr-lang/expr v1.17.8
 	github.com/fogleman/gg v1.3.0
 	github.com/peterh/liner v1.2.2
@@ -14,6 +15,7 @@ require (
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/mattn/go-runewidth v0.0.24 // indirect
+	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	golang.org/x/image v0.36.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
 )

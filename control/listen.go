@@ -119,6 +119,10 @@ func (l *Listen) ControlChange(channel, number, value int) {
 
 }
 
+func (l *Listen) PrintInfo() {
+	notify.Printf("Listen(deviceID=%d, variableName=%s)\n", l.deviceID, l.variableName)
+}
+
 func (l *Listen) Storex() string {
 	return fmt.Sprintf("listen(%d,%s,%s)", l.deviceID, l.variableName, core.Storex(l.callback))
 }

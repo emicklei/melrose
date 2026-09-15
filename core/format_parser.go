@@ -413,7 +413,6 @@ func (s *chordprogressionSTM) reset() {
 }
 
 const allowedNoteNames = "abcdefgABCDEFG=<^>"
-const allowedAccidentals = "#_b♯♭"
 
 func newNoteSTM() *noteSTM {
 	s := new(noteSTM)

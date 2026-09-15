@@ -47,4 +47,6 @@ type MIDIListener interface {
 	HandleMIDIMessage(status int16, nr, data2 int)
 	Start()
 	Stop()
+	Reset()
+	PrintInfo()
 }

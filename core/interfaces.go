@@ -134,6 +134,7 @@ type NoteListener interface {
 	NoteOn(channel int, note Note)
 	NoteOff(channel int, note Note)
 	ControlChange(channel, number, value int)
+	PrintInfo()
 }
 
 type Conditional interface {

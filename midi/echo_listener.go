@@ -17,3 +17,7 @@ func (e EchoListener) NoteOff(channel int, n core.Note) {
 	fmt.Fprintf(notify.Console.StandardOut, "%s ", n.String())
 }
 func (e EchoListener) ControlChange(channel, number, value int) {}
+
+func (e EchoListener) PrintInfo() {
+	fmt.Fprintf(notify.Console.StandardOut, "echo listener\n")
+}

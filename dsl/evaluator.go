@@ -224,6 +224,7 @@ func (e *Evaluator) handleAssignment(varName string, r any) (any, error) {
 			if storedValue, present := e.context.Variables().Get(varName); present {
 				if storedRecording, replaceme := storedValue.(*control.Recording); replaceme {
 					storedRecording.GetTargetFrom(theRecording)
+					// return the stored. not the input
 					r = storedRecording
 				} else {
 					// existing variable but not a Recording
@@ -236,7 +237,25 @@ func (e *Evaluator) handleAssignment(varName string, r any) (any, error) {
 			return r, nil
 		}
 
-		// not a Loop or Listen or Recording
+		// specical case for OnOff
+		if theOnOff, ok := r.(*control.OnOff); ok {
+			if storedValue, present := e.context.Variables().Get(varName); present {
+				storedOnOff, ok := storedValue.(*control.OnOff)
+				if !ok || !storedOnOff.Equals(theOnOff) {
+					// existing variable but not an OnOff
+					// or for a different OnOff configuration
+					e.context.Variables().Put(varName, theOnOff)
+				}
+				// return the stored. not the input
+				r = storedOnOff
+			} else {
+				// new variable for theOnOff
+				e.context.Variables().Put(varName, theOnOff)
+			}
+			return r, nil
+		}
+
+		// not a Loop or Listen or Recording or OnOff
 		e.context.Variables().Put(varName, r)
 		if aware, ok := r.(core.NameAware); ok {
 			aware.VariableName(varName)

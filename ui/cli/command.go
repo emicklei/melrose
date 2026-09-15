@@ -20,7 +20,6 @@ func cmdFunctions() map[string]Command {
 	}}
 	cmds[":k"] = Command{Description: "stop all sound and loops", Func: func(ctx core.Context, args []string) notify.Message {
 		dsl.StopAllPlayables(ctx)
-		ctx.Device().Reset()
 		return nil
 	}}
 	cmds[":b"] = Command{Description: "beat settings", Func: handleBeatSetting}
@@ -29,6 +28,8 @@ func cmdFunctions() map[string]Command {
 	cmds[":d"] = Command{Description: "toggle debug lines", Func: handleToggleDebug}
 	cmds[":p"] = Command{Description: "list all running", Func: handleListAllRunning}
 	cmds[":e"] = Command{Description: "echo MIDI", Func: handleEchoNotes}
+	cmds[":l"] = Command{Description: "list all key triggers", Func: handleListKeyTriggers}
+	cmds[":r"] = Command{Description: "reset", Func: handleReset}
 	return cmds
 }
 
@@ -85,4 +86,12 @@ func handleListAllRunning(ctx core.Context, args []string) notify.Message {
 
 func handleEchoNotes(ctx core.Context, args []string) notify.Message {
 	return ctx.Device().Command(append([]string{"e"}, args...))
+}
+
+func handleListKeyTriggers(ctx core.Context, args []string) notify.Message {
+	return ctx.Device().Command(append([]string{"l"}, args...))
+}
+
+func handleReset(ctx core.Context, args []string) notify.Message {
+	return ctx.Device().Command(append([]string{"r"}, args...))
 }

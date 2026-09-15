@@ -64,3 +64,7 @@ func (k *Knob) Value() any {
 func (k *Knob) VariableName(yours string) {
 	k.variableName = yours
 }
+
+func (k *Knob) PrintInfo() {
+	notify.Printf("Knob(deviceID=%d, channel=%d, number=%d, variableName=%s, currentValue=%d)\n", k.deviceID, k.channel, k.number, k.variableName, k.currentValue)
+}

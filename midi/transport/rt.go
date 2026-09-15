@@ -73,7 +73,7 @@ func (t RtmidiTransporter) InitInputsOutputs() (ins []PortAndName, outs []PortAn
 	}
 	return ins, outs, nil
 }
-func (r RtmidiTransporter) initOutputs() (outs []PortAndName, err error) {
+func (t RtmidiTransporter) initOutputs() (outs []PortAndName, err error) {
 	out, err := rtmidi.NewMIDIOutDefault()
 	if err != nil {
 		return nil, fmt.Errorf("can't open default MIDI out: %w", err)
@@ -94,7 +94,7 @@ func (r RtmidiTransporter) initOutputs() (outs []PortAndName, err error) {
 	return outs, nil
 }
 
-func (r RtmidiTransporter) initInputs() (ins []PortAndName, err error) {
+func (t RtmidiTransporter) initInputs() (ins []PortAndName, err error) {
 	in, err := rtmidi.NewMIDIInDefault()
 	if err != nil {
 		return nil, fmt.Errorf("can't open default MIDI in: %w", err)
@@ -142,6 +142,8 @@ func (i RtmidiIn) Close() error {
 	}
 	return i.in.Close()
 }
+
+var _ MIDIListener = (*RtListener)(nil)
 
 type RtListener struct {
 	*mListener

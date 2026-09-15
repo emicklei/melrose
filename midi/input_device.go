@@ -24,7 +24,10 @@ func (i *InputDevice) Listener() transport.MIDIListener {
 	return i.listener
 }
 
-// TODO deprecated?
-func (i *InputDevice) stopListener() {
-	i.listener.Stop()
+func (i *InputDevice) reset() {
+	i.listener.Reset()
+}
+
+func (i *InputDevice) PrintListenerInfo() {
+	i.listener.PrintInfo()
 }

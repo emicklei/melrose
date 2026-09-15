@@ -55,6 +55,7 @@ func (t *Timeline) Len() int64 {
 
 // Play runs a loop to handle all the events in time. This is blocking.
 func (t *Timeline) Play() {
+	notify.Debugf("core.timeline: starting to play")
 	t.resume = make(chan bool)
 	t.isPlaying = true
 	for t.isPlaying {
@@ -63,11 +64,8 @@ func (t *Timeline) Play() {
 		t.protection.RUnlock()
 		if here == nil {
 			// Wait for a signal (new event or shutdown signal)
-			select {
-			case <-t.resume:
-				// Continue to check isPlaying at top of loop
-				continue
-			}
+			<-t.resume
+			continue
 		}
 		now := time.Now()
 		for now.After(here.when) {
@@ -121,6 +119,7 @@ func (t *Timeline) Stop() {
 			// Timeout in case goroutine is already stopped
 		}
 	}
+	notify.Debugf("core.timeline: stopped playing")
 }
 
 // Schedule adds an event for a given time
