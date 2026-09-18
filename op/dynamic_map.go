@@ -26,14 +26,14 @@ func NewDynamicMap(slist []core.Sequenceable, dynamics core.HasValue) DynamicMap
 
 func (d DynamicMap) S() core.Sequence {
 	// JIT parsing
-	dynamicsString, ok := d.dynamics.Value().(string)
+	dynamicsString, ok := core.ValueOf(d.dynamics).(string)
 	if !ok {
-		notify.NewWarningf("dynamic mapping is not a string")
+		notify.Warnf("dynamic mapping is not a string:%T", core.ValueOf(d.dynamics))
 		return core.Sequence{}
 	}
 	list, err := parseIndex2Dynamics(dynamicsString)
 	if err != nil {
-		notify.NewWarningf("cannot parse dynamic mapping %v", err)
+		notify.Warnf("cannot parse dynamic mapping %v", err)
 		return core.Sequence{}
 	}
 	target := [][]core.Note{}
