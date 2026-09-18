@@ -79,7 +79,7 @@ dynamic(112,note('a')) // => A++++`,
 		Template:    `dynamicmap('${1:mapping}',${2:object})`,
 		Samples: `dynamicmap('1:++,2:--',sequence('e f')) // => E++ F--
 dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
-		Func: func(mapping string, playables ...any) any {
+		Func: func(mappingStringOrVar any, playables ...any) any {
 			joined := []core.Sequenceable{}
 			for _, p := range playables {
 				if s, ok := getSequenceable(p); !ok {
@@ -88,12 +88,7 @@ dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 					joined = append(joined, s)
 				}
 			}
-			mapper, err := op.NewDynamicMap(joined, mapping)
-			if err != nil {
-				notify.NewWarningf("cannot create dynamic mapping %v", err)
-				return nil
-			}
-			return mapper
+			return op.NewDynamicMap(joined, getHasValue(mappingStringOrVar))
 		}})
 
 	registerFunction(eval, "progression", Function{
@@ -971,15 +966,32 @@ onkey(c2, fun) // if C2 is pressed on the axiom device then evaluate the functio
 		}})
 
 	registerFunction(eval, "interval", Function{
-		Title:       "Interval creator",
-		Description: "create an integer repeating interval (from,to,by,method). Default method is 'repeat', Use next() to get a new integer",
-		Prefix:      "int",
-		Template:    `interval(${1:from},${2:to},${3:by})`,
+		Title: "Interval creator",
+		Description: `create an integer repeating interval (from,to,by,method).
+	Available methods are 'repeat','once','repeat-two-way','once-two-way'.
+	Default method is 'repeat', Use next() to get a new integer`,
+		Prefix:   "int",
+		Template: `interval(${1:from},${2:to},${3:by})`,
 		Samples: `int1 = interval(-2,4,1)
 lp_cdef = loop(transpose(int1,sequence('c d e f')), next(int1))`,
 		IsComposer: true,
-		Func: func(from, to, by any) *core.Interval {
-			return core.NewInterval(core.ToHasValue(from), core.ToHasValue(to), core.ToHasValue(by), core.RepeatFromTo)
+		Func: func(from, to, by any, method ...string) any {
+			how := core.RepeatFromTo
+			if len(method) > 0 {
+				switch method[0] {
+				case "repeat":
+					how = core.RepeatFromTo
+				case "once":
+					how = core.OnceFromTo
+				case "repeat-two-way":
+					how = core.RepeatFromToFrom
+				case "once-two-way":
+					how = core.OnceFromToFrom
+				default:
+					return notify.Panic(fmt.Errorf("unknown interval method: %s", method[0]))
+				}
+			}
+			return core.NewInterval(core.ToHasValue(from), core.ToHasValue(to), core.ToHasValue(by), how)
 		}})
 
 	registerFunction(eval, "resequence", Function{

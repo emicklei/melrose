@@ -7,11 +7,12 @@ import (
 	"strings"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 )
 
 type DynamicMap struct {
-	Target        []core.Sequenceable
-	IndexDynamics []index2dynamic
+	Target   []core.Sequenceable
+	dynamics core.HasValue
 }
 
 type index2dynamic struct {
@@ -19,19 +20,25 @@ type index2dynamic struct {
 	dynamic string
 }
 
-func NewDynamicMap(slist []core.Sequenceable, dynamics string) (DynamicMap, error) {
-	id, err := parseIndex2Dynamics(dynamics)
-	dm := DynamicMap{Target: slist, IndexDynamics: id}
-	if err != nil {
-		return dm, err
-	}
-	return dm, nil
+func NewDynamicMap(slist []core.Sequenceable, dynamics core.HasValue) DynamicMap {
+	return DynamicMap{Target: slist, dynamics: dynamics}
 }
 
 func (d DynamicMap) S() core.Sequence {
+	// JIT parsing
+	dynamicsString, ok := d.dynamics.Value().(string)
+	if !ok {
+		notify.NewWarningf("dynamic mapping is not a string")
+		return core.Sequence{}
+	}
+	list, err := parseIndex2Dynamics(dynamicsString)
+	if err != nil {
+		notify.NewWarningf("cannot parse dynamic mapping %v", err)
+		return core.Sequence{}
+	}
 	target := [][]core.Note{}
 	source := Join{Target: d.Target}.S().Notes
-	for _, entry := range d.IndexDynamics {
+	for _, entry := range list {
 		if entry.at <= 0 || entry.at > len(source) {
 			// invalid offset, skip
 			continue
@@ -48,7 +55,7 @@ func (d DynamicMap) S() core.Sequence {
 
 func (d DynamicMap) Storex() string {
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "dynamicmap('%s'", formatIndex2Dynamics(d.IndexDynamics))
+	fmt.Fprintf(&b, "dynamicmap(%s", core.Storex(d.dynamics))
 	core.AppendStorexList(&b, false, d.Target)
 	fmt.Fprintf(&b, ")")
 	return b.String()
@@ -92,5 +99,5 @@ func (d DynamicMap) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	if core.IsIdenticalTo(d, from) {
 		return to
 	}
-	return DynamicMap{Target: replacedAll(d.Target, from, to), IndexDynamics: d.IndexDynamics}
+	return DynamicMap{Target: replacedAll(d.Target, from, to), dynamics: d.dynamics}
 }

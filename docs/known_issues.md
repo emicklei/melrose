@@ -1,7 +1,6 @@
 # Known Issues
 
 - cannot use variable for indices in 
-    - dynamicmap
     - transposemap
     - octavemap
     - notemap
@@ -18,3 +17,4 @@
         fader(algo,sequence('c d e'))
 - group only takes one sequenceable
 - volume for offsetting the velocity
+- stop(onoff('c1'))
