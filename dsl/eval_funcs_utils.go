@@ -70,7 +70,7 @@ func getSequenceable(v any) (core.Sequenceable, bool) {
 		return s, ok
 	}
 	if val, ok := v.(core.HasValue); ok {
-		vv := val.Value()
+		vv := val.Value() // TODO use core.ValueOf ??
 		if s, ok := vv.(core.Sequenceable); ok {
 			return s, ok
 		}
@@ -80,7 +80,7 @@ func getSequenceable(v any) (core.Sequenceable, bool) {
 
 func getPlayable(v any) (core.Playable, bool) {
 	if val, ok := v.(core.HasValue); ok {
-		v = val.Value()
+		v = val.Value() // TODO use core.ValueOf ??
 	}
 	if s, ok := v.(core.Playable); ok {
 		return s, ok
@@ -100,6 +100,9 @@ func getSequenceableList(m ...any) (list []core.Sequenceable, ok bool) {
 	return
 }
 
+// getHasValue ensures that the returned value implements core.HasValue.
+// If the input already implements core.HasValue, it is returned as is.
+// Otherwise, it is wrapped using core.On.
 func getHasValue(val any) core.HasValue {
 	if v, ok := val.(core.HasValue); ok {
 		return v
@@ -108,6 +111,7 @@ func getHasValue(val any) core.HasValue {
 }
 
 // getValue returns the Value() of val iff val is a HasValue, else returns val
+// deprecated: use core.ValueOf instead
 func getValue(val any) any {
 	if v, ok := val.(core.HasValue); ok {
 		return v.Value()

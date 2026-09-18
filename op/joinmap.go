@@ -46,7 +46,7 @@ func (j JoinMap) S() core.Sequence {
 					notes = append(notes, core.Rest4) // TODO what should be the duration?
 				}
 			}
-			target = append(target, Group{Target: core.BuildSequence(notes)})
+			target = append(target, Group{Target: []core.Sequenceable{core.BuildSequence(notes)}})
 		}
 	}
 	return Join{Target: target}.S()

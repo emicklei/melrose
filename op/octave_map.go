@@ -8,32 +8,40 @@ import (
 )
 
 type OctaveMap struct {
-	Target       core.Sequenceable
-	IndexOffsets []int2int // one-based
+	Target  []core.Sequenceable
+	indices core.HasValue
 }
 
-func NewOctaveMap(target core.Sequenceable, indices string) OctaveMap {
+func NewOctaveMap(target []core.Sequenceable, indices core.HasValue) OctaveMap {
 	return OctaveMap{
-		Target:       target,
-		IndexOffsets: parseIndexOffsets(indices),
+		Target:  target,
+		indices: indices,
 	}
 }
 
 func (o OctaveMap) S() core.Sequence {
+	if len(o.Target) == 0 {
+		return core.EmptySequence
+	}
 	return core.Sequence{Notes: o.Notes()}
 }
 
 func (o OctaveMap) Notes() [][]core.Note {
-	source := o.Target.S().Notes
+	if len(o.Target) == 0 {
+		return nil
+	}
+	source := o.Target[0].S().Notes
 	target := [][]core.Note{}
-	for _, entry := range o.IndexOffsets {
+	indicesString, ok := core.ValueOf(o.indices).(string)
+	if !ok {
+		return nil
+	}
+	for _, entry := range parseIndexOffsets(indicesString) {
 		if entry.from <= 0 || entry.from > len(source) {
-			// invalid offset, skip
 			continue
 		}
-		eachGroup := source[entry.from-1] // from is one-based
+		eachGroup := source[entry.from-1]
 		if entry.to == 0 {
-			// no offset, use as is
 			target = append(target, eachGroup)
 			continue
 		}
@@ -47,13 +55,20 @@ func (o OctaveMap) Notes() [][]core.Note {
 }
 
 func (o OctaveMap) Storex() string {
-	s, ok := o.Target.(core.Storable)
+	if len(o.Target) == 0 {
+		return ""
+	}
+	s, ok := o.Target[0].(core.Storable)
 	if !ok {
 		return ""
 	}
 	var b bytes.Buffer
+	indicesString, ok := core.ValueOf(o.indices).(string)
+	if !ok {
+		return ""
+	}
 	fmt.Fprintf(&b, "octavemap('")
-	for i, each := range o.IndexOffsets {
+	for i, each := range parseIndexOffsets(indicesString) {
 		if i > 0 {
 			fmt.Fprintf(&b, ",")
 		}
@@ -69,11 +84,5 @@ func (o OctaveMap) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	if core.IsIdenticalTo(o, from) {
 		return to
 	}
-	if core.IsIdenticalTo(o.Target, from) {
-		return OctaveMap{Target: to, IndexOffsets: o.IndexOffsets}
-	}
-	if rep, ok := o.Target.(core.Replaceable); ok {
-		return OctaveMap{Target: rep.Replaced(from, to), IndexOffsets: o.IndexOffsets}
-	}
-	return o
+	return OctaveMap{Target: replacedAll(o.Target, from, to), indices: o.indices}
 }

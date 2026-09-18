@@ -32,7 +32,7 @@ Fraction can also be an exact float value between 0 and 1.
 `,
 		Prefix:     "fra",
 		IsComposer: true,
-		Template:   `fraction(${1:object},${2:object})`,
+		Template:   `fraction(${1:object},${2:sequenceables})`,
 		Samples:    `fraction(8,sequence('e f')) // => 8E 8F , shorten the notes from quarter to eight`,
 		Func: func(param any, playables ...any) any {
 			joined := []core.Sequenceable{}
@@ -55,7 +55,7 @@ Fraction can also be an exact float value between 0 and 1.
 		Prefix:     "dy",
 		Alias:      "velocity",
 		IsComposer: true,
-		Template:   `dynamic(${1:emphasis},${2:object})`,
+		Template:   `dynamic(${1:emphasis},${2:sequenceables})`,
 		Samples: `dynamic('++',sequence('e f')) // => E++ F++
 dynamic(112,note('a')) // => A++++`,
 		Func: func(emphasis any, playables ...any) any {
@@ -76,7 +76,7 @@ dynamic(112,note('a')) // => A++++`,
 		Description: `changes the dynamic of notes from a musical object. 1-index-based mapping`,
 		Prefix:      "dyna",
 		IsComposer:  true,
-		Template:    `dynamicmap('${1:mapping}',${2:object})`,
+		Template:    `dynamicmap('${1:mapping}',${2:sequenceables})`,
 		Samples: `dynamicmap('1:++,2:--',sequence('e f')) // => E++ F--
 dynamicmap('2:o,1:++,2:--,1:++', sequence('a b') // => B A++ B-- A++`,
 		Func: func(mappingStringOrVar any, playables ...any) any {
@@ -256,45 +256,45 @@ chord('g/M/2') // Major G second inversion`,
 		Title:       "Transpose Map operator",
 		Description: "create a sequence with notes for which the order and the pitch are changed. 1-based indexing",
 		Alias:       "pitchmap",
-		Template:    `transposemap('${1:int2int}',${2:object})`,
+		Template:    `transposemap('${1:int2int}',${2:sequenceables})`,
 		IsComposer:  true,
 		Samples:     `transposemap('1:-1,1:0,1:1',note('c')) // => B3 C D`,
-		Func: func(indices string, m any) any {
-			s, ok := getSequenceable(m)
+		Func: func(indices any, m ...any) any {
+			list, ok := getSequenceableList(m...)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot transposemap (%T) %v", m, m))
 			}
-			return op.NewTransposeMap(s, indices)
+			return op.NewTransposeMap(list, getHasValue(indices))
 		}})
 
 	registerFunction(eval, "octavemap", Function{
 		Title:       "Octave Map operator",
 		Description: "create a sequence with notes for which the order and the octaves are changed",
 		Prefix:      "octavem",
-		Template:    `octavemap('${1:int2int}',${2:object})`,
+		Template:    `octavemap('${1:int2int}',${2:sequenceables})`,
 		IsComposer:  true,
 		Samples:     `octavemap('1:-1,2:0,3:1',chord('c')) // => (C3 E G5)`,
-		Func: func(indices string, m any) any {
-			s, ok := getSequenceable(m)
+		Func: func(indices any, m ...any) any {
+			list, ok := getSequenceableList(m...)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot octavemap (%T) %v", m, m))
 			}
-			return op.NewOctaveMap(s, indices)
+			return op.NewOctaveMap(list, getHasValue(indices))
 		}})
 
 	registerFunction(eval, "velocitymap", Function{
 		Title:       "Velocity Map operator",
 		Description: "create a sequence with notes for which the order and the velocities are changed. Velocity 0 means no change.",
 		Prefix:      "velocitym",
-		Template:    `velocitymap('${1:int2int}',${2:object})`,
+		Template:    `velocitymap('${1:int2int}',${2:sequenceables})`,
 		IsComposer:  true,
 		Samples:     `velocitymap('1:30,2:0,3:60',chord('c')) // => (C3--- E G5+)`,
-		Func: func(indices string, m any) any {
-			s, ok := getSequenceable(m)
+		Func: func(indices string, m ...any) any {
+			list, ok := getSequenceableList(m...)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot velocitymap (%T) %v", m, m))
 			}
-			return op.NewVelocityMap(s, indices)
+			return op.NewVelocityMap(list, indices)
 		}})
 
 	registerFunction(eval, "transpose", Function{
@@ -302,32 +302,32 @@ chord('g/M/2') // Major G second inversion`,
 		Description: "change the pitch with a delta of semitones",
 		Alias:       "pitch",
 		Prefix:      "tran",
-		Template:    `transpose(${1:semitones},${2:sequenceable})`,
+		Template:    `transpose(${1:semitones},${2:sequenceables})`,
 		Samples: `transpose(-1,sequence('c d e'))
 p = interval(-4,4,1)
 transpose(p,note('c'))`,
 		IsComposer: true,
-		Func: func(semitones, m any) any {
-			s, ok := getSequenceable(m)
+		Func: func(semitones any, m ...any) any {
+			list, ok := getSequenceableList(m...)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot transpose (%T) %v", m, m))
 			}
-			return op.Transpose{Target: s, Semitones: getHasValue(semitones)}
+			return op.Transpose{Target: list, Semitones: getHasValue(semitones)}
 		}})
 
 	registerFunction(eval, "reverse", Function{
 		Title:       "Reverse operator",
 		Description: "reverse the (groups of) notes in a sequence",
 		Prefix:      "rev",
-		Template:    `reverse(${1:sequenceable})`,
+		Template:    `reverse(${1:sequenceables})`,
 		Samples:     `reverse(chord('a')) // (A D_5 E5)`,
 		IsComposer:  true,
-		Func: func(m any) any {
-			s, ok := getSequenceable(m)
+		Func: func(m ...any) any {
+			list, ok := getSequenceableList(m...)
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot reverse (%T) %v", m, m))
 			}
-			return op.Reverse{Target: s}
+			return op.Reverse{Target: list}
 		}})
 
 	registerFunction(eval, "repeat", Function{
@@ -338,15 +338,11 @@ transpose(p,note('c'))`,
 		Samples:     `repeat(4,sequence('c d e'))`,
 		IsComposer:  true,
 		Func: func(howMany any, playables ...any) any {
-			joined := []core.Sequenceable{}
-			for _, p := range playables {
-				if s, ok := getSequenceable(p); !ok {
-					return notify.Panic(fmt.Errorf("cannot repeat (%T) %v", p, p))
-				} else {
-					joined = append(joined, s)
-				}
+			list, ok := getSequenceableList(playables...)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot repeat (%T) %v", playables, playables))
 			}
-			return op.Repeat{Target: joined, Times: getHasValue(howMany)}
+			return op.Repeat{Target: list, Times: getHasValue(howMany)}
 		}})
 
 	registerFunction(eval, "join", Function{
@@ -354,22 +350,18 @@ transpose(p,note('c'))`,
 		Alias:       "+",
 		Description: "joins one or more musical objects as one",
 		Prefix:      "joi",
-		Template:    `join(${1:first},${2:second})`,
+		Template:    `join(${1:sequenceables})`,
 		Samples: `a = chord('a')
 b = sequence('(c e g)')
 ab = join(a,b) // => (A D_5 E5) (C E G) 
 ab = a + b // => (A D_5 E5) (C E G)`,
 		IsComposer: true,
 		Func: func(playables ...any) any {
-			joined := []core.Sequenceable{}
-			for _, p := range playables {
-				if s, ok := getSequenceable(p); !ok {
-					return notify.Panic(fmt.Errorf("cannot join (%T) %v", p, p))
-				} else {
-					joined = append(joined, s)
-				}
+			list, ok := getSequenceableList(playables...)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot join (%T) %v", playables, playables))
 			}
-			return op.Join{Target: joined}
+			return op.Join{Target: list}
 		}})
 
 	registerFunction(eval, "bpm", Function{
@@ -470,15 +462,15 @@ note('2.e#--')`,
 		Title:       "Scale creator",
 		Description: `create a Scale using this <a href="/docs/reference/notations/#scale">format</a>`,
 		Prefix:      "sc",
-		Template:    `scale('${1:scale-syntax}')`,
+		Template:    `scale('${1:scale-syntax}',${2:repeated})`,
 		IsCore:      true,
 		Samples: `
 // E major
 scale('e') // => E G_ A_ A B D_5 E_5
 / E minor
 scale('e/m') // => E F G A B C5 D5
-// E flat minor
-scale('e_/m') // => E_ E G_ A_ B_ B D_5
+// E flat minor, 2 octaves
+scale('e_/m',2) // => E_ E G_ A_ B_ B D_5 E_5 E5 G_5 A_5 B_5 B5 D_6
 `,
 		Func: func(s string, repeated ...int) any {
 			sc, err := core.NewScale(s)
@@ -543,7 +535,7 @@ loop(transpose(num,note('C')),next(num))`,
 		Description:   "play all musical objects",
 		ControlsAudio: true,
 		Prefix:        "pla",
-		Template:      `play(${1:sequenceable})`,
+		Template:      `play(${1:sequenceables})`,
 		Samples:       `play(s1,s2,s3) // play s3 after s2 after s1`,
 		Func: func(playables ...any) any {
 			list := []core.Sequenceable{}
@@ -567,7 +559,7 @@ loop(transpose(num,note('C')),next(num))`,
 		Description:   "Synchronise playing musical objects. Use play() for serial playing",
 		ControlsAudio: true,
 		Prefix:        "syn",
-		Template:      `sync(${1:object})`,
+		Template:      `sync(${1:sequenceables})`,
 		Samples: `sync(s1,s2,s3) // play s1,s2 and s3 at the same time
 sync(loop1,loop2) // begin loop2 at the next start of loop1`,
 		Func: func(playables ...any) any {
@@ -582,28 +574,23 @@ sync(loop1,loop2) // begin loop2 at the next start of loop1`,
 		Title:       "Ungroup operator",
 		Description: "undo any grouping of notes from one or more musical objects",
 		Prefix:      "ung",
-		Template:    `ungroup(${1:sequenceable})`,
+		Template:    `ungroup(${1:sequenceables})`,
 		IsComposer:  true,
 		Samples: `ungroup(chord('e')) // => E G B
 ungroup(sequence('(c d)'),note('e')) // => C D E`,
 		Func: func(playables ...any) any {
-			joined := []core.Sequenceable{}
-			for _, p := range playables {
-				if s, ok := getSequenceable(p); !ok {
-					notify.NewWarningf("cannot ungroup (%T) %v", p, p)
-					return nil
-				} else {
-					joined = append(joined, s)
-				}
+			list, ok := getSequenceableList(playables...)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot ungroup (%T) %v", playables, playables))
 			}
-			return op.Serial{Target: joined}
+			return op.Serial{Target: list}
 		}})
 
 	registerFunction(eval, "octave", Function{
 		Title:       "Octave operator",
 		Description: "change the pitch of notes by steps of 12 semitones for one or more musical objects",
 		Prefix:      "oct",
-		Template:    `octave(${1:offset},${2:sequenceable})`,
+		Template:    `octave(${1:offset},${2:sequenceables})`,
 		IsComposer:  true,
 		Samples:     `octave(1,sequence('c d')) // => C5 D5`,
 		Func: func(scalarOrVar any, playables ...any) any {
@@ -615,14 +602,9 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 			if !isVar && !isInt {
 				notify.Panic(fmt.Errorf("invalid octave offset parameter (%T) %v", scalarOrVar, scalarOrVar))
 			}
-			list := []core.Sequenceable{}
-			for _, p := range playables {
-				if s, ok := getSequenceable(p); !ok {
-					notify.NewWarningf("cannot octave (%T) %v", p, p)
-					return nil
-				} else {
-					list = append(list, s)
-				}
+			list, ok := getSequenceableList(playables...)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot octave (%T) %v", playables, playables))
 			}
 			return op.Octave{Target: list, Offset: core.ToHasValue(scalarOrVar)}
 		}})
@@ -631,17 +613,12 @@ ungroup(sequence('(c d)'),note('e')) // => C D E`,
 		Title:         "Bare creator",
 		Description:   "Transforms the object into a simple basic sequence of notes without fractions,dynamics and rests",
 		ControlsAudio: false,
-		Template:      `bare(somevar,othervar)`,
+		Template:      `bare(${1:sequenceables})`,
 		Samples:       `b = bare(sequence('.2F+++ =')) // => 2F`,
-		Func: func(playables ...any) any {
-			list := []core.Sequenceable{}
-			for _, p := range playables {
-				if s, ok := getSequenceable(p); !ok {
-					notify.NewWarningf("cannot bare (%T) %v", p, p)
-					return nil
-				} else {
-					list = append(list, s)
-				}
+		Func: func(m ...any) any {
+			list, ok := getSequenceableList(m...)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot bare (%T) %v", m, m))
 			}
 			return op.Bare{Target: list}
 		}})
@@ -679,15 +656,18 @@ record(rec) // record notes played on the current input device`,
 		Title:       "Undo dynamic operator",
 		Description: "set the dymamic to normal for all notes in a musical object",
 		Prefix:      "und",
-		Template:    `undynamic(${1:sequenceable})`,
+		Template:    `undynamic(${1:sequenceables})`,
 		IsComposer:  true,
 		Samples:     `undynamic('A+ B++ C-- D-') // =>  A B C D`,
-		Func: func(value any) any {
-			if s, ok := getSequenceable(value); !ok {
-				return notify.Panic(fmt.Errorf("cannot undynamic (%T) %v", value, value))
-			} else {
-				return op.Undynamic{Target: s}
+		Func: func(m ...any) any {
+			list, ok := getSequenceableList(m...)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot undynamic (%T) %v", m, m))
 			}
+			if len(list) == 0 {
+				return notify.Panic(fmt.Errorf("cannot undynamic empty list"))
+			}
+			return op.Undynamic{Target: list}
 		}})
 
 	registerFunction(eval, "iterator", Function{
@@ -707,17 +687,17 @@ lp = loop(p,next(i))`,
 	registerFunction(eval, "rotate", Function{
 		Title:       "Rotation modifier",
 		Description: "rotates note(groups) in a sequence. count is negative for rotating left",
-		Template:    `rotate(${1:count},${2:object})`,
+		Template:    `rotate(${1:count},${2:sequenceables})`,
 		Samples: `rotate(-1,sequence('C E G')) // E G C
 			`,
-		Func: func(count any, m any) any {
-			s, ok := getSequenceable(m)
+		Func: func(count any, m ...any) any {
+			list, ok := getSequenceableList(m...)
 			if !ok {
-				return notify.Panic(fmt.Errorf("cannot rotate (%T) %v", s, s))
+				return notify.Panic(fmt.Errorf("cannot rotate (%T) %v", m, m))
 			}
 			return op.Rotate{
 				Times:  getHasValue(count),
-				Target: s,
+				Target: list,
 			}
 		}})
 
@@ -725,7 +705,7 @@ lp = loop(p,next(i))`,
 		Title:       "Stretch operator",
 		Description: "stretches the duration of musical object(s) with a factor. If the factor < 1 then duration is shortened",
 		Prefix:      "st",
-		Template:    `stretch(${1:factor},${2:object})`,
+		Template:    `stretch(${1:factor},${2:sequenceables})`,
 		Samples: `stretch(2,note('c'))  // 2C
 stretch(0.25,sequence('(c e g)'))  // (16C 16E 16G)
 stretch(8,note('c'))  // C with length of 8 x 0.25 (quarter) = 2 bars`,
@@ -741,15 +721,15 @@ stretch(8,note('c'))  // C with length of 8 x 0.25 (quarter) = 2 bars`,
 		Title:       "Group operator",
 		Description: "create a new sequence in which all notes of a musical object are grouped",
 		Prefix:      "gro",
-		Template:    `group(${1:sequenceable})`,
+		Template:    `group(${1:sequenceables})`,
 		Samples:     `group(sequence('c d e')) // => (C D E)`,
 		IsComposer:  true,
-		Func: func(value any) any {
-			if s, ok := getSequenceable(value); !ok {
-				return notify.Panic(fmt.Errorf("cannot group (%T) %v", value, value))
-			} else {
-				return op.Group{Target: s}
+		Func: func(m ...any) any {
+			list, ok := getSequenceableList(m...)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot group (%T) %v", m, m))
 			}
+			return op.Group{Target: list}
 		}})
 
 	// BEGIN Loop and control
@@ -758,7 +738,7 @@ stretch(8,note('c'))  // C with length of 8 x 0.25 (quarter) = 2 bars`,
 		Description:   "create a new loop from one or more musical objects",
 		ControlsAudio: true,
 		Prefix:        "loo",
-		Template:      `loop(${1:object})`,
+		Template:      `loop(${1:sequenceables})`,
 		Samples: `cb = sequence('c d e f g a b')
 loop(cb,reverse(cb))`,
 		Func: func(playables ...any) any {
@@ -999,17 +979,17 @@ lp_cdef = loop(transpose(int1,sequence('c d e f')), next(int1))`,
 		Title:       "Sequence modifier",
 		Description: "creates a modifier of sequence notes by index (1-based)",
 		Prefix:      "resq",
-		Template:    `resequence('${1:space-separated-1-based-indices}',${2:sequenceable})`,
+		Template:    `resequence('${1:space-separated-1-based-indices}',${2:sequenceables})`,
 		Samples: `s1 = sequence('C D E F G A B')
 i1 = resequence('6 5 4 3 2 1',s1) // => B A G F E D
 i2 = resequence('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)`,
 		IsComposer: true,
-		Func: func(pattern, m any) any {
-			s, ok := getSequenceable(m)
+		Func: func(pattern any, m ...any) any {
+			list, ok := getSequenceableList(m...)
 			if !ok {
-				return notify.Panic(fmt.Errorf("cannot create resequencer on (%T) %v", m, m))
+				return notify.Panic(fmt.Errorf("cannot resequence (%T) %v", m, m))
 			}
-			return op.NewResequencer(s, core.ToHasValue(pattern))
+			return op.NewResequencer(list, core.ToHasValue(pattern))
 		}})
 
 	registerFunction(eval, "notemap", Function{
@@ -1019,18 +999,14 @@ i2 = resequence('(6 5) 4 3 (2 1)',s1) // => (B A) G F (E D)`,
 		IsComposer:  true,
 		Samples: `m1 = notemap('..!..!..!', note('c2'))
 m2 = notemap('3 6 9', octave(-1,note('d2')))`,
-		Func: func(indices string, note any) any {
-			m, err := op.NewNoteMap(indices, getHasValue(note))
-			if err != nil {
-				return notify.Panic(fmt.Errorf("cannot create notemap, error:%v", err))
-			}
-			return m
+		Func: func(indices any, note any) any {
+			return op.NewNoteMap(getHasValue(indices), getHasValue(note))
 		}})
 
 	registerFunction(eval, "merge", Function{
 		Title:       "Merge creator",
 		Description: `merges multiple sequences into one sequence`,
-		Template:    `merge(${1:sequenceable})`,
+		Template:    `merge(${1:sequenceables})`,
 		Samples: `m1 = notemap('..!..!..!', note('c2'))
 m2 = notemap('4 7 10', note('d2'))
 all = merge(m1,m2) // => = = C2 D2 = C2 D2 = C2 D2 = =`,
@@ -1152,7 +1128,7 @@ loop(lp_pi)`,
 			return op.Trim{
 				Start:  getHasValue(skipStart),
 				End:    getHasValue(skipEnd),
-				Target: s}
+				Target: []core.Sequenceable{s}}
 		}})
 
 	registerFunction(eval, "tabs", Function{
@@ -1189,7 +1165,7 @@ td = replace(tc, c, d) // c -> d in tc`,
 			if !ok {
 				return notify.Panic(fmt.Errorf("cannot create replace with (%T) %v", to, to))
 			}
-			return op.Replace{Target: targetS, From: fromS, To: toS}
+			return op.Replace{Target: []core.Sequenceable{targetS}, From: fromS, To: toS}
 		}})
 
 	registerFunction(eval, "midi_send", Function{

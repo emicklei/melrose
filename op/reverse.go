@@ -7,15 +7,21 @@ import (
 )
 
 type Reverse struct {
-	Target core.Sequenceable
+	Target []core.Sequenceable
 }
 
 func (r Reverse) S() core.Sequence {
-	return r.Target.S().Reversed()
+	if len(r.Target) == 0 {
+		return core.EmptySequence
+	}
+	return r.Target[0].S().Reversed()
 }
 
 func (r Reverse) Storex() string {
-	if s, ok := r.Target.(core.Storable); ok {
+	if len(r.Target) == 0 {
+		return ""
+	}
+	if s, ok := r.Target[0].(core.Storable); ok {
 		return fmt.Sprintf("reverse(%s)", s.Storex())
 	}
 	return ""
@@ -26,11 +32,5 @@ func (r Reverse) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	if core.IsIdenticalTo(r, from) {
 		return to
 	}
-	if core.IsIdenticalTo(r.Target, from) {
-		return Reverse{Target: to}
-	}
-	if tr, ok := r.Target.(core.Replaceable); ok {
-		return Reverse{Target: tr.Replaced(from, to)}
-	}
-	return r
+	return Reverse{Target: replacedAll(r.Target, from, to)}
 }

@@ -9,10 +9,13 @@ import (
 type Trim struct {
 	Start  core.HasValue
 	End    core.HasValue
-	Target core.Sequenceable
+	Target []core.Sequenceable
 }
 
 func (t Trim) S() core.Sequence {
+	if len(t.Target) == 0 {
+		return core.EmptySequence
+	}
 	start, ok := t.Start.Value().(int)
 	if !ok || start < 0 {
 		start = 0
@@ -21,7 +24,7 @@ func (t Trim) S() core.Sequence {
 	if !ok || end < 0 {
 		end = 0
 	}
-	notes := t.Target.S().Notes
+	notes := t.Target[0].S().Notes
 	if end >= len(notes) {
 		return core.EmptySequence
 	}
@@ -31,7 +34,10 @@ func (t Trim) S() core.Sequence {
 }
 
 func (t Trim) Storex() string {
-	if s, ok := t.Target.(core.Storable); ok {
+	if len(t.Target) == 0 {
+		return ""
+	}
+	if s, ok := t.Target[0].(core.Storable); ok {
 		return fmt.Sprintf("trim(%s,%s,%s)",
 			core.Storex(t.Start),
 			core.Storex(t.End),
@@ -45,11 +51,5 @@ func (t Trim) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	if core.IsIdenticalTo(t, from) {
 		return to
 	}
-	if core.IsIdenticalTo(t.Target, from) {
-		return Trim{Start: t.Start, End: t.End, Target: to}
-	}
-	if rep, ok := t.Target.(core.Replaceable); ok {
-		return Trim{Start: t.Start, End: t.End, Target: rep.Replaced(from, to)}
-	}
-	return t
+	return Trim{Start: t.Start, End: t.End, Target: replacedAll(t.Target, from, to)}
 }

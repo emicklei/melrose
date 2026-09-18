@@ -100,27 +100,6 @@ var intervalStrategies = map[string]intervalStrategy{
 	"repeat-two-way": strategyRepeatFromToFrom{},
 }
 
-func (i *Interval) step() int {
-	if i.direction == 0 {
-		if step := Int(i.by); step > 0 {
-			i.direction = 1
-		} else if step < 0 {
-			i.direction = -1
-		}
-	}
-	step := Int(i.by)
-	if step < 0 {
-		step = -step
-	}
-	if i.direction > 0 {
-		return step
-	}
-	if i.direction < 0 {
-		return -step
-	}
-	return 0
-}
-
 // this will walk the interval once from [from] to [to]
 type strategyOnceFromTo struct{}
 

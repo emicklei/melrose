@@ -46,7 +46,7 @@ func DecomposeSequence(s core.Sequence) core.Sequenceable {
 	io.WriteString(fs, "'")
 	r := NewDynamicMap(
 		[]core.Sequenceable{FractionMap{
-			target:   core.Sequence{Notes: groups},
+			target:   []core.Sequenceable{core.Sequence{Notes: groups}},
 			fraction: core.On(fs),
 		}},
 		core.On(formatIndex2Dynamics(dynamics)),
