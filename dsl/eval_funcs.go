@@ -71,6 +71,29 @@ dynamic(112,note('a')) // => A++++`,
 			return op.Dynamic{Target: joined, Emphasis: getHasValue(emphasis)}
 		}})
 
+	registerFunction(eval, "volume", Function{
+		Title:       "Volume operator",
+		Description: "sets the MIDI velocity [0..127] of all notes in one or more musical objects",
+		Prefix:      "vol",
+		IsComposer:  true,
+		Template:    `volume(${1:value},${2:sequenceables})`,
+		Samples:     `volume(80,sequence('e f'))`,
+		Func: func(value any, playables ...any) any {
+			if direct, ok := value.(int); ok && (direct < 0 || direct > 127) {
+				return notify.Panic(fmt.Errorf("volume must be in [0..127], got %d", direct))
+			}
+			if _, isInt := value.(int); !isInt {
+				if _, hasValue := value.(core.HasValue); !hasValue {
+					return notify.Panic(fmt.Errorf("invalid volume parameter (%T) %v", value, value))
+				}
+			}
+			list, ok := getSequenceableList(playables...)
+			if !ok {
+				return notify.Panic(fmt.Errorf("cannot volume (%T) %v", playables, playables))
+			}
+			return op.Volume{Target: list, Value: getHasValue(value)}
+		}})
+
 	registerFunction(eval, "dynamicmap", Function{
 		Title:       "Dynamic Map creator",
 		Description: `changes the dynamic of notes from a musical object. 1-index-based mapping`,

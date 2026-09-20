@@ -198,6 +198,32 @@ d = dynamic(v,note('c'))`)
 	checkStorex(t, r, "dynamic(v,note('C'))")
 }
 
+func TestVolume(t *testing.T) {
+	r := eval(t, `v = 55
+volume(v,note('c'),sequence('(e g)'))`)
+	checkStorex(t, r, "volume(v,note('C'),sequence('(E G)'))")
+	sequence := r.(core.Sequenceable).S()
+	for _, group := range sequence.Notes {
+		for _, note := range group {
+			if got, want := note.Velocity, 55; got != want {
+				t.Errorf("got velocity %d, want %d", got, want)
+			}
+		}
+	}
+}
+
+func TestVolume_InvalidArgument(t *testing.T) {
+	for _, source := range []string{
+		`volume(-1,note('c'))`,
+		`volume(128,note('c'))`,
+		`volume('loud',note('c'))`,
+	} {
+		if _, err := newTestEvaluator().evaluateCleanStatement(source); err == nil {
+			t.Errorf("expected error evaluating %s", source)
+		}
+	}
+}
+
 func TestProcessLanguageTest(t *testing.T) {
 	src, _ := os.ReadFile("language_test.mel")
 	defer func() {
