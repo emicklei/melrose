@@ -47,6 +47,20 @@ func Test_compactGroup(t *testing.T) {
 	}
 }
 
+func TestSequenceReader_noteUpto_32ndRest(t *testing.T) {
+	r := &sequenceReader{sequence: core.MustParseSequence("C"), durationAtLastNote: 0.28175}
+	got, ok := r.noteUpto(0.25, 0.03175)
+	if !ok {
+		t.Fatal("expected a 32nd-note rest to be generated")
+	}
+	if len(got) != 1 || !got[0].IsRest() {
+		t.Fatalf("expected a single rest note, got %#v", got)
+	}
+	if got[0].DurationFactor() != 0.03175 {
+		t.Fatalf("expected 32nd-note rest duration, got %v", got[0].DurationFactor())
+	}
+}
+
 func TestMerge_Storex(t *testing.T) {
 	s1 := core.MustParseSequence("C")
 	m := Merge{Target: []core.Sequenceable{s1}}
