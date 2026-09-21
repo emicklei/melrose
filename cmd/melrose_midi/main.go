@@ -69,8 +69,8 @@ func main() {
 		timeline.Schedule(core.NewNoteChange(each.isOn, int64(each.key), int64(each.velocity)), when)
 	}
 
-	gc := gg.NewContext(2000, 150)
 	nv := img.NotesView{Events: timeline.NoteEvents(), BPM: averageBPM}
+	gc := gg.NewContext(nv.Width(), nv.Height())
 	nv.DrawOn(gc)
 	if err := gc.SavePNG("fur-elise.png"); err != nil {
 		fmt.Fprintln(os.Stderr, "failed to save image:", err)

@@ -10,6 +10,41 @@ import (
 	"github.com/fogleman/gg"
 )
 
+func TestNotesViewWidth(t *testing.T) {
+	bpm := 120.0
+	start := time.Now()
+	tests := []struct {
+		name     string
+		duration time.Duration
+		want     int
+	}{
+		{name: "thirty-second note", duration: core.WholeNoteDuration(bpm) / 32, want: 2},
+		{name: "sixteenth note", duration: core.WholeNoteDuration(bpm) / 16, want: 4},
+		{name: "whole note", duration: core.WholeNoteDuration(bpm), want: 64},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			view := NotesView{
+				Events: []core.NoteEvent{{Start: start, End: start.Add(test.duration), Number: 60}},
+				BPM:    bpm,
+			}
+			if got := view.Width(); got != test.want {
+				t.Fatalf("Width() = %d, want %d", got, test.want)
+			}
+		})
+	}
+}
+
+func TestNotesViewHeight(t *testing.T) {
+	view := NotesView{Events: []core.NoteEvent{
+		{Number: 60},
+		{Number: 64},
+	}}
+	if got, want := view.Height(), 20; got != want {
+		t.Fatalf("Height() = %d, want %d", got, want)
+	}
+}
+
 func sampleTimeline() *core.Timeline {
 	tim := core.NewTimeline()
 	now := time.Now()
@@ -40,10 +75,9 @@ func sampleTimeline() *core.Timeline {
 
 func TestDraw(t *testing.T) {
 	tl := sampleTimeline()
-	gc := gg.NewContext(1000, 150)
-
 	evts := tl.NoteEvents()
 	nv := NotesView{Events: evts, BPM: 10.0}
+	gc := gg.NewContext(nv.Width(), nv.Height())
 	nv.DrawOn(gc)
 	gc.SavePNG("TestDraw.png")
 }
@@ -54,8 +88,8 @@ func TestRecordedTimeline(t *testing.T) {
 	// TODO stored from control/recording.go:54
 	events := core.NoteEventsFromFile("/tmp/melrose-recording.json")
 	t.Log("event count:", len(events))
-	gc := gg.NewContext(1000, 100)
 	nv := NotesView{Events: events, BPM: bpm}
+	gc := gg.NewContext(nv.Width(), nv.Height())
 	nv.DrawOn(gc)
 	gc.SavePNG("TestRecorded_RAW.png")
 
@@ -67,8 +101,8 @@ func TestRecordedTimeline(t *testing.T) {
 		tim := core.NewTimeline()
 		d := midi.NewOutputDevice(0, nil, 0, tim)
 		d.Play(core.NoCondition, seq, bpm, time.Now())
-		gc := gg.NewContext(500, 50)
 		nv := NotesView{Events: tim.NoteEvents(), BPM: bpm}
+		gc := gg.NewContext(nv.Width(), nv.Height())
 		nv.DrawOn(gc)
 		gc.SavePNG("TestRecorded_PROCESSED.png")
 	}
@@ -84,8 +118,8 @@ func TestScaleInputSequenceBuilder(t *testing.T) {
 	tim := core.NewTimeline()
 	d := midi.NewOutputDevice(0, nil, 0, tim)
 	d.Play(core.NoCondition, seq, bpm, time.Now())
-	gc := gg.NewContext(500, 100)
 	nv := NotesView{Events: tim.NoteEvents(), BPM: bpm}
+	gc := gg.NewContext(nv.Width(), nv.Height())
 	nv.DrawOn(gc)
 	gc.SavePNG("TestRecorded_SCALE.png")
 }
