@@ -1,7 +1,6 @@
 package dsl
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -25,66 +24,25 @@ func NewEvaluator(ctx core.Context) *Evaluator {
 	}
 }
 
-const fourSpaces = "    "
-
 // Statements are separated by newlines and semicolons.
-// If a line is prefixed by one or more TABs then that line is appended to the previous.
-// If a line is prefixed by 4 SPACES then that line is appended to the previous.
 // Return the result of the last expression or statement.
 func (e *Evaluator) EvaluateProgram(source string) (any, error) {
-	splitted := strings.Split(source, "\n")
-	lines := make([]string, 0, len(splitted))
-
-	// indentation
-	nrOfLastExpression := -1
-	for lineNr, line := range splitted {
-		if strings.HasPrefix(line, "\t") || strings.HasPrefix(line, fourSpaces) || (strings.TrimSpace(line) == ")" && len(lines) > 0 && strings.Count(lines[len(lines)-1], "(") > strings.Count(lines[len(lines)-1], ")")) { // append to previous
-			if len(lines) == 0 {
-				return nil, errors.New("syntax error, first line cannot start with TAB")
-			}
-			if nrOfLastExpression+1 != lineNr {
-				return nil, fmt.Errorf("syntax error, line with TAB [%d] must be part of expression", lineNr+1)
-			}
-			lines[len(lines)-1] = withoutTrailingComment(lines[len(lines)-1]) + line // with TAB TODO
-			nrOfLastExpression = lineNr
-			continue
-		}
-		lines = append(lines, line)
-		nrOfLastExpression = lineNr
+	statements, err := CleanStatements(source)
+	if err != nil {
+		return nil, err
 	}
-	// now, lines dont have leading tabs or 4 spaces
 
 	var lastResult any
-	for _, line := range lines {
-		// replace all TABs
-		line = strings.Replace(line, "\t", " ", -1)
-		// whitespaces
-		line = strings.TrimSpace(line)
-		// empty
-		if len(line) == 0 {
+	for _, statement := range statements {
+		if strings.HasPrefix(strings.TrimSpace(statement), "//") {
 			continue
 		}
-		// comment line
-		if strings.HasPrefix(line, "//") {
-			continue
+		result, err := e.evaluateCleanStatement(statement)
+		if err != nil {
+			return nil, err
 		}
-		// trailing inline comment
-		line = withoutTrailingComment(line)
-
-		for _, statement := range strings.Split(line, ";") {
-			// whitespaces
-			statement = strings.TrimSpace(statement)
-			// empty
-			if len(statement) == 0 {
-				continue
-			}
-			result, err := e.evaluateCleanStatement(statement)
-			if err != nil {
-				return nil, err
-			}
-			if result != nil {
-				lastResult = result
-			}
+		if result != nil {
+			lastResult = result
 		}
 	}
 	return lastResult, nil
@@ -331,11 +289,4 @@ func (e *Evaluator) LookupFunction(fn string) (Function, bool) {
 		}
 	}
 	return Function{}, false
-}
-
-func withoutTrailingComment(s string) string {
-	if slashes := strings.Index(s, "//"); slashes != -1 {
-		return s[0:slashes]
-	}
-	return s
 }

@@ -253,14 +253,12 @@ func TestEvaluate_Scale_At(t *testing.T) {
 
 func TestLineCommentOnBrokenExpression(t *testing.T) {
 	e := newTestEvaluator()
-	r, err := e.EvaluateProgram(
+	_, err := e.EvaluateProgram(
 		`join( // comment
 	sequence('A'))`)
-	checkError(t, err)
-	if got, want := r.(op.Join).Storex(), "join(sequence('A'))"; got != want {
-		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	if err == nil {
+		t.Fatal("expected an error for a comment inside an expression")
 	}
-
 }
 
 func TestKeyOnNoteString(t *testing.T) {
