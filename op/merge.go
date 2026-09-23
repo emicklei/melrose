@@ -154,30 +154,31 @@ func (r *sequenceReader) noteUpto(duration float32, shortest float32) (list []co
 			diff = shortest
 		}
 		var rest core.Note
-		switch diff {
-		case 1.5:
+		const tolerance = 0.00001
+		switch {
+		case math.Abs(float64(diff-1.5)) < tolerance:
 			rest = core.MustParseNote("1.=")
-		case 1.0:
+		case math.Abs(float64(diff-1.0)) < tolerance:
 			rest = core.MustParseNote("1=")
-		case 0.75:
+		case math.Abs(float64(diff-0.75)) < tolerance:
 			rest = core.MustParseNote("2.=")
-		case 0.5:
+		case math.Abs(float64(diff-0.5)) < tolerance:
 			rest = core.MustParseNote("2=")
-		case 0.375:
+		case math.Abs(float64(diff-0.375)) < tolerance:
 			rest = core.MustParseNote(".=")
-		case 0.25:
+		case math.Abs(float64(diff-0.25)) < tolerance:
 			rest = core.MustParseNote("=")
-		case 0.1875:
+		case math.Abs(float64(diff-0.1875)) < tolerance:
 			rest = core.MustParseNote("8.=")
-		case 0.125:
+		case math.Abs(float64(diff-0.125)) < tolerance:
 			rest = core.MustParseNote("8=")
-		case 0.09375:
+		case math.Abs(float64(diff-0.09375)) < tolerance:
 			rest = core.MustParseNote("16.=")
-		case 0.0625:
+		case math.Abs(float64(diff-0.0625)) < tolerance:
 			rest = core.MustParseNote("16=")
-		case 0.047625:
+		case math.Abs(float64(diff-0.047625)) < tolerance:
 			rest = core.MustParseNote("32.=")
-		case 0.03175:
+		case math.Abs(float64(diff-0.03175)) < tolerance:
 			rest = core.MustParseNote("32=")
 		default:
 			return list, false
