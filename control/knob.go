@@ -35,23 +35,12 @@ func (k *Knob) Storex() string {
 }
 
 func (k *Knob) NoteOn(channel int, n core.Note) {
-	if notify.IsDebug() {
-		notify.Debugf("knob.NoteOn %v", n)
-	}
+	notify.Debugf("knob.NoteOn %v", n)
 }
 func (k *Knob) NoteOff(channel int, n core.Note) {
-	if notify.IsDebug() {
-		notify.Debugf("knob.NoteOff %v", n)
-	}
+	notify.Debugf("knob.NoteOff %v", n)
 }
 func (k *Knob) ControlChange(channel, number, value int) {
-	if notify.IsDebug() {
-		notify.Debugf("knob.ControlChange ch=%d,nr=%d,val=%d", channel, number, value)
-	}
-	// TODO check channel
-	// if number != number {
-	// 	return
-	// }
 	notify.Infof("knob %s (%d,%d,%d) = %d", k.variableName, k.deviceID, k.channel, k.number, value)
 	k.currentValue = value
 }

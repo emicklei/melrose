@@ -66,9 +66,8 @@ func (b *Beatmaster) SettingNotifier(handler func(LoopController)) {
 // bars is zero-based
 func (b *Beatmaster) Plan(bars int64, seq Sequenceable) {
 	atBeats := b.beatsAtNextBar() + (b.biab * bars)
-	if notify.IsDebug() {
-		notify.Debugf("beat.schedule at beats: %d put: %s bars: %.2f", atBeats, Storex(seq), seq.S().Bars(int(b.biab)))
-	}
+	notify.Debugf("beat.schedule at beats: %d put: %s bars: %.2f", atBeats, Storex(seq), seq.S().Bars(int(b.biab)))
+
 	b.schedule.Schedule(atBeats, func(when time.Time) {
 		d := b.context.Device()
 		if d != nil { // TODO happens on testing; NEEDSFIX
