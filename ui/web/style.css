@@ -50,20 +50,6 @@ header {
     font-family: monospace;
 }
 
-header label {
-    opacity: .7;
-}
-
-header input {
-    background: #3c3c3c;
-    border: 1px solid var(--line);
-    color: var(--fg);
-    padding: 3px 6px;
-    border-radius: 3px;
-    width: 190px;
-    font-family: monospace;
-}
-
 header button {
     background: #0e639c;
     border: none;
@@ -87,6 +73,20 @@ main {
 #editor {
     flex: 1;
     min-height: 0;
+}
+
+.stoppable-glyph::before {
+    content: "";
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin: 2px auto 0;
+    border-radius: 50%;
+    background: #e51400;
+}
+
+.stoppable-glyph {
+    cursor: pointer;
 }
 
 #output {

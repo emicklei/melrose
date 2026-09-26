@@ -13,7 +13,6 @@ const FUNCTIONS = [
 ];
 
 const STORAGE_KEY = "melrose.web.source";
-const ENDPOINT_KEY = "melrose.web.endpoint";
 const FILENAME = "melrose-web.mel";
 
 const DEFAULT_SOURCE = [
@@ -31,18 +30,9 @@ const DEFAULT_SOURCE = [
     ""
 ].join("\n");
 
-const endpointInput = document.getElementById("endpoint");
 const outputEl = document.getElementById("output");
 let editor = null;
-
-// When served by melrose itself the API lives on the same origin.
-if (location.protocol.startsWith("http")) {
-    endpointInput.value = location.origin;
-}
-
-function endpoint() {
-    return endpointInput.value.replace(/\/+$/, "");
-}
+const stoppableMarkers = new Map();
 
 function log(action, message, isError) {
     const entry = document.createElement("div");
@@ -57,12 +47,12 @@ function log(action, message, isError) {
 }
 
 /* Returns the selected text, or the contiguous block of non-empty lines
-   around the cursor, together with its one-based start line. */
+    around the cursor, together with its one-based end line. */
 function currentStatement() {
     const model = editor.getModel();
     const selection = editor.getSelection();
     if (selection && !selection.isEmpty()) {
-        return { source: model.getValueInRange(selection), line: selection.startLineNumber };
+          return { source: model.getValueInRange(selection), line: selection.endLineNumber };
     }
     const cursor = editor.getPosition().lineNumber;
     const isBlank = (n) => model.getLineContent(n).trim().length === 0;
@@ -75,16 +65,19 @@ function currentStatement() {
     while (end < model.getLineCount() && !isBlank(end + 1)) end++;
     const lines = [];
     for (let n = start; n <= end; n++) lines.push(model.getLineContent(n));
-    return { source: lines.join("\n"), line: start };
+    return { source: lines.join("\n"), line: end };
 }
 
-async function perform(action) {
-    const { source, line } = currentStatement();
+async function perform(action, targetLine) {
+    const breakpointLine = action === "stop" ? (targetLine ?? Array.from(stoppableMarkers.keys()).pop()) : undefined;
+    const { source, line } = breakpointLine === undefined
+        ? currentStatement()
+        : { source: editor.getModel().getLineContent(breakpointLine), line: breakpointLine };
     if (source.trim().length === 0) {
         log(action, "nothing to send", true);
         return;
     }
-    const url = endpoint() + "/v1/statements?action=" + encodeURIComponent(action) +
+    const url = location.origin + "/v1/statements?action=" + encodeURIComponent(action) +
         "&file=" + encodeURIComponent(FILENAME) + "&line=" + line;
     let response;
     try {
@@ -95,7 +88,7 @@ async function perform(action) {
             body: source
         });
     } catch (err) {
-        log(action, "cannot reach " + endpoint() + " : " + err, true);
+        log(action, "cannot reach " + location.origin + " : " + err, true);
         return;
     }
     let result;
@@ -107,8 +100,18 @@ async function perform(action) {
         return;
     }
     const failed = result["is-error"] === true || !response.ok;
+    if (!failed) {
+        const previous = stoppableMarkers.get(result.line) || [];
+        const markers = action !== "stop" && result.stoppable === true ? [{
+            range: new monaco.Range(result.line, 1, result.line, 1),
+            options: { glyphMarginClassName: "stoppable-glyph", glyphMarginHoverMessage: { value: "Stop" } }
+        }] : [];
+        const updated = editor.deltaDecorations(previous, markers);
+        if (markers.length) stoppableMarkers.set(result.line, updated);
+        else stoppableMarkers.delete(result.line);
+    }
     const parts = [];
-    if (result.type) parts.push(result.type);
+    //if (result.type) parts.push(result.type);
     if (result.message) parts.push(result.message);
     if (!parts.length && result.object != null) parts.push(JSON.stringify(result.object));
     log(action, parts.join(" : ") || "ok", failed);
@@ -117,9 +120,9 @@ async function perform(action) {
 async function fetchVersion() {
     const el = document.getElementById("version");
     try {
-        const response = await fetch(endpoint() + "/version");
+        const response = await fetch(location.origin + "/version");
         const info = await response.json();
-        el.textContent = "api " + info.APIVersion + " · syntax " + info.SyntaxVersion + " · " + info.BuildTag;
+        el.textContent = "version " + info.BuildTag;
     } catch (err) {
         el.textContent = "offline";
     }
@@ -180,6 +183,7 @@ require(["vs/editor/editor.main"], function () {
         language: "melrose",
         theme: "vs-dark",
         automaticLayout: true,
+        glyphMargin: true,
         fontSize: 14,
         minimap: { enabled: false },
         scrollBeyondLastLine: false
@@ -189,17 +193,25 @@ require(["vs/editor/editor.main"], function () {
         localStorage.setItem(STORAGE_KEY, editor.getValue());
     });
 
-    const bind = (keybinding, action) => {
+    editor.onMouseDown((event) => {
+        if (event.target.type !== monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN) return;
+        const line = event.target.position?.lineNumber;
+        if (stoppableMarkers.has(line)) perform("stop", line);
+    });
+
+    const bind = (keyCode, action) => {
+        const keybindings = [monaco.KeyMod.CtrlCmd | keyCode];
+        if (navigator.platform.startsWith("Mac")) keybindings.push(monaco.KeyMod.WinCtrl | keyCode);
         editor.addAction({
             id: "melrose." + action,
             label: "Melrōse: " + action,
-            keybindings: [keybinding],
+            keybindings: keybindings,
             run: () => perform(action)
         });
     };
-    bind(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE, "eval");
-    bind(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Digit3, "play");
-    bind(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Digit5, "stop");
+    bind(monaco.KeyCode.KeyE, "eval");
+    bind(monaco.KeyCode.Digit3, "play");
+    bind(monaco.KeyCode.Digit5, "stop");
 
     editor.focus();
 });
@@ -208,12 +220,6 @@ document.getElementById("btn-eval").onclick = () => perform("eval");
 document.getElementById("btn-play").onclick = () => perform("play");
 document.getElementById("btn-stop").onclick = () => perform("stop");
 document.getElementById("btn-clear").onclick = () => { outputEl.textContent = ""; };
-
-endpointInput.value = localStorage.getItem(ENDPOINT_KEY) || endpointInput.value;
-endpointInput.onchange = () => {
-    localStorage.setItem(ENDPOINT_KEY, endpoint());
-    fetchVersion();
-};
 
 // Same shortcuts while focus is outside the editor; Monaco handles them itself.
 window.addEventListener("keydown", (e) => {
