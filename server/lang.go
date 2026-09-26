@@ -7,6 +7,7 @@ import (
 	"github.com/emicklei/melrose/api"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
+	"github.com/emicklei/melrose/ui/web"
 	"github.com/emicklei/structexplorer"
 )
 
@@ -31,6 +32,7 @@ func (l *LanguageServer) Start() error {
 	http.HandleFunc("/v1/pianoroll", l.pianorollImageHandler)
 	http.HandleFunc("/version", l.versionHandler)
 	http.HandleFunc("/explore", structexplorer.NewService("ctx", l.context).ServeHTTP)
+	http.Handle("/", http.FileServer(http.FS(web.Assets)))
 	return http.ListenAndServe(l.address, nil)
 }
 

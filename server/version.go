@@ -16,6 +16,7 @@ type versionInfo struct {
 
 func (l *LanguageServer) versionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("access-control-allow-origin", "*")
 	v := versionInfo{
 		APIVersion:    "v1",
 		SyntaxVersion: dsl.SyntaxVersion,
