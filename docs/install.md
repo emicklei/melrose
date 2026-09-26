@@ -21,6 +21,12 @@ The minimum requirement is Go 1.24.2. On a Mac, macOS 11 Big Sur or higher is re
 
 ## Mac OSX
 
+### Using `brew` for the latest release
+
+	brew install emicklei/tap/melrose
+
+### From source
+
 	go install github.com/emicklei/melrose/cmd/melrose@latest
 
 After installing `melrōse`, you can start the tool in a Terminal using:
