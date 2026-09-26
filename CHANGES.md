@@ -2,6 +2,7 @@
 
 ## [v1.0.0-beta*] - 
 
+- add Web interface, started with ":w"
 - add "load", "play" and "check" subcommands
 - allow tolerance in merge
 - support 32 in merge

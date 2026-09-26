@@ -35,6 +35,10 @@ Program flags can be used before or after a subcommand. For example:
 Commands to control the program itself are prefix with a colon `:`.
 With `:h` you get the list of known commands.
 
+Use `:w` to open the Web UI in your default browser. It uses the address set by
+`-http` (by default, `http://localhost:8118`). The command cannot open the UI
+when the HTTP server is disabled with `-http ""`.
+
 ### CLI line editing
 
 The following line editing commands are supported on platforms and terminals

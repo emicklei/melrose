@@ -24,9 +24,7 @@ const DEFAULT_SOURCE = [
     "",
     'bpm(120)',
     "",
-    's1 = sequence("C E G")',
-    "",
-    "play(s1)",
+    's1 = seq("C E G")',
     ""
 ].join("\n");
 
@@ -69,10 +67,11 @@ function currentStatement() {
 }
 
 async function perform(action, targetLine) {
-    const breakpointLine = action === "stop" ? (targetLine ?? Array.from(stoppableMarkers.keys()).pop()) : undefined;
-    const { source, line } = breakpointLine === undefined
-        ? currentStatement()
-        : { source: editor.getModel().getLineContent(breakpointLine), line: breakpointLine };
+    const { source, line } = action === "stop" && targetLine !== undefined
+        ? { source: editor.getModel().getLineContent(targetLine), line: targetLine }
+        : editor.getSelection().isEmpty()
+            ? { source: editor.getModel().getValue(), line: editor.getModel().getLineCount() }
+            : currentStatement();
     if (source.trim().length === 0) {
         log(action, "nothing to send", true);
         return;
@@ -115,6 +114,23 @@ async function perform(action, targetLine) {
     if (result.message) parts.push(result.message);
     if (!parts.length && result.object != null) parts.push(JSON.stringify(result.object));
     log(action, parts.join(" : ") || "ok", failed);
+}
+
+async function clearEditor() {
+    try {
+        const response = await fetch(location.origin + "/v1/statements?action=kill", { method: "POST" });
+        const result = await response.json();
+        if (!response.ok || result["is-error"] === true) {
+            throw new Error(result.message || response.statusText);
+        }
+    } catch (err) {
+        log("kill", "cannot stop music: " + err, true);
+        return;
+    }
+    editor.deltaDecorations(Array.from(stoppableMarkers.values()).flat(), []);
+    stoppableMarkers.clear();
+    editor.setValue("");
+    outputEl.textContent = "";
 }
 
 async function fetchVersion() {
@@ -219,7 +235,7 @@ require(["vs/editor/editor.main"], function () {
 document.getElementById("btn-eval").onclick = () => perform("eval");
 document.getElementById("btn-play").onclick = () => perform("play");
 document.getElementById("btn-stop").onclick = () => perform("stop");
-document.getElementById("btn-clear").onclick = () => { outputEl.textContent = ""; };
+document.getElementById("btn-clear").onclick = clearEditor;
 
 // Same shortcuts while focus is outside the editor; Monaco handles them itself.
 window.addEventListener("keydown", (e) => {

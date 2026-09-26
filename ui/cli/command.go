@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/server"
+	"github.com/emicklei/melrose/ui/web"
 
 	"github.com/emicklei/melrose/dsl"
 	"github.com/emicklei/melrose/notify"
@@ -30,6 +32,7 @@ func cmdFunctions() map[string]Command {
 	cmds[":e"] = Command{Description: "echo MIDI", Func: handleEchoNotes}
 	cmds[":l"] = Command{Description: "list all key triggers", Func: handleListKeyTriggers}
 	cmds[":r"] = Command{Description: "reset", Func: handleReset}
+	cmds[":w"] = Command{Description: "open Web UI in the default browser", Func: handleOpenWebUI}
 	return cmds
 }
 
@@ -94,4 +97,16 @@ func handleListKeyTriggers(ctx core.Context, args []string) notify.Message {
 
 func handleReset(ctx core.Context, args []string) notify.Message {
 	return ctx.Device().Command(append([]string{"r"}, args...))
+}
+
+func handleOpenWebUI(ctx core.Context, args []string) notify.Message {
+	url, err := server.WebURL()
+	if err != nil {
+		return notify.NewErrorf("failed to open Web UI: %v", err)
+	}
+	err = web.OpenURL(url)
+	if err != nil {
+		return notify.NewErrorf("failed to open Web UI: %v", err)
+	}
+	return notify.NewInfof("Web UI opened in the default browser")
 }
