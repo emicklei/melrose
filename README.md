@@ -8,35 +8,33 @@
 
 `melrōse` is a tool to create and play music by programming melodies.
 It uses a custom language to compose notes and create loops and tracks to play.
+Write note patterns as short text expressions, then play them through a MIDI device or music app.
+
+MIDI (Musical Instrument Digital Interface) is a digital communication language that sends musical instructions—like which note to play, how long to hold it, and how hard it is struck—between electronic instruments and computers.
+
 This is an example of a simple major scale C.
 
 ```javascript
 sequence('c d e f g a b c5') // or use the alias "seq"
 ```
 
-Note sequences in your program can be changed while playing giving you direct audible feedback. 
-For the best experience, use the `melrōse` tool together with the Visual Studio Code Plugin for Melrōse.
+Note sequences in your program can be changed while playing giving you direct audible feedback.
 
 See also [Blog post](http://ernestmicklei.com/melrose/introduction_melrose/)
 
 Read the [documentation](https://melrōse.org/) on how to use `melrōse`.
 
-## Web
+## Choose your setup
 
-See [Melrōse Playground](https://play.melrōse.org) to start writing programs directly in the browser and connect to a local running MIDI receiver, e.g. Apple Garageband.
+- **Try it in your browser:** Open the [Melrōse Playground](https://play.melrōse.org), enter the scale example above, connect a MIDI receiver such as GarageBand, and use the play control.
+- **Work locally with music files and MIDI devices:** [Install Melrōse](docs/install.md) to use its terminal REPL and minimal Web UI. A local installation can connect to multiple devices, with up to 16 MIDI channels available per device.
+- **Compose in Visual Studio Code:** Install the [Melrōse VS Code extension](https://marketplace.visualstudio.com/items?itemName=EMicklei.melrose-for-vscode) to manage music files and play music from the editor.
 
-## Install
-
-To have a full experience of the tool in which you can work with multiple devices and files, you can install it locally on our machine. It runs in any terminal and serves both a REPL (read evaluate play loop) and a minimal Web UI. 
-See [Build instructions](docs/install.md).
-
-### Programming music
+### Showcase
 
 <img src="docs/images/riboluta-melrose.png" alt="riboluta-melrose" width="80%">
 
-### System setup
-
-The `melrōse` tool can connect to multiple devices at the same time and for each device, you can choose any of the 16 channels to send or receive MIDI.
+### MIDI setup
 
 ![melrose-port-daw.png](docs/images/melrose-port-daw.png)
 
@@ -56,4 +54,5 @@ See [melrose-mcp](https://github.com/emicklei/melrose-mcp) for details how to in
 - `slidermidi` is a tool that provides an interactive UI Sliders to send MIDI change event. This can be used to control the playing of music in `melrōse`.See [slidermidi](https://codeberg.org/emicklei/slidermidi) for details how to install and use it.
 
 Software is licensed under [MIT](LICENSE).
+
 &copy; 2026 [ernestmicklei.com](http://ernestmicklei.com)
