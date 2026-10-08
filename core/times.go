@@ -6,7 +6,79 @@ import (
 )
 
 func WholeNoteDuration(bpm float64) time.Duration {
-	return time.Duration(int(math.Round(4*60*1000/bpm))) * time.Millisecond
+	return fractionDuration(1, bpm)
+}
+
+func fractionDuration(fraction, bpm float64) time.Duration {
+	return time.Duration(math.Round(fraction * 240 * float64(time.Second) / bpm))
+}
+
+const musicalTicksPerWhole = 1 << 32
+
+type PlaybackClock struct {
+	origin time.Time
+	bpm    float64
+	ticks  int64
+	fixed  time.Duration
+}
+
+func NewPlaybackClock(begin time.Time, bpm float64) PlaybackClock {
+	return PlaybackClock{origin: begin, bpm: bpm}
+}
+
+func (c PlaybackClock) Duration() time.Duration {
+	return fractionDuration(float64(c.ticks)/musicalTicksPerWhole, c.bpm) + c.fixed
+}
+
+func (c PlaybackClock) Time() time.Time {
+	return c.origin.Add(c.Duration())
+}
+
+func (c *PlaybackClock) SetBPM(bpm float64) {
+	if c.bpm == bpm {
+		return
+	}
+	c.origin = c.Time()
+	c.bpm = bpm
+	c.ticks = 0
+	c.fixed = 0
+}
+
+func (c PlaybackClock) After(note Note) PlaybackClock {
+	if note.duration > 0 {
+		c.fixed += note.duration
+	} else {
+		fraction := float64(note.fraction)
+		if note.Dotted {
+			fraction *= 1.5
+		}
+		c.ticks += int64(math.Round(fraction * musicalTicksPerWhole))
+	}
+	for _, tied := range note.tied {
+		c = c.After(tied)
+	}
+	return c
+}
+
+func (c PlaybackClock) AfterGroup(notes []Note) PlaybackClock {
+	if len(notes) == 0 {
+		return c
+	}
+	earliest := c.After(notes[0])
+	for _, note := range notes[1:] {
+		end := c.After(note)
+		if end.Duration() < earliest.Duration() {
+			earliest = end
+		}
+	}
+	return earliest
+}
+
+func (c PlaybackClock) AfterSequence(sequence Sequence) PlaybackClock {
+	for _, group := range sequence.Notes {
+		c = c.AfterGroup(group)
+	}
+	return c
 }
 
 func FractionToDurationParts(f float64) (fraction float32, dotted bool) {

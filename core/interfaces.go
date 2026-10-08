@@ -58,6 +58,10 @@ type AudioDevice interface {
 	Report()
 }
 
+type ClockedAudioDevice interface {
+	PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time
+}
+
 type DeviceDescriptor struct {
 	ID      int
 	IsInput bool

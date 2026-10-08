@@ -20,6 +20,9 @@ type Loop struct {
 	condition  Condition
 	startedAt  time.Time
 	nextPlayAt time.Time
+	clock      *PlaybackClock
+	cycleTicks int64
+	cycleFixed time.Duration
 }
 
 func NewLoop(ctx Context, target []Sequenceable) *Loop {
@@ -76,7 +79,7 @@ func (l *Loop) Inspect(i Inspection) {
 }
 
 // in mutex
-func (l *Loop) reschedule(d AudioDevice, when time.Time) {
+func (l *Loop) reschedule(d AudioDevice) {
 	if !l.isRunning {
 		return
 	}
@@ -84,13 +87,37 @@ func (l *Loop) reschedule(d AudioDevice, when time.Time) {
 		l.isRunning = false
 		return
 	}
-	moment := when
+	bpm := l.ctx.Control().BPM()
+	l.clock.SetBPM(bpm)
+	moment := l.clock.Time()
+	begin := moment
+	startClock := *l.clock
+	clocked, usesClock := d.(ClockedAudioDevice)
 	for _, each := range l.target {
 		// after each other
-		moment = d.Play(l.condition, each, l.ctx.Control().BPM(), moment)
+		if usesClock {
+			moment = clocked.PlayWithClock(l.condition, each, l.clock)
+		} else {
+			moment = d.Play(l.condition, each, bpm, moment)
+			*l.clock = NewPlaybackClock(moment, bpm)
+		}
 	}
 	if notify.IsDebug() {
 		notify.Debugf("core.loop: next=%s", moment.Format("15:04:05.00"))
+	}
+	if !moment.After(begin) {
+		l.isRunning = false
+		if runningLoop == l {
+			runningLoop = nil
+		}
+		return
+	}
+	if usesClock {
+		l.cycleTicks = l.clock.ticks - startClock.ticks
+		l.cycleFixed = l.clock.fixed - startClock.fixed
+	} else {
+		l.cycleTicks = 0
+		l.cycleFixed = moment.Sub(begin)
 	}
 	// schedule the loop itself so it can play again when Handle is called
 	l.nextPlayAt = moment
@@ -114,7 +141,33 @@ func (l *Loop) Handle(tim *Timeline, when time.Time) {
 	if !l.isRunning {
 		return
 	}
-	l.reschedule(l.ctx.Device(), when)
+	l.clock.SetBPM(l.ctx.Control().BPM())
+	period := PlaybackClock{bpm: l.clock.bpm, ticks: l.cycleTicks, fixed: l.cycleFixed}.Duration()
+	next := *l.clock
+	next.ticks += l.cycleTicks
+	next.fixed += l.cycleFixed
+	if period > 0 && !next.Time().After(when) {
+		missed := int64(when.Sub(l.clock.Time()) / period)
+		if missed < 1 {
+			missed = 1
+		}
+		l.clock.ticks += missed * l.cycleTicks
+		l.clock.fixed += time.Duration(missed) * l.cycleFixed
+		for l.clock.Time().After(when) {
+			l.clock.ticks -= l.cycleTicks
+			l.clock.fixed -= l.cycleFixed
+		}
+		for {
+			end := *l.clock
+			end.ticks += l.cycleTicks
+			end.fixed += l.cycleFixed
+			if end.Time().After(when) {
+				break
+			}
+			*l.clock = end
+		}
+	}
+	l.reschedule(l.ctx.Device())
 }
 
 func (l *Loop) NoteChangesDo(block func(NoteChange)) {}
@@ -140,7 +193,9 @@ func (l *Loop) Play(ctx Context, while Condition, at time.Time) time.Time {
 	l.isRunning = true
 	l.condition = while
 	l.startedAt = when
-	l.reschedule(l.ctx.Device(), when)
+	clock := NewPlaybackClock(when, ctx.Control().BPM())
+	l.clock = &clock
+	l.reschedule(l.ctx.Device())
 	return forever
 }
 

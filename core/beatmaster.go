@@ -1,7 +1,6 @@
 package core
 
 import (
-	"math"
 	"time"
 
 	"github.com/emicklei/melrose/notify"
@@ -12,7 +11,7 @@ type Beatmaster struct {
 	context         Context
 	beating         bool
 	bpmChanges      chan float64
-	ticker          *time.Ticker
+	timer           *time.Timer
 	done            chan bool
 	schedule        *BeatSchedule
 	beats           int64   // monotonic increasing number, starting at 0
@@ -128,9 +127,12 @@ func (b *Beatmaster) Start() {
 	}
 	b.notifySettingChanged()
 	b.beats = 0
-	b.ticker = time.NewTicker(beatTickerDuration(b.bpm))
+	clock := NewPlaybackClock(time.Now(), b.bpm)
+	nextBeat := clock.After(Rest4)
+	b.timer = time.NewTimer(time.Until(nextBeat.Time()))
 	b.beating = true
 	go func() {
+		defer b.timer.Stop()
 		if notify.IsDebug() {
 			notify.Debugf("core.beatmaster: started bpm=%v tick=%v", b.bpm, beatTickerDuration(b.bpm))
 		}
@@ -148,32 +150,38 @@ func (b *Beatmaster) Start() {
 					}
 					b.bpm = bpm
 					b.notifySettingChanged()
-					b.ticker.Stop()
-					b.ticker = time.NewTicker(beatTickerDuration(bpm))
 				default:
 				}
+			}
+			if clock.bpm != b.bpm {
+				clock.SetBPM(b.bpm)
+				nextBeat = clock.After(Rest4)
+				b.timer.Reset(time.Until(nextBeat.Time()))
 			}
 			// in between bars
 			select {
 			case <-b.done:
 				return
-			case now := <-b.ticker.C:
+			case <-b.timer.C:
+				clock = nextBeat
 				if b.schedule.IsEmpty() {
 					b.beats = 0
 				} else {
 					actions := b.schedule.Unschedule(b.beats)
 					for _, each := range actions {
-						each(now)
+						each(clock.Time())
 					}
 					b.beats++
 				}
+				nextBeat = clock.After(Rest4)
+				b.timer.Reset(time.Until(nextBeat.Time()))
 			}
 		}
 	}()
 }
 
 func beatTickerDuration(bpm float64) time.Duration {
-	return time.Duration(int(math.Round(float64(60*1000)/bpm))) * time.Millisecond
+	return fractionDuration(0.25, bpm)
 }
 
 // Stop will stop the beats. Any Loops will continue to run.
@@ -182,7 +190,6 @@ func (b *Beatmaster) Stop() {
 		return
 	}
 	b.beating = false
-	b.ticker.Stop()
 	b.done <- true
 	if notify.IsDebug() {
 		notify.Debugf("core.beatmaster: stopped")

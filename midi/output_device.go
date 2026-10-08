@@ -124,6 +124,11 @@ func (d *OutputDevice) handledPedalChange(condition core.Condition, channel int,
 }
 
 func (d *OutputDevice) Play(condition core.Condition, seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
+	clock := core.NewPlaybackClock(beginAt, bpm)
+	return d.PlayWithClock(condition, seq, &clock)
+}
+
+func (d *OutputDevice) PlayWithClock(condition core.Condition, seq core.Sequenceable, clock *core.PlaybackClock) time.Time {
 	// which channel?
 	channel := d.defaultChannel
 	if sel, ok := seq.(core.ChannelSelector); ok {
@@ -132,19 +137,20 @@ func (d *OutputDevice) Play(condition core.Condition, seq core.Sequenceable, bpm
 	}
 
 	// schedule all notes of the sequenceable
-	wholeNoteDuration := core.WholeNoteDuration(bpm)
-	moment := beginAt
 	for _, eachGroup := range seq.S().Notes {
 		if len(eachGroup) == 0 {
 			continue
 		}
+		moment := clock.Time()
 		// pedal
 		if d.handledPedalChange(condition, channel, d.timeline, moment, eachGroup) {
 			continue
 		}
+		end := clock.AfterGroup(eachGroup)
 		// one note
 		if len(eachGroup) == 1 {
-			moment = scheduleOneNote(d, condition, channel, eachGroup[0], wholeNoteDuration, moment)
+			scheduleOneNote(d, condition, channel, eachGroup[0], moment, end.Time())
+			*clock = end
 			continue
 		}
 		//  more than one note
@@ -153,61 +159,28 @@ func (d *OutputDevice) Play(condition core.Condition, seq core.Sequenceable, bpm
 			if d.echo {
 				event.echoString = core.StringFromNoteGroup(eachGroup)
 			}
-			actualDuration := durationOfGroup(eachGroup, wholeNoteDuration)
 			event.mustHandle = condition
-			moment = scheduleOnOffEvents(d, event, actualDuration, moment)
+			scheduleOnOffEvents(d, event, moment, end.Time())
+			*clock = end
 			continue
 		}
 		//  not combinable group of more than one note
-		earliest := moment.Add(1 * time.Hour)
 		for _, each := range eachGroup {
-			endTime := scheduleOneNote(d, condition, channel, each, wholeNoteDuration, moment)
-			if endTime.Before(earliest) {
-				earliest = endTime
-			}
+			scheduleOneNote(d, condition, channel, each, moment, clock.After(each).Time())
 		}
-		moment = earliest
+		*clock = end
 	}
-	return moment
+	return clock.Time()
 }
 
-// returns the longest TODO in core?
-func durationOfGroup(notes []core.Note, whole time.Duration) time.Duration {
-	longest := time.Duration(0)
-	for _, each := range notes {
-		eachDuration := time.Duration(float32(whole) * each.DurationFactor())
-		if eachDuration > longest {
-			longest = eachDuration
-		}
-	}
-	return longest
-}
-
-func scheduleOneNote(device *OutputDevice, condition core.Condition, channel int, note core.Note, whole time.Duration, moment time.Time) time.Time {
+func scheduleOneNote(device *OutputDevice, condition core.Condition, channel int, note core.Note, moment, end time.Time) {
 	if note.IsRest() {
 		event := restEvent{mustHandle: condition}
 		if device.echo {
 			event.echoString = note.String()
 		}
 		device.timeline.Schedule(event, moment)
-		actualDuration := time.Duration(float32(whole) * note.DurationFactor())
-		return moment.Add(actualDuration)
-	}
-	// midi variable length note?
-	if fixed, ok := note.NonFractionBasedDuration(); ok {
-		event := midiEvent{
-			which:      []int64{int64(note.MIDI())},
-			onoff:      noteOn,
-			device:     device.id,
-			channel:    channel,
-			velocity:   int64(note.Velocity),
-			out:        device.stream,
-			mustHandle: condition,
-		}
-		if device.echo {
-			event.echoString = note.String()
-		}
-		return scheduleOnOffEvents(device, event, fixed, moment)
+		return
 	}
 	// normal note
 	event := midiEvent{
@@ -222,25 +195,23 @@ func scheduleOneNote(device *OutputDevice, condition core.Condition, channel int
 	if device.echo {
 		event.echoString = note.String()
 	}
-	actualDuration := time.Duration(float32(whole) * note.DurationFactor())
-	return scheduleOnOffEvents(device, event, actualDuration, moment)
+	scheduleOnOffEvents(device, event, moment, end)
 
 }
 
-func scheduleOnOffEvents(device *OutputDevice, event midiEvent, duration time.Duration, at time.Time) time.Time {
+func scheduleOnOffEvents(device *OutputDevice, event midiEvent, at, end time.Time) {
 	device.timeline.Schedule(event, at)
-	moment := at.Add(duration)
-	device.timeline.Schedule(event.asNoteoff(), moment)
-	return moment
+	device.timeline.Schedule(event.asNoteoff(), end)
 }
 
 func canCombineEvent(notes []core.Note) bool {
 	if len(notes) <= 1 {
 		return true
 	}
-	dur, vel := notes[0].DurationFactor(), notes[0].Velocity
+	clock := core.NewPlaybackClock(time.Time{}, 120)
+	dur, vel := clock.After(notes[0]), notes[0].Velocity
 	for n := 1; n < len(notes); n++ {
-		d, v := notes[n].DurationFactor(), notes[n].Velocity
+		d, v := clock.After(notes[n]), notes[n].Velocity
 		if d != dur || v != vel {
 			return false
 		}

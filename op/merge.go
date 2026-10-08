@@ -178,7 +178,7 @@ func (r *sequenceReader) noteUpto(duration float32, shortest float32) (list []co
 			rest = core.MustParseNote("16=")
 		case math.Abs(float64(diff-0.047625)) < tolerance:
 			rest = core.MustParseNote("32.=")
-		case math.Abs(float64(diff-0.03175)) < tolerance:
+		case math.Abs(float64(diff-0.03125)) < tolerance:
 			rest = core.MustParseNote("32=")
 		default:
 			return list, false

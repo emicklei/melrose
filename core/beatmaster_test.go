@@ -63,6 +63,40 @@ func TestTrackBarTiming(t *testing.T) {
 	}
 }
 
+type beatPlaybackDevice struct {
+	AudioDeviceMock
+	beginnings chan time.Time
+}
+
+func (d *beatPlaybackDevice) Play(condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) time.Time {
+	d.beginnings <- beginAt
+	return beginAt.Add(seq.S().DurationAt(bpm))
+}
+
+func TestPlannedPlaybackBarTiming(t *testing.T) {
+	device := &beatPlaybackDevice{beginnings: make(chan time.Time, 2)}
+	ctx := PlayContext{AudioDevice: device}
+	master := NewBeatmaster(ctx, 1234)
+	master.Plan(0, S("1C"))
+	master.Plan(1, S("C C C C"))
+	master.Start()
+	defer master.Stop()
+	var beginnings []time.Time
+	for len(beginnings) < 2 {
+		select {
+		case when := <-device.beginnings:
+			beginnings = append(beginnings, when)
+		case <-time.After(2 * time.Second):
+			t.Fatal("timed out waiting for planned playback")
+		}
+	}
+	got := beginnings[1].Sub(beginnings[0])
+	want := WholeNoteDuration(1234)
+	if delta := got - want; delta < -time.Nanosecond || delta > time.Nanosecond {
+		t.Errorf("planned bar interval=%s, want %s within 1ns", got, want)
+	}
+}
+
 func TestBeatmaster_Getters(t *testing.T) {
 	ctx := PlayContext{}
 	b := NewBeatmaster(ctx, 120.0)

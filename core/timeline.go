@@ -69,7 +69,7 @@ func (t *Timeline) Play() {
 		}
 		now := time.Now()
 		for now.After(here.when) {
-			here.event.Handle(t, now)
+			here.event.Handle(t, time.Now())
 
 			t.protection.Lock()
 			t.head = t.head.next
@@ -79,6 +79,7 @@ func (t *Timeline) Play() {
 			if here == nil {
 				break
 			}
+			now = time.Now()
 		}
 		if here != nil {
 			untilNext := here.when.Sub(now)
