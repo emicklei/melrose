@@ -28,6 +28,8 @@ type Nextable interface {
 }
 
 type AudioDevice interface {
+	ClockedAudioDevice
+
 	DefaultDeviceIDs() (inputDeviceID, outputDeviceID int)
 
 	// Per device specific commands
@@ -59,6 +61,8 @@ type AudioDevice interface {
 }
 
 type ClockedAudioDevice interface {
+	// PlayWithClock schedules notes from the supplied clock and advances it to
+	// the sequence's end, retaining musical ticks across playback calls.
 	PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time
 }
 

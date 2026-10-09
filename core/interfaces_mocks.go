@@ -41,6 +41,11 @@ func (m *AudioDeviceMock) Play(condition Condition, seq Sequenceable, bpm float6
 	return beginAt
 }
 
+func (m *AudioDeviceMock) PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time {
+	*clock = clock.AfterSequence(seq.S())
+	return clock.Time()
+}
+
 // Listen implements the AudioDevice interface.
 func (m *AudioDeviceMock) Listen(deviceID int, who NoteListener, isStart bool) {
 	// no-op

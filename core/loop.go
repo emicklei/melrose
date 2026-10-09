@@ -78,7 +78,9 @@ func (l *Loop) Inspect(i Inspection) {
 	}
 }
 
-// in mutex
+// reschedule queues one cycle from the planned playback boundary, not the current
+// wall-clock time, so callback lateness does not accumulate as drift between loops.
+// The caller must hold l.mutex and initialize l.clock before calling.
 func (l *Loop) reschedule(d AudioDevice) {
 	if !l.isRunning {
 		return
@@ -87,24 +89,23 @@ func (l *Loop) reschedule(d AudioDevice) {
 		l.isRunning = false
 		return
 	}
+	// Apply tempo changes at the cycle boundary. SetBPM preserves that boundary
+	// while making subsequent musical durations use the new tempo.
 	bpm := l.ctx.Control().BPM()
 	l.clock.SetBPM(bpm)
 	moment := l.clock.Time()
 	begin := moment
 	startClock := *l.clock
-	clocked, usesClock := d.(ClockedAudioDevice)
 	for _, each := range l.target {
-		// after each other
-		if usesClock {
-			moment = clocked.PlayWithClock(l.condition, each, l.clock)
-		} else {
-			moment = d.Play(l.condition, each, bpm, moment)
-			*l.clock = NewPlaybackClock(moment, bpm)
-		}
+		// A shared clock places targets consecutively and retains musical ticks
+		// across cycles, avoiding repeated rounding of each sequence's duration.
+		moment = d.PlayWithClock(l.condition, each, l.clock)
 	}
 	if notify.IsDebug() {
 		notify.Debugf("core.loop: next=%s", moment.Format("15:04:05.00"))
 	}
+	// A cycle that advances no time would continually reschedule itself at the
+	// same boundary, preventing the timeline from making progress.
 	if !moment.After(begin) {
 		l.isRunning = false
 		if runningLoop == l {
@@ -112,14 +113,13 @@ func (l *Loop) reschedule(d AudioDevice) {
 		}
 		return
 	}
-	if usesClock {
-		l.cycleTicks = l.clock.ticks - startClock.ticks
-		l.cycleFixed = l.clock.fixed - startClock.fixed
-	} else {
-		l.cycleTicks = 0
-		l.cycleFixed = moment.Sub(begin)
-	}
-	// schedule the loop itself so it can play again when Handle is called
+	// Remember this cycle's length so Handle can skip completed cycles after a
+	// late wakeup without replaying or reevaluating every missed iteration.
+	// Keep musical ticks separate from explicit durations: only ticks scale with BPM.
+	l.cycleTicks = l.clock.ticks - startClock.ticks
+	l.cycleFixed = l.clock.fixed - startClock.fixed
+	// Queue the next cycle at this cycle's planned end, regardless of how long
+	// scheduling took. Handle will resume from the clock already at that boundary.
 	l.nextPlayAt = moment
 	d.Schedule(l, moment)
 }
@@ -146,6 +146,8 @@ func (l *Loop) Handle(tim *Timeline, when time.Time) {
 	next := *l.clock
 	next.ticks += l.cycleTicks
 	next.fixed += l.cycleFixed
+	// Skip only when an entire additional cycle has elapsed. Smaller delays keep
+	// the original boundary, so independently delayed loops retain their phase.
 	if period > 0 && !next.Time().After(when) {
 		missed := int64(when.Sub(l.clock.Time()) / period)
 		if missed < 1 {
@@ -153,6 +155,9 @@ func (l *Loop) Handle(tim *Timeline, when time.Time) {
 		}
 		l.clock.ticks += missed * l.cycleTicks
 		l.clock.fixed += time.Duration(missed) * l.cycleFixed
+		// Division by the rounded period estimates the skip count. Correct it
+		// against absolute clock boundaries, whose cumulative rounding may differ,
+		// to select the cycle containing when and schedule its end in the future.
 		for l.clock.Time().After(when) {
 			l.clock.ticks -= l.cycleTicks
 			l.clock.fixed -= l.cycleFixed

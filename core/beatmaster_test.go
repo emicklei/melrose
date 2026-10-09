@@ -73,6 +73,12 @@ func (d *beatPlaybackDevice) Play(condition Condition, seq Sequenceable, bpm flo
 	return beginAt.Add(seq.S().DurationAt(bpm))
 }
 
+func (d *beatPlaybackDevice) PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time {
+	d.beginnings <- clock.Time()
+	*clock = clock.AfterSequence(seq.S())
+	return clock.Time()
+}
+
 func TestPlannedPlaybackBarTiming(t *testing.T) {
 	device := &beatPlaybackDevice{beginnings: make(chan time.Time, 2)}
 	ctx := PlayContext{AudioDevice: device}
@@ -235,6 +241,11 @@ func (d *mockDevice) HandleSetting(name string, values []any) error {
 func (d *mockDevice) Play(condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time) {
 	d.played = true
 	return time.Now()
+}
+func (d *mockDevice) PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time {
+	d.played = true
+	*clock = clock.AfterSequence(seq.S())
+	return clock.Time()
 }
 func (d *mockDevice) HasInputCapability() bool {
 	return false
