@@ -2,6 +2,7 @@ package core
 
 import (
 	"bytes"
+	"sync"
 	"testing"
 	"time"
 
@@ -51,6 +52,8 @@ func TestTrackBarTiming(t *testing.T) {
 	tr1.Add(NewSequenceOnTrack(On(2), MustParseSequence("c")))
 	m := MultiTrack{Tracks: []HasValue{On(tr1), On(tr2)}}
 	m.Play(ctx, NoCondition, time.Now())
+	b.schedule.mutex.RLock()
+	defer b.schedule.mutex.RUnlock()
 	t.Log(b.schedule.entries)
 	_, ok := b.schedule.entries[0]
 	if !ok {
@@ -226,7 +229,20 @@ func TestBeatmaster_SettingNotifierBPM(t *testing.T) {
 }
 
 type mockDevice struct {
+	mutex  sync.Mutex
 	played bool
+}
+
+func (d *mockDevice) markPlayed() {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	d.played = true
+}
+
+func (d *mockDevice) hasPlayed() bool {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	return d.played
 }
 
 func (d *mockDevice) DefaultDeviceIDs() (inputDeviceID, outputDeviceID int) {
@@ -239,11 +255,11 @@ func (d *mockDevice) HandleSetting(name string, values []any) error {
 	return nil
 }
 func (d *mockDevice) Play(condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time) {
-	d.played = true
+	d.markPlayed()
 	return time.Now()
 }
 func (d *mockDevice) PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time {
-	d.played = true
+	d.markPlayed()
 	*clock = clock.AfterSequence(seq.S())
 	return clock.Time()
 }
@@ -275,7 +291,7 @@ func TestBeatmaster_PlayPlan(t *testing.T) {
 	b.Start()
 	defer b.Stop()
 	time.Sleep(1 * time.Second)
-	if !dev.played {
+	if !dev.hasPlayed() {
 		t.Error("device was not played")
 	}
 }
@@ -316,8 +332,8 @@ func TestBeatmaster_ScheduleEmpty(t *testing.T) {
 	b.Start()
 	defer b.Stop()
 	time.Sleep(2 * time.Second)
-	if got, want := b.beats, int64(0); got != want {
-		t.Errorf("got [%v] want [%v]", got, want)
+	if got, _ := b.BeatsAndBars(); got != 0 {
+		t.Errorf("got [%v] want [%v]", got, 0)
 	}
 }
 

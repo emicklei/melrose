@@ -83,9 +83,13 @@ type CommandPlayResponse struct {
 func (s *ServiceImpl) CommandPlay(file string, lineEnd int, source string) (CommandPlayResponse, error) {
 	s.updateMetadata(file, lineEnd, source)
 
-	programResult, err := s.evaluator.EvaluateProgram(source)
+	programResult, evaluated, err := s.evaluator.EvaluateProgramReportEvaluated(source)
 	if err != nil {
 		return CommandPlayResponse{}, patchFilelocation(err, lineEnd)
+	}
+	if evaluated {
+		// e.g. play(...) already played during evaluation
+		return CommandPlayResponse{ExpressionResult: programResult}, nil
 	}
 	var endTime time.Time
 	if pl, ok := programResult.(core.Playable); ok {

@@ -23,6 +23,8 @@ type Loop struct {
 	clock      *PlaybackClock
 	cycleTicks int64
 	cycleFixed time.Duration
+	loopCount  int // if > 0 then stop after that many cycles; for tests
+	cycles     int
 }
 
 func NewLoop(ctx Context, target []Sequenceable) *Loop {
@@ -34,6 +36,13 @@ func NewLoop(ctx Context, target []Sequenceable) *Loop {
 }
 
 func (l *Loop) Target() []Sequenceable { return l.target }
+
+// SetLoopCount makes the loop stop by itself after n cycles. Zero means forever.
+func (l *Loop) SetLoopCount(n int) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	l.loopCount = n
+}
 
 func (l *Loop) SetTarget(newTarget []Sequenceable) {
 	l.mutex.Lock()
@@ -63,6 +72,7 @@ func (l *Loop) Evaluate(ctx Context) error {
 		cond = with.Condition()
 	}
 	clone.condition = cond
+	clone.loopCount = l.loopCount
 	if notify.IsDebug() {
 		notify.Debugf("loop.eval")
 	}
@@ -118,6 +128,14 @@ func (l *Loop) reschedule(d AudioDevice) {
 	// Keep musical ticks separate from explicit durations: only ticks scale with BPM.
 	l.cycleTicks = l.clock.ticks - startClock.ticks
 	l.cycleFixed = l.clock.fixed - startClock.fixed
+	l.cycles++
+	if l.loopCount > 0 && l.cycles >= l.loopCount {
+		l.isRunning = false
+		if runningLoop == l {
+			runningLoop = nil
+		}
+		return
+	}
 	// Queue the next cycle at this cycle's planned end, regardless of how long
 	// scheduling took. Handle will resume from the clock already at that boundary.
 	l.nextPlayAt = moment
@@ -196,6 +214,7 @@ func (l *Loop) Play(ctx Context, while Condition, at time.Time) time.Time {
 		runningLoop = l
 	}
 	l.isRunning = true
+	l.cycles = 0
 	l.condition = while
 	l.startedAt = when
 	clock := NewPlaybackClock(when, ctx.Control().BPM())
