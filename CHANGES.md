@@ -1,7 +1,11 @@
 ## v1.0.0:
 
+
 ## [v1.0.0-beta*] - 
 
+- fix 32nd-note fractions throughout parsing, quantization, and merge
+- use cumulative musical clocks and nanosecond tempo conversion for playback
+- preserve parallel loop phase, skip fully missed iterations, and use absolute beat deadlines
 - add Web interface, started with ":w"
 - add "load", "play" and "check" subcommands
 - allow tolerance in merge

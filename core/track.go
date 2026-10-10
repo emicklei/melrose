@@ -36,7 +36,7 @@ func (t *Track) Play(ctx Context, while Condition, now time.Time) time.Time {
 		if notify.IsDebug() {
 			notify.Debugf("core.track title=%s channel=%d bar=%d, biab=%d, bpm=%.2f time=%s", t.Title, t.Channel, bars, biab, bpm, when.Format("04:05.000"))
 		}
-		endingAt = ctx.Device().Play(while, cs, bpm, when)
+		endingAt = PlayAt(ctx.Device(), while, cs, bpm, when)
 	}
 	return endingAt
 }

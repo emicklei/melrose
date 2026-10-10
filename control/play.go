@@ -27,7 +27,7 @@ func NewPlay(ctx core.Context, list []core.Sequenceable, playInSync bool) Play {
 func (p Play) Play(ctx core.Context, while core.Condition, at time.Time) time.Time {
 	end := at
 	for _, each := range p.target {
-		end = p.ctx.Device().Play(while, each, p.ctx.Control().BPM(), at)
+		end = core.PlayAt(p.ctx.Device(), while, each, p.ctx.Control().BPM(), at)
 		if !p.sync {
 			// play after each other
 			at = end
@@ -45,7 +45,7 @@ func (p Play) Evaluate(ctx core.Context) error {
 		cond = with.Condition()
 	}
 	for _, each := range p.target {
-		end := p.ctx.Device().Play(cond, each, p.ctx.Control().BPM(), moment)
+		end := core.PlayAt(p.ctx.Device(), cond, each, p.ctx.Control().BPM(), moment)
 		if !p.sync {
 			// play after each other
 			moment = end

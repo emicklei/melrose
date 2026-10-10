@@ -3,7 +3,6 @@ package core
 import (
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/emicklei/melrose/notify"
 )
@@ -69,12 +68,7 @@ func (m MIDINote) Inspect(i Inspection) {
 		return
 	}
 	i.Properties["note"] = n.String()
-	if d, ok := n.NonFractionBasedDuration(); ok {
-		i.Properties["duration"] = d
-	} else {
-		wholeNoteDuration := WholeNoteDuration(i.Context.Control().BPM())
-		i.Properties["duration"] = time.Duration(float32(wholeNoteDuration) * n.DurationFactor())
-	}
+	i.Properties["duration"] = n.DurationAt(i.Context.Control().BPM())
 	i.Properties["velocity"] = m.velocity
 }
 

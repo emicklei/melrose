@@ -88,7 +88,7 @@ func (s SyncPlay) play(ctx core.Context, while core.Condition) {
 			_ = ply.Play(ctx, while, time.Now())
 		} else {
 			if seq, ok := val.(core.Sequenceable); ok {
-				_ = ctx.Device().Play(while, seq, ctx.Control().BPM(), time.Now())
+				_ = core.PlayAt(ctx.Device(), while, seq, ctx.Control().BPM(), time.Now())
 			}
 		}
 	}

@@ -314,7 +314,7 @@ func (s *chordprogressionSTM) accept(lit string) error {
 	}
 	switch lit {
 	case "32":
-		s.fraction = 0.03175
+		s.fraction = 0.03125
 		return nil
 	case "16":
 		s.fraction = 0.0625
@@ -460,7 +460,7 @@ func (s *noteSTM) accept(lit string) error {
 		var f float32
 		switch lit {
 		case "32":
-			f = 0.03175
+			f = 0.03125
 		case "16":
 			f = 0.0625
 		case "8":

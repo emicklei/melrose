@@ -1,6 +1,7 @@
 package transport
 
 import (
+	"slices"
 	"sync"
 	"time"
 
@@ -20,7 +21,11 @@ type mListener struct {
 	noteOn        map[int]mNoteEvent
 	noteListeners []core.NoteListener
 	keyListeners  map[int]core.NoteListener
+	// bpm provides the tempo used to quantize the length of played notes
+	bpm func() float64
 }
+
+const defaultBPM = 120.0
 
 func newMListener() *mListener {
 	return &mListener{
@@ -28,7 +33,18 @@ func newMListener() *mListener {
 		noteOn:        map[int]mNoteEvent{},
 		noteListeners: []core.NoteListener{},
 		keyListeners:  map[int]core.NoteListener{},
+		bpm:           func() float64 { return defaultBPM },
 	}
+}
+
+// SetBPMProvider sets the function that returns the current tempo.
+func (l *mListener) SetBPMProvider(bpm func() float64) {
+	if bpm == nil {
+		return
+	}
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	l.bpm = bpm
 }
 
 func (l *mListener) Add(lis core.NoteListener) {
@@ -72,14 +88,14 @@ func (l *mListener) Reset() {
 }
 
 func (l *mListener) HandleMIDIMessage(status int16, nr int, data2 int) {
-	l.mutex.RLock()
-	defer l.mutex.RUnlock()
-
 	ch := int(int16(0x0F)&status) + 1
 
 	// controlChange before noteOn
 	if (status & controlChange) == controlChange {
-		for _, each := range l.noteListeners {
+		l.mutex.RLock()
+		listeners := slices.Clone(l.noteListeners)
+		l.mutex.RUnlock()
+		for _, each := range listeners {
 			each.ControlChange(ch, nr, int(data2))
 		}
 		return
@@ -87,20 +103,28 @@ func (l *mListener) HandleMIDIMessage(status int16, nr int, data2 int) {
 	isNoteOn := (status & noteOn) == noteOn
 	velocity := data2
 	if isNoteOn && velocity > 0 {
+		onNote, _ := core.MIDItoNote(0.25, nr, velocity) // length is computed on note off
+		// noteOn is mutated, so a write lock is required
+		l.mutex.Lock()
 		if _, ok := l.noteOn[nr]; ok {
+			l.mutex.Unlock()
 			return
 		}
-		onNote, _ := core.MIDItoNote(0.25, nr, velocity) // length is computed on note off
 		l.noteOn[nr] = mNoteEvent{
 			note: onNote,
 			when: time.Now(),
 		}
+		listeners := slices.Clone(l.noteListeners)
+		keyHandler, hasKeyHandler := l.keyListeners[nr]
+		l.mutex.Unlock()
+
 		notify.Debugf("on  %s", onNote)
-		for _, each := range l.noteListeners {
+		// listeners are called without the lock because they may add or remove listeners
+		for _, each := range listeners {
 			each.NoteOn(ch, onNote)
 		}
 		// notify key listeners
-		if keyHandler, ok := l.keyListeners[nr]; ok {
+		if hasKeyHandler {
 			keyHandler.NoteOn(ch, onNote)
 		}
 		return
@@ -111,20 +135,28 @@ func (l *mListener) HandleMIDIMessage(status int16, nr int, data2 int) {
 		isNoteOff = isNoteOn && velocity == 0
 	}
 	if isNoteOff {
+		l.mutex.Lock()
 		on, ok := l.noteOn[nr]
 		if !ok {
+			l.mutex.Unlock()
 			return
 		}
 		delete(l.noteOn, nr)
+		bpm := l.bpm()
+		listeners := slices.Clone(l.noteListeners)
+		keyHandler, hasKeyHandler := l.keyListeners[nr]
+		l.mutex.Unlock()
+
 		// compute delta
-		ms := time.Duration(time.Now().UnixNano()-on.when.UnixNano()) * time.Nanosecond
-		frac := core.DurationToFraction(120.0, ms) // TODO, BPM
-		offNote, _ := core.MIDItoNote(frac, nr, on.note.Velocity)
-		notify.Debugf("off %s [%d]", offNote, ms)
-		for _, each := range l.noteListeners {
+		nanos := time.Since(on.when)
+		frac, dotted := core.DurationToFraction(bpm, nanos)
+		name, octave, accidental := core.MIDIToNoteParts(nr)
+		offNote, _ := core.NewNote(name, octave, frac, accidental, dotted, on.note.Velocity)
+		notify.Debugf("off %s [%d]", offNote, nanos)
+		for _, each := range listeners {
 			each.NoteOff(ch, offNote)
 		}
-		if keyHandler, ok := l.keyListeners[nr]; ok {
+		if hasKeyHandler {
 			keyHandler.NoteOff(ch, offNote)
 		}
 		return

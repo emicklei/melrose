@@ -56,20 +56,27 @@ func (t *Timeline) Len() int64 {
 // Play runs a loop to handle all the events in time. This is blocking.
 func (t *Timeline) Play() {
 	notify.Debugf("core.timeline: starting to play")
-	t.resume = make(chan bool)
+	resume := make(chan bool)
+	t.protection.Lock()
+	t.resume = resume
 	t.isPlaying = true
-	for t.isPlaying {
+	t.protection.Unlock()
+	for {
 		t.protection.RLock()
+		playing := t.isPlaying
 		here := t.head
 		t.protection.RUnlock()
+		if !playing {
+			return
+		}
 		if here == nil {
 			// Wait for a signal (new event or shutdown signal)
-			<-t.resume
+			<-resume
 			continue
 		}
 		now := time.Now()
 		for now.After(here.when) {
-			here.event.Handle(t, now)
+			here.event.Handle(t, time.Now())
 
 			t.protection.Lock()
 			t.head = t.head.next
@@ -79,6 +86,7 @@ func (t *Timeline) Play() {
 			if here == nil {
 				break
 			}
+			now = time.Now()
 		}
 		if here != nil {
 			untilNext := here.when.Sub(now)
@@ -107,13 +115,14 @@ func (t *Timeline) Reset() {
 func (t *Timeline) Stop() {
 	t.protection.Lock()
 	wasPlaying := t.isPlaying
+	resume := t.resume
 	t.isPlaying = false
 	t.protection.Unlock()
 
 	// If we were playing, wake up the goroutine so it can check isPlaying and exit
-	if wasPlaying && t.resume != nil {
+	if wasPlaying && resume != nil {
 		select {
-		case t.resume <- true:
+		case resume <- true:
 			// Signal sent successfully
 		case <-time.After(100 * time.Millisecond):
 			// Timeout in case goroutine is already stopped
@@ -143,10 +152,11 @@ func (t *Timeline) schedule(event *scheduledTimelineEvent) {
 	if t.head == nil {
 		t.head = event
 		t.tail = event
+		playing, resume := t.isPlaying, t.resume
 		// before resume otherwise run loop will deadlock
 		t.protection.Unlock()
-		if t.isPlaying {
-			t.resume <- true
+		if playing {
+			resume <- true
 		}
 		return
 	}

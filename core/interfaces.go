@@ -36,9 +36,10 @@ type AudioDevice interface {
 	// Handle generic setting
 	HandleSetting(name string, values []any) error
 
-	// Play schedules all the notes on the timeline using a BPM (beats-per-minute).
+	// PlayWithClock schedules notes from the supplied clock and advances it to
+	// the sequence's end, retaining musical ticks across playback calls.
 	// Returns the end time of the last played Note.
-	Play(condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time)
+	PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time
 
 	HasInputCapability() bool
 	Listen(deviceID int, who NoteListener, isStart bool)
@@ -56,6 +57,15 @@ type AudioDevice interface {
 	Reset()
 	Close() error
 	Report()
+}
+
+// PlayAt plays seq on the device from beginAt using a new clock with the given BPM.
+// Returns the end time of the last played Note.
+func PlayAt(d interface {
+	PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time
+}, condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) time.Time {
+	clock := NewPlaybackClock(beginAt, bpm)
+	return d.PlayWithClock(condition, seq, &clock)
 }
 
 type DeviceDescriptor struct {

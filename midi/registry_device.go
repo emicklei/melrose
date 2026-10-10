@@ -21,10 +21,13 @@ type DeviceRegistry struct {
 	defaultInputID  int
 	defaultOutputID int
 	streamRegistry  *streamRegistry
+	// bpm provides the current tempo to input listeners
+	bpm func() float64
 }
 
-func NewDeviceRegistry() (*DeviceRegistry, error) {
+func NewDeviceRegistry(bpm func() float64) (*DeviceRegistry, error) {
 	r := &DeviceRegistry{
+		bpm:             bpm,
 		mutex:           new(sync.RWMutex),
 		in:              map[int]*InputDevice{},
 		out:             map[int]*OutputDevice{},
@@ -106,6 +109,7 @@ func (r *DeviceRegistry) Input(id int) (*InputDevice, error) {
 		return nil, err
 	}
 	ide := NewInputDevice(id, midiIn, r.streamRegistry.transport)
+	ide.listener.SetBPMProvider(r.bpm)
 	r.in[id] = ide
 	// do not start listening until requested for
 	return ide, nil

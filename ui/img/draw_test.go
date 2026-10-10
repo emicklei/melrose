@@ -100,7 +100,7 @@ func TestRecordedTimeline(t *testing.T) {
 		t.Log(seq)
 		tim := core.NewTimeline()
 		d := midi.NewOutputDevice(0, nil, 0, tim)
-		d.Play(core.NoCondition, seq, bpm, time.Now())
+		core.PlayAt(d, core.NoCondition, seq, bpm, time.Now())
 		nv := NotesView{Events: tim.NoteEvents(), BPM: bpm}
 		gc := gg.NewContext(nv.Width(), nv.Height())
 		nv.DrawOn(gc)
@@ -117,7 +117,7 @@ func TestScaleInputSequenceBuilder(t *testing.T) {
 	}
 	tim := core.NewTimeline()
 	d := midi.NewOutputDevice(0, nil, 0, tim)
-	d.Play(core.NoCondition, seq, bpm, time.Now())
+	core.PlayAt(d, core.NoCondition, seq, bpm, time.Now())
 	nv := NotesView{Events: tim.NoteEvents(), BPM: bpm}
 	gc := gg.NewContext(nv.Width(), nv.Height())
 	nv.DrawOn(gc)

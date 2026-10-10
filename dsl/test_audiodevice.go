@@ -13,8 +13,9 @@ type testAudioDevice struct{}
 
 func (t testAudioDevice) Command(args []string) notify.Message { return nil }
 func (t testAudioDevice) DefaultDeviceIDs() (int, int)         { return 1, 1 }
-func (t testAudioDevice) Play(condition core.Condition, seq core.Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time) {
-	return time.Now()
+func (t testAudioDevice) PlayWithClock(condition core.Condition, seq core.Sequenceable, clock *core.PlaybackClock) time.Time {
+	*clock = clock.AfterSequence(seq.S())
+	return clock.Time()
 }
 func (t testAudioDevice) HandleSetting(name string, values []any) error                { return nil }
 func (t testAudioDevice) HasInputCapability() bool                                     { return true }

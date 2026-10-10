@@ -21,6 +21,122 @@ type testEvent struct {
 func (e testEvent) NoteChangesDo(block func(NoteChange)) {}
 func (e testEvent) Handle(t *Timeline, w time.Time)      {}
 
+type timelinePlaybackEvent struct {
+	testEvent
+	handle func(time.Time)
+}
+
+func (e timelinePlaybackEvent) Handle(tim *Timeline, when time.Time) {
+	e.handle(when)
+}
+
+func TestTimelinePlaybackRefreshesCallbackTime(t *testing.T) {
+	timeline := NewTimeline()
+	first := make(chan time.Time, 1)
+	second := make(chan time.Time, 1)
+	release := make(chan struct{})
+	begin := time.Now().Add(10 * time.Millisecond)
+	if err := timeline.Schedule(timelinePlaybackEvent{handle: func(when time.Time) {
+		first <- when
+		<-release
+	}}, begin); err != nil {
+		t.Fatal(err)
+	}
+	if err := timeline.Schedule(timelinePlaybackEvent{handle: func(when time.Time) {
+		second <- when
+	}}, begin); err != nil {
+		t.Fatal(err)
+	}
+	done := make(chan struct{})
+	go func() {
+		timeline.Play()
+		close(done)
+	}()
+	t.Cleanup(func() {
+		timeline.Stop()
+		select {
+		case <-done:
+		case <-time.After(time.Second):
+			t.Error("timeline did not stop")
+		}
+	})
+	var firstTime time.Time
+	select {
+	case firstTime = <-first:
+		close(release)
+	case <-time.After(time.Second):
+		close(release)
+		t.Fatal("first callback did not run")
+	}
+	select {
+	case secondTime := <-second:
+		if !secondTime.After(firstTime) {
+			t.Fatal("second callback received a stale execution timestamp")
+		}
+	case <-time.After(time.Second):
+		t.Fatal("second callback did not run")
+	}
+}
+
+type loopTimingDevice struct {
+	AudioDeviceMock
+}
+
+type loopTimingSequence struct {
+	Sequence
+	calls int
+}
+
+func (s *loopTimingSequence) S() Sequence {
+	s.calls++
+	return s.Sequence
+}
+
+func (d *loopTimingDevice) PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time {
+	*clock = clock.AfterSequence(seq.S())
+	return clock.Time()
+}
+
+func TestParallelLoopTiming(t *testing.T) {
+	leader := runningLoop
+	runningLoop = nil
+	t.Cleanup(func() { runningLoop = leader })
+	ctx := PlayContext{LoopControl: NewBeatmaster(nil, 123), AudioDevice: &loopTimingDevice{}}
+	target := &loopTimingSequence{Sequence: S("1C")}
+	first := NewLoop(ctx, []Sequenceable{target})
+	second := NewLoop(ctx, []Sequenceable{S("C C C C")})
+	begin := time.Now().Add(time.Hour)
+	first.Play(ctx, NoCondition, begin)
+	second.Play(ctx, NoCondition, begin)
+	t.Cleanup(func() {
+		first.Stop(ctx)
+		second.Stop(ctx)
+	})
+	if !first.NextPlayAt().Equal(second.NextPlayAt()) {
+		t.Fatal("equal-duration loops should initially share a boundary")
+	}
+	const iterations = 100
+	for iteration := 0; iteration < iterations; iteration++ {
+		first.Handle(nil, first.NextPlayAt().Add(time.Millisecond))
+		second.Handle(nil, second.NextPlayAt().Add(3*time.Millisecond))
+	}
+	if got, want := second.NextPlayAt().Sub(first.NextPlayAt()), time.Duration(0); got != want {
+		t.Errorf("callback lateness drift = %s, want %s", got, want)
+	}
+	if got, want := first.NextPlayAt().Sub(begin), fractionDuration(iterations+1, 123); got != want {
+		t.Errorf("loop boundary = %s, want %s", got, want)
+	}
+	late := begin.Add(20 * time.Minute)
+	first.Handle(nil, late)
+	second.Handle(nil, late.Add(time.Millisecond))
+	if !first.NextPlayAt().Equal(second.NextPlayAt()) || !first.NextPlayAt().After(late) {
+		t.Fatal("overdue loops should skip completed iterations and resume on the same future boundary")
+	}
+	if got, want := target.calls, iterations+2; got != want {
+		t.Errorf("sequence evaluated %d times, want %d played iterations", got, want)
+	}
+}
+
 func TestScheduleAdd(t *testing.T) {
 	tim := NewTimeline()
 	now := time.Now()
