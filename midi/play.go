@@ -17,13 +17,8 @@ func (r *DeviceRegistry) Schedule(e core.TimelineEvent, beginAt time.Time) {
 	device.timeline.Schedule(e, beginAt)
 }
 
-// Play schedules all the notes on the timeline beginning at a give time (now or in the future).
+// PlayWithClock schedules all the notes on the timeline beginning at the clock's time (now or in the future).
 // Returns the end time of the last played Note.
-func (r *DeviceRegistry) Play(condition core.Condition, seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
-	clock := core.NewPlaybackClock(beginAt, bpm)
-	return r.PlayWithClock(condition, seq, &clock)
-}
-
 func (r *DeviceRegistry) PlayWithClock(condition core.Condition, seq core.Sequenceable, clock *core.PlaybackClock) time.Time {
 	if notify.IsDebug() {
 		notify.Debugf("midi.play: time=%s object=%s", clock.Time().Format("04:05.000"), core.Storex(seq))

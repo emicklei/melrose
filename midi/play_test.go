@@ -48,7 +48,7 @@ func TestPlaybackTiming(t *testing.T) {
 				timeline := core.NewTimeline()
 				device := NewOutputDevice(1, nil, 1, timeline)
 				begin := time.Now().Add(time.Hour)
-				end := device.Play(core.NoCondition, large, bpm, begin)
+				end := core.PlayAt(device, core.NoCondition, large, bpm, begin)
 				actual := end.Sub(begin)
 				wholeTimeline := core.NewTimeline()
 				wholeDevice := NewOutputDevice(1, nil, 1, wholeTimeline)
@@ -57,7 +57,7 @@ func TestPlaybackTiming(t *testing.T) {
 				for repetition := 0; repetition < repetitions*pattern.wholeNotes; repetition++ {
 					wholeSequence = wholeSequence.SequenceJoin(wholePattern)
 				}
-				wholeDuration := wholeDevice.Play(core.NoCondition, wholeSequence, bpm, begin).Sub(begin)
+				wholeDuration := core.PlayAt(wholeDevice, core.NoCondition, wholeSequence, bpm, begin).Sub(begin)
 				ideal := time.Duration(math.Round(float64(repetitions*pattern.wholeNotes) * 240 * float64(time.Second) / bpm))
 				t.Logf("duration=%s, ideal=%s, tempo error=%s, subdivision error=%s", actual, ideal, actual-ideal, actual-wholeDuration)
 				if actual != wholeDuration || actual != ideal {
@@ -94,7 +94,7 @@ func TestPlaybackClockAcrossSequencesAndTempoChanges(t *testing.T) {
 	}
 	want := begin.Add(time.Duration(math.Round(repetitions * 0.125 * 240 * float64(time.Second) / 123)))
 	wholeDevice := NewOutputDevice(1, nil, 1, core.NewTimeline())
-	if got := wholeDevice.Play(core.NoCondition, large, 123, begin); !got.Equal(want) || !clock.Time().Equal(got) {
+	if got := core.PlayAt(wholeDevice, core.NoCondition, large, 123, begin); !got.Equal(want) || !clock.Time().Equal(got) {
 		t.Errorf("partitioned playback=%s, single sequence=%s, want=%s", clock.Time().Sub(begin), got.Sub(begin), want.Sub(begin))
 	}
 	clock.SetBPM(137)
@@ -134,7 +134,7 @@ func TestPlaybackMixedDurations(t *testing.T) {
 	}
 	timeline := core.NewTimeline()
 	device := NewOutputDevice(1, nil, 1, timeline)
-	end := device.Play(core.NoCondition, sequence, bpm, begin)
+	end := core.PlayAt(device, core.NoCondition, sequence, bpm, begin)
 	if got, want := end.Sub(begin), offset(0.125, 333); got != want {
 		t.Errorf("playback duration=%s, want=%s", got, want)
 	}

@@ -107,11 +107,6 @@ func (d *RecordingAudioDevice) Drain() {
 	}
 }
 
-func (d *RecordingAudioDevice) Play(condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) time.Time {
-	clock := NewPlaybackClock(beginAt, bpm)
-	return d.PlayWithClock(condition, seq, &clock)
-}
-
 func (d *RecordingAudioDevice) PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time {
 	d.setOrigin(clock.Time())
 	seq = UnValue(seq)

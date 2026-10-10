@@ -24,9 +24,6 @@ type noAudioDevice struct{}
 
 func (t noAudioDevice) Command(args []string) notify.Message { return nil }
 func (t noAudioDevice) DefaultDeviceIDs() (int, int)         { return 1, 1 }
-func (t noAudioDevice) Play(condition core.Condition, seq core.Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time) {
-	return time.Now()
-}
 func (t noAudioDevice) PlayWithClock(condition core.Condition, seq core.Sequenceable, clock *core.PlaybackClock) time.Time {
 	*clock = clock.AfterSequence(seq.S())
 	return clock.Time()

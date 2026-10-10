@@ -92,10 +92,6 @@ func (s *loopTimingSequence) S() Sequence {
 	return s.Sequence
 }
 
-func (d *loopTimingDevice) Play(condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) time.Time {
-	return beginAt.Add(seq.S().DurationAt(bpm))
-}
-
 func (d *loopTimingDevice) PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time {
 	*clock = clock.AfterSequence(seq.S())
 	return clock.Time()

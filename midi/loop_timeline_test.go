@@ -93,7 +93,7 @@ func checkNoteOns(t *testing.T, ons []recordedWrite, notes []int64, spacing time
 
 func TestSequenceThroughOutputDeviceAndTimeline(t *testing.T) {
 	ctx, out := newTimelineTestContext(t)
-	ctx.Device().Play(core.NoCondition, core.S("C E G"), 600, time.Now())
+	core.PlayAt(ctx.Device(), core.NoCondition, core.S("C E G"), 600, time.Now())
 	ons := waitForNoteOns(out, 3, 2*time.Second)
 	checkNoteOns(t, ons, []int64{60, 64, 67}, 100*time.Millisecond)
 }

@@ -83,7 +83,7 @@ func (b *Beatmaster) Plan(bars int64, seq Sequenceable) {
 	b.schedule.Schedule(atBeats, func(when time.Time) {
 		d := b.context.Device()
 		if d != nil { // TODO happens on testing; NEEDSFIX
-			d.Play(NoCondition, seq, b.BPM(), when)
+			PlayAt(d, NoCondition, seq, b.BPM(), when)
 		}
 	})
 }
@@ -256,7 +256,7 @@ func (s zeroBeat) Start()                                       {}
 func (s zeroBeat) Stop()                                        {}
 func (s zeroBeat) Reset()                                       {}
 func (s zeroBeat) SetBPM(bpm float64)                           {}
-func (s zeroBeat) BPM() float64                                 { return 120.0 }
+func (s zeroBeat) BPM() float64                                 { return 120.0 } // same as the default tempo
 func (s zeroBeat) SetBIAB(biab int)                             {}
 func (s zeroBeat) BIAB() int                                    { return 4 }
 func (s zeroBeat) BeatsAndBars() (int64, int64)                 { return 0, 0 }

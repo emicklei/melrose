@@ -12,7 +12,7 @@ func recordingContext(device AudioDevice) PlayContext {
 func TestRecordingAudioDevicePlaysSequenceInOrder(t *testing.T) {
 	dev := NewRecordingAudioDevice()
 	begin := time.Now()
-	end := dev.Play(NoCondition, S("C E G"), 120, begin)
+	end := PlayAt(dev, NoCondition, S("C E G"), 120, begin)
 	if got, want := end.Sub(begin), 1500*time.Millisecond; got != want {
 		t.Errorf("end=%s, want=%s", got, want)
 	}
@@ -33,7 +33,7 @@ func TestRecordingAudioDevicePlaysSequenceInOrder(t *testing.T) {
 
 func TestRecordingAudioDeviceConditionSkipsNoteOn(t *testing.T) {
 	dev := NewRecordingAudioDevice()
-	dev.Play(func() bool { return false }, S("C"), 120, time.Now())
+	PlayAt(dev, func() bool { return false }, S("C"), 120, time.Now())
 	dev.Drain()
 	for _, each := range dev.Events() {
 		if each.On {
@@ -44,7 +44,7 @@ func TestRecordingAudioDeviceConditionSkipsNoteOn(t *testing.T) {
 
 func TestRecordingAudioDeviceRunUntil(t *testing.T) {
 	dev := NewRecordingAudioDevice()
-	dev.Play(NoCondition, S("C E G"), 120, time.Now())
+	PlayAt(dev, NoCondition, S("C E G"), 120, time.Now())
 	dev.RunUntil(500 * time.Millisecond)
 	if got, want := len(dev.NoteOns()), 2; got != want {
 		t.Errorf("note-ons=%d, want=%d", got, want)

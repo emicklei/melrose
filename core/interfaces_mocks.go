@@ -36,11 +36,7 @@ func (m *AudioDeviceMock) HasInputCapability() bool {
 	return false
 }
 
-// Play implements the AudioDevice interface.
-func (m *AudioDeviceMock) Play(condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) time.Time {
-	return beginAt
-}
-
+// PlayWithClock implements the AudioDevice interface.
 func (m *AudioDeviceMock) PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time {
 	*clock = clock.AfterSequence(seq.S())
 	return clock.Time()

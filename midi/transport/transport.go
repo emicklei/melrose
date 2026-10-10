@@ -45,6 +45,8 @@ type MIDIListener interface {
 	Remove(core.NoteListener)
 	OnKey(core.Note, core.NoteListener)
 	HandleMIDIMessage(status int16, nr, data2 int)
+	// SetBPMProvider sets the tempo source used to quantize played note lengths
+	SetBPMProvider(bpm func() float64)
 	Start()
 	Stop()
 	Reset()

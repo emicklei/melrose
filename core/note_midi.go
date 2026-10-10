@@ -33,35 +33,9 @@ func (n Note) MIDI() int {
 	return ((1 + n.Octave) * 12) + nameOffset + n.Accidental
 }
 
-func DurationToFraction(bpm float64, d time.Duration) float32 {
-	one := WholeNoteDuration(bpm)
-	abs := func(i int) int {
-		if i < 0 {
-			return -i
-		}
-		return i
-	}
-	numbers := []struct {
-		fraction float32
-		ms       int
-	}{
-		{1.0, int(one)},
-		{0.5, int(one / time.Duration(2))},
-		{0.25, int(one / time.Duration(4))},
-		{0.125, int(one / time.Duration(8))},
-		{0.0625, int(one / time.Duration(16))},
-	}
-	millis := int(d)
-	distance := abs(numbers[0].ms - millis)
-	idx := 0
-	for c := 1; c < len(numbers); c++ {
-		cdistance := abs(numbers[c].ms - millis)
-		if cdistance < distance {
-			idx = c
-			distance = cdistance
-		}
-	}
-	return numbers[idx].fraction
+// DurationToFraction returns the note length (and whether it is dotted) that is closest to d at the given tempo.
+func DurationToFraction(bpm float64, d time.Duration) (fraction float32, dotted bool) {
+	return FractionToDurationParts(float64(d) / float64(WholeNoteDuration(bpm)))
 }
 
 func MIDItoNote(fraction float32, nr int, vel int) (Note, error) {

@@ -103,7 +103,8 @@ func (s *ServiceImpl) CommandPlay(file string, lineEnd int, source string) (Comm
 		// any sequenceable is playable
 		if seq, ok := programResult.(core.Sequenceable); ok {
 			notify.Infof("play(%s)", displayString(s.context, seq))
-			endTime = s.context.Device().Play(
+			endTime = core.PlayAt(
+				s.context.Device(),
 				core.NoCondition,
 				seq,
 				s.context.Control().BPM(),

@@ -123,11 +123,6 @@ func (d *OutputDevice) handledPedalChange(condition core.Condition, channel int,
 	return false
 }
 
-func (d *OutputDevice) Play(condition core.Condition, seq core.Sequenceable, bpm float64, beginAt time.Time) time.Time {
-	clock := core.NewPlaybackClock(beginAt, bpm)
-	return d.PlayWithClock(condition, seq, &clock)
-}
-
 func (d *OutputDevice) PlayWithClock(condition core.Condition, seq core.Sequenceable, clock *core.PlaybackClock) time.Time {
 	// which channel?
 	channel := d.defaultChannel
@@ -208,6 +203,7 @@ func canCombineEvent(notes []core.Note) bool {
 	if len(notes) <= 1 {
 		return true
 	}
+	// Any tempo works: notes are only compared to each other, never scheduled.
 	clock := core.NewPlaybackClock(time.Time{}, 120)
 	dur, vel := clock.After(notes[0]), notes[0].Velocity
 	for n := 1; n < len(notes); n++ {

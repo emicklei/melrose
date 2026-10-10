@@ -71,11 +71,6 @@ type beatPlaybackDevice struct {
 	beginnings chan time.Time
 }
 
-func (d *beatPlaybackDevice) Play(condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) time.Time {
-	d.beginnings <- beginAt
-	return beginAt.Add(seq.S().DurationAt(bpm))
-}
-
 func (d *beatPlaybackDevice) PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time {
 	d.beginnings <- clock.Time()
 	*clock = clock.AfterSequence(seq.S())
@@ -253,10 +248,6 @@ func (d *mockDevice) Command(args []string) notify.Message {
 }
 func (d *mockDevice) HandleSetting(name string, values []any) error {
 	return nil
-}
-func (d *mockDevice) Play(condition Condition, seq Sequenceable, bpm float64, beginAt time.Time) (endingAt time.Time) {
-	d.markPlayed()
-	return time.Now()
 }
 func (d *mockDevice) PlayWithClock(condition Condition, seq Sequenceable, clock *PlaybackClock) time.Time {
 	d.markPlayed()
