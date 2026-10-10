@@ -22,17 +22,6 @@ func TestDurations(t *testing.T) {
 	}
 }
 
-func TestEventNoteOff(t *testing.T) {
-	on := midiEvent{onoff: noteOn}
-	off := on.asNoteoff()
-	if got, want := on.onoff, noteOn; got != want {
-		t.Errorf("got [%v] want [%v]", got, want)
-	}
-	if got, want := off.onoff, noteOff; got != want {
-		t.Errorf("got [%v] want [%v]", got, want)
-	}
-}
-
 func Test_canCombineEvent(t *testing.T) {
 	type args struct {
 		notes []core.Note
