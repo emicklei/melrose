@@ -277,7 +277,19 @@ func (e *Evaluator) handleAssignment(varName string, r any) (any, error) {
 			return r, nil
 		}
 
-		// not a Loop or Listen or Recording or OnOff
+		// special case for SyncPlay
+		if theSync, ok := r.(control.SyncPlay); ok {
+			if storedValue, present := e.context.Variables().Get(varName); present {
+				// keep the stored one if unchanged so that Stop reaches the playing children
+				if storedSync, same := storedValue.(control.SyncPlay); same && storedSync.Storex() == theSync.Storex() {
+					return storedSync, nil
+				}
+			}
+			e.context.Variables().Put(varName, theSync)
+			return r, nil
+		}
+
+		// not a Loop or Listen or Recording or OnOff or SyncPlay
 		e.context.Variables().Put(varName, r)
 		if aware, ok := r.(core.NameAware); ok {
 			aware.VariableName(varName)
