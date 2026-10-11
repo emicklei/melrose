@@ -30,9 +30,11 @@ func (s SyncPlay) Storex() string {
 	return b.String()
 }
 
-// Play implements Playable
-func (s SyncPlay) Play(ctx core.Context, at time.Time) error {
-	return s.Evaluate(ctx)
+var _ core.Playable = SyncPlay{}
+
+func (s SyncPlay) Play(ctx core.Context, while core.Condition, at time.Time) time.Time {
+	s.play(ctx, while)
+	return time.Now()
 }
 
 // Stop implements Stoppeable
@@ -71,15 +73,23 @@ func (s SyncPlay) IsPlaying() bool {
 }
 
 func (s SyncPlay) Evaluate(ctx core.Context) error {
+	cond := core.NoCondition
+	if with, ok := ctx.(core.Conditional); ok {
+		cond = with.Condition()
+	}
+	s.play(ctx, cond)
+	return nil
+}
+
+func (s SyncPlay) play(ctx core.Context, while core.Condition) {
 	for _, each := range s.playables {
 		val := each.Value()
 		if ply, ok := val.(core.Playable); ok {
-			_ = ply.Play(ctx, time.Now())
+			_ = ply.Play(ctx, while, time.Now())
 		} else {
 			if seq, ok := val.(core.Sequenceable); ok {
-				_ = ctx.Device().Play(core.NoCondition, seq, ctx.Control().BPM(), time.Now())
+				_ = core.PlayAt(ctx.Device(), while, seq, ctx.Control().BPM(), time.Now())
 			}
 		}
 	}
-	return nil
 }

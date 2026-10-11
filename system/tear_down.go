@@ -7,9 +7,14 @@ import (
 )
 
 func TearDown(ctx core.Context) error {
+	// Stop timing/scheduling first to minimize new events during shutdown.
 	dsl.StopAllPlayables(ctx)
-	ctx.Control().Reset()
-	ctx.Device().Close()
+	ctx.Control().Stop()
+	// Force immediate silence before closing MIDI streams.
+	ctx.Device().Reset()
+	if err := ctx.Device().Close(); err != nil {
+		return err
+	}
 	notify.PrintBye()
 	return nil
 }

@@ -4,6 +4,8 @@
 package transport
 
 import (
+	"fmt"
+
 	"github.com/emicklei/melrose/notify"
 	"gitlab.com/gomidi/midi/v2/drivers/rtmididrv/imported/rtmidi"
 )
@@ -60,6 +62,58 @@ func (t RtmidiTransporter) NewMIDIListener(in MIDIIn) MIDIListener {
 	return newRtListener(in.(RtmidiIn).in)
 }
 
+func (t RtmidiTransporter) InitInputsOutputs() (ins []PortAndName, outs []PortAndName, err error) {
+	outs, err = t.initOutputs()
+	if err != nil {
+		return nil, nil, err
+	}
+	ins, err = t.initInputs()
+	if err != nil {
+		return nil, nil, err
+	}
+	return ins, outs, nil
+}
+func (t RtmidiTransporter) initOutputs() (outs []PortAndName, err error) {
+	out, err := rtmidi.NewMIDIOutDefault()
+	if err != nil {
+		return nil, fmt.Errorf("can't open default MIDI out: %w", err)
+	}
+	defer out.Close()
+	ports, err := out.PortCount()
+	if err != nil {
+		return nil, fmt.Errorf("can't get number of output ports: %w", err)
+	}
+
+	for each := range ports {
+		name, err := out.PortName(each)
+		if err != nil {
+			name = ""
+		}
+		outs = append(outs, PortAndName{Port: each, Name: name})
+	}
+	return outs, nil
+}
+
+func (t RtmidiTransporter) initInputs() (ins []PortAndName, err error) {
+	in, err := rtmidi.NewMIDIInDefault()
+	if err != nil {
+		return nil, fmt.Errorf("can't open default MIDI in: %w", err)
+	}
+	defer in.Close()
+	ports, err := in.PortCount()
+	if err != nil {
+		return nil, fmt.Errorf("can't get number of input ports: %w", err)
+	}
+	for each := range ports {
+		name, err := in.PortName(each)
+		if err != nil {
+			name = ""
+		}
+		ins = append(ins, PortAndName{Port: each, Name: name})
+	}
+	return ins, nil
+}
+
 type RtmidiOut struct {
 	out  rtmidi.MIDIOut
 	port int
@@ -88,6 +142,8 @@ func (i RtmidiIn) Close() error {
 	}
 	return i.in.Close()
 }
+
+var _ MIDIListener = (*RtListener)(nil)
 
 type RtListener struct {
 	*mListener
@@ -140,10 +196,8 @@ func (l *RtListener) handleRtEvent(m rtmidi.MIDIIn, data []byte, delta float64) 
 func (l *RtListener) Stop() {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
-	if l.listening {
-		if err := l.midiIn.CancelCallback(); err != nil {
-			notify.Warnf("failed to cancel listener callback")
-		}
-	}
+	// Keep the native callback installed and only gate delivery in handleRtEvent.
+	// Calling CancelCallback can race with in-flight native callbacks and cause
+	// a nil dereference inside the upstream rtmidi binding.
 	l.listening = false
 }

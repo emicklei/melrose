@@ -23,6 +23,12 @@ type Transporter interface {
 	NewMIDIOut(id int) (MIDIOut, error)
 	NewMIDIIn(id int) (MIDIIn, error)
 	NewMIDIListener(MIDIIn) MIDIListener
+	InitInputsOutputs() (ins []PortAndName, outs []PortAndName, err error)
+}
+
+type PortAndName struct {
+	Port int
+	Name string
 }
 
 type MIDIOut interface {
@@ -39,6 +45,10 @@ type MIDIListener interface {
 	Remove(core.NoteListener)
 	OnKey(core.Note, core.NoteListener)
 	HandleMIDIMessage(status int16, nr, data2 int)
+	// SetBPMProvider sets the tempo source used to quantize played note lengths
+	SetBPMProvider(bpm func() float64)
 	Start()
 	Stop()
+	Reset()
+	PrintInfo()
 }

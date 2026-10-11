@@ -9,8 +9,9 @@ import (
 )
 
 type KeyTrigger struct {
-	mutex   *sync.RWMutex
+	mutex   sync.RWMutex
 	playing bool
+	count   int
 	ctx     core.Context
 	channel int
 	note    core.Note
@@ -19,7 +20,6 @@ type KeyTrigger struct {
 
 func NewKeyTrigger(ctx core.Context, channel int, onNote core.Note, startStop core.HasValue) *KeyTrigger {
 	return &KeyTrigger{
-		mutex:   new(sync.RWMutex),
 		ctx:     ctx,
 		channel: channel,
 		note:    onNote,
@@ -28,9 +28,8 @@ func NewKeyTrigger(ctx core.Context, channel int, onNote core.Note, startStop co
 
 // NoteOn is part of core.NoteListener
 func (t *KeyTrigger) NoteOn(channel int, n core.Note) {
-	if notify.IsDebug() {
-		notify.Debugf("keytrigger.NoteOn ch=%d note=%v", channel, n)
-	}
+	notify.Debugf("keytrigger.NoteOn ch=%d note=%v", channel, n)
+
 	if channel != t.channel {
 		return
 	}
@@ -48,40 +47,40 @@ func (t *KeyTrigger) NoteOn(channel int, n core.Note) {
 	defer t.mutex.Unlock()
 	// both playable and evaluatable are allowed
 	if play, ok := val.(core.Playable); ok {
-		stopper, stoppable := val.(core.Stoppable)
-		if stoppable {
-			if t.playing {
-				notify.Infof("%s -> stop(%s)", t.note.String(), core.Storex(t.fun))
-				stopper.Stop(t.ctx)
-				t.playing = false
-			} else {
-				t.playing = true
-				notify.Infof("%s -> play(%s)", t.note.String(), core.Storex(t.fun))
-				_ = play.Play(t.ctx, time.Now())
+		if t.playing {
+			notify.Infof("%s -> stop(%s)", t.note.String(), core.Storex(t.fun))
+			// this condition change will stop the notes of the playable
+			t.playing = false
+			// if the playable is a loop, stop it explicitly
+			if looper, ok := play.(*core.Loop); ok {
+				looper.Stop(t.ctx)
 			}
-			return
+		} else {
+			t.playing = true
+			t.count++
+			activeCount := t.count
+			notify.Infof("%s -> play(%s)", t.note.String(), core.Storex(t.fun))
+			_ = play.Play(t.ctx, func() bool { return t.playing && t.count == activeCount }, time.Now())
 		}
-		// cannot stop
-		_ = play.Play(t.ctx, time.Now())
-		return
-	}
-	// not playable, maybe evaluatable
-	if eval, ok := val.(core.Evaluatable); ok {
-		eval.Evaluate(t.ctx)
+	} else {
+		// not playable, maybe evaluatable
+		if eval, ok := val.(core.Evaluatable); ok {
+			eval.Evaluate(t.ctx)
+		}
 	}
 }
 
 // NoteOff is part of core.NoteListener
 func (t *KeyTrigger) NoteOff(channel int, n core.Note) {
-	if notify.IsDebug() {
-		notify.Debugf("keytrigger.NoteOff ch=%d note=%v", channel, n)
-	}
+	notify.Debugf("keytrigger.NoteOff ch=%d note=%v", channel, n)
 	// key trigger is not interested in this
 }
 
 func (t *KeyTrigger) ControlChange(channel, number, value int) {
-	if notify.IsDebug() {
-		notify.Debugf("keytrigger.ControlChange %d %d %d", channel, number, value)
-	}
+	notify.Debugf("keytrigger.ControlChange %d %d %d", channel, number, value)
 	// key trigger is not interested in this
+}
+
+func (t *KeyTrigger) PrintInfo() {
+	notify.Printf("on %s -> play(%s),stop(%s)\n", t.note.String(), core.Storex(t.fun), core.Storex(t.fun))
 }

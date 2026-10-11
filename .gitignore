@@ -14,3 +14,4 @@ ui/img/*.png
 since.log
 coverage.out
 coverage.html
+.kilo

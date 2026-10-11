@@ -8,7 +8,9 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
+	"time"
 
+	"github.com/emicklei/melrose/control"
 	"github.com/emicklei/melrose/core"
 
 	"github.com/emicklei/melrose/dsl"
@@ -20,12 +22,57 @@ var (
 	history = ".melrose.history"
 )
 
+func LoadFile(ctx core.Context, fileName string) error {
+	if _, err := os.Stat(fileName); os.IsNotExist(err) {
+		notify.Print(notify.NewErrorf("file does not exist:%v", fileName))
+		return err
+	}
+	content, err := os.ReadFile(fileName)
+	if err != nil {
+		notify.Print(notify.NewErrorf("error reading file:%v", err))
+		return err
+	}
+	eval := dsl.NewEvaluator(ctx)
+	_, err = eval.RecoveringEvaluateProgram(string(content))
+	if err != nil {
+		notify.Print(notify.NewErrorf("error loading file:%v", err))
+	}
+	return err
+}
+
+func ExecuteFile(ctx core.Context, fileName string) error {
+	if _, err := os.Stat(fileName); os.IsNotExist(err) {
+		notify.Print(notify.NewErrorf("file does not exist:%v", fileName))
+		return err
+	}
+	content, err := os.ReadFile(fileName)
+	if err != nil {
+		notify.Print(notify.NewErrorf("error reading file:%v", err))
+		return err
+	}
+	eval := dsl.NewEvaluator(ctx)
+	lastResult, err := eval.RecoveringEvaluateProgram(string(content))
+	if err != nil {
+		notify.Print(notify.NewErrorf("error executing file:%v", err))
+	}
+	// check whether the last result is Playable
+	if playable, ok := lastResult.(core.Playable); ok {
+		playable.Play(ctx, core.NoCondition, time.Now())
+	}
+	// it is not Playable, but if it is Sequenceable then we can play it as a sequence
+	if sequenceable, ok := lastResult.(core.Sequenceable); ok {
+		play := control.NewPlay(ctx, []core.Sequenceable{sequenceable}, false)
+		play.Play(ctx, core.NoCondition, time.Now())
+	}
+	return nil
+}
+
 func StartREPL(ctx core.Context) {
 	notify.PrintWelcome(core.BuildTag)
 	// start REPL
 	line := liner.NewLiner()
 	defer line.Close()
-	defer tearDown(line, ctx)
+	defer tearDown(line)
 	// TODO liner catches control+c
 	//setupCloseHandler(line)
 	ctx.Device().Report()
@@ -33,9 +80,7 @@ func StartREPL(ctx core.Context) {
 	repl(line, ctx)
 }
 
-func tearDown(line *liner.State, ctx core.Context) {
-	ctx.Control().Reset()
-	ctx.Device().Reset()
+func tearDown(line *liner.State) {
 	if f, err := os.Create(history); err != nil {
 		notify.Print(notify.NewErrorf("error writing history file:%v", err))
 	} else {
@@ -60,7 +105,6 @@ func repl(line *liner.State, ctx core.Context) {
 		entry, err := line.Prompt(notify.Prompt())
 		if err != nil {
 			notify.Print(notify.NewError(err))
-			tearDown(line, ctx)
 			goto exit
 		}
 	entry:
@@ -117,13 +161,13 @@ exit:
 // setupCloseHandler creates a 'listener' on a new goroutine which will notify the
 // program if it receives an interrupt from the OS. We then handle this by calling
 // our clean up procedure and exiting the program.
-func setupCloseHandler(line *liner.State, ctx core.Context) {
+func setupCloseHandler(line *liner.State) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-c
 		fmt.Println("\r- Ctrl+C pressed in Terminal")
-		tearDown(line, ctx)
+		tearDown(line)
 		os.Exit(0)
 	}()
 }

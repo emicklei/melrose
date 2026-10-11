@@ -46,9 +46,10 @@ func Setup(buildTag string) (core.Context, error) {
 	ctx := new(core.PlayContext)
 	ctx.EnvironmentVars = new(sync.Map)
 	ctx.VariableStorage = dsl.NewVariableStore()
+	// 120 is the documented default tempo; changed at runtime by bpm()
 	ctx.LoopControl = core.NewBeatmaster(ctx, 120)
 	ctx.CapabilityFlags = core.NewCapabilities()
-	reg, err := midi.NewDeviceRegistry()
+	reg, err := midi.NewDeviceRegistry(func() float64 { return ctx.Control().BPM() })
 	if err != nil {
 		return nil, fmt.Errorf("unable to initialize MIDI: %w", err)
 	}

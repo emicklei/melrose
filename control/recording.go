@@ -31,7 +31,7 @@ func (r *Recording) GetTargetFrom(other *Recording) {
 	r.variableName = other.variableName
 }
 
-func (r *Recording) Play(ctx core.Context, at time.Time) time.Time {
+func (r *Recording) Play(ctx core.Context, while core.Condition, at time.Time) time.Time {
 	notify.Debugf("start recording...")
 	// flush
 	r.timeline.Reset()
@@ -98,4 +98,8 @@ func (r *Recording) ControlChange(channel, number, value int) {}
 
 func (r *Recording) Inspect(i core.Inspection) {
 	i.Properties["sequence"] = r.S()
+}
+
+func (r *Recording) PrintInfo() {
+	notify.Printf("Recording(deviceID=%d, variableName=%s, bpm=%f)\n", r.deviceID, r.variableName, r.bpm)
 }

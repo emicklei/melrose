@@ -12,21 +12,27 @@ import (
 
 type FractionMap struct {
 	fraction core.HasValue
-	target   core.Sequenceable
+	target   []core.Sequenceable
 }
 
 func NewFractionMap(fraction core.HasValue, target core.Sequenceable) FractionMap {
-	return FractionMap{fraction: fraction, target: target}
+	return FractionMap{fraction: fraction, target: []core.Sequenceable{target}}
 }
 
 func (f FractionMap) Storex() string {
+	if len(f.target) == 0 {
+		return fmt.Sprintf("fractionmap(%s,nil)", core.Storex(f.fraction))
+	}
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "fractionmap(%s,%s)", core.Storex(f.fraction), core.Storex(f.target))
+	fmt.Fprintf(&b, "fractionmap(%s,%s)", core.Storex(f.fraction), core.Storex(f.target[0]))
 	return b.String()
 }
 
 // S is part of core.Sequenceable
 func (f FractionMap) S() core.Sequence {
+	if len(f.target) == 0 {
+		return core.EmptySequence
+	}
 	frac := core.String(f.fraction)
 	if len(frac) == 0 {
 		notify.Warnf("invalid fraction type detected, %v", f.fraction)
@@ -40,14 +46,13 @@ func (f FractionMap) S() core.Sequence {
 	if len(mapping) == 0 {
 		return core.EmptySequence
 	}
-	source := f.target.S().Notes
+	source := f.target[0].S().Notes
 	target := [][]core.Note{}
 	for _, entry := range mapping {
 		if entry.at <= 0 || entry.at > len(source) {
-			// invalid offset, skip
 			continue
 		}
-		eachGroup := source[entry.at-1] // at is one-based
+		eachGroup := source[entry.at-1]
 		newGroup := []core.Note{}
 		for _, eachNote := range eachGroup {
 			newGroup = append(newGroup, eachNote.WithFraction(float32(1.0/float32(entry.inverseFraction)), entry.dotted))
@@ -64,7 +69,8 @@ type int2fractionAndDotted struct {
 }
 
 // 1:1 2:.2 3:8.
-//   1 .2 8
+//
+//	1 .2 8
 func parseIndexFractions(s string) (m []int2fractionAndDotted, err error) {
 	entries := strings.Fields(strings.ReplaceAll(s, ",", " "))
 	for i, each := range entries {
@@ -117,11 +123,5 @@ func (f FractionMap) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	if core.IsIdenticalTo(f, from) {
 		return to
 	}
-	if core.IsIdenticalTo(f.target, from) {
-		return FractionMap{target: to, fraction: f.fraction}
-	}
-	if rep, ok := f.target.(core.Replaceable); ok {
-		return FractionMap{target: rep.Replaced(from, to), fraction: f.fraction}
-	}
-	return f
+	return FractionMap{target: replacedAll(f.target, from, to), fraction: f.fraction}
 }

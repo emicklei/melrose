@@ -12,15 +12,32 @@ You can use the following flags to change its behavior.
 
     -http <address>
         address on which to listen for HTTP requests (default ":8118")
-    -tunnel <subdomain>
-        offers a public subdomain.loca.lt address to server HTTP request
-    -v
+    -d
         verbose logging
+    -log
+        log file location
+
+### program subcommands
+
+    melrose play <file>
+        load all statements from a file and play the result of the last expression
+    melrose load <file>
+        load all statements from a file
+    melrose check [file]
+        validate a Melrose source file; if no file is given, read from standard input
+
+Program flags can be used before or after a subcommand. For example:
+
+    melrose play somefile.mel -d
 
 ### CLI control
 
 Commands to control the program itself are prefix with a colon `:`.
 With `:h` you get the list of known commands.
+
+Use `:w` to open the Web UI in your default browser. It uses the address set by
+`-http` (by default, `http://localhost:8118`). The command cannot open the UI
+when the HTTP server is disabled with `-http ""`.
 
 ### CLI line editing
 

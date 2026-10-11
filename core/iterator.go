@@ -2,6 +2,8 @@ package core
 
 import "fmt"
 
+var _ HasValue = (*Iterator)(nil)
+
 type Iterator struct {
 	index  int
 	name   string

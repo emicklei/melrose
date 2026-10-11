@@ -42,5 +42,5 @@ func (s SetBPM) Inspect(i core.Inspection) {
 
 // Storex implements Storable
 func (s SetBPM) Storex() string {
-	return fmt.Sprintf("bpm(%v)", s.bpm)
+	return fmt.Sprintf("bpm(%v)", core.Storex(s.bpm))
 }

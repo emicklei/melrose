@@ -13,11 +13,17 @@ Depending on your operating system, different steps are required.
 Search and install the extension from the editor or go to the [Marketplace published package](https://marketplace.visualstudio.com/items?itemName=EMicklei.melrose-for-vscode)
 
 
-## [all platforms] Go SDK.
+## Mac OSX
+
+### Using `brew` for the latest release
+
+	brew install emicklei/tap/melrose
+
+### From source
 
 You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
 
-## Mac OSX
+The minimum requirement is Go 1.24.2. On a Mac, macOS 11 Big Sur or higher is required.
 
 	go install github.com/emicklei/melrose/cmd/melrose@latest
 
@@ -27,7 +33,9 @@ After installing `melrōse`, you can start the tool in a Terminal using:
 
 If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH`.
 
-## Linux
+## Linux 
+
+You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
 
 On Ubuntu / Debian
 

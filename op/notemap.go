@@ -2,7 +2,6 @@ package op
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -16,45 +15,19 @@ const (
 )
 
 type NoteMap struct {
-	Target        core.HasValue
-	Indices       []int
-	indicesFormat int
-	maxIndex      int
+	Target  core.HasValue
+	indices core.HasValue
 }
 
 // NewNoteMap returns a NoteMap that creates a sequence from occurrences of a note.
 // The format of indices can be one of:
 // 1 2 4 ; each number is an index in the sequence where the note is present; rest notes are placed in the gaps.
 // ! . ! ; each dot is a rest, each exclamation mark is a presence of a note.
-func NewNoteMap(indices string, note core.HasValue) (NoteMap, error) {
-	idx := []int{}
-	// check for dots and bangs first
-	var parsed [][]int
-	format := formatNumbers
-	var maxIndex int
-	if strings.ContainsAny(indices, "!.") {
-		parsed = parseIndices(convertDotsAndBangs(indices))
-		format = formatDotAndBangs
-		maxIndex = len(indices)
-	} else if strings.ContainsAny(indices, "1234567890 ") { // space is allowed
-		parsed = parseIndices(indices)
-	} else {
-		return NoteMap{}, errors.New("bad syntax NoteMap; must have digits,spaces OR dots and exclamation marks")
-	}
-	for _, each := range parsed {
-		idx = append(idx, each[0])
-	}
-	max := sliceMax(idx)
-	if max > maxIndex {
-		maxIndex = max
-	}
+func NewNoteMap(indices core.HasValue, note core.HasValue) NoteMap {
 	return NoteMap{
 		Target:  note,
-		Indices: idx,
-		// internal
-		indicesFormat: format,
-		maxIndex:      maxIndex,
-	}, nil
+		indices: indices,
+	}
 }
 
 func convertDotsAndBangs(format string) string {
@@ -69,12 +42,12 @@ func convertDotsAndBangs(format string) string {
 	return b.String()
 }
 
-func (n NoteMap) formattedIndices(format int) string {
+func (n NoteMap) formattedIndices(indices []int, format int, max int) string {
 	var b bytes.Buffer
 	if format == formatDotAndBangs {
-		for i := 1; i <= n.maxIndex; i++ {
+		for i := 1; i <= max; i++ {
 			found := false
-			for _, each := range n.Indices {
+			for _, each := range indices {
 				if each == i {
 					found = true
 					break
@@ -87,7 +60,7 @@ func (n NoteMap) formattedIndices(format int) string {
 			}
 		}
 	} else {
-		for i, each := range n.Indices {
+		for i, each := range indices {
 			if i > 0 {
 				fmt.Fprintf(&b, " ")
 			}
@@ -98,22 +71,46 @@ func (n NoteMap) formattedIndices(format int) string {
 }
 
 func (n NoteMap) Storex() string {
-	st, ok := n.Target.(core.Storable)
+	indexs, format, max := n.getIndices()
+	return fmt.Sprintf("notemap('%s',%s)", n.formattedIndices(indexs, format, max), core.Storex(n.Target))
+}
+
+func (n NoteMap) getIndices() ([]int, int, int) { // indices, format used, and max index
+	indicesStr, ok := core.ValueOf(n.indices).(string)
 	if !ok {
-		st, ok = n.Target.Value().(core.Storable)
+		return []int{}, formatNumbers, 0
 	}
-	if ok {
-		return fmt.Sprintf("notemap('%s',%s)", n.formattedIndices(n.indicesFormat), st.Storex())
+	idx := []int{}
+	// check for dots and bangs first
+	var parsed [][]int
+	format := formatNumbers
+	var maxIndex int
+	if strings.ContainsAny(indicesStr, "!.") {
+		parsed = parseIndices(convertDotsAndBangs(indicesStr))
+		format = formatDotAndBangs
+		maxIndex = len(indicesStr)
+	} else if strings.ContainsAny(indicesStr, "1234567890 ") { // space is allowed
+		parsed = parseIndices(indicesStr)
+	} else {
+		return []int{}, formatNumbers, 0
 	}
-	return ""
+	for _, each := range parsed {
+		idx = append(idx, each[0])
+	}
+	max := sliceMax(idx)
+	if max > maxIndex {
+		maxIndex = max
+	}
+	return idx, format, maxIndex
 }
 
 // Inspect implements Inspectable
 func (n NoteMap) Inspect(i core.Inspection) {
-	if n.indicesFormat == formatDotAndBangs {
-		i.Properties["nrs"] = n.formattedIndices(formatNumbers)
+	indexs, format, max := n.getIndices()
+	if format == formatDotAndBangs {
+		i.Properties["nrs"] = n.formattedIndices(indexs, formatNumbers, max)
 	} else {
-		i.Properties["dots"] = n.formattedIndices(formatDotAndBangs)
+		i.Properties["dots"] = n.formattedIndices(indexs, formatDotAndBangs, max)
 	}
 	n.S().Inspect(i)
 }
@@ -152,11 +149,12 @@ func (n NoteMap) S() core.Sequence {
 			return core.EmptySequence
 		}
 	}
-	notes := make([]core.Note, n.maxIndex)
+	indexs, _, max := n.getIndices()
+	notes := make([]core.Note, max)
 	for i := range notes {
 		notes[i] = note.ToRest()
 	}
-	for _, each := range n.Indices {
+	for _, each := range indexs {
 		notes[each-1] = note
 	}
 	return core.BuildSequence(notes)
@@ -176,8 +174,6 @@ func (n NoteMap) Replaced(from, to core.Sequenceable) core.Sequenceable {
 		return n
 	}
 	return NoteMap{
-		Target:        core.On(note.Replaced(from, to)),
-		Indices:       n.Indices,
-		indicesFormat: n.indicesFormat,
-		maxIndex:      n.maxIndex}
+		Target:  core.On(note.Replaced(from, to)),
+		indices: n.indices}
 }

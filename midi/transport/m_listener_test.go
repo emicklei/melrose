@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/emicklei/melrose/core"
+	"github.com/emicklei/melrose/notify"
 )
 
 type noteCollector struct {
@@ -33,6 +34,10 @@ func (n *noteCollector) NoteOff(channel int, note core.Note) {
 	n.number = note.MIDI()
 	n.data2 = note.Velocity
 	n.noteOff = true
+}
+
+func (n *noteCollector) PrintInfo() {
+	notify.Printf("noteCollector(noteOn=%v, noteOff=%v, controlChange=%v, channel=%d, number=%d, data2=%d)\n", n.noteOn, n.noteOff, n.controlChange, n.channel, n.number, n.data2)
 }
 
 func Test_mListener_HandleMIDIMessage(t *testing.T) {

@@ -1,7 +1,30 @@
 ## v1.0.0:
 
-## [v1.0.0-beta] - 
 
+## [v1.0.0-beta*] - 
+
+- fix 32nd-note fractions throughout parsing, quantization, and merge
+- use cumulative musical clocks and nanosecond tempo conversion for playback
+- preserve parallel loop phase, skip fully missed iterations, and use absolute beat deadlines
+- add Web interface, started with ":w"
+- add "load", "play" and "check" subcommands
+- allow tolerance in merge
+- support 32 in merge
+- work on img sizing
+- add volume operator
+- allow operations on list of sequence, more var support in ops
+- fix dynamicmap
+- implement all interval strategies
+- allow var in dynamicmap
+- fix onoff,onkey,improve reset,add :l
+- fix handle end bracket on separate line
+- extend Play with condition
+- doc fixes
+- add link to playground
+- revert to 1.24.2
+- make any sequenceable also playable
+- improve shutdown for open notes
+- stay on go 1.24 for older Macs
 - `if ` is aliased by `when`
 - add optional repeat parameter in scale, scale('16a2',2)
 - add `melrose-mcp` server mention

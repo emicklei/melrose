@@ -18,8 +18,8 @@ sequenceDiagram
     Evaluator->>Play: NewPlay(...)
     Play-->>Evaluator: playable
     Evaluator->>Play: playable.Evaluate()
-    Play->>Device: Play(sequence, bpm, now)
-    Device->>Output: Play(sequence, bpm, now)
+    Play->>Device: PlayAt(sequence, bpm, now)
+    Device->>Output: PlayWithClock(sequence, clock)
     Output->>Timeline: Schedule(noteOn)
     Output->>Timeline: Schedule(noteOff)
     Timeline-->>MIDI: WriteShort(NoteOn)

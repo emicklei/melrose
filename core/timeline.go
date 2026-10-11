@@ -55,19 +55,28 @@ func (t *Timeline) Len() int64 {
 
 // Play runs a loop to handle all the events in time. This is blocking.
 func (t *Timeline) Play() {
-	t.resume = make(chan bool)
+	notify.Debugf("core.timeline: starting to play")
+	resume := make(chan bool)
+	t.protection.Lock()
+	t.resume = resume
 	t.isPlaying = true
+	t.protection.Unlock()
 	for {
 		t.protection.RLock()
+		playing := t.isPlaying
 		here := t.head
 		t.protection.RUnlock()
+		if !playing {
+			return
+		}
 		if here == nil {
-			<-t.resume
+			// Wait for a signal (new event or shutdown signal)
+			<-resume
 			continue
 		}
 		now := time.Now()
 		for now.After(here.when) {
-			here.event.Handle(t, now)
+			here.event.Handle(t, time.Now())
 
 			t.protection.Lock()
 			t.head = t.head.next
@@ -77,6 +86,7 @@ func (t *Timeline) Play() {
 			if here == nil {
 				break
 			}
+			now = time.Now()
 		}
 		if here != nil {
 			untilNext := here.when.Sub(now)
@@ -100,6 +110,27 @@ func (t *Timeline) Reset() {
 	t.tail = nil
 }
 
+// Stop signals the Play loop to exit gracefully.
+// Should be called during shutdown to clean up the timeline goroutine.
+func (t *Timeline) Stop() {
+	t.protection.Lock()
+	wasPlaying := t.isPlaying
+	resume := t.resume
+	t.isPlaying = false
+	t.protection.Unlock()
+
+	// If we were playing, wake up the goroutine so it can check isPlaying and exit
+	if wasPlaying && resume != nil {
+		select {
+		case resume <- true:
+			// Signal sent successfully
+		case <-time.After(100 * time.Millisecond):
+			// Timeout in case goroutine is already stopped
+		}
+	}
+	notify.Debugf("core.timeline: stopped playing")
+}
+
 // Schedule adds an event for a given time
 func (t *Timeline) Schedule(event TimelineEvent, when time.Time) error {
 	now := time.Now()
@@ -121,10 +152,11 @@ func (t *Timeline) schedule(event *scheduledTimelineEvent) {
 	if t.head == nil {
 		t.head = event
 		t.tail = event
+		playing, resume := t.isPlaying, t.resume
 		// before resume otherwise run loop will deadlock
 		t.protection.Unlock()
-		if t.isPlaying {
-			t.resume <- true
+		if playing {
+			resume <- true
 		}
 		return
 	}

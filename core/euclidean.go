@@ -29,7 +29,7 @@ func (e *Euclidean) Play(ctx Context, at time.Time) error {
 	dt := WholeNoteDuration(bpm) / time.Duration(steps)
 	for _, each := range toggles {
 		if each {
-			ctx.Device().Play(NoCondition, playback, bpm, moment)
+			PlayAt(ctx.Device(), NoCondition, playback, bpm, moment)
 		}
 		moment = moment.Add(dt)
 	}

@@ -8,11 +8,11 @@ import (
 )
 
 type VelocityMap struct {
-	Target          core.Sequenceable
+	Target          []core.Sequenceable
 	IndexVelocities []int2int // one-based
 }
 
-func NewVelocityMap(target core.Sequenceable, indices string) VelocityMap {
+func NewVelocityMap(target []core.Sequenceable, indices string) VelocityMap {
 	return VelocityMap{
 		Target:          target,
 		IndexVelocities: parseIndexOffsets(indices),
@@ -20,20 +20,24 @@ func NewVelocityMap(target core.Sequenceable, indices string) VelocityMap {
 }
 
 func (v VelocityMap) S() core.Sequence {
+	if len(v.Target) == 0 {
+		return core.EmptySequence
+	}
 	return core.Sequence{Notes: v.Notes()}
 }
 
 func (v VelocityMap) Notes() [][]core.Note {
-	source := v.Target.S().Notes
+	if len(v.Target) == 0 {
+		return nil
+	}
+	source := v.Target[0].S().Notes
 	target := [][]core.Note{}
 	for _, entry := range v.IndexVelocities {
 		if entry.from <= 0 || entry.from > len(source) {
-			// invalid offset, skip
 			continue
 		}
-		eachGroup := source[entry.from-1] // from is one-based
+		eachGroup := source[entry.from-1]
 		if entry.to == 0 {
-			// no offset, use as is
 			target = append(target, eachGroup)
 			continue
 		}
@@ -47,7 +51,10 @@ func (v VelocityMap) Notes() [][]core.Note {
 }
 
 func (v VelocityMap) Storex() string {
-	s, ok := v.Target.(core.Storable)
+	if len(v.Target) == 0 {
+		return ""
+	}
+	s, ok := v.Target[0].(core.Storable)
 	if !ok {
 		return ""
 	}
@@ -69,11 +76,5 @@ func (v VelocityMap) Replaced(from, to core.Sequenceable) core.Sequenceable {
 	if core.IsIdenticalTo(v, from) {
 		return to
 	}
-	if core.IsIdenticalTo(v.Target, from) {
-		return OctaveMap{Target: to, IndexOffsets: v.IndexVelocities}
-	}
-	if rep, ok := v.Target.(core.Replaceable); ok {
-		return VelocityMap{Target: rep.Replaced(from, to), IndexVelocities: v.IndexVelocities}
-	}
-	return v
+	return VelocityMap{Target: replacedAll(v.Target, from, to), IndexVelocities: v.IndexVelocities}
 }

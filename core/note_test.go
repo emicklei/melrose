@@ -238,7 +238,7 @@ func TestQuantizeFraction(t *testing.T) {
 		{
 			"1/32",
 			1.0 / 32.0,
-			0.03175,
+			0.03125,
 			false,
 			true,
 		},

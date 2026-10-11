@@ -1,7 +1,9 @@
 package core
 
 import (
+	"math"
 	"testing"
+	"time"
 )
 
 func TestParseSequenceBlocks(t *testing.T) {
@@ -57,6 +59,22 @@ func TestSequenceLength(t *testing.T) {
 	m, _ := ParseSequence("C (E G)")
 	if got, want := m.DurationAt(120).Seconds(), 1.0; got != want {
 		t.Errorf("got [%v:%T] want [%v:%T]", got, got, want, want)
+	}
+}
+
+func TestSequenceCumulativeDuration(t *testing.T) {
+	const bars = 1024
+	for _, bpm := range []float64{123, 127, 137} {
+		for _, pattern := range []string{"1C", "C C C C", "32C~32C 16C 8C 2.C"} {
+			sequence := Sequence{}
+			for bar := 0; bar < bars; bar++ {
+				sequence = sequence.SequenceJoin(S(pattern))
+			}
+			want := time.Duration(math.Round(bars * 240 * float64(time.Second) / bpm))
+			if got := sequence.DurationAt(bpm); got != want {
+				t.Errorf("bpm=%g pattern=%s duration=%s, want %s", bpm, pattern, got, want)
+			}
+		}
 	}
 }
 

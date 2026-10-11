@@ -40,12 +40,11 @@ func (l *LanguageServer) pianorollImageHandler(w http.ResponseWriter, r *http.Re
 
 	tim := core.NewTimeline()
 	d := midi.NewOutputDevice(0, nil, 0, tim)
-	d.Play(core.NoCondition, seq, l.context.Control().BPM(), time.Now())
-
-	gc := gg.NewContext(1000, 200)
+	core.PlayAt(d, core.NoCondition, seq, l.context.Control().BPM(), time.Now())
 
 	evts := tim.NoteEvents()
 	nv := img.NotesView{Events: evts, BPM: l.context.Control().BPM()}
+	gc := gg.NewContext(nv.Width(), nv.Height())
 	nv.DrawOn(gc)
 
 	w.Header().Set("content-type", "image/png")

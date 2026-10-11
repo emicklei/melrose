@@ -50,10 +50,10 @@ func Test_parseIndexFractions(t *testing.T) {
 
 func TestFractionMap_Replaced(t *testing.T) {
 	f := NewFractionMap(core.On("1"), core.MustParseSequence("C D"))
-	if core.IsIdenticalTo(f, f.target) {
+	if core.IsIdenticalTo(f, f.target[0]) {
 		t.Error("should not be identical")
 	}
-	if !core.IsIdenticalTo(f.Replaced(f.target, core.EmptySequence).(FractionMap).target, core.EmptySequence) {
+	if !core.IsIdenticalTo(f.Replaced(f.target[0], core.EmptySequence).(FractionMap).target[0], core.EmptySequence) {
 		t.Error("not replaced")
 	}
 	if !core.IsIdenticalTo(f.Replaced(f, core.EmptySequence), core.EmptySequence) {
@@ -63,7 +63,7 @@ func TestFractionMap_Replaced(t *testing.T) {
 		t.Error("should be same")
 	}
 	f = NewFractionMap(core.On("1"), f)
-	if !core.IsIdenticalTo(f.Replaced(f.target, core.EmptySequence).(FractionMap).target, core.EmptySequence) {
+	if !core.IsIdenticalTo(f.Replaced(f.target[0], core.EmptySequence).(FractionMap).target[0], core.EmptySequence) {
 		t.Error("not replaced")
 	}
 }

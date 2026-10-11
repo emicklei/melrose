@@ -10,7 +10,6 @@ import (
 
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
-	"gitlab.com/gomidi/midi/v2/drivers/rtmididrv/imported/rtmidi"
 )
 
 var _ core.AudioDevice = (*DeviceRegistry)(nil)
@@ -22,10 +21,13 @@ type DeviceRegistry struct {
 	defaultInputID  int
 	defaultOutputID int
 	streamRegistry  *streamRegistry
+	// bpm provides the current tempo to input listeners
+	bpm func() float64
 }
 
-func NewDeviceRegistry() (*DeviceRegistry, error) {
+func NewDeviceRegistry(bpm func() float64) (*DeviceRegistry, error) {
 	r := &DeviceRegistry{
+		bpm:             bpm,
 		mutex:           new(sync.RWMutex),
 		in:              map[int]*InputDevice{},
 		out:             map[int]*OutputDevice{},
@@ -47,11 +49,22 @@ func (r *DeviceRegistry) DefaultDeviceIDs() (inputDeviceID, outputDeviceID int) 
 }
 
 func (r *DeviceRegistry) Reset() {
+	r.mutex.RLock()
+	outs := make([]*OutputDevice, 0, len(r.out))
 	for _, each := range r.out {
+		outs = append(outs, each)
+	}
+	ins := make([]*InputDevice, 0, len(r.in))
+	for _, each := range r.in {
+		ins = append(ins, each)
+	}
+	r.mutex.RUnlock()
+
+	for _, each := range outs {
 		each.Reset()
 	}
-	for _, each := range r.in {
-		each.stopListener()
+	for _, each := range ins {
+		each.reset()
 	}
 }
 
@@ -96,6 +109,7 @@ func (r *DeviceRegistry) Input(id int) (*InputDevice, error) {
 		return nil, err
 	}
 	ide := NewInputDevice(id, midiIn, r.streamRegistry.transport)
+	ide.listener.SetBPMProvider(r.bpm)
 	r.in[id] = ide
 	// do not start listening until requested for
 	return ide, nil
@@ -104,11 +118,23 @@ func (r *DeviceRegistry) Input(id int) (*InputDevice, error) {
 func (r *DeviceRegistry) init() error {
 	r.defaultOutputID = r.streamRegistry.transport.DefaultOutputDeviceID()
 	r.defaultInputID = r.streamRegistry.transport.DefaultInputDeviceID()
-	if err := r.initInputs(); err != nil {
+	ins, outs, err := r.streamRegistry.transport.InitInputsOutputs()
+	if err != nil {
 		return err
 	}
-	if err := r.initOutputs(); err != nil {
-		return err
+	for _, each := range ins {
+		device, err := r.Input(each.Port)
+		if err != nil {
+			continue
+		}
+		device.name = each.Name
+	}
+	for _, each := range outs {
+		device, err := r.Output(each.Port)
+		if err != nil {
+			continue
+		}
+		device.name = each.Name
 	}
 	return nil
 }
@@ -129,57 +155,16 @@ func (r *DeviceRegistry) Report() {
 	}
 }
 
-func (r *DeviceRegistry) initOutputs() error {
-	out, err := rtmidi.NewMIDIOutDefault()
-	if err != nil {
-		return fmt.Errorf("can't open default MIDI out: %w", err)
-	}
-	defer out.Close()
-	ports, err := out.PortCount()
-	if err != nil {
-		return fmt.Errorf("can't get number of output ports: %w", err)
-	}
-	for each := range ports {
-		device, err := r.Output(each)
-		if err != nil {
-			continue
-		}
-		name, err := out.PortName(each)
-		if err != nil {
-			name = ""
-		}
-		device.name = name
-	}
-	return nil
-}
-
-func (r *DeviceRegistry) initInputs() error {
-	in, err := rtmidi.NewMIDIInDefault()
-	if err != nil {
-		return fmt.Errorf("can't open default MIDI in: %w", err)
-	}
-	defer in.Close()
-	ports, err := in.PortCount()
-	if err != nil {
-		return fmt.Errorf("can't get number of input ports: %w", err)
-	}
-	for each := range ports {
-		device, err := r.Input(each)
-		if err != nil {
-			continue
-		}
-		name, err := in.PortName(each)
-		if err != nil {
-			name = ""
-		}
-		device.name = name
-	}
-	return nil
-}
-
 func (r *DeviceRegistry) Close() error {
+	r.mutex.RLock()
+	ins := make([]*InputDevice, 0, len(r.in))
 	for _, each := range r.in {
-		each.stopListener()
+		ins = append(ins, each)
+	}
+	r.mutex.RUnlock()
+
+	for _, each := range ins {
+		each.reset()
 	}
 	return r.streamRegistry.close()
 }
@@ -201,6 +186,16 @@ func (r *DeviceRegistry) OnKey(ctx core.Context, deviceID int, channel int, note
 	trigger := NewKeyTrigger(ctx, channel, note, fun)
 	in.listener.OnKey(note, trigger)
 	return nil
+}
+
+// ResetListeners will call reset on each listener
+// TODO used?
+func (r *DeviceRegistry) ResetListeners() {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+	for _, in := range r.in {
+		in.listener.Reset()
+	}
 }
 
 func (r *DeviceRegistry) Listen(deviceID int, who core.NoteListener, isStart bool) {

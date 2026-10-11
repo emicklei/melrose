@@ -55,7 +55,7 @@ func (t RtmidiTransporter) PrintInfo(defaultInID, defaultOutID int) {
 				name = ""
 			}
 			isCurrent := ""
-			if i == defaultInID {
+			if i == defaultOutID {
 				isCurrent = " (current)"
 			}
 

@@ -137,3 +137,11 @@ func ReplacedAll(target []Sequenceable, from, to Sequenceable) []Sequenceable {
 	}
 	return newTarget
 }
+
+// LiteralValue returns the literal value of a value, unwrapping any HasValue
+func LiteralValue(v any) any {
+	if h, ok := v.(HasValue); ok {
+		return LiteralValue(h.Value())
+	}
+	return v
+}

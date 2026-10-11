@@ -105,13 +105,26 @@ func (r *DeviceRegistry) Command(args []string) notify.Message {
 		r.HandleSetting("echo", []any{args[1], id})
 		return nil
 	}
-	if len(args) == 1 && args[0] == "r" {
-		fmt.Println("Reset MIDI device configuration. Stopping all listeners")
+	if args[0] == "r" {
+		fmt.Println("Reset MIDI device configuration. Stopping all listeners. Removing all key triggers")
 		r.Reset()
-		r.Close()
-		r.init()
+		// TODO
+		// r.Close()
+		// r.init()
+		return nil
+	}
+	if args[0] == "l" {
+		r.printListenerInfo()
+		return nil
 	}
 	return notify.NewErrorf("unknown command:%v", args)
+}
+
+func (r *DeviceRegistry) printListenerInfo() {
+	for i, device := range r.in {
+		notify.PrintHighlighted(fmt.Sprintf("input device %d (%s)\n", i, device.name))
+		device.PrintListenerInfo()
+	}
 }
 
 func (r *DeviceRegistry) printInfo() {
@@ -140,8 +153,8 @@ func (r *DeviceRegistry) printInfoVerbose() {
 	fmt.Println("set('midi.in', <device-id>)              --- change the default MIDI input device id (or use e.g. \":m i 1\")")
 	fmt.Println("set('midi.out',<device-id>)              --- change the default MIDI output device id (or use e.g. \":m o 1\")")
 	fmt.Println("set('midi.out.channel',<device-id>,<nr>) --- change the default MIDI channel for an output device id")
-	fmt.Println(":e i <device-id>                         --- toggle printing the MIDI notes from input device id")
-	fmt.Println(":e o <device-id>                         --- toggle printing the MIDI notes to output device id")
+	fmt.Println(":e i <device-id>                         --- toggle echoing the MIDI notes from input device id")
+	fmt.Println(":e o <device-id>                         --- toggle echoing the MIDI notes to output device id")
 }
 
 func (r *DeviceRegistry) toggleEchoNotesForDevice(isInput bool, deviceID int) {

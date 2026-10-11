@@ -19,7 +19,14 @@ Operations in the `op` package do not mutate the incoming sequence. They create 
 ## 4. Timeline-Based Event Scheduling
 Playback does not rely on simple procedural `time.Sleep` calls.
 * **Why:** If the system just slept between notes, it would block execution and make it impossible to interrupt or dynamically alter playback (crucial for live-coding). 
-* **Implementation:** The `core.Timeline` stores `TimelineEvent`s scheduled in the future. A background `Beatmaster` goroutine sweeps the timeline to dispatch events (like `note_on` and `note_off`) to the `AudioDevice`. This separates evaluation from playback, allowing a user to run new code without glitching the audio.
+* **Implementation:** The `core.Timeline` stores `TimelineEvent`s scheduled in the future. Its playback goroutine dispatches events (like `note_on` and `note_off`), while `Beatmaster` schedules beat-based actions separately. This separates evaluation from playback, allowing a user to run new code without glitching the audio.
+
+### Musical Clock and Loop Phase
+`core.PlaybackClock` accumulates musical positions in integer ticks (2^32 ticks per whole note), with fixed-duration notes recorded separately in nanoseconds. Each event timestamp is calculated from the clock's origin and cumulative position using one shared tempo conversion, rounding only the absolute musical offset to the nearest nanosecond. Dotted notes, ties, and 32nd notes therefore preserve their rhythmic proportions across large sequences. Mixed-length groups advance at their earliest ending note, matching MIDI playback.
+
+MIDI devices implement `core.AudioDevice.PlayWithClock` so loops can keep the same clock across consecutive targets and iterations. `core.PlayAt` starts a new clock at a given time and tempo for one-off playback. Beatmaster likewise uses absolute musical deadlines rather than repeatedly adding a rounded beat duration. Tempo changes preserve the current boundary and start a new tempo segment there.
+
+Loop callbacks continue from their scheduled boundary, not their actual execution time. If one or more complete iterations have elapsed, those iterations are skipped using the previous iteration's musical span; stateful sequences are not evaluated for skipped iterations. The next played iteration evaluates its targets once, as usual. Loops with no positive duration stop rather than repeatedly scheduling immediate callbacks. These rules preserve phase, but do not eliminate OS scheduling or MIDI transport latency.
 
 ## 5. Live Variable Delegation
 Loops and tracks evaluate their contents lazily during playback.

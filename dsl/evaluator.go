@@ -32,18 +32,30 @@ const fourSpaces = "    "
 // If a line is prefixed by 4 SPACES then that line is appended to the previous.
 // Return the result of the last expression or statement.
 func (e *Evaluator) EvaluateProgram(source string) (any, error) {
+	result, _, err := e.evaluateProgram(source)
+	return result, err
+}
+
+// EvaluateProgramReportEvaluated is like EvaluateProgram.
+// It also reports whether the result was already evaluated (e.g. a play expression played),
+// in which case evaluating it again would repeat its effect.
+func (e *Evaluator) EvaluateProgramReportEvaluated(source string) (result any, evaluated bool, err error) {
+	return e.evaluateProgram(source)
+}
+
+func (e *Evaluator) evaluateProgram(source string) (any, bool, error) {
 	splitted := strings.Split(source, "\n")
 	lines := make([]string, 0, len(splitted))
 
 	// indentation
 	nrOfLastExpression := -1
 	for lineNr, line := range splitted {
-		if strings.HasPrefix(line, "\t") || strings.HasPrefix(line, fourSpaces) { // append to previous
+		if strings.HasPrefix(line, "\t") || strings.HasPrefix(line, fourSpaces) || (strings.TrimSpace(line) == ")" && len(lines) > 0 && strings.Count(lines[len(lines)-1], "(") > strings.Count(lines[len(lines)-1], ")")) { // append to previous
 			if len(lines) == 0 {
-				return nil, errors.New("syntax error, first line cannot start with TAB")
+				return nil, false, errors.New("syntax error, first line cannot start with TAB")
 			}
 			if nrOfLastExpression+1 != lineNr {
-				return nil, fmt.Errorf("syntax error, line with TAB [%d] must be part of expression", lineNr+1)
+				return nil, false, fmt.Errorf("syntax error, line with TAB [%d] must be part of expression", lineNr+1)
 			}
 			lines[len(lines)-1] = withoutTrailingComment(lines[len(lines)-1]) + line // with TAB TODO
 			nrOfLastExpression = lineNr
@@ -55,6 +67,7 @@ func (e *Evaluator) EvaluateProgram(source string) (any, error) {
 	// now, lines dont have leading tabs or 4 spaces
 
 	var lastResult any
+	var lastEvaluated bool
 	for _, line := range lines {
 		// replace all TABs
 		line = strings.Replace(line, "\t", " ", -1)
@@ -78,16 +91,16 @@ func (e *Evaluator) EvaluateProgram(source string) (any, error) {
 			if len(statement) == 0 {
 				continue
 			}
-			result, err := e.evaluateCleanStatement(statement)
+			result, evaluated, err := e.evaluateStatement(statement)
 			if err != nil {
-				return nil, err
+				return nil, false, err
 			}
 			if result != nil {
-				lastResult = result
+				lastResult, lastEvaluated = result, evaluated
 			}
 		}
 	}
-	return lastResult, nil
+	return lastResult, lastEvaluated, nil
 }
 
 func (e *Evaluator) RecoveringEvaluateProgram(entry string) (any, error) {
@@ -101,55 +114,65 @@ func (e *Evaluator) RecoveringEvaluateProgram(entry string) (any, error) {
 }
 
 func (e *Evaluator) evaluateCleanStatement(entry string) (any, error) {
+	result, _, err := e.evaluateStatement(entry)
+	return result, err
+}
+
+// evaluated is true if the result is Evaluatable and its Evaluate was called.
+func (e *Evaluator) evaluateStatement(entry string) (result any, evaluated bool, err error) {
 	if value, ok := e.context.Variables().Get(entry); ok {
-		return value, nil
+		return value, false, nil
 	}
 	if varName, expression, ok := IsAssignment(entry); ok {
 		// variable cannot be named after function
 		if _, conflict := e.funcs[varName]; conflict {
-			return nil, fmt.Errorf("cannot use variable [%s] because it is a defined function", varName)
+			return nil, false, fmt.Errorf("cannot use variable [%s] because it is a defined function", varName)
 		}
 
 		r, err := e.EvaluateExpression(expression)
 		if err != nil {
-			return nil, err
+			return nil, false, err
 		}
-		return e.handleAssignment(varName, r)
+		result, err := e.handleAssignment(varName, r)
+		return result, false, err
 	}
 
 	// evaluate and print
 	r, err := e.EvaluateExpression(entry)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	// special case for Loop,Listen,Recording
 	if canStop, ok := r.(core.Stoppable); ok {
 		varName := e.newSuggestedVariableName(canStop)
 		if len(varName) == 0 {
-			return nil, fmt.Errorf("this object must assigned to variable name, use e.g. var = %s", canStop.(core.Storable).Storex())
+			return nil, false, fmt.Errorf("this object must be assigned to variable name, use e.g. var = %s", canStop.(core.Storable).Storex())
 		}
-		return e.handleAssignment(varName, r)
+		result, err := e.handleAssignment(varName, r)
+		return result, false, err
 	}
 
 	// special case for Evals, put last because Stoppables can be also Evaluatable
 	if theEval, ok := r.(core.Evaluatable); ok {
 		if err := theEval.Evaluate(e.context); err != nil { // no condition
-			return nil, err
+			return nil, false, err
 		}
+		return r, true, nil
 	}
 
-	return r, nil
+	return r, false, nil
 }
 
 // The last expression returned a Stoppable and was not assigned to a variable.
-// Generate a name based on the combination of the file and the line (if both given).
+// Generate a name based on the combination of the file and the line.
+// Fallback to "_var" if the line number is not available.
 func (e *Evaluator) newSuggestedVariableName(stoppable core.Stoppable) string {
 	var line int
 	if v, ok := e.context.Environment().Load(core.EditorLineEnd); ok {
 		line = v.(int)
 	} else {
-		return ""
+		return "_var"
 	}
 	return fmt.Sprintf("%s%d", shortTypeName(stoppable), line)
 }
@@ -223,6 +246,7 @@ func (e *Evaluator) handleAssignment(varName string, r any) (any, error) {
 			if storedValue, present := e.context.Variables().Get(varName); present {
 				if storedRecording, replaceme := storedValue.(*control.Recording); replaceme {
 					storedRecording.GetTargetFrom(theRecording)
+					// return the stored. not the input
 					r = storedRecording
 				} else {
 					// existing variable but not a Recording
@@ -235,7 +259,37 @@ func (e *Evaluator) handleAssignment(varName string, r any) (any, error) {
 			return r, nil
 		}
 
-		// not a Loop or Listen or Recording
+		// specical case for OnOff
+		if theOnOff, ok := r.(*control.OnOff); ok {
+			if storedValue, present := e.context.Variables().Get(varName); present {
+				storedOnOff, ok := storedValue.(*control.OnOff)
+				if !ok || !storedOnOff.Equals(theOnOff) {
+					// existing variable but not an OnOff
+					// or for a different OnOff configuration
+					e.context.Variables().Put(varName, theOnOff)
+				}
+				// return the stored. not the input
+				r = storedOnOff
+			} else {
+				// new variable for theOnOff
+				e.context.Variables().Put(varName, theOnOff)
+			}
+			return r, nil
+		}
+
+		// special case for SyncPlay
+		if theSync, ok := r.(control.SyncPlay); ok {
+			if storedValue, present := e.context.Variables().Get(varName); present {
+				// keep the stored one if unchanged so that Stop reaches the playing children
+				if storedSync, same := storedValue.(control.SyncPlay); same && storedSync.Storex() == theSync.Storex() {
+					return storedSync, nil
+				}
+			}
+			e.context.Variables().Put(varName, theSync)
+			return r, nil
+		}
+
+		// not a Loop or Listen or Recording or OnOff or SyncPlay
 		e.context.Variables().Put(varName, r)
 		if aware, ok := r.(core.NameAware); ok {
 			aware.VariableName(varName)
