@@ -2,14 +2,11 @@ package server
 
 import (
 	"flag"
-	"fmt"
-	"net"
 	"net/http"
 
 	"github.com/emicklei/melrose/api"
 	"github.com/emicklei/melrose/core"
 	"github.com/emicklei/melrose/notify"
-	"github.com/emicklei/melrose/ui/web"
 	"github.com/emicklei/structexplorer"
 )
 
@@ -34,26 +31,10 @@ func (l *LanguageServer) Start() error {
 	http.HandleFunc("/v1/pianoroll", l.pianorollImageHandler)
 	http.HandleFunc("/version", l.versionHandler)
 	http.HandleFunc("/explore", structexplorer.NewService("ctx", l.context).ServeHTTP)
-	http.Handle("/", http.FileServer(http.FS(web.Assets)))
 	return http.ListenAndServe(l.address, nil)
 }
 
 var httpPort = flag.String("http", ":8118", "address on which to listen for HTTP requests")
-
-// WebURL returns the local browser URL for the configured HTTP listener.
-func WebURL() (string, error) {
-	if *httpPort == "" {
-		return "", fmt.Errorf("HTTP server is disabled")
-	}
-	host, port, err := net.SplitHostPort(*httpPort)
-	if err != nil {
-		return "", err
-	}
-	if host == "" || host == "0.0.0.0" || host == "::" {
-		host = "localhost"
-	}
-	return "http://" + net.JoinHostPort(host, port), nil
-}
 
 func Start(ctx core.Context) {
 	ls := NewLanguageServer(ctx, *httpPort)
