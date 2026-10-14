@@ -1,5 +1,7 @@
 ## [v1.0.0-beta*] - 
 
+- fix help alias text
+- remove syntax version
 - fix 32nd-note fractions throughout parsing, quantization, and merge
 - use cumulative musical clocks and nanosecond tempo conversion for playback
 - preserve parallel loop phase, skip fully missed iterations, and use absolute beat deadlines

@@ -17,7 +17,7 @@ func showHelp(ctx core.Context, args []string) notify.Message {
 	var b bytes.Buffer
 
 	if len(args) == 0 {
-		fmt.Fprintf(&b, "\nversion %s, syntax: %s\n", core.BuildTag, dsl.SyntaxVersion)
+		fmt.Fprintf(&b, "\nversion %s\n", core.BuildTag)
 		fmt.Fprintf(&b, "https://melrōse.org \n")
 	}
 
@@ -73,7 +73,7 @@ func showHelp(ctx core.Context, args []string) notify.Message {
 		for _, k := range keys {
 			f := funcs[k]
 			fmt.Fprintf(&b, "%s --- %s", strings.Repeat(" ", width-len(k))+k, f.Title)
-			if f.Alias != "" {
+			if f.Alias != "" && f.Alias != k {
 				fmt.Fprintf(&b, " (alias:%s)", f.Alias)
 			}
 			fmt.Fprintln(&b)

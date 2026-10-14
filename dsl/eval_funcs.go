@@ -17,9 +17,6 @@ import (
 	"github.com/emicklei/melrose/op"
 )
 
-// SyntaxVersion tells what language version this package is supporting.
-const SyntaxVersion = "0.37" // major,minor
-
 func EvalFunctions(ctx core.Context) map[string]Function {
 	eval := map[string]Function{}
 
@@ -1281,7 +1278,7 @@ onkey('c4',onoff('e')) // uses default input and default output MIDI device`,
 		Title:         "Music Pattern Generator: Euclidean",
 		Description:   "euclidean creates a euclidean rythm generator",
 		Template:      "euclidean(${1:steps},${2:beats},${3:rotation},${4:noteOrVariable})",
-		ControlsAudio: true,
+		ControlsAudio: false,
 		Samples:       "e = euclidean(12,4,0,sequence('c e g'))",
 		Func: func(steps, beats, rotation, noteOrVariable any) any {
 			return &core.Euclidean{

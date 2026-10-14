@@ -47,11 +47,11 @@ You can also sponsor Melrōse via [Github Sponsors](https://github.com/sponsors/
 
 ### Related tools
 
-- `melrose-mcp` is a (server) tool that uses the [MCP](https://modelcontextprotocol.io/) protocol to receive expressions to play.
+- `melrose-mcp` <br>is a (server) tool that uses the [MCP](https://modelcontextprotocol.io/) protocol to receive expressions to play.
 See [melrose-mcp](https://github.com/emicklei/melrose-mcp) for details how to install and use it.
-- `midicyles` is a tool that visualizes MIDI events using polar coordinates (notes move around in circles).See [midicyles](https://codeberg.org/emicklei/midicycles) for details how to install and use it.
-- `keymidi` is a tool that provides an interactive OS Keyboard to send MIDI events. This can be used to control the playing of music in `melrōse`.See [keymidi](https://codeberg.org/emicklei/keymidi) for details how to install and use it.
-- `slidermidi` is a tool that provides an interactive UI Sliders to send MIDI change event. This can be used to control the playing of music in `melrōse`.See [slidermidi](https://codeberg.org/emicklei/slidermidi) for details how to install and use it.
+- `midicyles` <br>is a tool that visualizes MIDI events using polar coordinates (notes move around in circles).See [midicyles](https://codeberg.org/emicklei/midicycles) for details how to install and use it.
+- `keymidi` <br>is a tool that provides an interactive OS Keyboard to send MIDI events. This can be used to control the playing of music in `melrōse`.See [keymidi](https://codeberg.org/emicklei/keymidi) for details how to install and use it.
+- `slidermidi` <br>is a tool that provides an interactive UI Sliders to send MIDI change event. This can be used to control the playing of music in `melrōse`.See [slidermidi](https://codeberg.org/emicklei/slidermidi) for details how to install and use it.
 
 Software is licensed under [MIT](LICENSE).
 
