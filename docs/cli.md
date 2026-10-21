@@ -23,6 +23,8 @@ You can use the following flags to change its behavior.
         load all statements from a file and play the result of the last expression
     melrose load <file>
         load all statements from a file
+    melrose midi
+        list available MIDI input and output devices
     melrose check [file]
         validate a Melrose source file; if no file is given, read from standard input
 

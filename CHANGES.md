@@ -1,5 +1,6 @@
 ## [v1.0.0-beta*] - 
 
+- add midi subcommand to list available devices
 - allow print source when play from file
 - fix help alias text
 - remove syntax version

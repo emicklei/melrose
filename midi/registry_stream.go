@@ -1,6 +1,7 @@
 package midi
 
 import (
+	"errors"
 	"sync"
 
 	"github.com/emicklei/melrose/midi/transport"
@@ -61,13 +62,14 @@ func (s *streamRegistry) input(id int) (transport.MIDIIn, error) {
 func (s *streamRegistry) close() error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
+	var closeErr error
 	for _, each := range s.in {
-		each.Close()
+		closeErr = errors.Join(closeErr, each.Close())
 	}
 	for _, each := range s.out {
-		each.Close()
+		closeErr = errors.Join(closeErr, each.Close())
 	}
 	s.out = map[int]transport.MIDIOut{}
 	s.in = map[int]transport.MIDIIn{}
-	return nil
+	return closeErr
 }

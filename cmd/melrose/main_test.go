@@ -89,6 +89,23 @@ func TestParseCommand(t *testing.T) {
 			wantFlagArgs: []string{"-log", "melrose.log"},
 		},
 		{
+			name:         "midi",
+			arguments:    []string{"midi"},
+			wantCommand:  "midi",
+			wantFlagArgs: []string{},
+		},
+		{
+			name:         "midi with debug flag",
+			arguments:    []string{"midi", "-d"},
+			wantCommand:  "midi",
+			wantFlagArgs: []string{"-d"},
+		},
+		{
+			name:      "midi with unexpected argument",
+			arguments: []string{"midi", "extra"},
+			wantError: true,
+		},
+		{
 			name:      "missing filename",
 			arguments: []string{"load"},
 			wantError: true,

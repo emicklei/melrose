@@ -35,7 +35,15 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer system.TearDown(ctx)
+	defer func() {
+		if err := system.TearDown(ctx); err != nil {
+			log.Printf("error during shutdown: %v", err)
+		}
+	}()
+	if command == "midi" {
+		ctx.Device().Command(nil)
+		return
+	}
 	if command == "play" {
 		if err := cli.ExecuteFile(ctx, filename); err != nil {
 			log.Fatalln(err)
@@ -140,11 +148,17 @@ func parseCommand(arguments []string) (string, string, error) {
 		}
 		return "", "", errors.New("usage: melrose check [file]")
 	}
+	if positional[0] == "midi" {
+		if len(positional) == 1 {
+			return "midi", "", nil
+		}
+		return "", "", errors.New("usage: melrose midi")
+	}
 	if len(positional) != 2 {
 		return "", "", errors.New("usage: melrose <load|play> <file>")
 	}
 	if positional[0] != "load" && positional[0] != "play" {
-		return "", "", fmt.Errorf("unknown subcommand %q; expected load, play, or check", positional[0])
+		return "", "", fmt.Errorf("unknown subcommand %q; expected load, play, check, or midi", positional[0])
 	}
 	return positional[0], positional[1], nil
 }
