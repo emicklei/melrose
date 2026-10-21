@@ -22,13 +22,13 @@ Note sequences in your program can be changed while playing giving you direct au
 
 See also [Blog post](http://ernestmicklei.com/melrose/introduction_melrose/)
 
-Read the [documentation](https://melrōse.org/) on how to use `melrōse`.
-
 ## Choose your setup
 
 - **Try it in your browser:** Open the [Melrōse Playground](https://play.melrōse.org), enter the scale example above, connect a MIDI receiver such as GarageBand, and use the play control.
 - **Work locally with music files and MIDI devices:** [Install Melrōse](docs/install.md) to use its terminal REPL and connect to MIDI devices. A local installation can connect to multiple devices, with up to 16 MIDI channels available per device.
 - **Compose in Visual Studio Code:** Install the [Melrōse VS Code extension](https://marketplace.visualstudio.com/items?itemName=EMicklei.melrose-for-vscode) to manage music files and play music from the editor.
+
+Read the [Documentation](https://melrōse.org/) on how to use `melrōse`.
 
 ### Showcase
 
@@ -36,7 +36,7 @@ Read the [documentation](https://melrōse.org/) on how to use `melrōse`.
 
 ### MIDI setup
 
-![melrose-port-daw.png](docs/images/melrose-port-daw.png)
+<img src="docs/images/melrose-port-daw.png" alt="melrose-port-daw" width="80%">
 
 ### Contributions
 
