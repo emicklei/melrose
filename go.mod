@@ -9,6 +9,7 @@ require (
 	github.com/fogleman/gg v1.3.0
 	github.com/peterh/liner v1.2.2
 	gitlab.com/gomidi/midi/v2 v2.3.24
+	golang.org/x/term v0.40.0
 )
 
 require (

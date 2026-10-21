@@ -69,6 +69,7 @@ func ExecuteFile(ctx core.Context, fileName string) error {
 
 func StartREPL(ctx core.Context) {
 	notify.PrintWelcome(core.BuildTag)
+	defer notify.PrintBye()
 	// start REPL
 	line := liner.NewLiner()
 	defer line.Close()

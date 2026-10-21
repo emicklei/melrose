@@ -13,6 +13,7 @@ import (
 	"github.com/emicklei/melrose/server"
 	"github.com/emicklei/melrose/system"
 	"github.com/emicklei/melrose/ui/cli"
+	"golang.org/x/term"
 )
 
 var (
@@ -39,9 +40,9 @@ func main() {
 		if err := cli.ExecuteFile(ctx, filename); err != nil {
 			log.Fatalln(err)
 		}
-		// wait for the user to press enter before exiting
-		fmt.Println("Press Enter to exit...")
-		fmt.Scanln()
+		if err := waitForPlayInput(filename, os.Stdin, os.Stdout); err != nil {
+			log.Println(err)
+		}
 		return
 	}
 	if command == "load" {
@@ -52,6 +53,61 @@ func main() {
 	// start the server and the REPL
 	server.Start(ctx)
 	cli.StartREPL(ctx)
+}
+
+func waitForPlayInput(filename string, input *os.File, output io.Writer) error {
+	for {
+		if _, err := fmt.Fprintln(output, "Press 'Enter' to exit or 'p' to show the file..."); err != nil {
+			return err
+		}
+		key, err := readPlayKey(input)
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		switch key {
+		case '\r', '\n', 3, 4: // Enter, Ctrl-C, or Ctrl-D.
+			return nil
+		case 'p':
+			content, err := os.ReadFile(filename)
+			if err != nil {
+				if _, err := fmt.Fprintf(output, "Error reading file: %v\n", err); err != nil {
+					return err
+				}
+				continue
+			}
+			fmt.Fprintln(output, ">>>")
+			if _, err := output.Write(content); err != nil {
+				return err
+			}
+			fmt.Fprintln(output, "<<<")
+			if len(content) > 0 && content[len(content)-1] != '\n' {
+				if _, err := fmt.Fprintln(output); err != nil {
+					return err
+				}
+			}
+		}
+	}
+}
+
+func readPlayKey(input *os.File) (key byte, err error) {
+	fd := int(input.Fd())
+	if term.IsTerminal(fd) {
+		state, err := term.MakeRaw(fd)
+		if err != nil {
+			return 0, fmt.Errorf("setting terminal input mode: %w", err)
+		}
+		defer func() {
+			if restoreErr := term.Restore(fd, state); restoreErr != nil {
+				err = errors.Join(err, fmt.Errorf("restoring terminal input mode: %w", restoreErr))
+			}
+		}()
+	}
+	var buffer [1]byte
+	_, err = io.ReadFull(input, buffer[:])
+	return buffer[0], err
 }
 
 func validateSource(filename string) error {

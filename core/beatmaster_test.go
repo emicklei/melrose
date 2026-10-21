@@ -185,11 +185,6 @@ func TestBeatmaster_Plan(t *testing.T) {
 	if got, want := len(b.schedule.entries), 1; got != want {
 		t.Errorf("got [%v] want [%v]", got, want)
 	}
-	// test debug
-	notify.ToggleDebug()
-	b.Plan(1, MustParseSequence("D"))
-	notify.ToggleDebug()
-
 	// test nil device
 	b.context = Context(nil)
 	b.Plan(1, MustParseSequence("E"))

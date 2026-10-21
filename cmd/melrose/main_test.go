@@ -1,10 +1,62 @@
 package main
 
 import (
+	"bytes"
 	"os"
+	"path/filepath"
 	"slices"
+	"strings"
 	"testing"
 )
+
+func TestWaitForPlayInput(t *testing.T) {
+	for _, test := range []struct {
+		name       string
+		keys       string
+		missing    bool
+		wantPrints int
+		wantError  bool
+	}{
+		{name: "enter exits", keys: "\n"},
+		{name: "carriage return exits", keys: "\r"},
+		{name: "print repeatedly", keys: "pp\np", wantPrints: 2},
+		{name: "ignore unknown keys", keys: "xp\n", wantPrints: 1},
+		{name: "end of input exits"},
+		{name: "control c exits", keys: "\x03p"},
+		{name: "control d exits", keys: "\x04p"},
+		{name: "missing file reports error", keys: "p\n", missing: true, wantError: true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			dir := t.TempDir()
+			filename := filepath.Join(dir, "source.mel")
+			const content = "sequence(\"c d e\")"
+			if !test.missing {
+				if err := os.WriteFile(filename, []byte(content), 0600); err != nil {
+					t.Fatal(err)
+				}
+			}
+			keyfile := filepath.Join(dir, "keys")
+			if err := os.WriteFile(keyfile, []byte(test.keys), 0600); err != nil {
+				t.Fatal(err)
+			}
+			input, err := os.Open(keyfile)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer input.Close()
+			var output bytes.Buffer
+			if err := waitForPlayInput(filename, input, &output); err != nil {
+				t.Fatal(err)
+			}
+			if got := strings.Count(output.String(), content); got != test.wantPrints {
+				t.Fatalf("printed file %d times, want %d; output: %q", got, test.wantPrints, output.String())
+			}
+			if got := strings.Contains(output.String(), "Error reading file:"); got != test.wantError {
+				t.Fatalf("file error reported = %t, want %t; output: %q", got, test.wantError, output.String())
+			}
+		})
+	}
+}
 
 func TestParseCommand(t *testing.T) {
 	tests := []struct {

@@ -11,7 +11,7 @@ func StopAllPlayables(context core.Context) {
 	for k, v := range context.Variables().Variables() {
 		if s, ok := v.(core.Stoppable); ok {
 			if s.IsPlaying() {
-				notify.Infof("stopping: %s = %s", k, core.Storex(s))
+				notify.Debugf("stopping: %s = %s", k, core.Storex(s))
 				_ = s.Stop(context)
 			}
 		}

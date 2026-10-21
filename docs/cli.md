@@ -26,6 +26,10 @@ You can use the following flags to change its behavior.
     melrose check [file]
         validate a Melrose source file; if no file is given, read from standard input
 
+After `melrose play <file>`, press `p` to print the file's current contents
+without stopping playback. You can repeat this; press Enter to exit.
+Neither action requires typing a command and submitting it.
+
 Program flags can be used before or after a subcommand. For example:
 
     melrose play somefile.mel -d
