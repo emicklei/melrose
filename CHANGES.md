@@ -1,5 +1,6 @@
 ## [v1.0.0-beta*] - 
 
+- allow print source when play from file
 - fix help alias text
 - remove syntax version
 - fix 32nd-note fractions throughout parsing, quantization, and merge
