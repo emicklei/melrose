@@ -68,7 +68,7 @@ func (r *DeviceRegistry) HandleSetting(name string, values []any) error {
 // Command is part of melrose.AudioDevice
 func (r *DeviceRegistry) Command(args []string) notify.Message {
 	if len(args) == 0 {
-		r.printInfoVerbose()
+		r.printInfoVerbose(true)
 		return nil
 	}
 	if len(args) == 2 && args[0] == "o" {
@@ -120,6 +120,10 @@ func (r *DeviceRegistry) Command(args []string) notify.Message {
 	return notify.NewErrorf("unknown command:%v", args)
 }
 
+func (r *DeviceRegistry) PrintInfoWithoutInstructions() {
+	r.printInfoVerbose(false)
+}
+
 func (r *DeviceRegistry) printListenerInfo() {
 	for i, device := range r.in {
 		notify.PrintHighlighted(fmt.Sprintf("input device %d (%s)\n", i, device.name))
@@ -131,7 +135,7 @@ func (r *DeviceRegistry) printInfo() {
 	r.streamRegistry.transport.PrintInfo(r.defaultInputID, r.defaultOutputID)
 
 }
-func (r *DeviceRegistry) printInfoVerbose() {
+func (r *DeviceRegistry) printInfoVerbose(includeInstructions bool) {
 	r.printInfo()
 
 	notify.PrintHighlighted("default settings:")
@@ -148,6 +152,10 @@ func (r *DeviceRegistry) printInfoVerbose() {
 		fmt.Printf(" no output device (restart?)\n")
 	}
 	fmt.Println()
+
+	if !includeInstructions {
+		return
+	}
 
 	notify.PrintHighlighted("how to change:")
 	fmt.Println("set('midi.in', <device-id>)              --- change the default MIDI input device id (or use e.g. \":m i 1\")")

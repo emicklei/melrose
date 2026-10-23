@@ -41,7 +41,11 @@ func main() {
 		}
 	}()
 	if command == "midi" {
-		ctx.Device().Command(nil)
+		if device, ok := ctx.Device().(interface{ PrintInfoWithoutInstructions() }); ok {
+			device.PrintInfoWithoutInstructions()
+		} else {
+			ctx.Device().Command(nil)
+		}
 		return
 	}
 	if command == "play" {
