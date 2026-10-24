@@ -72,7 +72,7 @@ Ctrl-R       | Reverse Search history (Ctrl-S forward, Ctrl-G cancel)
 Ctrl-Y       | Paste from Yank buffer (Alt-Y to paste next yank instead)
 
 
-### special commands
+### special commands !
 
     !<object> 
 

@@ -1,4 +1,4 @@
-## [v1.0.0-beta*] - 
+## [v1.0.0] - Sat Oct 24 22:17 2026 +0200 
 
 - add midi subcommand to list available devices
 - allow print source when play from file

@@ -7,22 +7,19 @@ In order to build and work with `melrose` on your operating system, the followin
 
 Depending on your operating system, different steps are required.
 
-
 ## [all platforms] Melrōse plugin for Visual Studio Code<a name="plugin"></a>
 
 Search and install the extension from the editor or go to the [Marketplace published package](https://marketplace.visualstudio.com/items?itemName=EMicklei.melrose-for-vscode)
 
-
 ## Mac OSX
 
-### Using `brew` for the latest release
+### using `brew` for the latest release
 
 	brew install emicklei/tap/melrose
 
-### From source
+### using Go SDK
 
 You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
-
 The minimum requirement is Go 1.24.2. On a Mac, macOS 11 Big Sur or higher is required.
 
 	go install github.com/emicklei/melrose/cmd/melrose@latest
@@ -36,6 +33,7 @@ If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH
 ## Linux 
 
 You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
+The minimum requirement is Go 1.24.2.
 
 On Ubuntu / Debian
 
@@ -53,4 +51,6 @@ If this command cannot be found then you need to add `$GOPATH/bin` to your `PATH
 
 ## Windows
 
+You need to install the [Go SDK](https://golang.org/dl/) for compiling the program on your machine.
+The minimum requirement is Go 1.24.2.
 Look at the build script (`.travis.yml`) of [melrose-windows](https://github.com/emicklei/melrose-windows) for detailed steps to build an executable from source.
